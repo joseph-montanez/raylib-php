@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("raylib", "for raylib support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("raylib", "enable raylib support", "no");
+
+if (PHP_RAYLIB != "no") {
+	EXTENSION("raylib", "raylib.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+}
+
