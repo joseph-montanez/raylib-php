@@ -1,5 +1,7 @@
 <?php
 
+use raylib\Image;
+
 require_once __DIR__ . '/../raylib-colors.php';
 
 // Initialization
@@ -11,7 +13,7 @@ raylib\InitWindow($screenWidth, $screenHeight, "raylib [textures] example - imag
 
 // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
-$image = new raylib\Image(__DIR__  . '/resources/raylib_logo.png');     // Loaded in CPU memory (RAM)
+$image = new Image(__DIR__  . '/resources/raylib_logo.png');    // Loaded in CPU memory (RAM)
 $texture = $image->toTexture();                                         // Image converted to texture, GPU memory (VRAM)
 
 unset($image);    // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM

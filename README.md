@@ -1,4 +1,4 @@
-#raylib-php
+# raylib-php
 
 PHP 7.x bindings for raylib, a simple and easy-to-use library to learn videogames programming (www.raylib.com)
 

@@ -109,6 +109,164 @@ function GetScreenWidth() : int {}
  */
 function GetScreenHeight() : int {}
 
+//------------------------------------------------------------------------------------
+// Input Handling Functions (Module: core)
+//------------------------------------------------------------------------------------
+
+// Input-related functions: keyboard
+
+/**
+ * Detect if a key has been pressed once
+ *
+ * @param int $key
+ *
+ * @return bool
+ */
+function IsKeyPressed(int $key) : bool {}
+
+/**
+ * Detect if a key is being pressed
+ *
+ * @param int $key
+ *
+ * @return bool
+ */
+function IsKeyDown(int $key) : bool {}
+
+/**
+ * Detect if a key has been released once
+ *
+ * @param int $key
+ *
+ * @return bool
+ */
+function IsKeyReleased(int $key) : bool {}
+
+/**
+ * Detect if a key is NOT being pressed
+ *
+ * @param int $key
+ *
+ * @return bool
+ */
+function IsKeyUp(int $key) : bool {}
+
+/**
+ * Get latest key pressed
+ *
+ * @return int
+ */
+function GetKeyPressed() : int {}
+
+/**
+ * Set a custom key to exit program (default is ESC)
+ *
+ * @param int $key
+ */
+function SetExitKey(int $key) : void {}
+
+// Input-related functions: gamepads
+
+/**
+ * Detect if a gamepad is available
+ *
+ * @param int $gamepad
+ *
+ * @return bool
+ */
+function IsGamepadAvailable(int $gamepad) : bool {}
+
+/**
+ * Check gamepad name (if available)
+ *
+ * @param int $gamepad
+ * @param string $name
+ *
+ * @return bool
+ */
+function IsGamepadName(int $gamepad, string $name) : bool {}
+
+/**
+ * Return gamepad internal name id
+ *
+ * @param int $gamepad
+ *
+ * @return string
+ */
+function GetGamepadName(int $gamepad) : string {}
+
+/**
+ * Detect if a gamepad button has been pressed once
+ *
+ * @param int $gamepad
+ * @param int $button
+ *
+ * @return bool
+ */
+function IsGamepadButtonPressed(int $gamepad, int $button) : bool {}
+
+/**
+ * Detect if a gamepad button is being pressed
+ *
+ * @param int $gamepad
+ * @param int $button
+ *
+ * @return bool
+ */
+function IsGamepadButtonDown(int $gamepad, int $button) : bool {}
+
+/**
+ * Detect if a gamepad button has been released once
+ *
+ * @param int $gamepad
+ * @param int $button
+ *
+ * @return bool
+ */
+function IsGamepadButtonReleased(int $gamepad, int $button) : bool {}
+
+/**
+ * Detect if a gamepad button is NOT being pressed
+ *
+ * @param int $gamepad
+ * @param int $button
+ *
+ * @return bool
+ */
+function IsGamepadButtonUp(int $gamepad, int $button) : bool {}
+
+/**
+ * Get the last gamepad button pressed
+ *
+ * @return int
+ */
+function GetGamepadButtonPressed() : int {}
+
+/**
+ * Return gamepad axis count for a gamepad
+ *
+ * @param int $gamepad
+ *
+ * @return int
+ */
+function GetGamepadAxisCount(int $gamepad) : int {}
+
+/**
+ * Return axis movement value for a gamepad axis
+ *
+ * @param int $gamepad
+ * @param int $axis
+ *
+ * @return float
+ */
+function GetGamepadAxisMovement(int $gamepad, int $axis) : float {}
+
+//------------------------------------------------------------------------------------
+// Texture Loading and Drawing Functions (Module: textures)
+//------------------------------------------------------------------------------------
+
+// Image/Texture2D data loading/unloading/saving functions
+
 /**
  * Load image from file into CPU memory (RAM)
  *
@@ -137,7 +295,6 @@ function BeginDrawing() {}
  * End canvas drawing and swap buffers (double buffering)
  */
 function EndDrawing() {}
-
 
 
 /**
@@ -209,3 +366,90 @@ function TextureGetHeight($texture) : int {}
  * @param array $color
  */
 function DrawText(string $text, int $posX, int $posY, int $fontSize, array $color) {}
+
+
+class Image {
+    public function __construct(string $fileName) {}
+
+    /**
+     * Load texture from image data
+     *
+     * @return Texture
+     */
+    public function toTexture() : Texture {}
+
+    /**
+     * Image raw data
+     *
+     * @return array
+     */
+    public function data() : array {}
+
+    /**
+     * Image base width
+     *
+     * @return int
+     */
+    public function width() : int {}
+
+    /**
+     * Image base height
+     *
+     * @return int
+     */
+    public function height() : int {}
+
+    /**
+     * Image levels, 1 by default
+     *
+     * @return int
+     */
+    public function mipmaps() : int {}
+
+    /**
+     * Data format (PixelFormat type)
+     *
+     * @return int
+     */
+    public function format() : int {}
+
+}
+
+class Texture {
+    public function __construct(string $fileName) {}
+
+    /**
+     * Texture base width
+     *
+     * @return int
+     */
+    public function width() : int {}
+
+    /**
+     * Texture base height
+     *
+     * @return int
+     */
+    public function height() : int {}
+
+    /**
+     * OpenGL texture id
+     *
+     * @return int
+     */
+    public function id() : int {}
+
+    /**
+     * Mipmap levels, 1 by default
+     *
+     * @return int
+     */
+    public function mipmaps() : int {}
+
+    /**
+     * Data format (PixelFormat type)
+     *
+     * @return int
+     */
+    public function format() : int {}
+}

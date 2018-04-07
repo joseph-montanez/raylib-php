@@ -276,6 +276,209 @@ PHP_FUNCTION(ClearBackground)
 }
 
 //------------------------------------------------------------------------------------
+// Input Handling Functions (Module: core)
+//------------------------------------------------------------------------------------
+
+// Input-related functions: keyboard
+
+//bool IsKeyPressed(int key);
+PHP_FUNCTION(IsKeyPressed)
+{
+    zend_long key;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(key)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsKeyPressed(zend_long_2int(key)));
+}
+
+//bool IsKeyDown(int key);
+PHP_FUNCTION(IsKeyDown)
+{
+    zend_long key;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(key)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsKeyDown(zend_long_2int(key)));
+}
+
+//bool IsKeyReleased(int key);
+PHP_FUNCTION(IsKeyReleased)
+{
+    zend_long key;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(key)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsKeyReleased(zend_long_2int(key)));
+}
+
+//bool IsKeyUp(int key);
+PHP_FUNCTION(IsKeyUp)
+{
+    zend_long key;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(key)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsKeyUp(zend_long_2int(key)));
+}
+
+//int GetKeyPressed(void);
+PHP_FUNCTION(GetKeyPressed)
+{
+    RETURN_LONG(GetKeyPressed());
+}
+
+//void SetExitKey(void);
+PHP_FUNCTION(SetExitKey)
+{
+    zend_long key;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(key)
+    ZEND_PARSE_PARAMETERS_END();
+
+    SetExitKey(zend_long_2int(key));
+}
+
+// Input-related functions: gamepads
+
+//bool IsGamepadAvailable(int gamepad);
+PHP_FUNCTION(IsGamepadAvailable)
+{
+    zend_long gamepad;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(gamepad)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadAvailable(zend_long_2int(gamepad)));
+}
+
+//bool IsGamepadName(int gamepad);
+PHP_FUNCTION(IsGamepadName)
+{
+    zend_long gamepad;
+    zend_string *name;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_STR(name)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadName(zend_long_2int(gamepad), name->val));
+}
+
+//const char *GetGamepadName(int gamepad);
+PHP_FUNCTION(GetGamepadName)
+{
+    zend_long gamepad;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(gamepad)
+    ZEND_PARSE_PARAMETERS_END();
+
+    const char *gamepadName = GetGamepadName(zend_long_2int(gamepad));
+    zend_string *str = zend_string_init(gamepadName, sizeof(gamepadName)-1, 0);
+
+    RETURN_STR(str);
+}
+
+//bool IsGamepadButtonPressed(int gamepad, int button);
+PHP_FUNCTION(IsGamepadButtonPressed)
+{
+    zend_long gamepad;
+    zend_long button;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_LONG(button)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadButtonPressed(zend_long_2int(gamepad), zend_long_2int(button)));
+}
+
+//bool IsGamepadButtonDown(int gamepad, int button);
+PHP_FUNCTION(IsGamepadButtonDown)
+{
+    zend_long gamepad;
+    zend_long button;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_LONG(button)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadButtonDown(zend_long_2int(gamepad), zend_long_2int(button)));
+}
+
+//bool IsGamepadButtonReleased(int gamepad, int button);
+PHP_FUNCTION(IsGamepadButtonReleased)
+{
+    zend_long gamepad;
+    zend_long button;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_LONG(button)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadButtonReleased(zend_long_2int(gamepad), zend_long_2int(button)));
+}
+
+//bool IsGamepadButtonUp(int gamepad, int button);
+PHP_FUNCTION(IsGamepadButtonUp)
+{
+    zend_long gamepad;
+    zend_long button;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_LONG(button)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsGamepadButtonUp(zend_long_2int(gamepad), zend_long_2int(button)));
+}
+
+//int GetGamepadButtonPressed(void);
+PHP_FUNCTION(GetGamepadButtonPressed)
+{
+    RETURN_LONG(GetGamepadButtonPressed());
+}
+
+//int GetGamepadAxisCount(int gamepad);
+PHP_FUNCTION(GetGamepadAxisCount)
+{
+    zend_long gamepad;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(gamepad)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetGamepadAxisCount(zend_long_2int(gamepad)));
+}
+
+//bool GetGamepadAxisMovement(int gamepad, int button);
+PHP_FUNCTION(GetGamepadAxisMovement)
+{
+    zend_long gamepad;
+    zend_long axis;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(gamepad)
+            Z_PARAM_LONG(axis)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_DOUBLE(GetGamepadAxisMovement(zend_long_2int(gamepad), zend_long_2int(axis)));
+}
+
+//------------------------------------------------------------------------------------
 // Texture Loading and Drawing Functions (Module: textures)
 //------------------------------------------------------------------------------------
 
@@ -845,6 +1048,27 @@ const zend_function_entry raylib_functions[] = {
 		// Timming-related functions
 		ZEND_NS_FE("raylib", SetTargetFPS, NULL)
 		ZEND_NS_FE("raylib", GetFPS, NULL)
+        //------------------------------------------------------------------------------------
+        // Input Handling Functions (Module: core)
+        //------------------------------------------------------------------------------------
+        // Input-related functions: keyboard
+        ZEND_NS_FE("raylib", IsKeyPressed, NULL)
+        ZEND_NS_FE("raylib", IsKeyDown, NULL)
+        ZEND_NS_FE("raylib", IsKeyReleased, NULL)
+        ZEND_NS_FE("raylib", IsKeyUp, NULL)
+        ZEND_NS_FE("raylib", GetKeyPressed, NULL)
+        ZEND_NS_FE("raylib", SetExitKey, NULL)
+        // Input-related functions: gamepads
+        ZEND_NS_FE("raylib", IsGamepadAvailable, NULL)
+        ZEND_NS_FE("raylib", IsGamepadName, NULL)
+        ZEND_NS_FE("raylib", GetGamepadName, NULL)
+        ZEND_NS_FE("raylib", IsGamepadButtonPressed, NULL)
+        ZEND_NS_FE("raylib", IsGamepadButtonDown, NULL)
+        ZEND_NS_FE("raylib", IsGamepadButtonReleased, NULL)
+        ZEND_NS_FE("raylib", IsGamepadButtonUp, NULL)
+        ZEND_NS_FE("raylib", GetGamepadButtonPressed, NULL)
+        ZEND_NS_FE("raylib", GetGamepadAxisCount, NULL)
+        ZEND_NS_FE("raylib", GetGamepadAxisMovement, NULL)
         //------------------------------------------------------------------------------------
         // Texture Loading and Drawing Functions (Module: textures)
         //------------------------------------------------------------------------------------
