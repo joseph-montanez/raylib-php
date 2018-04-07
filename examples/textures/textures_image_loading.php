@@ -11,13 +11,13 @@ raylib\InitWindow($screenWidth, $screenHeight, "raylib [textures] example - imag
 
 // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
-$image = raylib\LoadImage(__DIR__  . '/resources/raylib_logo.png');     // Loaded in CPU memory (RAM)
-$texture = raylib\LoadTextureFromImage($image);                         // Image converted to texture, GPU memory (VRAM)
+$image = new raylib\Image(__DIR__  . '/resources/raylib_logo.png');     // Loaded in CPU memory (RAM)
+$texture = $image->toTexture();                                         // Image converted to texture, GPU memory (VRAM)
 
-raylib\UnloadImage($image);   // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
+unset($image);    // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
 
-$texture_x = $screenWidth / 2 - raylib\TextureGetWidth($texture) / 2;
-$texture_y = $screenHeight / 2 - raylib\TextureGetHeight($texture) / 2;
+$texture_x = $screenWidth / 2 - $texture->width() / 2;
+$texture_y = $screenHeight / 2 - $texture->height() / 2;
 //---------------------------------------------------------------------------------------
 
 // Main game loop
@@ -35,7 +35,7 @@ while (!raylib\WindowShouldClose())    // Detect window close button or ESC key
 
     raylib\ClearBackground(raylib\RAYWHITE);
 
-    raylib\DrawTexture($texture, $texture_x, $texture_y, raylib\WHITE);
+    $texture->draw($texture_x, $texture_y, raylib\WHITE);
 
     raylib\DrawText("this IS a texture loaded from an image!", 300, 370, 10, raylib\GRAY);
 

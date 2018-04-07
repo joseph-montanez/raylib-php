@@ -22,56 +22,15 @@
 #include "config.h"
 #endif
 
-#include <raylib.h>
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_raylib.h"
-
-#define raylib_register_color_constant(name, value) \
-	REGISTER_NS_LONG_CONSTANT("raylib\\colors", name, value, CONST_CS | CONST_PERSISTENT)
-
-//#ZEND_DECLARE_MODULE_GLOBALS(raylib)
+#include "raylib-utils.h"
+#include "raylib-image.h"
+#include "raylib-texture.h"
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
 
 
 static int le_link, le_plink, le_raylib_image, le_raylib_texture;
-
-struct Color php_array_to_color(zval *ar) {
-    HashTable *arr_hash;
-    long num_key;
-    zval *val;
-    zend_string *key;
-
-    unsigned char* r = (unsigned char *) 255;
-    unsigned char* g = (unsigned char *) 255;
-    unsigned char* b = (unsigned char *) 255;
-    unsigned char* a = (unsigned char *) 255;
-
-    arr_hash = Z_ARRVAL_P(ar);
-    ZEND_HASH_FOREACH_KEY_VAL(arr_hash, num_key, key, val) {
-                if (Z_TYPE_P(val) == IS_LONG) {
-                    switch(num_key) {
-                        case 0:
-                            r = (unsigned char*) val;
-                        case 1:
-                            g = (unsigned char*) val;
-                        case 2:
-                            b = (unsigned char*) val;
-                        case 3:
-                            a = (unsigned char*) val;
-                    }
-                }
-            } ZEND_HASH_FOREACH_END();
-
-    struct Color color = { *r, *b, *g, *a };
-    return color;
-}
-
-int zend_long_2int(zend_long val) {
-	return (val <= INT_MAX) ? (int)((zend_long)val) : -1;
-}
 
 
 /* True global resources - no need for thread safety here */
@@ -642,6 +601,9 @@ PHP_MINIT_FUNCTION(raylib)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+
+    php_raylib_image_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);

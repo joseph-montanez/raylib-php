@@ -21,10 +21,20 @@
 #ifndef PHP_RAYLIB_H
 #define PHP_RAYLIB_H
 
+#include <raylib.h>
+#include "php.h"
+#include "php_ini.h"
+#include "ext/standard/info.h"
+#include "raylib-texture.h"
+
 extern zend_module_entry raylib_module_entry;
 #define phpext_raylib_ptr &raylib_module_entry
 
 #define PHP_RAYLIB_VERSION "1.9.4"
+
+zend_class_entry *php_raylib_image_ce;
+zend_class_entry *php_raylib_texture_ce;
+
 
 #ifdef PHP_WIN32
 #	define PHP_RAYLIB_API __declspec(dllexport)
@@ -57,9 +67,6 @@ ZEND_END_MODULE_GLOBALS(raylib)
 #if defined(ZTS) && defined(COMPILE_DL_RAYLIB)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
-
-struct Color php_array_to_color(zval *ar);
-int zend_long_2int(zend_long val);
 
 #endif	/* PHP_RAYLIB_H */
 
