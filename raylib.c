@@ -29,6 +29,7 @@
 #include "raylib-window.h"
 #include "raylib-cursor.h"
 
+
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
 
 
@@ -92,12 +93,6 @@ PHP_FUNCTION(InitWindow)
 	InitWindow(zend_long_2int(width), zend_long_2int(height), title->val);
 
 	zend_string_free(title);
-}
-
-//void CloseWindow(void);
-PHP_FUNCTION(CloseWindow)
-{
-	CloseWindow();
 }
 
 //bool IsWindowReady(void);
@@ -485,29 +480,6 @@ PHP_FUNCTION(GetGamepadAxisMovement)
 //------------------------------------------------------------------------------------
 
 // Image/Texture2D data loading/unloading/saving functions
-
-//Image LoadImage(const char *fileName)
-PHP_FUNCTION(LoadImage)
-{
-    zend_string *fileName;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_STR(fileName)
-    ZEND_PARSE_PARAMETERS_END();
-
-    struct Image *imagePtr;
-    struct Image image = LoadImage(fileName->val);
-
-    imagePtr = (struct Image*) malloc(sizeof(struct Image));
-    imagePtr->data = image.data;
-    imagePtr->format = image.format;
-    imagePtr->height = image.height;
-    imagePtr->width = image.width;
-    imagePtr->mipmaps = image.mipmaps;
-
-
-    RETURN_RES(zend_register_resource(imagePtr, le_raylib_image));
-}
 
 //void UnloadImage(Image image)
 PHP_FUNCTION(UnloadImage)

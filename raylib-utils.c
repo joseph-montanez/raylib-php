@@ -6,6 +6,12 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
+#define Rectangle RectangleWin
+#define CloseWindow CloseWindowWin
+#define ShowCursor ShowCursorWin
+#define DrawTextA DrawTextAWin
+#define DrawTextExA DrawTextExAWin
+#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
 
@@ -43,3 +49,10 @@ struct Color php_array_to_color(zval *ar) {
 int zend_long_2int(zend_long val) {
     return (val <= INT_MAX) ? (int)((zend_long)val) : -1;
 }
+
+#undef Rectangle
+#undef CloseWindow
+#undef ShowCursor
+#undef DrawTextA
+#undef DrawTextExA
+#undef LoadImageA

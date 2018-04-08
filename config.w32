@@ -1,13 +1,20 @@
 // $Id$
 // vim:ft=javascript
 
-//ARG_WITH("raylib", "for raylib support", "no");
-
-ARG_ENABLE("raylib", "enable raylib support", "no");
+ARG_WITH("raylib", "for raylib support", "no");
 
 if (PHP_RAYLIB != "no") {
-	var raylib_sources = 	'"raylib.c raylib-image.c raylib-window.c raylib-cursor.c raylib-texture.c raylib-utils.c';
-	PHP_INSTALL_HEADERS("ext/raylib", "raylib.h php_raylib.h raylib-image.h raylib-window.h raylib-cursor.h raylib-texture.h raylib-utils.h");
-	EXTENSION("raylib", raylib_sources, PHP_RAYLIB_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+	raylib_lib_paths = PHP_PHP_BUILD + "\\lib;";
+	raylib_include_paths = PHP_PHP_BUILD + "\\include;";
+
+	if (CHECK_LIB("raylib.lib", "raylib", PHP_RAYLIB) &&
+        CHECK_HEADER_ADD_INCLUDE("raylib.h", "CFLAGS_RAYLIB", PHP_RAYLIB + "\\include")) {
+		var raylib_sources = "raylib.c raylib-image.c raylib-window.c raylib-cursor.c raylib-texture.c raylib-utils.c";
+		PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h raylib-image.h raylib-window.h raylib-cursor.h raylib-texture.h raylib-utils.h");
+		EXTENSION("raylib", raylib_sources);
+		CHECK_HEADER_ADD_INCLUDE('raylib.h', 'CFLAGS_RAYLIB', raylib_include_paths);
+	} else {
+        	WARNING("raylib not enabled; libraries not found");
+	}
 }
 
