@@ -76,8 +76,21 @@ BSD-like license that allows static linking with closed source software. Check [
     ./configure
     make
 
+### Windows
+
+Windows requires compiling with PHP sources, you will still get a .dll in the end.
+
+    cmake clean
+    buildconf --force
+    configure --enable-raylib
+    nmake
+
 ## How To Run raylib PHP Extension
 
 ### MacOS & Linux
 
     php -dextension=modules/raylib.so examples/textures/textures_image_loading.php
+
+### Windows
+
+    php.exe -dextension=modules/php7raylib-1.9.4-dev.dll examples/textures/textures_image_loading.php

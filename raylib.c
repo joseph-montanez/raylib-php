@@ -28,6 +28,7 @@
 #include "raylib-texture.h"
 #include "raylib-window.h"
 #include "raylib-cursor.h"
+#include "raylib-text.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -678,47 +679,6 @@ PHP_FUNCTION(TextureGetFormat)
 }
 
 
-
-//------------------------------------------------------------------------------------
-// Font Loading and Text Drawing Functions (Module: text)
-//------------------------------------------------------------------------------------
-
-// Text drawing functions
-
-//void DrawFPS(int posX, int posY)
-PHP_FUNCTION(DrawFPS)
-{
-	zend_long posX;
-	zend_long posY;
-
-	ZEND_PARSE_PARAMETERS_START(2, 2)
-			Z_PARAM_LONG(posX)
-			Z_PARAM_LONG(posY)
-	ZEND_PARSE_PARAMETERS_END();
-
-	DrawFPS(zend_long_2int(posX), zend_long_2int(posY));
-}
-
-//void DrawText(const char *text, int posX, int posY, int fontSize, Color color)
-PHP_FUNCTION(DrawText)
-{
-	zend_string *text;
-	zend_long posX;
-	zend_long posY;
-	zend_long fontSize;
-	zval *ar;
-
-	ZEND_PARSE_PARAMETERS_START(5, 5)
-		Z_PARAM_STR(text)
-		Z_PARAM_LONG(posX)
-		Z_PARAM_LONG(posY)
-		Z_PARAM_LONG(fontSize)
-		Z_PARAM_ZVAL(ar)
-	ZEND_PARSE_PARAMETERS_END();
-
-	DrawText(text->val, zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(fontSize), php_array_to_color(ar));
-}
-
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
@@ -783,6 +743,7 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_window_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_cursor_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_text_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
@@ -1035,7 +996,6 @@ const zend_function_entry raylib_functions[] = {
         // Texture Loading and Drawing Functions (Module: textures)
         //------------------------------------------------------------------------------------
         // Image/Texture2D data loading/unloading/saving functions
-        ZEND_NS_FE("raylib", LoadImage, NULL)
         ZEND_NS_FE("raylib", UnloadImage, NULL)
         ZEND_NS_FE("raylib", LoadTexture, NULL)
         ZEND_NS_FE("raylib", LoadTextureFromImage, NULL)
@@ -1047,12 +1007,6 @@ const zend_function_entry raylib_functions[] = {
         ZEND_NS_FE("raylib", TextureGetId, NULL)
         ZEND_NS_FE("raylib", TextureGetMipmaps, NULL)
         ZEND_NS_FE("raylib", TextureGetFormat, NULL)
-		//------------------------------------------------------------------------------------
-		// Font Loading and Text Drawing Functions (Module: text)
-		//------------------------------------------------------------------------------------
-		// Text drawing functions
-		ZEND_NS_FE("raylib", DrawFPS, NULL)
-		ZEND_NS_FE("raylib", DrawText, NULL)
 	PHP_FE_END
 };
 /* }}} */
