@@ -34,6 +34,8 @@ extern zend_module_entry raylib_module_entry;
 
 zend_class_entry *php_raylib_image_ce;
 zend_class_entry *php_raylib_texture_ce;
+zend_class_entry *php_raylib_window_ce;
+zend_class_entry *php_raylib_cursor_ce
 
 
 #ifdef PHP_WIN32

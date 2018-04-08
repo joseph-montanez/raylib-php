@@ -1,6 +1,7 @@
 <?php
 
 use raylib\Image;
+use raylib\Window;
 
 require_once __DIR__ . '/../raylib-colors.php';
 
@@ -9,7 +10,7 @@ require_once __DIR__ . '/../raylib-colors.php';
 $screenWidth = 800;
 $screenHeight = 450;
 
-raylib\InitWindow($screenWidth, $screenHeight, "raylib [textures] example - image loading");
+Window::init($screenWidth, $screenHeight, "raylib [textures] example - image loading");
 
 // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
@@ -23,7 +24,7 @@ $texture_y = $screenHeight / 2 - $texture->height() / 2;
 //---------------------------------------------------------------------------------------
 
 // Main game loop
-while (!raylib\WindowShouldClose())    // Detect window close button or ESC key
+while (!Window::shouldClose())    // Detect window close button or ESC key
 {
     // Update
     //----------------------------------------------------------------------------------
@@ -49,5 +50,5 @@ while (!raylib\WindowShouldClose())    // Detect window close button or ESC key
 
 // De-Initialization
 //--------------------------------------------------------------------------------------
-raylib\CloseWindow();        // Close window and OpenGL context
+Window::close();        // Close window and OpenGL context
 //--------------------------------------------------------------------------------------

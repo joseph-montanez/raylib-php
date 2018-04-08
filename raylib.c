@@ -26,6 +26,8 @@
 #include "raylib-utils.h"
 #include "raylib-image.h"
 #include "raylib-texture.h"
+#include "raylib-window.h"
+#include "raylib-cursor.h"
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
 
@@ -807,6 +809,8 @@ PHP_MINIT_FUNCTION(raylib)
 
     php_raylib_image_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_window_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_cursor_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
@@ -1027,20 +1031,6 @@ const zend_function_entry raylib_functions[] = {
 		//------------------------------------------------------------------------------------
 		// Window and Graphics Device Functions (Module: core)
 		//------------------------------------------------------------------------------------
-		// Window-related functions
-		ZEND_NS_FE("raylib", InitWindow, NULL)
-		ZEND_NS_FE("raylib", CloseWindow, NULL)
-		ZEND_NS_FE("raylib", IsWindowReady, NULL)
-        ZEND_NS_FE("raylib", WindowShouldClose, NULL)
-        ZEND_NS_FE("raylib", ToggleFullscreen, NULL)
-        ZEND_NS_FE("raylib", SetWindowIcon, NULL)
-        ZEND_NS_FE("raylib", SetWindowTitle, NULL)
-        ZEND_NS_FE("raylib", SetWindowPosition, NULL)
-        ZEND_NS_FE("raylib", SetWindowMonitor, NULL)
-        ZEND_NS_FE("raylib", SetWindowMinSize, NULL)
-        ZEND_NS_FE("raylib", SetWindowSize, NULL)
-        ZEND_NS_FE("raylib", GetScreenWidth, NULL)
-        ZEND_NS_FE("raylib", GetScreenHeight, NULL)
 		// Drawing-related functions
 		ZEND_NS_FE("raylib", ClearBackground, NULL)
 		ZEND_NS_FE("raylib", BeginDrawing, NULL)
