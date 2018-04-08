@@ -35,3 +35,5 @@ tests/*/*.log
 tests/*/*.sh
 cmake-build-debug/
 .idea
+
+*.DS_Store
