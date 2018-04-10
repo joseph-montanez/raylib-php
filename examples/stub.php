@@ -369,53 +369,16 @@ function TextureGetHeight($texture) : int {}
  */
 function DrawText(string $text, int $posX, int $posY, int $fontSize, array $color) {}
 
-
-class Image {
-    public function __construct(string $fileName) {}
-
-    /**
-     * Load texture from image data
-     *
-     * @return Texture
-     */
-    public function toTexture() : Texture {}
-
-    /**
-     * Image raw data
-     *
-     * @return array
-     */
-    public function data() : array {}
-
-    /**
-     * Image base width
-     *
-     * @return int
-     */
-    public function width() : int {}
-
-    /**
-     * Image base height
-     *
-     * @return int
-     */
-    public function height() : int {}
-
-    /**
-     * Image levels, 1 by default
-     *
-     * @return int
-     */
-    public function mipmaps() : int {}
-
-    /**
-     * Data format (PixelFormat type)
-     *
-     * @return int
-     */
-    public function format() : int {}
+/**
+ * Class SpriteFont
+ * @package raylib
+ */
+class SpriteFont {
 
 }
+
+
+
 
 class Texture {
     public function __construct(string $fileName) {}

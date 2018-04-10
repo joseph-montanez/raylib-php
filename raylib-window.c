@@ -7,7 +7,6 @@
 #undef LOG_WARNING
 #undef LOG_DEBUG
 #define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
 #define ShowCursor ShowCursorWin
 #define DrawTextA DrawTextAWin
 #define DrawTextExA DrawTextExAWin
@@ -174,9 +173,18 @@ PHP_METHOD(Window, getScreenHeight)
     RETURN_LONG(GetScreenHeight());
 }
 
+//void CloseWindow(void);
+PHP_METHOD(Window, close)
+{
+    CloseWindow();
+}
+
+
+
 const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Window, init, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, close, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -208,7 +216,6 @@ void php_raylib_window_startup(INIT_FUNC_ARGS)
 }
 
 #undef Rectangle
-#undef CloseWindow
 #undef ShowCursor
 #undef DrawTextA
 #undef DrawTextExA

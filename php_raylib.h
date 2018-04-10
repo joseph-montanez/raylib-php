@@ -52,6 +52,12 @@ zend_class_entry *php_raylib_texture_ce;
 zend_class_entry *php_raylib_window_ce;
 zend_class_entry *php_raylib_cursor_ce;
 zend_class_entry *php_raylib_text_ce;
+zend_class_entry *php_raylib_draw_ce;
+zend_class_entry *php_raylib_rendertexture_ce;
+zend_class_entry *php_raylib_camera_ce;
+zend_class_entry *php_raylib_camera2d_ce;
+zend_class_entry *php_raylib_timming_ce;
+zend_class_entry *php_raylib_spritefont_ce;
 
 
 #ifdef PHP_WIN32

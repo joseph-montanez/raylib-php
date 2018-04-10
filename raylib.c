@@ -29,6 +29,12 @@
 #include "raylib-window.h"
 #include "raylib-cursor.h"
 #include "raylib-text.h"
+#include "raylib-draw.h"
+#include "raylib-rendertexture.h"
+#include "raylib-camera.h"
+#include "raylib-camera2d.h"
+#include "raylib-timming.h"
+#include "raylib-spritefont.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -70,207 +76,6 @@ PHP_FUNCTION(confirm_raylib_compiled)
 	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "raylib", arg);
 
 	RETURN_STR(strg);
-}
-
-//------------------------------------------------------------------------------------
-// Window and Graphics Device Functions (Module: core)
-//------------------------------------------------------------------------------------
-
-// Window-related functions
-
-//void InitWindow(int width, int height, const char *title);
-PHP_FUNCTION(InitWindow)
-{
-	zend_long width;
-	zend_long height;
-	zend_string *title;
-
-	ZEND_PARSE_PARAMETERS_START(3, 3)
-			Z_PARAM_LONG(width)
-			Z_PARAM_LONG(height)
-			Z_PARAM_STR(title)
-	ZEND_PARSE_PARAMETERS_END();
-
-	InitWindow(zend_long_2int(width), zend_long_2int(height), title->val);
-
-	zend_string_free(title);
-}
-
-//bool IsWindowReady(void);
-PHP_FUNCTION(IsWindowReady)
-{
-	RETURN_BOOL(IsWindowReady());
-}
-
-//bool WindowShouldClose(void);
-PHP_FUNCTION(WindowShouldClose)
-{
-    RETURN_BOOL(WindowShouldClose());
-}
-
-//bool IsWindowMinimized(void);
-PHP_FUNCTION(IsWindowMinimized)
-{
-    RETURN_BOOL(IsWindowMinimized());
-}
-
-//void ToggleFullscreen(void);
-PHP_FUNCTION(ToggleFullscreen)
-{
-    ToggleFullscreen();
-}
-
-//void SetWindowIcon(Image image);
-PHP_FUNCTION(SetWindowIcon)
-{
-    zval *image_rez;
-    Image *image;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "r", &image_rez) == FAILURE) {
-        return;
-    }
-
-    if ((image = (Image *)zend_fetch_resource(Z_RES_P(image_rez), "LE_RAYLIB_IMAGE", le_raylib_image)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    SetWindowIcon(*image);
-}
-
-//void SetWindowTitle(const char *title);
-PHP_FUNCTION(SetWindowTitle)
-{
-    zend_string *title;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_STR(title)
-    ZEND_PARSE_PARAMETERS_END();
-
-
-    SetWindowTitle(title->val);
-}
-
-//void SetWindowPosition(int x, int y);
-PHP_FUNCTION(SetWindowPosition)
-{
-    zend_long x;
-    zend_long y;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(x)
-            Z_PARAM_LONG(y)
-    ZEND_PARSE_PARAMETERS_END();
-
-    SetWindowPosition(zend_long_2int(x), zend_long_2int(y));
-}
-
-//void SetWindowMonitor(int monitor);
-PHP_FUNCTION(SetWindowMonitor)
-{
-    zend_long monitor;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(monitor)
-    ZEND_PARSE_PARAMETERS_END();
-
-    SetWindowMonitor(zend_long_2int(monitor));
-}
-
-//void SetWindowMinSize(int width, int height);
-PHP_FUNCTION(SetWindowMinSize)
-{
-    zend_long width;
-    zend_long height;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(width)
-            Z_PARAM_LONG(height)
-    ZEND_PARSE_PARAMETERS_END();
-
-    SetWindowMinSize(zend_long_2int(width), zend_long_2int(height));
-}
-
-//void SetWindowSize(int width, int height);
-PHP_FUNCTION(SetWindowSize)
-{
-    zend_long width;
-    zend_long height;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(width)
-            Z_PARAM_LONG(height)
-    ZEND_PARSE_PARAMETERS_END();
-
-    SetWindowSize(zend_long_2int(width), zend_long_2int(height));
-}
-
-//int GetScreenWidth(void);
-PHP_FUNCTION(GetScreenWidth)
-{
-    RETURN_LONG(GetScreenWidth());
-}
-
-//int GetScreenHeight(void);
-PHP_FUNCTION(GetScreenHeight)
-{
-    RETURN_LONG(GetScreenHeight());
-}
-
-// Timming-related functions
-
-//void SetTargetFPS(int fps);
-PHP_FUNCTION(SetTargetFPS)
-{
-	zend_long fps;
-
-	ZEND_PARSE_PARAMETERS_START(1, 1)
-			Z_PARAM_LONG(fps)
-	ZEND_PARSE_PARAMETERS_END();
-
-	SetTargetFPS(zend_long_2int(fps));
-}
-
-//int GetFPS(void);
-PHP_FUNCTION(GetFPS)
-{
-    RETURN_LONG(GetFPS());
-}
-
-//float GetFrameTime(void);
-PHP_FUNCTION(GetFrameTime)
-{
-    RETURN_DOUBLE(GetFrameTime());
-}
-
-//double GetTime(void);
-PHP_FUNCTION(GetTime)
-{
-    RETURN_DOUBLE(GetTime());
-}
-
-
-//bool BeginDrawing(void);
-PHP_FUNCTION(BeginDrawing)
-{
-	BeginDrawing();
-}
-
-//bool EndDrawing(void);
-PHP_FUNCTION(EndDrawing)
-{
-	EndDrawing();
-}
-
-//void ClearBackground(Color color)
-PHP_FUNCTION(ClearBackground)
-{
-	zval *ar;
-
-	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_ZVAL(ar)
-	ZEND_PARSE_PARAMETERS_END();
-
-	ClearBackground(php_array_to_color(ar));
 }
 
 //------------------------------------------------------------------------------------
@@ -476,210 +281,6 @@ PHP_FUNCTION(GetGamepadAxisMovement)
     RETURN_DOUBLE(GetGamepadAxisMovement(zend_long_2int(gamepad), zend_long_2int(axis)));
 }
 
-//------------------------------------------------------------------------------------
-// Texture Loading and Drawing Functions (Module: textures)
-//------------------------------------------------------------------------------------
-
-// Image/Texture2D data loading/unloading/saving functions
-
-//void UnloadImage(Image image)
-PHP_FUNCTION(UnloadImage)
-{
-    zval *imageRez;
-    Image *image;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(imageRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((image = (Image *)zend_fetch_resource(Z_RES_P(imageRez), "LE_RAYLIB_IMAGE", le_raylib_image)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    UnloadImage(*image);
-    image->data = NULL;
-    free(image);
-    image = NULL;
-}
-
-
-//Texture2D LoadTexture(const char *fileName);
-PHP_FUNCTION(LoadTexture)
-{
-    zend_string *fileName;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_STR(fileName)
-    ZEND_PARSE_PARAMETERS_END();
-
-    struct Texture2D *texturePtr;
-    struct Texture2D texture = LoadTexture(fileName->val);
-
-    texturePtr = (struct Texture2D*) malloc(sizeof(struct Texture2D));
-    texturePtr->id = texture.id;
-    texturePtr->format = texture.format;
-    texturePtr->height = texture.height;
-    texturePtr->width = texture.width;
-    texturePtr->mipmaps = texture.mipmaps;
-
-
-    RETURN_RES(zend_register_resource(texturePtr, le_raylib_texture));
-}
-
-//Texture2D LoadTextureFromImage(Image image);
-PHP_FUNCTION(LoadTextureFromImage)
-{
-    zval *imageRez;
-    Image *image;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(imageRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((image = (Image *)zend_fetch_resource(Z_RES_P(imageRez), "LE_RAYLIB_IMAGE", le_raylib_image)) == NULL) {
-        RETURN_FALSE;
-    }
-
-
-    struct Texture2D *texturePtr;
-    struct Texture2D texture = LoadTextureFromImage(*image);
-
-    texturePtr = (struct Texture2D*) malloc(sizeof(struct Texture2D));
-    texturePtr->id = texture.id;
-    texturePtr->format = texture.format;
-    texturePtr->height = texture.height;
-    texturePtr->width = texture.width;
-    texturePtr->mipmaps = texture.mipmaps;
-
-    RETURN_RES(zend_register_resource(texturePtr, le_raylib_texture));
-}
-
-//void UnloadTexture(Texture2D texture)
-PHP_FUNCTION(UnloadTexture)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    UnloadTexture(*texture);
-    free(texture);
-    texture = NULL;
-}
-
-//void DrawTexture(Texture2D texture, int posX, int posY, Color tint);
-PHP_FUNCTION(DrawTexture)
-{
-    zval *textureRez;
-    Texture2D *texture;
-    zend_long posX;
-    zend_long posY;
-    zval *tint;
-
-    ZEND_PARSE_PARAMETERS_START(4, 4)
-            Z_PARAM_ZVAL(textureRez)
-            Z_PARAM_LONG(posX)
-            Z_PARAM_LONG(posY)
-            Z_PARAM_ZVAL(tint)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    DrawTexture(*texture, zend_long_2int(posX), zend_long_2int(posY), php_array_to_color(tint));
-}
-
-// Texture Resource Functions
-
-PHP_FUNCTION(TextureGetWidth)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    RETURN_LONG(texture->width);
-}
-
-PHP_FUNCTION(TextureGetHeight)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    RETURN_LONG(texture->height);
-}
-
-PHP_FUNCTION(TextureGetMipmaps)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    RETURN_LONG(texture->mipmaps);
-}
-
-PHP_FUNCTION(TextureGetId)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    RETURN_LONG(texture->id);
-}
-
-PHP_FUNCTION(TextureGetFormat)
-{
-    zval *textureRez;
-    Texture2D *texture;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(textureRez)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if ((texture = (Texture2D *)zend_fetch_resource(Z_RES_P(textureRez), "LE_RAYLIB_TEXTURE", le_raylib_texture)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    RETURN_LONG(texture->format);
-}
-
-
-/* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and
    unfold functions in source code. See the corresponding marks just before
    function definition, where the functions purpose is also documented. Please
@@ -744,6 +345,12 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_window_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_cursor_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_text_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_draw_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_camera_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_camera2d_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_rendertexture_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_timming_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_spritefont_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
@@ -961,16 +568,6 @@ PHP_MINFO_FUNCTION(raylib)
  */
 const zend_function_entry raylib_functions[] = {
 		ZEND_NS_FE("raylib", confirm_raylib_compiled, NULL)
-		//------------------------------------------------------------------------------------
-		// Window and Graphics Device Functions (Module: core)
-		//------------------------------------------------------------------------------------
-		// Drawing-related functions
-		ZEND_NS_FE("raylib", ClearBackground, NULL)
-		ZEND_NS_FE("raylib", BeginDrawing, NULL)
-		ZEND_NS_FE("raylib", EndDrawing, NULL)
-		// Timming-related functions
-		ZEND_NS_FE("raylib", SetTargetFPS, NULL)
-		ZEND_NS_FE("raylib", GetFPS, NULL)
         //------------------------------------------------------------------------------------
         // Input Handling Functions (Module: core)
         //------------------------------------------------------------------------------------
@@ -992,21 +589,6 @@ const zend_function_entry raylib_functions[] = {
         ZEND_NS_FE("raylib", GetGamepadButtonPressed, NULL)
         ZEND_NS_FE("raylib", GetGamepadAxisCount, NULL)
         ZEND_NS_FE("raylib", GetGamepadAxisMovement, NULL)
-        //------------------------------------------------------------------------------------
-        // Texture Loading and Drawing Functions (Module: textures)
-        //------------------------------------------------------------------------------------
-        // Image/Texture2D data loading/unloading/saving functions
-        ZEND_NS_FE("raylib", UnloadImage, NULL)
-        ZEND_NS_FE("raylib", LoadTexture, NULL)
-        ZEND_NS_FE("raylib", LoadTextureFromImage, NULL)
-        ZEND_NS_FE("raylib", UnloadTexture, NULL)
-        ZEND_NS_FE("raylib", DrawTexture, NULL)
-        // Texture2D Resource Functions
-        ZEND_NS_FE("raylib", TextureGetHeight, NULL)
-        ZEND_NS_FE("raylib", TextureGetWidth, NULL)
-        ZEND_NS_FE("raylib", TextureGetId, NULL)
-        ZEND_NS_FE("raylib", TextureGetMipmaps, NULL)
-        ZEND_NS_FE("raylib", TextureGetFormat, NULL)
 	PHP_FE_END
 };
 /* }}} */

@@ -12,6 +12,7 @@ extern zend_class_entry *php_raylib_image_ce;
 
 typedef struct _php_raylib_image_object {
     Image image;
+    HashTable *prop_handler;
     zend_object std;
 } php_raylib_image_object;
 

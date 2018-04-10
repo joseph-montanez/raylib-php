@@ -1,5 +1,7 @@
 <?php
 
+use raylib\Text;
+use raylib\Draw;
 use raylib\Image;
 use raylib\Window;
 
@@ -34,16 +36,16 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     // Draw
     //----------------------------------------------------------------------------------
-    raylib\BeginDrawing();
+    Draw::begin();
 
-    raylib\ClearBackground(raylib\RAYWHITE);
+    Draw::clearBackground(raylib\RAYWHITE);
 
     $texture->draw($texture_x, $texture_y, raylib\WHITE);
 
-    raylib\DrawText("this IS a texture loaded from an image!", 300, 370, 10, raylib\GRAY);
+    Text::draw("this IS a texture loaded from an image!", 300, 370, 10, raylib\GRAY);
 
 
-    raylib\EndDrawing();
+    Draw::end();
     //----------------------------------------------------------------------------------
 
 }
