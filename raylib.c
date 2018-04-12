@@ -36,6 +36,8 @@
 #include "raylib-timming.h"
 #include "raylib-spritefont.h"
 #include "raylib-key.h"
+#include "raylib-mouse.h"
+#include "raylib-collision.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -353,6 +355,8 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_timming_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_spritefont_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_key_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_mouse_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_collision_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
@@ -368,12 +372,6 @@ PHP_MINIT_FUNCTION(raylib)
     REGISTER_NS_LONG_CONSTANT("raylib\\keys", "MENU", KEY_MENU, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\keys", "VOLUME_UP", KEY_VOLUME_UP, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\keys", "VOLUME_DOWN", KEY_VOLUME_DOWN, CONST_CS | CONST_PERSISTENT);
-
-
-    // Mouse Buttons
-    REGISTER_NS_LONG_CONSTANT("raylib\\mouse", "LEFT_BUTTON", MOUSE_LEFT_BUTTON, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\mouse", "RIGHT_BUTTON", MOUSE_RIGHT_BUTTON, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\mouse", "MIDDLE_BUTTON", MOUSE_MIDDLE_BUTTON, CONST_CS | CONST_PERSISTENT);
 
     // Touch points registered
     REGISTER_NS_LONG_CONSTANT("raylib\\max", "TOUCH_POINTS", MAX_TOUCH_POINTS, CONST_CS | CONST_PERSISTENT);

@@ -68,23 +68,12 @@ PHP_METHOD(Camera, __construct)
 
 PHP_METHOD(Camera, getPosition)
 {
-    HashTable *position;
-
     php_raylib_camera_object *intern = Z_CAMERA_OBJ_P(getThis());
 
-    zval *x;
-    zval *y;
-    zval *z;
-    ZVAL_DOUBLE(x, intern->camera.position.x);
-    ZVAL_DOUBLE(y, intern->camera.position.y);
-    ZVAL_DOUBLE(z, intern->camera.position.z);
-
-    zend_hash_init(position, 3, NULL, NULL, 0);
-    zend_hash_str_add(position, "x", sizeof("x"), x);
-    zend_hash_str_add(position, "y", sizeof("y"), y);
-    zend_hash_str_add(position, "z", sizeof("z"), z);
-
-    RETURN_ARR(position);
+    array_init(return_value);
+    add_assoc_double(return_value, "x", (double) intern->camera.position.x);
+    add_assoc_double(return_value, "y", (double) intern->camera.position.y);
+    add_assoc_double(return_value, "z", (double) intern->camera.position.y);
 }
 
 PHP_METHOD(Camera, setPosition)

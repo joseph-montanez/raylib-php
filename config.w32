@@ -18,7 +18,7 @@ if (PHP_RAYLIB != "no") {
 
 		ADD_FLAG("LIBS_CLI", "raylib.lib glfw3dll.lib");
 
-		var raylib_sources = "raylib.c raylib-camera.c raylib-camera.h raylib-camera.lo raylib-camera2d.c raylib-camera2d.h raylib-camera2d.lo raylib-cursor.c raylib-cursor.h raylib-cursor.lo raylib-draw.c raylib-image.c raylib-key.c raylib-rendertexture.c raylib-spritefont.c raylib-text.c raylib-texture.c raylib-timming.c raylib-utils.c raylib-window.c";
+		var raylib_sources = "raylib.c raylib-camera.c raylib-camera.h raylib-camera.lo raylib-camera2d.c raylib-camera2d.h raylib-camera2d.lo raylib-cursor.c raylib-cursor.h raylib-cursor.lo raylib-draw.c raylib-image.c raylib-key.c raylib-rendertexture.c raylib-spritefont.c raylib-text.c raylib-texture.c raylib-timming.c raylib-utils.c raylib-window.c raylib-mouse.c raylib-collision.c";
 		PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h raylib-image.h raylib-window.h raylib-text.h raylib-cursor.h raylib-texture.h raylib-utils.h");
 		EXTENSION("raylib", raylib_sources, true, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1", "php" + PHP_VERSION + "raylib.dll");
 

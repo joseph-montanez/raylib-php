@@ -155,6 +155,73 @@ struct Vector2 php_array_to_vector2(zval *ar) {
     return vector;
 }
 
+
+struct Rectangle php_array_to_rec(zval *ar) {
+    HashTable *arr_hash;
+    long num_key;
+    zval *val = NULL;
+    zend_string *key;
+
+    struct Rectangle rec;
+
+    arr_hash = Z_ARRVAL_P(ar);
+    ZEND_HASH_FOREACH_KEY_VAL(arr_hash, num_key, key, val) {
+                if (key) {
+                    if (zend_string_equals_literal(key, "x")) {
+                        switch (Z_TYPE_P(val)) {
+                            case IS_DOUBLE:
+                                rec.x = (int) Z_DVAL_P(val);
+                                break;
+                            case IS_LONG:
+                                rec.x = (int) Z_LVAL_P(val);
+                                break;
+                            default:
+                                rec.x = 0.0f;
+                                break;
+                        }
+                    } else if (zend_string_equals_literal(key, "y")) {
+                        switch (Z_TYPE_P(val)) {
+                            case IS_DOUBLE:
+                                rec.y = (int) Z_DVAL_P(val);
+                                break;
+                            case IS_LONG:
+                                rec.y = (int) Z_LVAL_P(val);
+                                break;
+                            default:
+                                rec.y = 0.0f;
+                                break;
+                        }
+                    } else if (zend_string_equals_literal(key, "width")) {
+                        switch (Z_TYPE_P(val)) {
+                            case IS_DOUBLE:
+                                rec.width = (int) Z_DVAL_P(val);
+                                break;
+                            case IS_LONG:
+                                rec.width = (int) Z_LVAL_P(val);
+                                break;
+                            default:
+                                rec.width = 0;
+                                break;
+                        }
+                    } else if (zend_string_equals_literal(key, "height")) {
+                        switch (Z_TYPE_P(val)) {
+                            case IS_DOUBLE:
+                                rec.height = (int) Z_DVAL_P(val);
+                                break;
+                            case IS_LONG:
+                                rec.height = (int) Z_LVAL_P(val);
+                                break;
+                            default:
+                                rec.height = 0;
+                                break;
+                        }
+                    }
+                }
+            } ZEND_HASH_FOREACH_END();
+
+    return rec;
+}
+
 #undef Rectangle
 #undef CloseWindow
 #undef ShowCursor

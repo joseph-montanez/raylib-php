@@ -1,6 +1,10 @@
 <?php
 
+require_once __DIR__ . '/../raylib-colors.php';
+
+use raylib\Collision;
 use raylib\Draw;
+use raylib\Input\Mouse;
 use raylib\Timming;
 use raylib\Window;
 use const raylib\RAYWHITE;
@@ -82,7 +86,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     for ($i = 0; $i < 21; $i++)    // Iterate along all the rectangles
     {
-        if (Collision::checkPointRec($mousePoint, $colorsRecs[i]))
+        if (Collision::checkPointRec($mousePoint, $colorsRecs[$i]))
         {
             $colors[$i]['a'] = 120;
 

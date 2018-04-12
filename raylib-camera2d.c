@@ -52,20 +52,11 @@ PHP_METHOD(Camera2d, __construct)
 
 PHP_METHOD(Camera2d, getOffset)
 {
-    HashTable *position;
-
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
 
-    zval *x;
-    zval *y;
-    ZVAL_DOUBLE(x, intern->camera2d.offset.x);
-    ZVAL_DOUBLE(y, intern->camera2d.offset.y);
-
-    zend_hash_init(position, 2, NULL, NULL, 0);
-    zend_hash_str_add(position, "x", sizeof("x"), x);
-    zend_hash_str_add(position, "y", sizeof("y"), y);
-
-    RETURN_ARR(position);
+    array_init(return_value);
+    add_assoc_double(return_value, "x", (double) intern->camera2d.offset.x);
+    add_assoc_double(return_value, "y", (double) intern->camera2d.offset.y);
 }
 
 PHP_METHOD(Camera2d, setOffset)

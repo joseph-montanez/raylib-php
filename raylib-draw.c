@@ -318,10 +318,62 @@ PHP_METHOD(Draw, rectangleV)
     DrawRectangleV(php_array_to_vector2(position), php_array_to_vector2(size), php_array_to_color(color));
 }
 
+//void DrawRectangleRec(Rectangle rec, Color color);
+PHP_METHOD(Draw, rectangleRec)
+{
+    zval *rec;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_ZVAL(rec)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawRectangleRec(php_array_to_rec(rec), php_array_to_color(color));
+}
+
+//void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);
+PHP_METHOD(Draw, rectanglePro)
+{
+    zval *rec;
+    zval *origin;
+    double radius;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_ZVAL(rec)
+            Z_PARAM_ZVAL(origin)
+            Z_PARAM_DOUBLE(radius)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawRectanglePro(php_array_to_rec(rec), php_array_to_vector2(origin), (float) radius, php_array_to_color(color));
+}
+
+//void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);
+PHP_METHOD(Draw, rectangleGradientV)
+{
+    zend_long posX;
+    zend_long posY;
+    zend_long width;
+    zend_long height;
+    zval *color1;
+    zval *color2;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+            Z_PARAM_LONG(posX)
+            Z_PARAM_LONG(posY)
+            Z_PARAM_LONG(width)
+            Z_PARAM_LONG(height)
+            Z_PARAM_ZVAL(color1)
+            Z_PARAM_ZVAL(color2)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawRectangleGradientV(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), php_array_to_color(color1), php_array_to_color(color2));
+}
+
 /*
  *
-RLAPI void DrawRectangleRec(Rectangle rec, Color color);                                                 // Draw a color-filled rectangle
-RLAPI void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);                 // Draw a color-filled rectangle with pro parameters
 RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a vertical-gradient-filled rectangle
 RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a horizontal-gradient-filled rectangle
 RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       // Draw a gradient-filled rectangle with custom vertex colors
@@ -360,6 +412,8 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, circleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleRec, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectanglePro, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
