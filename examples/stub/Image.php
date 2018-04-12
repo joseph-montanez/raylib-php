@@ -64,7 +64,7 @@ class Image {
     /**
      * Clear alpha channel to desired color
      *
-     * @param array $color
+     * @param array $color     The color [red,blue,green,alpha] i.e [0,0,0,255]
      * @param float $threshold
      *
      * @return void

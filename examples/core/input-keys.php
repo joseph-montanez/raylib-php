@@ -3,6 +3,7 @@ use raylib\Draw;
 use raylib\Text;
 use raylib\Timming;
 use raylib\Window;
+use raylib\Input\Key;
 
 
 // Initialization
@@ -22,10 +23,10 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 {
     // Update
     //----------------------------------------------------------------------------------
-    if (raylib\IsKeyDown(raylib\keys\RIGHT)) { $ballPosition['x'] += 0.8; }
-    if (raylib\IsKeyDown(raylib\keys\LEFT)) { $ballPosition['x'] -= 0.8; }
-    if (raylib\IsKeyDown(raylib\keys\UP)) { $ballPosition['y'] -= 0.8; }
-    if (raylib\IsKeyDown(raylib\keys\DOWN)) { $ballPosition['y'] += 0.8; }
+    if (Key::isDown(Key::RIGHT)) { $ballPosition['x'] += 0.8; }
+    if (Key::isDown(Key::LEFT)) { $ballPosition['x'] -= 0.8; }
+    if (Key::isDown(Key::UP)) { $ballPosition['y'] -= 0.8; }
+    if (Key::isDown(Key::DOWN)) { $ballPosition['y'] += 0.8; }
     //----------------------------------------------------------------------------------
 
     // Draw

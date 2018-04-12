@@ -12,6 +12,7 @@ extern zend_class_entry *php_raylib_texture_ce;
 
 typedef struct _php_raylib_texture_object {
     Texture2D texture;
+    HashTable *prop_handler;
     zend_object std;
 } php_raylib_texture_object;
 

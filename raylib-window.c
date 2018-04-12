@@ -51,7 +51,7 @@ PHP_METHOD(Window, __construct)
 
 PHP_METHOD(Window, init)
 {
-    zend_object *width;
+    zend_long width;
     zend_long height;
     zend_string *title;
 
@@ -81,7 +81,7 @@ PHP_METHOD(Window, isMinimized)
 
 PHP_METHOD(Window, toggleFullscreen)
 {
-    ToggleFullscreen;
+    ToggleFullscreen();
 }
 
 PHP_METHOD(Window, setIcon)

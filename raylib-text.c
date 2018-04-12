@@ -52,7 +52,7 @@ PHP_METHOD(Text, __construct)
 
 
 //void DrawFPS(int posX, int posY)
-PHP_METHOD(Text, drawFPS)
+PHP_METHOD(Text, drawFps)
 {
     zend_long posX;
     zend_long posY;
@@ -85,11 +85,26 @@ PHP_METHOD(Text, draw)
     DrawText(text->val, zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(fontSize), php_array_to_color(ar));
 }
 
+//int MeasureText(const char *text, int fontSize)
+PHP_METHOD(Text, measure)
+{
+    zend_string *text;
+    zend_long fontSize;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_STR(text)
+            Z_PARAM_LONG(fontSize)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(MeasureText(text->val, zend_long_2int(fontSize)));
+}
+
 
 const zend_function_entry php_raylib_text_methods[] = {
         PHP_ME(Text, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Text, drawFPS, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Text, drawFps, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Text, draw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Text, measure, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

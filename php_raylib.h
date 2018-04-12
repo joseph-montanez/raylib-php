@@ -45,7 +45,7 @@
 extern zend_module_entry raylib_module_entry;
 #define phpext_raylib_ptr &raylib_module_entry
 
-#define PHP_RAYLIB_VERSION "1.9.4"
+#define PHP_RAYLIB_VERSION "1.9.7"
 
 zend_class_entry *php_raylib_image_ce;
 zend_class_entry *php_raylib_texture_ce;
@@ -58,6 +58,7 @@ zend_class_entry *php_raylib_camera_ce;
 zend_class_entry *php_raylib_camera2d_ce;
 zend_class_entry *php_raylib_timming_ce;
 zend_class_entry *php_raylib_spritefont_ce;
+zend_class_entry *php_raylib_key_ce;
 
 
 #ifdef PHP_WIN32

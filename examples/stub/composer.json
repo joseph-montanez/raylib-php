@@ -1,0 +1,17 @@
+{
+  "name": "joseph-montanez/raylib-php-stub",
+  "description": "Raylib runtime & extensions header files for PhpStorm",
+  "homepage": "https://www.raylib.com",
+  "license": "Zlib",
+  "keywords": [
+    "raylib",
+    "JetBrains",
+    "PHPStorm",
+    "stubs",
+    "autocomplete",
+    "type",
+    "inference",
+    "code",
+    "inspection"
+  ]
+}

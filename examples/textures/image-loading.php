@@ -17,12 +17,12 @@ Window::init($screenWidth, $screenHeight, "raylib [textures] example - image loa
 // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
 $image = new Image(__DIR__  . '/resources/raylib_logo.png');    // Loaded in CPU memory (RAM)
-$texture = $image->toTexture();                                         // Image converted to texture, GPU memory (VRAM)
+$texture = $image->toTexture();                                 // Image converted to texture, GPU memory (VRAM)
 
 unset($image);    // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
 
-$texture_x = $screenWidth / 2 - $texture->width() / 2;
-$texture_y = $screenHeight / 2 - $texture->height() / 2;
+$texture_x = $screenWidth / 2 - $texture->width / 2;
+$texture_y = $screenHeight / 2 - $texture->height / 2;
 //---------------------------------------------------------------------------------------
 
 // Main game loop

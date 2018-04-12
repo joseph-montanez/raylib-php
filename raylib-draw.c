@@ -108,7 +108,127 @@ PHP_METHOD(Draw, endTextureMode)
     EndTextureMode();
 }
 
-//void DrawCircleV(Vector2 center, float radius, Color color);
+//void DrawPixel(int posX, int posY, Color color);
+PHP_METHOD(Draw, pixel)
+{
+    zend_long posX;
+    zend_long posY;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+            Z_PARAM_LONG(posX)
+            Z_PARAM_LONG(posY)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawPixel(zend_long_2int(posX), zend_long_2int(posY), php_array_to_color(color));
+}
+
+//void DrawPixelV(Vector2 position, Color color);
+PHP_METHOD(Draw, pixelV)
+{
+    zval *position;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_ZVAL(position)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawPixelV(php_array_to_vector2(position), php_array_to_color(color));
+}
+
+//void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);
+PHP_METHOD(Draw, line)
+{
+    zend_long startPosX;
+    zend_long startPosY;
+    zend_long endPosX;
+    zend_long endPosY;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+            Z_PARAM_LONG(startPosX)
+            Z_PARAM_LONG(startPosY)
+            Z_PARAM_LONG(endPosX)
+            Z_PARAM_LONG(endPosY)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawLine(zend_long_2int(startPosX), zend_long_2int(startPosY), zend_long_2int(endPosX), zend_long_2int(endPosY), php_array_to_color(color));
+}
+
+//void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);
+PHP_METHOD(Draw, lineV)
+{
+    zval *startPos;
+    zval *endPos;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+            Z_PARAM_ZVAL(startPos)
+            Z_PARAM_ZVAL(endPos)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawLineV(php_array_to_vector2(startPos), php_array_to_vector2(endPos), php_array_to_color(color));
+}
+
+//void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);
+PHP_METHOD(Draw, lineEx)
+{
+    zval *startPos;
+    zval *endPos;
+    double thick;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_ZVAL(startPos)
+            Z_PARAM_ZVAL(endPos)
+            Z_PARAM_DOUBLE(thick)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawLineEx(php_array_to_vector2(startPos), php_array_to_vector2(endPos), (float) thick, php_array_to_color(color));
+}
+
+//void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
+PHP_METHOD(Draw, lineBezier)
+{
+    zval *startPos;
+    zval *endPos;
+    double thick;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_ZVAL(startPos)
+            Z_PARAM_ZVAL(endPos)
+            Z_PARAM_DOUBLE(thick)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawLineBezier(php_array_to_vector2(startPos), php_array_to_vector2(endPos), (float) thick, php_array_to_color(color));
+}
+
+//void DrawCircle(int centerX, int centerY, float radius, Color color);
+PHP_METHOD(Draw, circle)
+{
+    zend_long centerX;
+    zend_long centerY;
+    double radius;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_LONG(centerX)
+            Z_PARAM_LONG(centerY)
+            Z_PARAM_DOUBLE(radius)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawCircle(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color));
+}
+
+//void DrawCircle(Vector2 center, float radius, Color color);
 PHP_METHOD(Draw, circleV)
 {
     zval *center;
@@ -124,6 +244,96 @@ PHP_METHOD(Draw, circleV)
     DrawCircleV(php_array_to_vector2(center), (float) radius, php_array_to_color(color));
 }
 
+//void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);
+PHP_METHOD(Draw, circleGradient)
+{
+    zend_long centerX;
+    zend_long centerY;
+    double radius;
+    zval *color1;
+    zval *color2;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+            Z_PARAM_LONG(centerX)
+            Z_PARAM_LONG(centerY)
+            Z_PARAM_DOUBLE(radius)
+            Z_PARAM_ZVAL(color1)
+            Z_PARAM_ZVAL(color2)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawCircleGradient(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color1),  php_array_to_color(color2));
+}
+
+//void DrawCircleLines(int centerX, int centerY, float radius, Color color);
+PHP_METHOD(Draw, circleLines)
+{
+    zend_long centerX;
+    zend_long centerY;
+    double radius;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_LONG(centerX)
+            Z_PARAM_LONG(centerY)
+            Z_PARAM_DOUBLE(radius)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawCircleLines(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color));
+}
+
+//void DrawRectangle(int posX, int posY, int width, int height, Color color);
+PHP_METHOD(Draw, rectangle)
+{
+    zend_long posX;
+    zend_long posY;
+    zend_long width;
+    zend_long height;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+            Z_PARAM_LONG(posX)
+            Z_PARAM_LONG(posY)
+            Z_PARAM_LONG(width)
+            Z_PARAM_LONG(height)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawRectangle(zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(width), zend_long_2int(height), php_array_to_color(color));
+}
+
+//void DrawRectangleV(Vector2 position, Vector2 size, Color color);
+PHP_METHOD(Draw, rectangleV)
+{
+    zval *position;
+    zval *size;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+            Z_PARAM_ZVAL(position)
+            Z_PARAM_ZVAL(size)
+            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    DrawRectangleV(php_array_to_vector2(position), php_array_to_vector2(size), php_array_to_color(color));
+}
+
+/*
+ *
+RLAPI void DrawRectangleRec(Rectangle rec, Color color);                                                 // Draw a color-filled rectangle
+RLAPI void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);                 // Draw a color-filled rectangle with pro parameters
+RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a vertical-gradient-filled rectangle
+RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a horizontal-gradient-filled rectangle
+RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       // Draw a gradient-filled rectangle with custom vertex colors
+RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
+RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              // Draw rectangle outline with extended parameters
+RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                // Draw a color-filled triangle
+RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           // Draw triangle outline
+RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               // Draw a regular polygon (Vector version)
+RLAPI void DrawPolyEx(Vector2 *points, int numPoints, Color color);                                      // Draw a closed polygon defined by points
+RLAPI void DrawPolyExLines(Vector2 *points, int numPoints, Color color);                                 // Draw polygon lines
+ */
+
 
 const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, __construct, NULL, ZEND_ACC_PUBLIC)
@@ -136,7 +346,20 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, end3dMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, beginTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, endTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+
+        // Basic shapes drawing functions
+        PHP_ME(Draw, pixel, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, pixelV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, line, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineBezier, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleGradient, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, circleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

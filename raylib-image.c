@@ -23,35 +23,18 @@ zend_object_handlers php_raylib_image_object_handlers;
 static HashTable php_raylib_image_prop_handlers;
 
 typedef int (*raylib_image_read_int_t)(struct Image *image);
-typedef char *(*raylib_image_read_const_char_t)(struct Image *image, int *len);
-typedef char *(*raylib_image_read_const_char_from_ze_t)(php_raylib_image_object *obj);
-typedef int(*raylib_image_read_int_from_ze_t)(php_raylib_image_object *obj);
 
 typedef struct _raylib_image_prop_handler {
     raylib_image_read_int_t read_int_func;
-    raylib_image_read_const_char_t read_const_char_func;
-    raylib_image_read_const_char_from_ze_t read_const_char_from_obj_func;
-    raylib_image_read_int_from_ze_t read_int_from_obj_func;
-
-    int type;
 } raylib_image_prop_handler;
 /* }}} */
 
 
-static void php_raylib_image_register_prop_handler(HashTable *prop_handler, char *name,
-                                                   raylib_image_read_int_t read_int_func,
-                                                   raylib_image_read_const_char_t read_char_func,
-                                                   raylib_image_read_const_char_from_ze_t read_char_from_obj_func,
-                                                   raylib_image_read_int_from_ze_t read_int_from_obj_func,
-                                                   int rettype) /* {{{ */
+static void php_raylib_image_register_prop_handler(HashTable *prop_handler, char *name, raylib_image_read_int_t read_int_func) /* {{{ */
 {
     raylib_image_prop_handler hnd;
 
-    hnd.read_const_char_func = read_char_func;
     hnd.read_int_func = read_int_func;
-    hnd.read_const_char_from_obj_func = read_char_from_obj_func;
-    hnd.read_int_from_obj_func = read_int_from_obj_func;
-    hnd.type = rettype;
     zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_image_prop_handler));
 
     /* Register for reflection */
@@ -61,47 +44,17 @@ static void php_raylib_image_register_prop_handler(HashTable *prop_handler, char
 
 static zval *php_raylib_image_property_reader(php_raylib_image_object *obj, raylib_image_prop_handler *hnd, zval *rv) /* {{{ */
 {
-    const char *retchar = NULL;
     int retint = 0;
-    int len = 0;
 
-    if (obj) {
-        if (hnd->read_const_char_func) {
-            retchar = hnd->read_const_char_func(&obj->image, &len);
-        } else {
-            if (hnd->read_int_func) {
-                retint = hnd->read_int_func(&obj->image);
-                if (retint == -1) {
-                    php_error_docref(NULL, E_WARNING, "Internal raylib image error returned");
-                    return NULL;
-                }
-            } else if (hnd->read_const_char_from_obj_func) {
-                retchar = hnd->read_const_char_from_obj_func(obj);
-                len = (int) strlen(retchar);
-            } else if (hnd->read_int_from_obj_func) {
-                retint = hnd->read_int_from_obj_func(&obj);
-            }
+    if (obj != NULL && hnd->read_int_func) {
+        retint = hnd->read_int_func(&obj->image);
+        if (retint == -1) {
+            php_error_docref(NULL, E_WARNING, "Internal raylib image error returned");
+            return NULL;
         }
     }
 
-    switch (hnd->type) {
-        case IS_STRING:
-            if (retchar) {
-                ZVAL_STRINGL(rv, (char *) retchar, len);
-            } else {
-                ZVAL_EMPTY_STRING(rv);
-            }
-            break;
-            /* case IS_TRUE */
-        case IS_FALSE:
-            ZVAL_BOOL(rv, (long)retint);
-            break;
-        case IS_LONG:
-        ZVAL_LONG(rv, (long)retint);
-            break;
-        default:
-            ZVAL_NULL(rv);
-    }
+    ZVAL_LONG(rv, (long)retint);
 
     return rv;
 }
@@ -394,8 +347,9 @@ void php_raylib_image_startup(INIT_FUNC_ARGS)
     php_raylib_image_object_handlers.offset = XtOffsetOf(php_raylib_image_object, std);
     php_raylib_image_object_handlers.free_obj = &php_raylib_image_free_storage;
     php_raylib_image_object_handlers.clone_obj = NULL;
-    php_raylib_image_object_handlers.get_property_ptr_ptr = php_raylib_image_get_property_ptr_ptr;
 
+    // Props
+    php_raylib_image_object_handlers.get_property_ptr_ptr = php_raylib_image_get_property_ptr_ptr;
     php_raylib_image_object_handlers.get_gc         = php_raylib_image_get_gc;
     php_raylib_image_object_handlers.get_properties = php_raylib_image_get_properties;
     php_raylib_image_object_handlers.read_property	= php_raylib_image_read_property;
@@ -408,10 +362,10 @@ void php_raylib_image_startup(INIT_FUNC_ARGS)
     php_raylib_image_ce->create_object = php_raylib_image_new;
 
     zend_hash_init(&php_raylib_image_prop_handlers, 0, NULL, php_raylib_image_free_prop_handler, 1);
-    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "width", php_raylib_image_width, NULL, NULL, NULL, IS_LONG);
-    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_height, NULL, NULL, NULL, IS_LONG);
-    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "mipmaps", php_raylib_image_mipmaps, NULL, NULL, NULL, IS_LONG);
-    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_format, NULL, NULL, NULL, IS_LONG);
+    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "width", php_raylib_image_width);
+    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_height);
+    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "mipmaps", php_raylib_image_mipmaps);
+    php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_format);
 }
 
 #undef Rectangle
