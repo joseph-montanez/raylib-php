@@ -2,9 +2,12 @@
 
 PHP 7.x bindings for raylib, a simple and easy-to-use library to learn videogames programming (www.raylib.com)
 
-This is currently a work-in-progress and bindings are not complete and are likely to change.
+This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
+[MAPPING.md](MAPPING.md)
 
 # Example
+
+![Texture Image Loading](img/textures-image-loading.png)
 
 ```php
 <?php
