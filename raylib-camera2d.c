@@ -63,19 +63,87 @@ PHP_METHOD(Camera2d, setOffset)
 {
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
 
-    zval *positionArr;
+    zval *offset;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(positionArr)
+            Z_PARAM_ZVAL(offset)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera2d.offset = php_array_to_vector2(positionArr);
+    intern->camera2d.offset = php_array_to_vector2(offset);
+}
+
+PHP_METHOD(Camera2d, getTarget)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    array_init(return_value);
+    add_assoc_double(return_value, "x", (double) intern->camera2d.target.x);
+    add_assoc_double(return_value, "y", (double) intern->camera2d.target.y);
+}
+
+PHP_METHOD(Camera2d, setTarget)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    zval *target;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_ZVAL(target)
+    ZEND_PARSE_PARAMETERS_END();
+
+    intern->camera2d.target = php_array_to_vector2(target);
+}
+
+PHP_METHOD(Camera2d, getRotation)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    RETURN_DOUBLE((double) intern->camera2d.rotation)
+}
+
+PHP_METHOD(Camera2d, setRotation)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    double rotation;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_DOUBLE(rotation)
+    ZEND_PARSE_PARAMETERS_END();
+
+    intern->camera2d.rotation = (float) rotation;
+}
+
+PHP_METHOD(Camera2d, getZoom)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    RETURN_DOUBLE((double) intern->camera2d.zoom)
+}
+
+PHP_METHOD(Camera2d, setZoom)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+
+    double zoom;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_DOUBLE(zoom)
+    ZEND_PARSE_PARAMETERS_END();
+
+    intern->camera2d.rotation = (float) zoom;
 }
 
 const zend_function_entry php_raylib_camera2d_methods[] = {
         PHP_ME(Camera2d, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Camera2d, getOffset, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Camera2d, setOffset, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getTarget, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, setTarget, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getRotation, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, setRotation, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getZoom, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, setZoom, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
