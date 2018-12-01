@@ -4,7 +4,7 @@ namespace raylib;
 
 
 /**
- * Class Camera
+ * Class Camera3D
  * @package raylib
  *
  * @property-read array $position
@@ -13,7 +13,7 @@ namespace raylib;
  * @property-read float $fovy
  * @property-read int $type
  */
-class Camera
+class Camera3D
 {
     const PERSPECTIVE = 0;
     const ORTHOGRAPHIC = 1;

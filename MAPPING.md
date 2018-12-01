@@ -36,10 +36,10 @@ This is a one to one mapping of each raylib function.
 | void ClearBackground(Color color);                          | raylib\Draw::clearBackground(array $color); ||            
 | void BeginDrawing(void);                                    | raylib\Draw::begin(void); ||                      
 | void EndDrawing(void);                                      | raylib\Draw::end(void); ||                        
-| void Begin2dMode(Camera2D camera);                          | raylib\Draw::begin2dMode(Camera2D $camera); ||            
-| void End2dMode(void);                                       | raylib\Draw::end2dMode(void); ||                         
-| void Begin3dMode(Camera camera);                            | raylib\Draw::begin3dMode(Camera camera); ||              
-| void End3dMode(void);                                       | raylib\Draw::end3dMode(void); ||                         
+| void BeginMode2D(Camera2D camera);                          | raylib\Draw::beginMode2d(Camera2D $camera); ||
+| void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
+| void BeginMode3D(Camera camera);                            | raylib\Draw::beginMode3d(Camera camera); ||
+| void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
 | void BeginTextureMode(RenderTexture2D target);              | raylib\Draw::beginTextureMode(RenderTexture2D $target); ||
 | void EndTextureMode(void);                                  | raylib\Draw::endTextureMode(void); ||                    
 

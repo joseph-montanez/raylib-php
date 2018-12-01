@@ -73,27 +73,29 @@ PHP_METHOD(Draw, end)
 }
 
 //void Begin2dMode(Camera2D camera);
-PHP_METHOD(Draw, begin2dMode)
+PHP_METHOD(Draw, beginMode2d)
 {
     // TODO
+//    BeginMode2D();
 }
 
 //void End2dMode(void);
-PHP_METHOD(Draw, end2dMode)
+PHP_METHOD(Draw, endMode2d)
 {
-    End2dMode();
+    EndMode2D();
 }
 
 //void Begin3dMode(Camera camera);
-PHP_METHOD(Draw, begin3dMode)
+PHP_METHOD(Draw, beginMode3d)
 {
     // TODO
+//    BeginMode3D();
 }
 
 //void end3dMode(void);
-PHP_METHOD(Draw, end3dMode)
+PHP_METHOD(Draw, endMode3d)
 {
-    End3dMode();
+    EndMode3D();
 }
 
 //void BeginTextureMode(RenderTexture2D target);
@@ -392,10 +394,10 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, clearBackground, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, begin, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, end, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, begin2dMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, end2dMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, begin3dMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, end3dMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginMode2d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endMode2d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, beginTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, endTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 

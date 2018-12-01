@@ -34,30 +34,30 @@ class Draw {
      *
      * @return void
      */
-    public static function begin2dMode(Camera2D $camera) : void {}
+    public static function beginMode2d(Camera2D $camera) : void {}
     
     /**
      * Ends 2D mode with custom camera
      *
      * @return void
      */
-    public static function end2dMode() : void {}
+    public static function endMode2d() : void {}
 
     /**
      * Initializes 3D mode with custom camera (3D)
      * 
-     * @param Camera $camera
+     * @param Camera3D $camera
      *
      * @return void
      */
-    public static function begin3dMode(Camera $camera) : void {}
+    public static function beginMode3d(Camera $camera) : void {}
 
     /**
      * Ends 3D mode and returns to default 2D orthographic mode
      *
      * @return void
      */
-    public static function end3dMode() : void {}
+    public static function endMode3d() : void {}
 
     /**
      * Initializes render texture for drawing

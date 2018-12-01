@@ -8,7 +8,7 @@
 extern zend_class_entry *php_raylib_camera_ce;
 
 typedef struct _php_raylib_camera_object {
-    Camera camera;
+    Camera3D camera;
     zend_object std;
 } php_raylib_camera_object;
 

@@ -110,7 +110,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     Draw::clearBackground(RAYWHITE);
 
-    Draw::begin2dMode($camera);
+    Draw::beginMode2d($camera);
 
     Draw::rectangle(-6000, 320, 13000, 8000, DARKGRAY);
 
@@ -123,7 +123,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     Draw::rectangle($camera->getTarget()['x'], -500, 1, $screenHeight * 4, GREEN);
     Draw::rectangle(-500, $camera->getTarget()['y'], $screenWidth * 4, 1, GREEN);
 
-    Draw::end2dMode();
+    Draw::endMode2d();
 
     Text::draw("SCREEN AREA", 640, 10, 20, RED);
 
