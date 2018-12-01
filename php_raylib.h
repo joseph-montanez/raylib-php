@@ -60,6 +60,7 @@ zend_class_entry *php_raylib_timming_ce;
 zend_class_entry *php_raylib_spritefont_ce;
 zend_class_entry *php_raylib_key_ce;
 zend_class_entry *php_raylib_mouse_ce;
+zend_class_entry *php_raylib_color_ce;
 zend_class_entry *php_raylib_collision_ce;
 
 

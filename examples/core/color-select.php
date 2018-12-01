@@ -7,7 +7,6 @@ use raylib\Draw;
 use raylib\Input\Mouse;
 use raylib\Timming;
 use raylib\Window;
-use const raylib\RAYWHITE;
 use const raylib\BEIGE;
 use const raylib\BLUE;
 use const raylib\BROWN;
@@ -25,6 +24,7 @@ use const raylib\MAROON;
 use const raylib\ORANGE;
 use const raylib\PINK;
 use const raylib\PURPLE;
+use const raylib\RAYWHITE;
 use const raylib\RED;
 use const raylib\SKYBLUE;
 use const raylib\VIOLET;
@@ -56,21 +56,20 @@ $colors = [
     GREEN,
     SKYBLUE,
     PURPLE,
-    BEIGE
+    BEIGE,
 ];
 
-$colors_recs = [];
+$colorsRecs = [];
 
 // Fills colorsRecs data (for every rectangle)
-for ($i = 0; $i < 21; $i++)
-{
-    $colorsRecs[$i]['x']      = 20 + 100 * ($i % 7) + 10 * ($i % 7);
-    $colorsRecs[$i]['y']      = 60 + 100 * ($i / 7) + 10 * ($i / 7);
+for ($i = 0; $i < 21; $i++) {
+    $colorsRecs[$i]['x']      = 20 + 100 * (int) ($i % 7) + 10 * (int) ($i % 7);
+    $colorsRecs[$i]['y']      = 60 + 100 * (int) ($i / 7) + 10 * (int) ($i / 7);
     $colorsRecs[$i]['width']  = 100;
     $colorsRecs[$i]['height'] = 100;
 }
 
-$selected[21] = array_fill(0, 21, false);  // Selected rectangles indicator
+$selected = array_fill(0, 21, false);  // Selected rectangles indicator
 
 $mousePoint = ['x' => 0, 'y' => 0];
 
@@ -86,13 +85,17 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     for ($i = 0; $i < 21; $i++)    // Iterate along all the rectangles
     {
-        if (Collision::checkPointRec($mousePoint, $colorsRecs[$i]))
-        {
+        if (Collision::checkPointRec($mousePoint, $colorsRecs[$i])) {
             $colors[$i]['a'] = 120;
 
-            if (Mouse::isButtonPressed(Mouse::LEFT_BUTTON)) { $selected[$i] = !$selected[$i]; }
+            if (Mouse::isButtonPressed(Mouse::LEFT_BUTTON)) {
+                echo "Pressed $i", PHP_EOL;
+                var_dump($selected[$i]);
+                $selected[$i] = !$selected[$i];
+            }
+        } else {
+            $colors[$i]['a'] = 255;
         }
-        else { $colors[$i]['a'] = 255; }
     }
     //----------------------------------------------------------------------------------
 
@@ -100,21 +103,20 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     //----------------------------------------------------------------------------------
     Draw::begin();
 
-        Draw::clearBackground(RAYWHITE);
+    Draw::clearBackground(RAYWHITE);
 
-        for ($i = 0; $i < 21; $i++)    // Draw all rectangles
-        {
-            Draw::rectangleRec($colorsRecs[$i], $colors[$i]);
+    for ($i = 0; $i < 21; $i++)    // Draw all rectangles
+    {
+        Draw::rectangleRec($colorsRecs[$i], $colors[$i]);
 
-            // Draw four rectangles around selected rectangle
-            if ($selected[$i])
-            {
-                Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 100, 10, RAYWHITE);        // Square top rectangle
-                Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 10, 100, RAYWHITE);        // Square left rectangle
-                Draw::rectangle($colorsRecs[$i]['x'] + 90, $colorsRecs[$i]['y'], 10, 100, RAYWHITE);   // Square right rectangle
-                Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'] + 90, 100, 10, RAYWHITE);   // Square bottom rectangle
-            }
+        // Draw four rectangles around selected rectangle
+        if (isset($selected[$i])) {
+            Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 100, 10, RAYWHITE);        // Square top rectangle
+            Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 10, 100, RAYWHITE);        // Square left rectangle
+            Draw::rectangle($colorsRecs[$i]['x'] + 90, $colorsRecs[$i]['y'], 10, 100, RAYWHITE);   // Square right rectangle
+            Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'] + 90, 100, 10, RAYWHITE);   // Square bottom rectangle
         }
+    }
 
     Draw::end();
     //----------------------------------------------------------------------------------
