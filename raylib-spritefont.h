@@ -8,7 +8,7 @@
 extern zend_class_entry *php_raylib_spritefont_ce;
 
 typedef struct _php_raylib_spritefont_object {
-    SpriteFont spritefont;
+    SpriteFont *spritefont;
     zend_object std;
 } php_raylib_spritefont_object;
 

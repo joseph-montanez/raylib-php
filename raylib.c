@@ -38,6 +38,7 @@
 #include "raylib-key.h"
 #include "raylib-mouse.h"
 #include "raylib-collision.h"
+#include "raylib-color.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -356,13 +357,14 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_spritefont_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_key_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_mouse_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_color_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_collision_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "FULLSCREEN_MODE", FLAG_FULLSCREEN_MODE, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_RESIZABLE", FLAG_WINDOW_RESIZABLE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_DECORATED", FLAG_WINDOW_DECORATED, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_UNDECORATED", FLAG_WINDOW_UNDECORATED, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_TRANSPARENT", FLAG_WINDOW_TRANSPARENT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "MSAA_4X_HINT", FLAG_MSAA_4X_HINT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "FLAG_VSYNC_HINTLOGO", FLAG_VSYNC_HINT, CONST_CS | CONST_PERSISTENT);
