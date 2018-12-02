@@ -89,8 +89,6 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
             $colors[$i]['a'] = 120;
 
             if (Mouse::isButtonPressed(Mouse::LEFT_BUTTON)) {
-                echo "Pressed $i", PHP_EOL;
-                var_dump($selected[$i]);
                 $selected[$i] = !$selected[$i];
             }
         } else {
@@ -110,7 +108,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
         Draw::rectangleRec($colorsRecs[$i], $colors[$i]);
 
         // Draw four rectangles around selected rectangle
-        if (isset($selected[$i])) {
+        if ($selected[$i]) {
             Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 100, 10, RAYWHITE);        // Square top rectangle
             Draw::rectangle($colorsRecs[$i]['x'], $colorsRecs[$i]['y'], 10, 100, RAYWHITE);        // Square left rectangle
             Draw::rectangle($colorsRecs[$i]['x'] + 90, $colorsRecs[$i]['y'], 10, 100, RAYWHITE);   // Square right rectangle
