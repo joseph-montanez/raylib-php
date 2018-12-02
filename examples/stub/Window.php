@@ -99,12 +99,12 @@ class Window {
      *
      * @return int
      */
-    public static function GetScreenWidth() : int {}
+    public static function getScreenWidth() : int {}
 
     /**
      * Get current screen height
      *
      * @return int
      */
-    public static function GetScreenHeight() : int {}
+    public static function getScreenHeight() : int {}
 }

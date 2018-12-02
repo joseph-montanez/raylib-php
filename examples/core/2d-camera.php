@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../raylib-colors.php';
 
+use raylib\Color;
 use raylib\Camera2D;
 use raylib\Draw;
 use raylib\Input\Key;
@@ -132,10 +133,10 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     Draw::rectangle($screenWidth - 5, 5, 5, $screenHeight - 10, RED);
     Draw::rectangle(0, $screenHeight - 5, $screenWidth, 5, RED);
 
-    Draw::rectangle(10, 10, 250, 113, Fade(SKYBLUE, 0.5));
+    Draw::rectangle(10, 10, 250, 113, Color::fade(SKYBLUE, 0.5));
     Draw::rectangleLines(10, 10, 250, 113, BLUE);
 
-    Text::draw("Free 2d camera controls:", 20, 20, 10, BLACK);
+    Text::draw("Free 2d camera3d controls:", 20, 20, 10, BLACK);
     Text::draw("- Right/Left to move Offset", 40, 40, 10, DARKGRAY);
     Text::draw("- Mouse Wheel to Zoom in-out", 40, 60, 10, DARKGRAY);
     Text::draw("- A / S to Rotate", 40, 80, 10, DARKGRAY);
@@ -147,6 +148,6 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
 // De-Initialization
 //--------------------------------------------------------------------------------------
-CloseWindow();        // Close window and OpenGL context
+Window::close();        // Close window and OpenGL context
 //--------------------------------------------------------------------------------------
 
