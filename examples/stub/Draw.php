@@ -30,27 +30,27 @@ class Draw {
     public static function end() : void {}
 
     /**
-     * @param Camera2D $camera
+     * @param Camera2D $camera3d
      *
      * @return void
      */
-    public static function beginMode2d(Camera2D $camera) : void {}
+    public static function beginMode2d(Camera2D $camera3d) : void {}
     
     /**
-     * Ends 2D mode with custom camera
+     * Ends 2D mode with custom camera3d
      *
      * @return void
      */
     public static function endMode2d() : void {}
 
     /**
-     * Initializes 3D mode with custom camera (3D)
+     * Initializes 3D mode with custom camera3d (3D)
      * 
-     * @param Camera3D $camera
+     * @param Camera3D $camera3d
      *
      * @return void
      */
-    public static function beginMode3d(Camera $camera) : void {}
+    public static function beginMode3d(Camera $camera3d) : void {}
 
     /**
      * Ends 3D mode and returns to default 2D orthographic mode

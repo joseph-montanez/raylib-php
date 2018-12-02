@@ -14,6 +14,8 @@
 #include "raylib.h"
 #include "raylib-draw.h"
 #include "raylib-utils.h"
+#include "raylib-camera2d.h"
+#include "raylib-camera3d.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -72,11 +74,18 @@ PHP_METHOD(Draw, end)
     EndDrawing();
 }
 
-//void Begin2dMode(Camera2D camera);
+//void Begin2dMode(Camera2D camera3d);
 PHP_METHOD(Draw, beginMode2d)
 {
-    // TODO
-//    BeginMode2D();
+    zval *camera2d;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_OBJECT(camera2d)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(camera2d);
+
+    BeginMode2D(intern->camera2d);
 }
 
 //void End2dMode(void);
@@ -85,14 +94,21 @@ PHP_METHOD(Draw, endMode2d)
     EndMode2D();
 }
 
-//void Begin3dMode(Camera camera);
+//void Begin3dMode(Camera camera3d);
 PHP_METHOD(Draw, beginMode3d)
 {
-    // TODO
-//    BeginMode3D();
+    zval *camera3d;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_OBJECT(camera3d)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(camera3d);
+
+    BeginMode3D(intern->camera3d);
 }
 
-//void end3dMode(void);
+//void End3dMode(void);
 PHP_METHOD(Draw, endMode3d)
 {
     EndMode3D();

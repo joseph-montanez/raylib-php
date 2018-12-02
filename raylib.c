@@ -31,7 +31,7 @@
 #include "raylib-text.h"
 #include "raylib-draw.h"
 #include "raylib-rendertexture.h"
-#include "raylib-camera.h"
+#include "raylib-camera3d.h"
 #include "raylib-camera2d.h"
 #include "raylib-timming.h"
 #include "raylib-font.h"
@@ -350,7 +350,7 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_cursor_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_text_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_draw_startup(INIT_FUNC_ARGS_PASSTHRU);
-    php_raylib_camera_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_camera3d_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_camera2d_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_rendertexture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_timming_startup(INIT_FUNC_ARGS_PASSTHRU);

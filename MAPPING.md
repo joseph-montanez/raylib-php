@@ -36,9 +36,9 @@ This is a one to one mapping of each raylib function.
 | void ClearBackground(Color color);                          | raylib\Draw::clearBackground(array $color); ||            
 | void BeginDrawing(void);                                    | raylib\Draw::begin(void); ||                      
 | void EndDrawing(void);                                      | raylib\Draw::end(void); ||                        
-| void BeginMode2D(Camera2D camera);                          | raylib\Draw::beginMode2d(Camera2D $camera); ||
+| void BeginMode2D(Camera2D camera3d);                          | raylib\Draw::beginMode2d(Camera2D $camera3d); ||
 | void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
-| void BeginMode3D(Camera camera);                            | raylib\Draw::beginMode3d(Camera camera); ||
+| void BeginMode3D(Camera camera3d);                            | raylib\Draw::beginMode3d(Camera camera3d); ||
 | void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
 | void BeginTextureMode(RenderTexture2D target);              | raylib\Draw::beginTextureMode(RenderTexture2D $target); ||
 | void EndTextureMode(void);                                  | raylib\Draw::endTextureMode(void); ||                    
@@ -46,9 +46,9 @@ This is a one to one mapping of each raylib function.
 ###  Screen-space-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Ray GetMouseRay(Vector2 mousePosition, Camera camera);      | TODO ||
-| Vector2 GetWorldToScreen(Vector3 position, Camera camera);  | TODO ||
-| Matrix GetCameraMatrix(Camera camera);                      | TODO ||
+| Ray GetMouseRay(Vector2 mousePosition, Camera camera3d);      | TODO ||
+| Vector2 GetWorldToScreen(Vector3 position, Camera camera3d);  | TODO ||
+| Matrix GetCameraMatrix(Camera camera3d);                      | TODO ||
 
 ###  Timming-related functions
 | C API | PHP API | Comment |
@@ -154,11 +154,11 @@ This is a one to one mapping of each raylib function.
 | Vector2 GetGesturePinchVector(void);                    | TODO ||
 | float GetGesturePinchAngle(void);                       | TODO ||
 
-###  Camera System Functions (Module: camera)
+###  Camera System Functions (Module: camera3d)
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void SetCameraMode(Camera camera, int mode);                | TODO ||
-| void UpdateCamera(Camera *camera);                          | TODO ||
+| void SetCameraMode(Camera camera3d, int mode);                | TODO ||
+| void UpdateCamera(Camera *camera3d);                          | TODO ||
 | void SetCameraPanControl(int panKey);                       | TODO ||
 | void SetCameraAltControl(int altKey);                       | TODO ||
 | void SetCameraSmoothZoomControl(int szKey);                 | TODO ||
@@ -373,8 +373,8 @@ RLAPI void DrawModelWires(Model model, Vector3 position, float scale, Color tint
 RLAPI void DrawModelWiresEx(Model model, Vector3 position, Vector3 rotationAxis,
                             float rotationAngle, Vector3 scale, Color tint);                            // Draw a model wires (with texture if set) with extended parameters
 RLAPI void DrawBoundingBox(BoundingBox box, Color color);                                               // Draw bounding box (wires)
-RLAPI void DrawBillboard(Camera camera, Texture2D texture, Vector3 center, float size, Color tint);     // Draw a billboard texture
-RLAPI void DrawBillboardRec(Camera camera, Texture2D texture, Rectangle sourceRec,
+RLAPI void DrawBillboard(Camera camera3d, Texture2D texture, Vector3 center, float size, Color tint);     // Draw a billboard texture
+RLAPI void DrawBillboardRec(Camera camera3d, Texture2D texture, Rectangle sourceRec,
                             Vector3 center, float size, Color tint);                                    // Draw a billboard texture defined by sourceRec
 
 // Collision detection functions
@@ -431,7 +431,7 @@ RLAPI void InitVrSimulator(VrDeviceInfo info);          // Init VR simulator for
 RLAPI void CloseVrSimulator(void);                      // Close VR simulator for current device
 RLAPI bool IsVrSimulatorReady(void);                    // Detect if VR simulator is ready
 RLAPI void SetVrDistortionShader(Shader shader);        // Set VR distortion shader for stereoscopic rendering
-RLAPI void UpdateVrTracking(Camera *camera);            // Update VR tracking (position and orientation) and camera
+RLAPI void UpdateVrTracking(Camera *camera3d);            // Update VR tracking (position and orientation) and camera3d
 RLAPI void ToggleVrMode(void);                          // Enable/Disable VR experience
 RLAPI void BeginVrDrawing(void);                        // Begin VR simulator stereo rendering
 RLAPI void EndVrDrawing(void);                          // End VR simulator stereo rendering
