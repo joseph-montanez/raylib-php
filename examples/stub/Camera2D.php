@@ -15,24 +15,24 @@ namespace raylib;
 class Camera2D
 {
     /**
-     * @return array Camera offset (displacement from target) - Vector2 ['x' => 0, 'y' => 0]
+     * @return \raylib\Vector2 Camera offset (displacement from target) - Vector2 ['x' => 0, 'y' => 0]
      */
-    public function getOffset() : array {}
+    public function getOffset() : Vector2 {}
 
     /**
-     * @param array $offset Camera offset (displacement from target) - Vector2 ['x' => 0, 'y' => 0]
+     * @param \raylib\Vector2 $offset Camera offset (displacement from target) - Vector2 ['x' => 0, 'y' => 0]
      */
-    public function setOffset(array $offset) : void {}
+    public function setOffset(Vector2 $offset) : void {}
 
     /**
-     * @return array Camera target (rotation and zoom origin) - Vector2 ['x' => 0, 'y' => 0]
+     * @return \raylib\Vector2 Camera target (rotation and zoom origin) - Vector2 ['x' => 0, 'y' => 0]
      */
-    public function getTarget() : array {}
+    public function getTarget() : Vector2 {}
 
     /**
-     * @param array $target Camera target (rotation and zoom origin) - Vector2 ['x' => 0, 'y' => 0]
+     * @param \raylib\Vector2 $target Camera target (rotation and zoom origin) - Vector2 ['x' => 0, 'y' => 0]
      */
-    public function setTarget(array $target) : void {}
+    public function setTarget(Vector2 $target) : void {}
 
     /**
      * @return float

@@ -1,16 +1,18 @@
 <?php
 
+use raylib\Color;
 use raylib\Text;
 use raylib\Draw;
 use raylib\Image;
 use raylib\Window;
 
-require_once __DIR__ . '/../raylib-colors.php';
-
 // Initialization
 //--------------------------------------------------------------------------------------
 $screenWidth = 800;
 $screenHeight = 450;
+$raywhite = new Color(245, 245, 245, 255);
+$white = new Color(255, 255, 255, 255);
+$gray     = new Color(130, 130, 130, 255);
 
 Window::init($screenWidth, $screenHeight, "raylib [textures] example - image loading");
 
@@ -38,11 +40,11 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     //----------------------------------------------------------------------------------
     Draw::begin();
 
-    Draw::clearBackground(raylib\RAYWHITE);
+    Draw::clearBackground($raywhite);
 
-    $texture->draw($texture_x, $texture_y, raylib\WHITE);
+    $texture->draw($texture_x, $texture_y, $white);
 
-    Text::draw("this IS a texture loaded from an image!", 300, 370, 10, raylib\GRAY);
+    Text::draw("this IS a texture loaded from an image!", 300, 370, 10, $gray);
 
 
     Draw::end();

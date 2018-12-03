@@ -2,15 +2,11 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-camera2d.h"
 #include "raylib-utils.h"
+#include "raylib-rectangle.h"
+#include "raylib-vector2.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -37,6 +33,8 @@ zend_object * php_raylib_camera2d_new(zend_class_entry *ce TSRMLS_DC)
 
     return &intern->std;
 }
+
+// PHP object handling
 
 PHP_METHOD(Camera2d, __construct)
 {
@@ -69,16 +67,29 @@ PHP_METHOD(Camera2d, setOffset)
             Z_PARAM_ZVAL(offset)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera2d.offset = php_array_to_vector2(offset);
+    php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(offset);
+
+    intern->camera2d.offset = phpOffset->vector2;
 }
 
 PHP_METHOD(Camera2d, getTarget)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *self = Z_CAMERA2D_OBJ_P(getThis());
 
-    array_init(return_value);
-    add_assoc_double(return_value, "x", (double) intern->camera2d.target.x);
-    add_assoc_double(return_value, "y", (double) intern->camera2d.target.y);
+    php_raylib_vector2_object *intern;
+
+    //-- Allocate vector2
+    intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(php_raylib_vector2_ce));
+    //-- Intialize vector2
+    zend_object_std_init(&intern->std, php_raylib_vector2_ce TSRMLS_CC);
+    object_properties_init(&intern->std, php_raylib_vector2_ce);
+    //-- Assigned handler
+    intern->std.handlers = &php_raylib_vector2_object_handlers;
+
+    //-- Assigned value to vector2
+    intern->vector2 = GetMousePosition();
+
+    RETURN_OBJ(&intern->std);
 }
 
 PHP_METHOD(Camera2d, setTarget)
@@ -91,7 +102,9 @@ PHP_METHOD(Camera2d, setTarget)
             Z_PARAM_ZVAL(target)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera2d.target = php_array_to_vector2(target);
+    php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(target);
+
+    intern->camera2d.target = phpTarget->vector2;
 }
 
 PHP_METHOD(Camera2d, getRotation)
@@ -159,10 +172,3 @@ void php_raylib_camera2d_startup(INIT_FUNC_ARGS)
     php_raylib_camera2d_object_handlers.free_obj = &php_raylib_camera2d_free_storage;
     php_raylib_camera2d_object_handlers.clone_obj = NULL;
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

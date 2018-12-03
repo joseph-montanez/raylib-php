@@ -15,6 +15,16 @@ namespace raylib;
 class Color
 {
     /**
+     * Color constructor.
+     *
+     * @param int $r Red
+     * @param int $g Green
+     * @param int $b Blue
+     * @param int $a Alpha
+     */
+    public function __construct(int $r, int $g, int $b, int $a) {}
+
+    /**
      * Returns hexadecimal value for a Color
      *
      * @param \raylib\Color $color
@@ -59,4 +69,61 @@ class Color
      * @return \raylib\Color
      */
     public static function fade(Color $color, float $alpha) : Color {}
+
+
+    /**
+     * Sets the alpha / transparency from values 0 - 255
+     *
+     * @param float $alpha
+     */
+    public function setAlpha(float $alpha) : void {}
+
+    /**
+     * Gets alpha from values 0 - 255
+     *
+     * @return float
+     */
+    public function getAlpha() : float {}
+
+    /**
+     * Sets red from values 0 - 255
+     *
+     * @param float $red
+     */
+    public function setRed(float $red) : void {}
+
+    /**
+     * Gets red from values 0 - 255
+     *
+     * @return float
+     */
+    public function getRed() : float {}
+
+    /**
+     * Sets green from values 0 - 255
+     *
+     * @param float $green
+     */
+    public function setGreen(float $green) : void {}
+
+    /**
+     * Gets green from values 0 - 255
+     *
+     * @return float
+     */
+    public function getGreen() : float {}
+
+    /**
+     * Sets blue from values 0 - 255
+     *
+     * @param float $blue
+     */
+    public function setBlue(float $blue) : void {}
+
+    /**
+     * Gets blue from values 0 - 255
+     *
+     * @return float
+     */
+    public function getBlue() : float {}
 }

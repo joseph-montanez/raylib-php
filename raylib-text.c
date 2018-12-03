@@ -6,16 +6,10 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowText ShowTextWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
 #include "raylib-text.h"
+#include "raylib-color.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -72,17 +66,19 @@ PHP_METHOD(Text, draw)
     zend_long posX;
     zend_long posY;
     zend_long fontSize;
-    zval *ar;
+    zval *color;
 
     ZEND_PARSE_PARAMETERS_START(5, 5)
             Z_PARAM_STR(text)
             Z_PARAM_LONG(posX)
             Z_PARAM_LONG(posY)
             Z_PARAM_LONG(fontSize)
-            Z_PARAM_ZVAL(ar)
+            Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawText(text->val, zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(fontSize), php_array_to_color(ar));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawText(text->val, zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(fontSize), phpColor->color);
 }
 
 //int MeasureText(const char *text, int fontSize)
@@ -122,11 +118,3 @@ void php_raylib_text_startup(INIT_FUNC_ARGS)
     php_raylib_text_object_handlers.free_obj = &php_raylib_text_free_storage;
     php_raylib_text_object_handlers.clone_obj = NULL;
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowText
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

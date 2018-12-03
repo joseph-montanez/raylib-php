@@ -6,16 +6,11 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowText ShowTextWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
 #include "raylib-collision.h"
+#include "raylib-vector2.h"
+#include "raylib-rectangle.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -57,11 +52,14 @@ PHP_METHOD(Collision, checkPointRec)
     zval *rec;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_ARRAY(point)
-            Z_PARAM_ARRAY(rec)
+            Z_PARAM_ZVAL(point)
+            Z_PARAM_ZVAL(rec)
     ZEND_PARSE_PARAMETERS_END();
 
-    RETURN_BOOL(CheckCollisionPointRec(php_array_to_vector2(point), php_array_to_rec(rec)));
+    php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
+    php_raylib_rectangle_object *phpRect = Z_RECTANGLE_OBJ_P(rec);
+
+    RETURN_BOOL(CheckCollisionPointRec(phpPoint->vector2, phpRect->rectangle));
 }
 
 
@@ -85,12 +83,4 @@ void php_raylib_collision_startup(INIT_FUNC_ARGS)
     php_raylib_collision_object_handlers.free_obj = &php_raylib_collision_free_storage;
     php_raylib_collision_object_handlers.clone_obj = NULL;
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowText
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA
 

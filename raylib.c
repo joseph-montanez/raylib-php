@@ -23,6 +23,10 @@
 #endif
 
 #include "php_raylib.h"
+#include "raylib-vector4.h"
+#include "raylib-vector3.h"
+#include "raylib-vector2.h"
+#include "raylib-rectangle.h"
 #include "raylib-utils.h"
 #include "raylib-image.h"
 #include "raylib-texture.h"
@@ -344,6 +348,10 @@ PHP_MINIT_FUNCTION(raylib)
 	REGISTER_INI_ENTRIES();
 	*/
 
+    php_raylib_vector4_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_vector3_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_vector2_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_rectangle_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_image_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_window_startup(INIT_FUNC_ARGS_PASSTHRU);

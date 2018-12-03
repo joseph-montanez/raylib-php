@@ -2,15 +2,10 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-texture.h"
 #include "raylib-utils.h"
+#include "raylib-color.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -317,17 +312,21 @@ PHP_METHOD(Texture, draw)
 {
     zend_long posX;
     zend_long posY;
-    zval *colorArr;
+    zval *color;
 
     ZEND_PARSE_PARAMETERS_START(3, 3)
             Z_PARAM_LONG(posX)
             Z_PARAM_LONG(posY)
-            Z_PARAM_ZVAL(colorArr)
+            Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
+
+
+//    php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
 
-    DrawTexture(intern->texture, zend_long_2int(posX), zend_long_2int(posY), php_array_to_color(colorArr));
+    DrawTexture(intern->texture, zend_long_2int(posX), zend_long_2int(posY), phpColor->color);
 }
 
 const zend_function_entry php_raylib_texture_methods[] = {
@@ -374,10 +373,3 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "height", php_raylib_texture_format);
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "id", php_raylib_texture_id);
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

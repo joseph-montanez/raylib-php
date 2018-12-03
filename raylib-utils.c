@@ -6,12 +6,6 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
 
@@ -53,6 +47,8 @@ int zend_long_2int(zend_long val) {
 float zend_double_2float(zval *val) {
     if (Z_TYPE_P(val) == IS_DOUBLE) {
         return (float) Z_DVAL_P(val);
+    } else if (Z_TYPE_P(val) == IS_LONG) {
+        return (float) Z_LVAL_P(val);
     } else {
         return 0.0f;
     }
@@ -221,10 +217,3 @@ struct Rectangle php_array_to_rec(zval *ar) {
 
     return rec;
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

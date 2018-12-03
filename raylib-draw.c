@@ -5,17 +5,14 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowDraw ShowDrawWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-draw.h"
 #include "raylib-utils.h"
 #include "raylib-camera2d.h"
 #include "raylib-camera3d.h"
+#include "raylib-color.h"
+#include "raylib-vector2.h"
+#include "raylib-rectangle.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -53,13 +50,15 @@ PHP_METHOD(Draw, __construct)
 //void ClearBackground(Color color);
 PHP_METHOD(Draw, clearBackground)
 {
-    zval *ar;
+    zval *color;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(ar)
+            Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    ClearBackground(php_array_to_color(ar));
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(color);
+
+    ClearBackground(intern->color);
 }
 
 //void BeginDrawing(void);
@@ -139,7 +138,10 @@ PHP_METHOD(Draw, pixel)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawPixel(zend_long_2int(posX), zend_long_2int(posY), php_array_to_color(color));
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawPixel(zend_long_2int(posX), zend_long_2int(posY), phpColor->color);
 }
 
 //void DrawPixelV(Vector2 position, Color color);
@@ -153,7 +155,10 @@ PHP_METHOD(Draw, pixelV)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawPixelV(php_array_to_vector2(position), php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+
+    DrawPixelV(phpPosition->vector2, phpColor->color);
 }
 
 //void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);
@@ -173,7 +178,9 @@ PHP_METHOD(Draw, line)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawLine(zend_long_2int(startPosX), zend_long_2int(startPosY), zend_long_2int(endPosX), zend_long_2int(endPosY), php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawLine(zend_long_2int(startPosX), zend_long_2int(startPosY), zend_long_2int(endPosX), zend_long_2int(endPosY), phpColor->color);
 }
 
 //void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);
@@ -189,7 +196,11 @@ PHP_METHOD(Draw, lineV)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawLineV(php_array_to_vector2(startPos), php_array_to_vector2(endPos), php_array_to_color(color));
+    php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawLineV(phpStartPos->vector2, phpEndPos->vector2, phpColor->color);
 }
 
 //void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);
@@ -207,7 +218,11 @@ PHP_METHOD(Draw, lineEx)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawLineEx(php_array_to_vector2(startPos), php_array_to_vector2(endPos), (float) thick, php_array_to_color(color));
+    php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawLineEx(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
 }
 
 //void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
@@ -225,7 +240,11 @@ PHP_METHOD(Draw, lineBezier)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawLineBezier(php_array_to_vector2(startPos), php_array_to_vector2(endPos), (float) thick, php_array_to_color(color));
+    php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawLineBezier(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
 }
 
 //void DrawCircle(int centerX, int centerY, float radius, Color color);
@@ -243,7 +262,9 @@ PHP_METHOD(Draw, circle)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawCircle(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawCircle(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, phpColor->color);
 }
 
 //void DrawCircle(Vector2 center, float radius, Color color);
@@ -259,7 +280,10 @@ PHP_METHOD(Draw, circleV)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawCircleV(php_array_to_vector2(center), (float) radius, php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+
+    DrawCircleV(phpCenter->vector2, (float) radius, phpColor->color);
 }
 
 //void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);
@@ -279,7 +303,10 @@ PHP_METHOD(Draw, circleGradient)
             Z_PARAM_ZVAL(color2)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawCircleGradient(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color1),  php_array_to_color(color2));
+    php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
+    php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
+
+    DrawCircleGradient(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, phpColor1->color, phpColor2->color);
 }
 
 //void DrawCircleLines(int centerX, int centerY, float radius, Color color);
@@ -297,7 +324,9 @@ PHP_METHOD(Draw, circleLines)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawCircleLines(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawCircleLines(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, phpColor->color);
 }
 
 //void DrawRectangle(int posX, int posY, int width, int height, Color color);
@@ -317,7 +346,9 @@ PHP_METHOD(Draw, rectangle)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawRectangle(zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(width), zend_long_2int(height), php_array_to_color(color));
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawRectangle(zend_long_2int(posX), zend_long_2int(posY), zend_long_2int(width), zend_long_2int(height), phpColor->color);
 }
 
 //void DrawRectangleV(Vector2 position, Vector2 size, Color color);
@@ -333,7 +364,11 @@ PHP_METHOD(Draw, rectangleV)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawRectangleV(php_array_to_vector2(position), php_array_to_vector2(size), php_array_to_color(color));
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawRectangleV(phpPosition->vector2, phpSize->vector2, phpColor->color);
 }
 
 //void DrawRectangleRec(Rectangle rec, Color color);
@@ -347,7 +382,10 @@ PHP_METHOD(Draw, rectangleRec)
             Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
-    DrawRectangleRec(php_array_to_rec(rec), php_array_to_color(color));
+    php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawRectangleRec(phpRec->rectangle, phpColor->color);
 }
 
 //void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);
@@ -449,11 +487,3 @@ void php_raylib_draw_startup(INIT_FUNC_ARGS)
     php_raylib_draw_object_handlers.free_obj = &php_raylib_draw_free_storage;
     php_raylib_draw_object_handlers.clone_obj = NULL;
 }
-
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowDraw
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

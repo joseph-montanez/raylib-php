@@ -7,6 +7,12 @@
 
 extern zend_class_entry *php_raylib_mouse_ce;
 
+extern void php_raylib_vector2_free_storage(zend_object *object TSRMLS_DC);
+
+extern zend_object * php_raylib_vector2_new(zend_class_entry *ce TSRMLS_DC);
+
+extern zend_object_handlers php_raylib_vector2_object_handlers;
+
 typedef struct _php_raylib_mouse_object {
     zend_object std;
 } php_raylib_mouse_object;

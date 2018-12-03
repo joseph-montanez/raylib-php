@@ -6,12 +6,6 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-font.h"
 #include "raylib-utils.h"
@@ -74,10 +68,3 @@ void php_raylib_font_startup(INIT_FUNC_ARGS)
     php_raylib_font_object_handlers.free_obj = &php_raylib_font_free_storage;
     php_raylib_font_object_handlers.clone_obj = NULL;
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA

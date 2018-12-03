@@ -6,13 +6,6 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowText ShowTextWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
 #include "raylib-key.h"
@@ -237,12 +230,3 @@ void php_raylib_key_startup(INIT_FUNC_ARGS)
     REGISTER_RAYLIB_KEY_CLASS_CONST_LONG("Y", KEY_Y);
     REGISTER_RAYLIB_KEY_CLASS_CONST_LONG("Z", KEY_Z);
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowText
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA
-

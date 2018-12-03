@@ -6,15 +6,9 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowText ShowTextWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-utils.h"
+#include "raylib-vector2.h"
 #include "raylib-mouse.h"
 
 
@@ -120,11 +114,20 @@ PHP_METHOD(Mouse, getY)
 //Vector2 GetMousePosition(void)
 PHP_METHOD(Mouse, getPosition)
 {
-    Vector2 mousePosition = GetMousePosition();
+    php_raylib_vector2_object *intern;
 
-    array_init(return_value);
-    add_assoc_double(return_value, "x", (double) mousePosition.x);
-    add_assoc_double(return_value, "y", (double) mousePosition.y);
+    //-- Allocate vector2
+    intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(php_raylib_vector2_ce));
+    //-- Intialize vector2
+    zend_object_std_init(&intern->std, php_raylib_vector2_ce TSRMLS_CC);
+    object_properties_init(&intern->std, php_raylib_vector2_ce);
+    //-- Assigned handler
+    intern->std.handlers = &php_raylib_vector2_object_handlers;
+
+    //-- Assigned value to vector2
+    intern->vector2 = GetMousePosition();
+
+    RETURN_OBJ(&intern->std);
 }
 
 //void SetMousePosition(Vector2 position);
@@ -193,12 +196,4 @@ void php_raylib_mouse_startup(INIT_FUNC_ARGS)
     REGISTER_RAYLIB_MOUSE_CLASS_CONST_LONG("RIGHT_BUTTON", MOUSE_RIGHT_BUTTON);
     REGISTER_RAYLIB_MOUSE_CLASS_CONST_LONG("MIDDLE_BUTTON", MOUSE_MIDDLE_BUTTON);
 }
-
-#undef Rectangle
-#undef CloseWindow
-#undef ShowText
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA
 

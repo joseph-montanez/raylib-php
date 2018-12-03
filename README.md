@@ -1,6 +1,6 @@
 # raylib-php
 
-PHP 7.x bindings for raylib, a simple and easy-to-use library to learn videogames programming (www.raylib.com)
+PHP 7.x bindings for raylib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
 
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
@@ -12,30 +12,23 @@ This is currently a work-in-progress and bindings are not complete and are likel
 ```php
 <?php
 
-use raylib\Text;
+use raylib\Color;
 use raylib\Draw;
-use raylib\Image;
+use raylib\Text;
+use raylib\Timming;
 use raylib\Window;
-
-require_once __DIR__ . '/../raylib-colors.php';
 
 // Initialization
 //--------------------------------------------------------------------------------------
-$screenWidth = 800;
+$screenWidth  = 800;
 $screenHeight = 450;
+$lightGray    = new Color(245, 245, 245, 255);
+$gray         = new Color(200, 200, 200, 255);
 
-Window::init($screenWidth, $screenHeight, "raylib [textures] example - image loading");
+Window::init($screenWidth, $screenHeight, "raylib [core] example - basic window");
 
-// NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-
-$image = new Image(__DIR__  . '/resources/raylib_logo.png');    // Loaded in CPU memory (RAM)
-$texture = $image->toTexture();                                 // Image converted to texture, GPU memory (VRAM)
-
-unset($image);    // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
-
-$texture_x = $screenWidth / 2 - $texture->width / 2;
-$texture_y = $screenHeight / 2 - $texture->height / 2;
-//---------------------------------------------------------------------------------------
+Timming::setTargetFps(60);
+//--------------------------------------------------------------------------------------
 
 // Main game loop
 while (!Window::shouldClose())    // Detect window close button or ESC key
@@ -45,21 +38,16 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     // TODO: Update your variables here
     //----------------------------------------------------------------------------------
 
-
     // Draw
     //----------------------------------------------------------------------------------
     Draw::begin();
 
-    Draw::clearBackground(raylib\RAYWHITE);
+    Draw::clearBackground($lightGray);
 
-    $texture->draw($texture_x, $texture_y, raylib\WHITE);
-
-    Text::draw("this IS a texture loaded from an image!", 300, 370, 10, raylib\GRAY);
-
+    Text::draw("Congrats! You created your first window!", 190, 200, 20, $gray);
 
     Draw::end();
     //----------------------------------------------------------------------------------
-
 }
 
 // De-Initialization
@@ -101,4 +89,4 @@ Windows requires compiling with PHP sources, you will still get a .dll in the en
 
 ### Windows
 
-    php.exe -dextension=modules/php7raylib-1.9.4-dev.dll examples/textures/textures_image_loading.php
+    php.exe -dextension=modules/php7raylib-2.0.0-dev.dll examples/textures/textures_image_loading.php

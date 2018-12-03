@@ -1,6 +1,6 @@
 <?php
 
-//use raylib\Color;
+use raylib\Color;
 use raylib\Draw;
 use raylib\Text;
 use raylib\Timming;
@@ -10,6 +10,8 @@ use raylib\Window;
 //--------------------------------------------------------------------------------------
 $screenWidth  = 800;
 $screenHeight = 450;
+$lightGray    = new Color(245, 245, 245, 255);
+$gray         = new Color(200, 200, 200, 255);
 
 Window::init($screenWidth, $screenHeight, "raylib [core] example - basic window");
 
@@ -28,9 +30,9 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     //----------------------------------------------------------------------------------
     Draw::begin();
 
-    Draw::clearBackground([245, 245, 245, 255]);
+    Draw::clearBackground($lightGray);
 
-    Text::draw("Congrats! You created your first window!", 190, 200, 20, [200, 200, 200, 255]);
+    Text::draw("Congrats! You created your first window!", 190, 200, 20, $gray);
 
     Draw::end();
     //----------------------------------------------------------------------------------

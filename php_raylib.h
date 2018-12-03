@@ -24,19 +24,7 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define CloseWindow CloseWindowWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include <raylib.h>
-#undef Rectangle
-#undef CloseWindow
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
@@ -45,8 +33,12 @@
 extern zend_module_entry raylib_module_entry;
 #define phpext_raylib_ptr &raylib_module_entry
 
-#define PHP_RAYLIB_VERSION "1.9.7"
+#define PHP_RAYLIB_VERSION "2.0.0"
 
+zend_class_entry *php_raylib_vector4_ce;
+zend_class_entry *php_raylib_vector3_ce;
+zend_class_entry *php_raylib_vector2_ce;
+zend_class_entry *php_raylib_rectangle_ce;
 zend_class_entry *php_raylib_image_ce;
 zend_class_entry *php_raylib_texture_ce;
 zend_class_entry *php_raylib_window_ce;

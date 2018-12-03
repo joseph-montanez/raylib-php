@@ -23,11 +23,11 @@ class Text
      * @param int    $posX
      * @param int    $posY
      * @param int    $fontSize
-     * @param array  $color    The color [red,blue,green,alpha] i.e [0,0,0,255]
+     * @param Color  $color The color
      *
      * {@internal void DrawText(const char *text, int posX, int posY, int fontSize, Color color); }}
      */
-    public static function draw(string $text, int $posX, int $posY, int $fontSize, array $color) : void {}
+    public static function draw(string $text, int $posX, int $posY, int $fontSize, Color $color) : void {}
 
     /**
      * Measure string width for default font

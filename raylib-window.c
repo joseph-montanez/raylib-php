@@ -6,11 +6,6 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#define Rectangle RectangleWin
-#define ShowCursor ShowCursorWin
-#define DrawTextA DrawTextAWin
-#define DrawTextExA DrawTextExAWin
-#define LoadImageA LoadImageAWin
 #include "raylib.h"
 #include "raylib-image.h"
 #include "raylib-utils.h"
@@ -214,9 +209,3 @@ void php_raylib_window_startup(INIT_FUNC_ARGS)
     php_raylib_window_object_handlers.free_obj = &php_raylib_window_free_storage;
     php_raylib_window_object_handlers.clone_obj = NULL;
 }
-
-#undef Rectangle
-#undef ShowCursor
-#undef DrawTextA
-#undef DrawTextExA
-#undef LoadImageA
