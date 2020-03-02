@@ -24,7 +24,9 @@
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
-#include <raylib.h>
+
+#include "raylib.h"
+#include "rlgl.h"
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
