@@ -11,7 +11,7 @@ use raylib\Timming;
 use raylib\Vector2;
 use raylib\Window;
 
-define('MAX_BUILDINGS', 100);
+const MAX_BUILDINGS = 100;
 
 // Initialization
 //--------------------------------------------------------------------------------------
@@ -29,24 +29,34 @@ $target       = new Vector2(0, 0);
 Window::init($screenWidth, $screenHeight, "raylib [core] example - 2d camera");
 
 $player      = new Rectangle(400, 280, 40, 40);
-$buildings   = array_fill(0, MAX_BUILDINGS, ['x' => 0, 'y' => 0, 'width' => 0, 'height' => 0]);
-$buildColors = array_fill(0, MAX_BUILDINGS, [0, 0, 0, 255]);
+/**
+ * @var \raylib\Rectangle[] $buildings
+ **/
+$buildings = [];
+/**
+ * @var \raylib\Rectangle[] $buildColors
+ **/
+$buildColors = [];
 
 $spacing = 0;
 
 for ($i = 0; $i < MAX_BUILDINGS; $i++) {
-    $height = rand(100, 800);
-    $width  = rand(50, 200);
+    $buildingWidth  = rand(50, 200);
+    $buildingHeight = rand(100, 800);
+    $buildingY = $screenHeight - 130 - $buildingHeight;
+    $buildingX = -6000 + $spacing;
 
-    $buildings[$i] = new Rectangle($width, $height, $screenHeight - 130 - $height, -6000 + $spacing);
+    $rec = new Rectangle($buildingX, $buildingY, $buildingWidth, $buildingHeight);
 
-    $spacing += $width;
+    $buildings[] = $rec;
 
-    $buildColors[$i] = new Color(rand(200, 240), rand(200, 240), rand(200, 250), 255);
+    $spacing += $buildingWidth;
+
+    $buildColors[] = new Color(rand(200, 240), rand(200, 240), rand(200, 250), 255);
 }
 
 $camera = new Camera2D();
-$camera->setOffset(new Vector2(0 ,0));
+$camera->setOffset(new Vector2($screenWidth / 2, $screenHeight / 2));
 $camera->setTarget(new Vector2($player->getX() + 20 ,$player->getY() + 20));
 $camera->setRotation(0.0);
 $camera->setZoom(1.0);
@@ -60,15 +70,9 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     // Update
     //----------------------------------------------------------------------------------
     if (Key::isDown(Key::RIGHT)) {
-        $player['x'] += 2;              // Player movement
-        $offset      = $camera->getOffset();
-        $offset['x'] -= 2;       // Camera displacement with player movement
-        $camera->setOffset($offset);
+        $player->setX($player->getX() + 2);
     } else if (Key::isDown(Key::LEFT)) {
-        $player['x']  -= 2;              // Player movement
-        $offset1      = $camera->getOffset();
-        $offset1['x'] += 2;       // Camera displacement with player movement
-        $camera->setOffset($offset1);
+        $player->setX($player->getX() - 2);
     }
 
     // Camera target follows player
@@ -91,7 +95,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     }
 
     // Camera zoom controls
-    $camera->setZoom(Mouse::getWheelMove() * 0.05);
+    $camera->setZoom($camera->getZoom() + (Mouse::getWheelMove() * 0.05));
 
     if ($camera->getZoom() > 3.0) {
         $camera->setZoom(3.0);
@@ -114,16 +118,16 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     Draw::beginMode2d($camera);
 
-    Draw::rectangle(-6000, 320, 13000, 8000, $darkgray);
+        Draw::rectangle(-6000, 320, 13000, 8000, $darkgray);
 
-    for ($i = 0; $i < MAX_BUILDINGS; $i++) {
-        Draw::rectangleRec($buildings[$i], $buildColors[$i]);
-    }
+        for ($i = 0; $i < MAX_BUILDINGS; $i++) {
+            Draw::rectangleRec($buildings[$i], $buildColors[$i]);
+        }
 
-    Draw::rectangleRec($player, $red);
+        Draw::rectangleRec($player, $red);
 
-    Draw::rectangle($camera->getTarget()->getX(), -500, 1, $screenHeight * 4, $green);
-    Draw::rectangle(-500, $camera->getTarget()->getY(), $screenWidth * 4, 1, $green);
+        Draw::Line($camera->getTarget()->getX(), -$screenHeight * 10, $camera->getTarget()->getX(), $screenHeight * 10, $green);
+        Draw::Line(-$screenWidth * 10, $camera->getTarget()->getY(), $screenWidth * 10, $camera->getTarget()->getY(), $green);
 
     Draw::endMode2d();
 
@@ -136,6 +140,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     Draw::rectangle(10, 10, 250, 113, Color::fade($skyblue, 0.5));
     Draw::rectangleLines(10, 10, 250, 113, $blue);
+
 
     Text::draw("Free 2d camera3d controls:", 20, 20, 10, $black);
     Text::draw("- Right/Left to move Offset", 40, 40, 10, $darkgray);

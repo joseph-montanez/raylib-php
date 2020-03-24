@@ -471,7 +471,6 @@ PHP_METHOD(Draw, rectangleGradientV)
     DrawRectangleGradientV(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), php_array_to_color(color1), php_array_to_color(color2));
 }
 
-
 //RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
 PHP_METHOD(Draw, rectangleLines)
 {
@@ -493,6 +492,7 @@ PHP_METHOD(Draw, rectangleLines)
 
     DrawRectangleLines(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), phpColor->color);
 }
+
 /*
  *
 RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a vertical-gradient-filled rectangle
