@@ -163,14 +163,13 @@ PHP_METHOD(Color, fade)
 
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(color);
 
-//
-//    zval *obj = malloc(sizeof(zval));
-//    object_init_ex(obj, php_raylib_color_ce);
-//
-//    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-//    result->color = Fade(intern->color, (float) fade);
-//
-//    RETURN_OBJ(&result->std);
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = Fade(intern->color, (float) fade);
+
+    RETURN_OBJ(&result->std);
 }
 
 PHP_METHOD(Color, getAlpha)

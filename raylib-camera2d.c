@@ -97,9 +97,13 @@ PHP_METHOD(Camera2d, getOffset)
 {
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
 
-    array_init(return_value);
-    add_assoc_double(return_value, "x", (double) intern->camera2d.offset.x);
-    add_assoc_double(return_value, "y", (double) intern->camera2d.offset.y);
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector2_ce);
+
+    php_raylib_vector2_object *result = Z_VECTOR2_OBJ_P(obj);
+    result->vector2 = intern->camera2d.offset;
+
+    RETURN_OBJ(&result->std);
 }
 
 PHP_METHOD(Camera2d, setOffset)
@@ -114,7 +118,8 @@ PHP_METHOD(Camera2d, setOffset)
 
     php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(offset);
 
-    intern->camera2d.offset = phpOffset->vector2;
+    intern->camera2d.offset.x = phpOffset->vector2.x;
+    intern->camera2d.offset.y = phpOffset->vector2.y;
 }
 
 PHP_METHOD(Camera2d, getTarget)
@@ -123,18 +128,13 @@ PHP_METHOD(Camera2d, getTarget)
 
     php_raylib_vector2_object *intern;
 
-    //-- Allocate vector2
-    intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(php_raylib_vector2_ce));
-    //-- Intialize vector2
-    zend_object_std_init(&intern->std, php_raylib_vector2_ce TSRMLS_CC);
-    object_properties_init(&intern->std, php_raylib_vector2_ce);
-    //-- Assigned handler
-    intern->std.handlers = &php_raylib_vector2_object_handlers;
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector2_ce);
 
-    //-- Assigned value to vector2
-    intern->vector2 = GetMousePosition();
+    php_raylib_vector2_object *result = Z_VECTOR2_OBJ_P(obj);
+    result->vector2 = self->camera2d.target;
 
-    RETURN_OBJ(&intern->std);
+    RETURN_OBJ(&result->std);
 }
 
 PHP_METHOD(Camera2d, setTarget)
@@ -189,7 +189,7 @@ PHP_METHOD(Camera2d, setZoom)
             Z_PARAM_DOUBLE(zoom)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera2d.rotation = (float) zoom;
+    intern->camera2d.zoom = (float) zoom;
 }
 
 const zend_function_entry php_raylib_camera2d_methods[] = {

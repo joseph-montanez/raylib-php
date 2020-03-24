@@ -76,6 +76,9 @@ zend_object * php_raylib_rectangle_new(zend_class_entry *ce TSRMLS_DC)
     intern->std.handlers = &php_raylib_rectangle_object_handlers;
 
     zend_declare_property_double(ce, "x", strlen("x"), 0.1f, ZEND_ACC_PUBLIC);
+    zend_declare_property_double(ce, "y", strlen("y"), 0.1f, ZEND_ACC_PUBLIC);
+    zend_declare_property_double(ce, "width", strlen("width"), 0.1f, ZEND_ACC_PUBLIC);
+    zend_declare_property_double(ce, "height", strlen("height"), 0.1f, ZEND_ACC_PUBLIC);
 
     return &intern->std;
 }
@@ -98,7 +101,7 @@ PHP_METHOD(Rectangle, __construct)
             Z_PARAM_ZVAL(height)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle = (Rectangle) {
             .x = zend_double_2float(x),

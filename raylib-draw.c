@@ -471,6 +471,28 @@ PHP_METHOD(Draw, rectangleGradientV)
     DrawRectangleGradientV(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), php_array_to_color(color1), php_array_to_color(color2));
 }
 
+
+//RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
+PHP_METHOD(Draw, rectangleLines)
+{
+    zend_long posX;
+    zend_long posY;
+    zend_long width;
+    zend_long height;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_LONG(posX)
+        Z_PARAM_LONG(posY)
+        Z_PARAM_LONG(width)
+        Z_PARAM_LONG(height)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawRectangleLines(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), phpColor->color);
+}
 /*
  *
 RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a vertical-gradient-filled rectangle
@@ -513,6 +535,7 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, rectangleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangleRec, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectanglePro, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
