@@ -35,5 +35,8 @@ tests/*/*.log
 tests/*/*.sh
 cmake-build-debug/
 .idea
+raylib.dir
+Win32
+x64
 
 *.DS_Store

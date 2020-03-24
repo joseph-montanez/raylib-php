@@ -1,11 +1,53 @@
-//
-// Created by Joseph Montanez on 4/8/18.
-//
+/* If defined, the following flags inhibit definition of the indicated items.*/
+#define NOGDICAPMASKS     // CC_*, LC_*, PC_*, CP_*, TC_*, RC_
+#define NOVIRTUALKEYCODES // VK_*
+#define NOWINMESSAGES     // WM_*, EM_*, LB_*, CB_*
+#define NOWINSTYLES       // WS_*, CS_*, ES_*, LBS_*, SBS_*, CBS_*
+#define NOSYSMETRICS      // SM_*
+#define NOMENUS           // MF_*
+#define NOICONS           // IDI_*
+#define NOKEYSTATES       // MK_*
+#define NOSYSCOMMANDS     // SC_*
+#define NORASTEROPS       // Binary and Tertiary raster ops
+#define NOSHOWWINDOW      // SW_*
+#define OEMRESOURCE       // OEM Resource values
+#define NOATOM            // Atom Manager routines
+#define NOCLIPBOARD       // Clipboard routines
+#define NOCOLOR           // Screen colors
+#define NOCTLMGR          // Control and Dialog routines
+#define NODRAWTEXT        // DrawText() and DT_*
+#define NOGDI             // All GDI defines and routines
+#define NOKERNEL          // All KERNEL defines and routines
+#define NOUSER            // All USER defines and routines
+/*#define NONLS             // All NLS defines and routines*/
+#define NOMB              // MB_* and MessageBox()
+#define NOMEMMGR          // GMEM_*, LMEM_*, GHND, LHND, associated routines
+#define NOMETAFILE        // typedef METAFILEPICT
+#define NOMINMAX          // Macros min(a,b) and max(a,b)
+#define NOMSG             // typedef MSG and associated routines
+#define NOOPENFILE        // OpenFile(), OemToAnsi, AnsiToOem, and OF_*
+#define NOSCROLL          // SB_* and scrolling routines
+#define NOSERVICE         // All Service Controller routines, SERVICE_ equates, etc.
+#define NOSOUND           // Sound driver routines
+#define NOTEXTMETRIC      // typedef TEXTMETRIC and associated routines
+#define NOWH              // SetWindowsHook and WH_*
+#define NOWINOFFSETS      // GWL_*, GCL_*, associated routines
+#define NOCOMM            // COMM driver routines
+#define NOKANJI           // Kanji support stuff.
+#define NOHELP            // Help engine interface.
+#define NOPROFILER        // Profiler interface.
+#define NODEFERWINDOWPOS  // DeferWindowPos routines
+#define NOMCX             // Modem Configuration Extensions
+
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
+
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
+
 #include "raylib.h"
 #include "raylib-utils.h"
 #include "raylib-vector2.h"
@@ -133,25 +175,29 @@ PHP_METHOD(Mouse, getPosition)
 //void SetMousePosition(Vector2 position);
 PHP_METHOD(Mouse, setPosition)
 {
-    zval *position;
+    double positionX;
+    double positionY;
 
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(position)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_DOUBLE(positionX)
+        Z_PARAM_DOUBLE(positionY)
     ZEND_PARSE_PARAMETERS_END();
 
-    SetMousePosition(php_array_to_vector2(position));
+    SetMousePosition((float) positionX, (float) positionY);
 }
 
 //void SetMouseScale(float scale);
 PHP_METHOD(Mouse, setScale)
 {
-    double scale;
+    double scaleX;
+    double scaleY;
 
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_DOUBLE(scale)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_DOUBLE(scaleX)
+        Z_PARAM_DOUBLE(scaleY)
     ZEND_PARSE_PARAMETERS_END();
 
-    SetMouseScale((float) scale);
+    SetMouseScale((float) scaleX, (float) scaleY);
 }
 
 //int GetMouseWheelMove(void)

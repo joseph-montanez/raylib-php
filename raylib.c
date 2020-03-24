@@ -74,7 +74,8 @@ PHP_INI_END()
 PHP_FUNCTION(confirm_raylib_compiled)
 {
 	char *arg = NULL;
-	size_t arg_len, len;
+    size_t arg_len;
+//    size_t arg_len, len;
 	zend_string *strg;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
