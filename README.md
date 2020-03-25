@@ -63,8 +63,13 @@ BSD-like license that allows static linking with closed source software. Check [
 	
 *Copyright (c) 2017 Joseph Montanez ([@joseph-montanez](https://twitter.com/shabb_jm))*
 
+## Binary Releases
+
+[Windows PHP Extension DLL](https://github.com/joseph-montanez/raylib-php/releases)
+
 ## How To Build PHP Extension
 
+Windows is by far the hardest platform to support and build for. Please use the binaries for Windows instead unless you want to commit fixes to this repo.
 
 ### MacOS & Linux
 
@@ -74,12 +79,7 @@ BSD-like license that allows static linking with closed source software. Check [
 
 ### Windows
 
-Windows requires compiling with PHP sources, you will still get a .dll in the end.
-
-    cmake clean
-    buildconf --force
-    configure --with-raylib
-    nmake
+Windows requires compiling with PHP sources (Currently Visual Studio 2017 needed), you will still get a .dll in the end.
 
 You will need to also compile RayLib as well. At the time writing I am using Visual Studio 2017 compiler, since PHP 7.4 requires this. Once compiled paste the following files:
 
@@ -103,6 +103,13 @@ You will need to also compile RayLib as well. At the time writing I am using Vis
     C:\src\raylib-2.6.0\cmake-build-debug\src\raymath.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raymath.h
     C:\src\raylib-2.6.0\cmake-build-debug\src\rlgl.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\rlgl.h
 
+Once you have PHP & Raylib setup you can then compile the extension
+
+    %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    cd C:/php-sdk
+    phpsdk-vs16-x64.bat
+    cd phpmaster\vc15\x64\php-src
+    cls && buildconf --force && configure --disable-all --enable-cli --with-raylib && nmake
 
 ## How To Run raylib PHP Extension
 

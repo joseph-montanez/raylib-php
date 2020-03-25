@@ -43,6 +43,7 @@
 #include "raylib-mouse.h"
 #include "raylib-collision.h"
 #include "raylib-color.h"
+#include "raylib-gamepad.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -159,135 +160,17 @@ PHP_FUNCTION(SetExitKey)
     SetExitKey(zend_long_2int(key));
 }
 
-// Input-related functions: gamepads
-
-//bool IsGamepadAvailable(int gamepad);
-PHP_FUNCTION(IsGamepadAvailable)
+// Setup window configuration flags (view FLAGS)
+// RLAPI void SetConfigFlags(unsigned int flags);
+PHP_FUNCTION(SetConfigFlags)
 {
-    zend_long gamepad;
+    zend_long flags;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(gamepad)
+        Z_PARAM_LONG(flags)
     ZEND_PARSE_PARAMETERS_END();
 
-    RETURN_BOOL(IsGamepadAvailable(zend_long_2int(gamepad)));
-}
-
-//bool IsGamepadName(int gamepad);
-PHP_FUNCTION(IsGamepadName)
-{
-    zend_long gamepad;
-    zend_string *name;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_STR(name)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadName(zend_long_2int(gamepad), name->val));
-}
-
-//const char *GetGamepadName(int gamepad);
-PHP_FUNCTION(GetGamepadName)
-{
-    zend_long gamepad;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(gamepad)
-    ZEND_PARSE_PARAMETERS_END();
-
-    const char *gamepadName = GetGamepadName(zend_long_2int(gamepad));
-    zend_string *str = zend_string_init(gamepadName, sizeof(gamepadName)-1, 0);
-
-    RETURN_STR(str);
-}
-
-//bool IsGamepadButtonPressed(int gamepad, int button);
-PHP_FUNCTION(IsGamepadButtonPressed)
-{
-    zend_long gamepad;
-    zend_long button;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_LONG(button)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadButtonPressed(zend_long_2int(gamepad), zend_long_2int(button)));
-}
-
-//bool IsGamepadButtonDown(int gamepad, int button);
-PHP_FUNCTION(IsGamepadButtonDown)
-{
-    zend_long gamepad;
-    zend_long button;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_LONG(button)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadButtonDown(zend_long_2int(gamepad), zend_long_2int(button)));
-}
-
-//bool IsGamepadButtonReleased(int gamepad, int button);
-PHP_FUNCTION(IsGamepadButtonReleased)
-{
-    zend_long gamepad;
-    zend_long button;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_LONG(button)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadButtonReleased(zend_long_2int(gamepad), zend_long_2int(button)));
-}
-
-//bool IsGamepadButtonUp(int gamepad, int button);
-PHP_FUNCTION(IsGamepadButtonUp)
-{
-    zend_long gamepad;
-    zend_long button;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_LONG(button)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadButtonUp(zend_long_2int(gamepad), zend_long_2int(button)));
-}
-
-//int GetGamepadButtonPressed(void);
-PHP_FUNCTION(GetGamepadButtonPressed)
-{
-    RETURN_LONG(GetGamepadButtonPressed());
-}
-
-//int GetGamepadAxisCount(int gamepad);
-PHP_FUNCTION(GetGamepadAxisCount)
-{
-    zend_long gamepad;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(gamepad)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_LONG(GetGamepadAxisCount(zend_long_2int(gamepad)));
-}
-
-//bool GetGamepadAxisMovement(int gamepad, int button);
-PHP_FUNCTION(GetGamepadAxisMovement)
-{
-    zend_long gamepad;
-    zend_long axis;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_LONG(gamepad)
-            Z_PARAM_LONG(axis)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_DOUBLE(GetGamepadAxisMovement(zend_long_2int(gamepad), zend_long_2int(axis)));
+    SetConfigFlags(zend_long_2int(flags));
 }
 
 /* The previous line is meant for vim and emacs, so it can correctly fold and
@@ -360,6 +243,7 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_text_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_draw_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_camera3d_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_gamepad_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_camera2d_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_rendertexture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_timming_startup(INIT_FUNC_ARGS_PASSTHRU);
@@ -387,56 +271,6 @@ PHP_MINIT_FUNCTION(raylib)
 
     // Touch points registered
     REGISTER_NS_LONG_CONSTANT("raylib\\max", "TOUCH_POINTS", MAX_TOUCH_POINTS, CONST_CS | CONST_PERSISTENT);
-    
-
-    // Gamepad Number
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad", "PLAYER1", GAMEPAD_PLAYER1, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad", "PLAYER2", GAMEPAD_PLAYER2, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad", "PLAYER3", GAMEPAD_PLAYER3, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad", "PLAYER4", GAMEPAD_PLAYER4, CONST_CS | CONST_PERSISTENT);
-
-    // Gamepad Buttons/Axis
-/* TODO: REDO Gamepad lookup
-    // PS3 USB Controller Buttons
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "TRIANGLE", GAMEPAD_PS3_BUTTON_TRIANGLE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "CIRCLE", GAMEPAD_PS3_BUTTON_CIRCLE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "CROSS", GAMEPAD_PS3_BUTTON_CROSS, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "SQUARE", GAMEPAD_PS3_BUTTON_SQUARE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "L1", GAMEPAD_PS3_BUTTON_L1, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "R1", GAMEPAD_PS3_BUTTON_R1, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "L2", GAMEPAD_PS3_BUTTON_L2, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "R2", GAMEPAD_PS3_BUTTON_R2, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "START", GAMEPAD_PS3_BUTTON_START, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "SELECT", GAMEPAD_PS3_BUTTON_SELECT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "UP", GAMEPAD_PS3_BUTTON_UP, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "RIGHT", GAMEPAD_PS3_BUTTON_RIGHT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "DOWN", GAMEPAD_PS3_BUTTON_DOWN, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "LEFT", GAMEPAD_PS3_BUTTON_LEFT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\button", "PS", GAMEPAD_PS3_BUTTON_PS, CONST_CS | CONST_PERSISTENT);
-
-    // PS3 USB Controller Axis
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "LEFT_X", GAMEPAD_PS3_AXIS_LEFT_X, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "LEFT_Y", GAMEPAD_PS3_AXIS_LEFT_Y, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "RIGHT_X", GAMEPAD_PS3_AXIS_RIGHT_X, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "RIGHT_Y", GAMEPAD_PS3_AXIS_RIGHT_Y, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "L2", GAMEPAD_PS3_AXIS_L2, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\ps3\\axis", "R2", GAMEPAD_PS3_AXIS_R2, CONST_CS | CONST_PERSISTENT);
-
-    // Xbox360 USB Controller Buttons
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "A", GAMEPAD_XBOX_BUTTON_A, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "B", GAMEPAD_XBOX_BUTTON_B, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "X", GAMEPAD_XBOX_BUTTON_X, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "Y", GAMEPAD_XBOX_BUTTON_Y, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "LB", GAMEPAD_XBOX_BUTTON_LB, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "RB", GAMEPAD_XBOX_BUTTON_RB, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "SELECT", GAMEPAD_XBOX_BUTTON_SELECT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "START", GAMEPAD_XBOX_BUTTON_START, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "UP", GAMEPAD_XBOX_BUTTON_UP, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "RIGHT", GAMEPAD_XBOX_BUTTON_RIGHT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "DOWN", GAMEPAD_XBOX_BUTTON_DOWN, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "LEFT", GAMEPAD_XBOX_BUTTON_LEFT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\gamepad\\xbox\\button", "HOME", GAMEPAD_XBOX_BUTTON_HOME, CONST_CS | CONST_PERSISTENT);
-*/
 
     // Shader and material limits
     REGISTER_NS_LONG_CONSTANT("raylib\\max", "SHADER_LOCATIONS", MAX_SHADER_LOCATIONS, CONST_CS | CONST_PERSISTENT);
@@ -511,18 +345,11 @@ const zend_function_entry raylib_functions[] = {
         ZEND_NS_FE("raylib", IsKeyUp, NULL)
         ZEND_NS_FE("raylib", GetKeyPressed, NULL)
         ZEND_NS_FE("raylib", SetExitKey, NULL)
-        // Input-related functions: gamepads
-        ZEND_NS_FE("raylib", IsGamepadAvailable, NULL)
-        ZEND_NS_FE("raylib", IsGamepadName, NULL)
-        ZEND_NS_FE("raylib", GetGamepadName, NULL)
-        ZEND_NS_FE("raylib", IsGamepadButtonPressed, NULL)
-        ZEND_NS_FE("raylib", IsGamepadButtonDown, NULL)
-        ZEND_NS_FE("raylib", IsGamepadButtonReleased, NULL)
-        ZEND_NS_FE("raylib", IsGamepadButtonUp, NULL)
-        ZEND_NS_FE("raylib", GetGamepadButtonPressed, NULL)
-        ZEND_NS_FE("raylib", GetGamepadAxisCount, NULL)
-        ZEND_NS_FE("raylib", GetGamepadAxisMovement, NULL)
-	PHP_FE_END
+
+        // Misc. functions
+        ZEND_NS_FE("raylib", SetConfigFlags, NULL)
+
+        PHP_FE_END
 };
 /* }}} */
 

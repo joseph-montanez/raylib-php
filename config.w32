@@ -29,8 +29,8 @@ if (PHP_RAYLIB != "no") {
         ADD_FLAG("LIBS_RAYLIB", "kernel32.lib user32.lib gdi32.lib winmm.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib") 
 
 
-		var raylib_sources = "raylib.c raylib-camera3d.c raylib-camera2d.c raylib-cursor.c raylib-draw.c raylib-image.c raylib-key.c raylib-rendertexture.c raylib-font.c raylib-text.c raylib-texture.c raylib-timming.c raylib-utils.c raylib-window.c raylib-mouse.c raylib-collision.c raylib-color.c raylib-vector4.c raylib-vector3.c raylib-vector2.c raylib-rectangle.c";
-		PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h raylib-camera3d.h raylib-camera2d.h raylib-cursor.h raylib-draw.h raylib-image.h raylib-key.h raylib-rendertexture.h raylib-font.h raylib-text.h raylib-texture.h raylib-timming.h raylib-utils.h raylib-window.h raylib-mouse.h raylib-collision.h raylib-color.h raylib-vector4.h raylib-vector3.h raylib-rectangle.h");
+		var raylib_sources = "raylib.c raylib-camera3d.c raylib-camera2d.c raylib-cursor.c raylib-draw.c raylib-image.c raylib-key.c raylib-rendertexture.c raylib-font.c raylib-text.c raylib-texture.c raylib-timming.c raylib-utils.c raylib-window.c raylib-mouse.c raylib-collision.c raylib-color.c raylib-vector4.c raylib-vector3.c raylib-vector2.c raylib-rectangle.c raylib-gamepad.c";
+		PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h raylib-camera3d.h raylib-camera2d.h raylib-cursor.h raylib-draw.h raylib-image.h raylib-key.h raylib-rendertexture.h raylib-font.h raylib-text.h raylib-texture.h raylib-timming.h raylib-utils.h raylib-window.h raylib-mouse.h raylib-collision.h raylib-color.h raylib-vector4.h raylib-vector3.h raylib-rectangle.h raylib-gamepad.h");
 		EXTENSION("raylib", raylib_sources, true, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1", "php_raylib.dll");
 
 	} else {
