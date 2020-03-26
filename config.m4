@@ -24,13 +24,13 @@ if test "$PHP_RAYLIB" != "no"; then
   AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
   AC_MSG_CHECKING(for libraylib)
   if test -x "$PKG_CONFIG" && $PKG_CONFIG --exists raylib; then
-    if $PKG_CONFIG raylib --atleast-version 1.9.1; then
+    if $PKG_CONFIG raylib --atleast-version 2.6.0; then
       LIBRAYLIB_CFLAGS=`$PKG_CONFIG raylib --cflags`
       LIBRAYLIB_LIBDIR=`$PKG_CONFIG raylib --libs`
       LIBRAYLIB_VERSON=`$PKG_CONFIG raylib --modversion`
       AC_MSG_RESULT(from pkgconfig: version $LIBRAYLIB_VERSON)
     else
-      AC_MSG_ERROR(system libraylib is too old: version 1.8.0 required)
+      AC_MSG_ERROR(system libraylib is too old: version 2.6.0 required)
     fi
   else
     AC_MSG_ERROR(pkg-config not found)
@@ -39,7 +39,7 @@ if test "$PHP_RAYLIB" != "no"; then
   PHP_EVAL_INCLINE($LIBRAYLIB_CFLAGS)
 
   dnl # --with-raylib -> check with-path
-  SEARCH_PATH="/usr/local /usr"     # you might want to change this
+  SEARCH_PATH="/usr/local /usr ./cmake-build-debug/_deps/raylib-src/src"     # you might want to change this
   SEARCH_FOR="/include/raylib.h"  # you most likely want to change this
   if test -r $PHP_RAYLIB/$SEARCH_FOR; then # path given as parameter
     RAYLIB_DIR=$PHP_RAYLIB
@@ -63,7 +63,7 @@ if test "$PHP_RAYLIB" != "no"; then
 
   dnl # --with-raylib -> check for lib and symbol presence
   LIBNAME=raylib # you may want to change this
-  LIBSYMBOL=ShowLogo # you most likely want to change this 
+  LIBSYMBOL=SetMouseScale # you most likely want to change this
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [

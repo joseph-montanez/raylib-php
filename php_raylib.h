@@ -26,7 +26,7 @@
 #undef LOG_DEBUG
 
 #include "raylib.h"
-#include "rlgl.h"
+//#include "rlgl.h"
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
