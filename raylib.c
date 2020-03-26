@@ -273,8 +273,8 @@ PHP_MINIT_FUNCTION(raylib)
     REGISTER_NS_LONG_CONSTANT("raylib\\max", "TOUCH_POINTS", MAX_TOUCH_POINTS, CONST_CS | CONST_PERSISTENT);
 
     // Shader and material limits
-    REGISTER_NS_LONG_CONSTANT("raylib\\max", "SHADER_LOCATIONS", MAX_SHADER_LOCATIONS, CONST_CS | CONST_PERSISTENT);
-    REGISTER_NS_LONG_CONSTANT("raylib\\max", "MATERIAL_MAPS", MAX_MATERIAL_MAPS, CONST_CS | CONST_PERSISTENT);
+//    REGISTER_NS_LONG_CONSTANT("raylib\\max", "SHADER_LOCATIONS", MAX_SHADER_LOCATIONS, CONST_CS | CONST_PERSISTENT);
+//    REGISTER_NS_LONG_CONSTANT("raylib\\max", "MATERIAL_MAPS", MAX_MATERIAL_MAPS, CONST_CS | CONST_PERSISTENT);
 
     le_raylib_image = zend_register_list_destructors_ex(raylib_image_dtor, NULL, "RAYLIB_IMAGE_TYPE", module_number);
     le_raylib_texture = zend_register_list_destructors_ex(raylib_texture_dtor, NULL, "RAYLIB_TEXTURE_TYPE", module_number);

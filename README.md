@@ -73,6 +73,12 @@ Windows is by far the hardest platform to support and build for. Please use the 
 
 ### MacOS & Linux
 
+#### Ubuntu 19.10
+
+    sudo apt-get install -y libx11-dev xorg-dev
+
+#### Build
+
     phpize
     ./configure
     make
