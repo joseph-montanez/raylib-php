@@ -5,7 +5,7 @@ PHP 7.x bindings for raylib, a simple and easy-to-use library to learn video gam
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
 
-# Example
+## Example
 
 ![Texture Image Loading](img/textures-image-loading.png)
 
@@ -56,7 +56,7 @@ Window::close();        // Close window and OpenGL context
 //--------------------------------------------------------------------------------------
 ```
 
-# License
+## License
 
 raylib-php is licensed under an unmodified zlib/libpng license, which is an OSI-certified, 
 BSD-like license that allows static linking with closed source software. Check [LICENSE](LICENSE) for further details.
@@ -66,6 +66,16 @@ BSD-like license that allows static linking with closed source software. Check [
 ## Binary Releases
 
 [Windows PHP Extension DLL](https://github.com/joseph-montanez/raylib-php/releases)
+
+## API Differences
+
+RayLib is a library designed for procedural code. All functions live in a global scope. While I could and still can do this, I'd prefer to organize and namespace the API.
+
+For example instead of calling `CheckCollisionPointTriangle()`, in PHP you'd call `raylib\Collision::checkPointTriangle()`. That static class method could technically live as a scoped function instead for example `raylib\Collision\checkPointTriangle` however this could become make importing far more tedious. 
+
+## API Limitation
+
+The PHP C-API has one glaring limitation and that is I cannot provide read AND write to class properties. For example, in RayLib you can call `rec->x += 1`, but in PHP you'll need to use getters and setters `rec->setX(rec->getX() + 1)`. Now this may change as there might be a way to support this but I think until PHP has true support for getters and setters as properties, rather than a magic catch all, I want to avoid this. By using properties, I need to maintain copies of every in two places, so it will add memory for little gain.
 
 ## How To Build PHP Extension
 

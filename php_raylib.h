@@ -57,6 +57,8 @@ zend_class_entry *php_raylib_mouse_ce;
 zend_class_entry *php_raylib_gamepad_ce;
 zend_class_entry *php_raylib_color_ce;
 zend_class_entry *php_raylib_collision_ce;
+zend_class_entry *php_raylib_wave_ce;
+zend_class_entry *php_raylib_audio_ce;
 
 
 #ifdef PHP_WIN32

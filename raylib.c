@@ -44,6 +44,7 @@
 #include "raylib-collision.h"
 #include "raylib-color.h"
 #include "raylib-gamepad.h"
+#include "raylib-wave.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
@@ -252,14 +253,18 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_mouse_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_color_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_collision_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_wave_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_audio_startup(INIT_FUNC_ARGS_PASSTHRU);
 
     // raylib Config Flags
     // TODO: REDO LOGO
-//    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "SHOW_LOGO", FLAG_SHOW_LOGO, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "RESERVED", FLAG_RESERVED, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "FULLSCREEN_MODE", FLAG_FULLSCREEN_MODE, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_RESIZABLE", FLAG_WINDOW_RESIZABLE, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_UNDECORATED", FLAG_WINDOW_UNDECORATED, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_TRANSPARENT", FLAG_WINDOW_TRANSPARENT, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_HIDDEN", FLAG_WINDOW_HIDDEN, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\flags", "WINDOW_ALWAYS_RUN", FLAG_WINDOW_ALWAYS_RUN, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "MSAA_4X_HINT", FLAG_MSAA_4X_HINT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\flags", "VSYNC_HINT", FLAG_VSYNC_HINT, CONST_CS | CONST_PERSISTENT);
 
@@ -272,12 +277,14 @@ PHP_MINIT_FUNCTION(raylib)
     // Touch points registered
     REGISTER_NS_LONG_CONSTANT("raylib\\max", "TOUCH_POINTS", MAX_TOUCH_POINTS, CONST_CS | CONST_PERSISTENT);
 
-    // Shader and material limits
-//    REGISTER_NS_LONG_CONSTANT("raylib\\max", "SHADER_LOCATIONS", MAX_SHADER_LOCATIONS, CONST_CS | CONST_PERSISTENT);
-//    REGISTER_NS_LONG_CONSTANT("raylib\\max", "MATERIAL_MAPS", MAX_MATERIAL_MAPS, CONST_CS | CONST_PERSISTENT);
-
     le_raylib_image = zend_register_list_destructors_ex(raylib_image_dtor, NULL, "RAYLIB_IMAGE_TYPE", module_number);
     le_raylib_texture = zend_register_list_destructors_ex(raylib_texture_dtor, NULL, "RAYLIB_TEXTURE_TYPE", module_number);
+    // TODO: I need to add other objects here, that are pointers!
+//    le_raylib_rectangle = zend_register_list_destructors_ex(raylib_rectangle_dtor, NULL, "RAYLIB_RECTANGLE_TYPE", module_number);
+//    le_raylib_wave = zend_register_list_destructors_ex(raylib_wave_dtor, NULL, "RAYLIB_WAVE_TYPE", module_number);
+//    le_raylib_vector2 = zend_register_list_destructors_ex(raylib_vector2_dtor, NULL, "RAYLIB_VECTOR2_TYPE", module_number);
+//    le_raylib_vector3 = zend_register_list_destructors_ex(raylib_vector3_dtor, NULL, "RAYLIB_VECTOR3_TYPE", module_number);
+//    le_raylib_vector4 = zend_register_list_destructors_ex(raylib_vector4_dtor, NULL, "RAYLIB_VECTOR4_TYPE", module_number);
 
     return SUCCESS;
 }

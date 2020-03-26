@@ -116,6 +116,12 @@ PHP_METHOD(Window, isMinimized)
     RETURN_BOOL(IsWindowMinimized());
 }
 
+//RLAPI bool IsWindowFullscreen(void);
+PHP_METHOD(Window, isFullscreen)
+{
+    RETURN_BOOL(IsWindowFullscreen());
+}
+
 PHP_METHOD(Window, toggleFullscreen)
 {
     ToggleFullscreen();
@@ -225,6 +231,7 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, toggleFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setIcon, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setTitle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
