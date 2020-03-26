@@ -77,6 +77,7 @@ $gameOver = false;
 $pause = false;
 $score = 0;
 $hiScore = 0;
+$t = time();
 
 $floppy = new Floppy();
 //$floppy->position = new Rectangle(0,0, 0, 0);
@@ -97,6 +98,8 @@ $superfx = false;
 //------------------------------------------------------------------------------------
 // Initialization
 //---------------------------------------------------------
+
+raylib\SetConfigFlags(raylib\flags\VSYNC_HINT);
 Window::init($screenWidth, $screenHeight, "sample game: floppy");
 
 InitGame();
@@ -149,12 +152,6 @@ function InitGame()
     }
 
     for ($i = 0; $i < MAX_TUBES * 2; $i += 2) {
-        if (isset($tubes[$i]->rec)) {
-            //-- This crashes?
-            echo 'unseting', PHP_EOL;
-            unset($tubes[$i]->rec);
-            echo 'unseted', PHP_EOL;
-        }
         $tubes[$i]->rec = new Rectangle(
             $tubesPos[$i / 2]->getX(),
             $tubesPos[$i / 2]->getY(),
@@ -162,14 +159,12 @@ function InitGame()
             255
         );
 
-        if (!isset($tubes[$i + 1]->rec)) {
-            $tubes[$i + 1]->rec = new Rectangle(
-                $tubesPos[$i / 2]->getX(),
-                600 + $tubesPos[$i / 2]->getY() - 255,
-                TUBES_WIDTH,
-                255
-            );
-        }
+        $tubes[$i + 1]->rec = new Rectangle(
+            $tubesPos[$i / 2]->getX(),
+            600 + $tubesPos[$i / 2]->getY() - 255,
+            TUBES_WIDTH,
+            255
+        );
 
         $tubes[$i / 2]->active = true;
     }
@@ -185,7 +180,12 @@ function InitGame()
 // Update game (one frame)
 function UpdateGame()
 {
-    global $floppy, $tubesSpeedX, $tubesPos, $tubes, $score, $gameOver, $superfx, $pause, $hiScore;
+    global $floppy, $tubesSpeedX, $tubesPos, $tubes, $score, $gameOver, $superfx, $pause, $hiScore, $time;
+
+    if (time() - $time > 1) {
+        echo "FPS: ", Timming::getFps(), PHP_EOL;
+        $time = time();
+    }
 
     if (!$gameOver) {
         if (Key::isPressed(Key::P)) {
