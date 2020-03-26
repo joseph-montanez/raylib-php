@@ -126,8 +126,6 @@ PHP_METHOD(Camera2d, getTarget)
 {
     php_raylib_camera2d_object *self = Z_CAMERA2D_OBJ_P(getThis());
 
-    php_raylib_vector2_object *intern;
-
     zval *obj = malloc(sizeof(zval));
     object_init_ex(obj, php_raylib_vector2_ce);
 
