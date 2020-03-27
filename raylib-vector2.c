@@ -78,6 +78,23 @@ zend_object * php_raylib_vector2_new(zend_class_entry *ce TSRMLS_DC)
     return &intern->std;
 }
 
+static zend_object *php_raylib_vector2_clone(zval *zobject)
+{
+    zend_object *old_object;
+    zend_object *new_object;
+
+    old_object = Z_OBJ_P(zobject);
+    new_object = php_raylib_vector2_new(old_object->ce);
+
+    // zend_objects_clone_members(new_object, old_object);
+
+    php_raylib_vector2_object *old_vector2 = php_raylib_vector2_fetch_object(old_object);
+    php_raylib_vector2_object *new_vector2 = php_raylib_vector2_fetch_object(new_object);
+    new_vector2->vector2 = old_vector2->vector2;
+
+    return new_object;
+}
+
 // PHP object handling
 
 PHP_METHOD(Vector2, __construct)
@@ -158,5 +175,5 @@ void php_raylib_vector2_startup(INIT_FUNC_ARGS)
     memcpy(&php_raylib_vector2_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     php_raylib_vector2_object_handlers.offset = XtOffsetOf(php_raylib_vector2_object, std);
     php_raylib_vector2_object_handlers.free_obj = &php_raylib_vector2_free_storage;
-    php_raylib_vector2_object_handlers.clone_obj = NULL;
+    php_raylib_vector2_object_handlers.clone_obj = php_raylib_vector2_clone;
 }

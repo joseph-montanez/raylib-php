@@ -116,10 +116,12 @@ PHP_METHOD(Window, isMinimized)
     RETURN_BOOL(IsWindowMinimized());
 }
 
+// TODO: Need to link raylib 3.0
 //RLAPI bool IsWindowFullscreen(void);
 PHP_METHOD(Window, isFullscreen)
 {
-    RETURN_BOOL(IsWindowFullscreen());
+    RETURN_BOOL(false);
+//    RETURN_BOOL(IsWindowFullscreen());
 }
 
 PHP_METHOD(Window, toggleFullscreen)

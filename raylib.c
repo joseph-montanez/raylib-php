@@ -45,6 +45,7 @@
 #include "raylib-color.h"
 #include "raylib-gamepad.h"
 #include "raylib-wave.h"
+#include "raylib-audio.h"
 
 
 #define RAYLIB_FLAG(name) "raylib\\flags\\" #name
