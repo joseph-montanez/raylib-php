@@ -6,492 +6,630 @@ This is a one to one mapping of each raylib function.
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void InitWindow(int width, int height, const char *title) | raylib\Window::init() ||
-| void CloseWindow(void);                                   | raylib\Window::close() ||
-| bool IsWindowReady(void);                                 | raylib\Window::isReady() ||
-| bool WindowShouldClose(void);                             | raylib\Window::shouldClose() ||
-| bool IsWindowMinimized(void);                             | raylib\Window::isMinimized() ||
-| void ToggleFullscreen(void);                              | raylib\Window::toggleFullscreen() ||
-| void SetWindowIcon(Image image);                          | raylib\Window::setIcon(Image $image) ||
-| void SetWindowTitle(const char *title);                   | raylib\Window::setTitle(string $title) ||
-| void SetWindowPosition(int x, int y);                     | raylib\Window::setPosition(int $x, int $y) ||
-| void SetWindowMonitor(int monitor);                       | raylib\Window::setMonitor(int $monitor) ||
-| void SetWindowMinSize(int width, int height);             | raylib\Window::setMinSize(int $width, int $height) ||
-| void SetWindowSize(int width, int height);                | raylib\Window::setSize(int $width, int $height) ||
-| int GetScreenWidth(void);                                 | raylib\Window::getWidth() : int ||
-| int GetScreenHeight(void);                                | raylib\Window::getHeight() : int ||
+| RLAPI void InitWindow(int width, int height, const char *title) | raylib\Window::init() ||
+| RLAPI bool WindowShouldClose(void);                             | raylib\Window::shouldClose() ||
+| RLAPI void CloseWindow(void);                                   | raylib\Window::close() ||
+| RLAPI bool IsWindowReady(void);                                 | raylib\Window::isReady() ||
+| RLAPI bool IsWindowMinimized(void);                             | raylib\Window::isMinimized() ||
+| RLAPI bool IsWindowResized(void);                               | TODO
+| RLAPI bool IsWindowHidden(void);                                | TODO
+| RLAPI bool IsWindowFullscreen(void);                            | TODO
+| RLAPI void UnhideWindow(void);                                  | TODO
+| RLAPI void HideWindow(void);                                    | TODO
+| RLAPI void ToggleFullscreen(void);                              | raylib\Window::toggleFullscreen() ||
+| RLAPI void SetWindowIcon(Image image);                          | raylib\Window::setIcon(Image $image) ||
+| RLAPI void SetWindowTitle(const char *title);                   | raylib\Window::setTitle(string $title) ||
+| RLAPI void SetWindowPosition(int x, int y);                     | raylib\Window::setPosition(int $x, int $y) ||
+| RLAPI void SetWindowMonitor(int monitor);                       | raylib\Window::setMonitor(int $monitor) ||
+| RLAPI void SetWindowMinSize(int width, int height);             | raylib\Window::setMinSize(int $width, int $height) ||
+| RLAPI void SetWindowSize(int width, int height);                | raylib\Window::setSize(int $width, int $height) ||
+| RLAPI void *GetWindowHandle(void);                              | TODO
+| RLAPI int GetScreenWidth(void);                                 | raylib\Window::getWidth() : int ||
+| RLAPI int GetScreenHeight(void);                                | raylib\Window::getHeight() : int ||
+| RLAPI int GetMonitorCount(void);                                | TODO
+| RLAPI int GetMonitorWidth(int monitor);                         | TODO
+| RLAPI int GetMonitorHeight(int monitor);                        | TODO
+| RLAPI int GetMonitorPhysicalWidth(int monitor);                 | TODO
+| RLAPI int GetMonitorPhysicalHeight(int monitor);                | TODO
+| RLAPI Vector2 GetWindowPosition(void);                          | TODO
+| RLAPI const char *GetMonitorName(int monitor);                  | TODO
+| RLAPI const char *GetClipboardText(void);                       | TODO
+| RLAPI void SetClipboardText(const char *text);                  | TODO
 
 ###  Cursor-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void ShowCursor(void);                                      | raylib\Cursor::show() ||
-| void HideCursor(void);                                      | raylib\Cursor::show() ||
-| bool IsCursorHidden(void);                                  | raylib\Cursor::isHidden() ||
-| void EnableCursor(void);                                    | raylib\Cursor::enable() ||
-| void DisableCursor(void);                                   | raylib\Cursor::disable() ||
+| RLAPI void ShowCursor(void);                                      | raylib\Cursor::show() ||
+| RLAPI void HideCursor(void);                                      | raylib\Cursor::show() ||
+| RLAPI bool IsCursorHidden(void);                                  | raylib\Cursor::isHidden() ||
+| RLAPI void EnableCursor(void);                                    | raylib\Cursor::enable() ||
+| RLAPI void DisableCursor(void);                                   | raylib\Cursor::disable() ||
 
 ###  Drawing-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void ClearBackground(Color color);                          | raylib\Draw::clearBackground(array $color); ||            
-| void BeginDrawing(void);                                    | raylib\Draw::begin(void); ||                      
-| void EndDrawing(void);                                      | raylib\Draw::end(void); ||                        
-| void BeginMode2D(Camera2D camera3d);                          | raylib\Draw::beginMode2d(Camera2D $camera3d); ||
-| void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
-| void BeginMode3D(Camera camera3d);                            | raylib\Draw::beginMode3d(Camera camera3d); ||
-| void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
-| void BeginTextureMode(RenderTexture2D target);              | raylib\Draw::beginTextureMode(RenderTexture2D $target); ||
-| void EndTextureMode(void);                                  | raylib\Draw::endTextureMode(void); ||                    
+| RLAPI void ClearBackground(Color color);                          | raylib\Draw::clearBackground(array $color); ||            
+| RLAPI void BeginDrawing(void);                                    | raylib\Draw::begin(void); ||                      
+| RLAPI void EndDrawing(void);                                      | raylib\Draw::end(void); ||                        
+| RLAPI void BeginMode2D(Camera2D camera3d);                        | raylib\Draw::beginMode2d(Camera2D $camera3d); ||
+| RLAPI void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
+| RLAPI void BeginMode3D(Camera camera3d);                          | raylib\Draw::beginMode3d(Camera camera3d); ||
+| RLAPI void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
+| RLAPI void BeginTextureMode(RenderTexture2D target);              | raylib\Draw::beginTextureMode(RenderTexture2D $target); ||
+| RLAPI void EndTextureMode(void);                                  | raylib\Draw::endTextureMode(void); ||                    
+| RLAPI void BeginScissorMode(int x, int y, int width, int height); | TODO
+| RLAPI void EndScissorMode(void);                                  | TODO
 
 ###  Screen-space-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Ray GetMouseRay(Vector2 mousePosition, Camera camera3d);      | TODO ||
-| Vector2 GetWorldToScreen(Vector3 position, Camera camera3d);  | TODO ||
-| Matrix GetCameraMatrix(Camera camera3d);                      | TODO ||
+| RLAPI Ray GetMouseRay(Vector2 mousePosition, Camera camera);                              | TODO ||
+| RLAPI Matrix GetCameraMatrix(Camera camera);                                              | TODO ||
+| RLAPI Matrix GetCameraMatrix2D(Camera2D camera);                                          | TODO ||
+| RLAPI Vector2 GetWorldToScreen(Vector3 position, Camera camera);                          | TODO ||
+| RLAPI Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height); | TODO ||
+| RLAPI Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera);                      | TODO ||
+| RLAPI Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);                      | TODO ||
 
 ###  Timming-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void SetTargetFPS(int fps);                                 | raylib\Timming::setTargetFPS(int $fps) ||
-| int GetFPS(void);                                           | raylib\Timming::getFPS() : int || 
-| float GetFrameTime(void);                                   | raylib\Timming::getFrameTime() : float ||
-| double GetTime(void);                                       | raylib\Timming::getTime() : float ||
+| RLAPI void SetTargetFPS(int fps);  | raylib\Timming::setTargetFPS(int $fps) ||
+| RLAPI int GetFPS(void);            | raylib\Timming::getFPS() : int || 
+| RLAPI float GetFrameTime(void);    | raylib\Timming::getFrameTime() : float ||
+| RLAPI double GetTime(void);        | raylib\Timming::getTime() : float ||
 
 ###  Color-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| float *ColorToFloat(Color color);                           | TODO ||
-| int ColorToInt(Color color);                                | TODO ||
-| Vector3 ColorToHSV(Color color);                            | TODO ||
-| Color GetColor(int hexValue);                               | TODO ||
-| Color Fade(Color color, float alpha);                       | TODO ||
+| RLAPI int ColorToInt(Color color);                                | TODO ||
+| RLAPI Vector4 ColorNormalize(Color color);                        | TODO ||
+| RLAPI Color ColorFromNormalized(Vector4 normalized);              | TODO ||
+| RLAPI Vector3 ColorToHSV(Color color);                            | TODO ||
+| RLAPI Color ColorFromHSV(Vector3 hsv);                            | TODO ||
+| RLAPI Color GetColor(int hexValue);                               | TODO ||
+| RLAPI Color Fade(Color color, float alpha);                       | raylib\Color->fade(float $alpha) | This does not return a new color at this time |
 
 ###  Misc. functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void SetConfigFlags(unsigned char flags);                   | raylib\setConfigFlags(int flags) ||
-| void SetTraceLog(unsigned char types);                      | TODO ||
-| void TraceLog(int logType, const char *text, ...);          | TODO ||
-| void TakeScreenshot(const char *fileName);                  | TODO ||
-| int GetRandomValue(int min, int max);                       | TODO ||
+| RLAPI void SetConfigFlags(unsigned int flags);                    | raylib\setConfigFlags(int flags) ||
+| RLAPI void SetTraceLogLevel(int logType);                         | TODO ||
+| RLAPI void SetTraceLogExit(int logType);                          | TODO ||
+| RLAPI void SetTraceLogCallback(TraceLogCallback callback);        | TODO ||
+| RLAPI void TraceLog(int logType, const char *text, ...);          | TODO ||
+| RLAPI void TakeScreenshot(const char *fileName);                  | TODO ||
+| RLAPI int GetRandomValue(int min, int max);                       | TODO ||
 
 ###  Files management functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool IsFileExtension(const char *fileName, const char *ext); | N/A | May implement, but really can be done in PHP |
-| const char *GetExtension(const char *fileName);              | N/A | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
-| const char *GetFileName(const char *filePath);               | N/A | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
-| const char *GetDirectoryPath(const char *fileName);          | N/A | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
-| const char *GetWorkingDirectory(void);                       | N/A | See getcwd() |
-| bool ChangeDirectory(const char *dir);                       | N/A | See chdir() |
-| bool IsFileDropped(void);                                    | TODO ||
-| char **GetDroppedFiles(int *count);                          | TODO ||
-| void ClearDroppedFiles(void);                                | TODO ||
+| RLAPI unsigned char *LoadFileData(const char *fileName, int *bytesRead);     | TODO | see file_get_contents() |
+| RLAPI void SaveFileData(const char *fileName, void *data, int bytesToWrite); | TODO | see file_get_contents() |
+| RLAPI char *LoadFileText(const char *fileName);                    | TODO | see file_get_contents() |
+| RLAPI void SaveFileText(const char *fileName, char *text);         | TODO | see file_get_contents() |
+| RLAPI bool FileExists(const char *fileName);                       | TODO | see file_exists() |
+| RLAPI bool IsFileExtension(const char *fileName, const char *ext); | TODO | May implement, but really can be done in PHP |
+| RLAPI bool DirectoryExists(const char *dirPath);                   | TODO | see is_dir() |
+| RLAPI const char *GetExtension(const char *fileName);              | TODO | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
+| RLAPI const char *GetFileName(const char *filePath);               | TODO | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
+| RLAPI const char *GetFileNameWithoutExt(const char *filePath);     | TODO | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
+| RLAPI const char *GetDirectoryPath(const char *filePath);          | TODO | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
+| RLAPI const char *GetPrevDirectoryPath(const char *dirPath);       | TODO | see realpath() |
+| RLAPI const char *GetWorkingDirectory(void);                       | TODO | http://php.net/manual/en/function.pathinfo.php or SplFileInfo |
+| RLAPI char **GetDirectoryFiles(const char *dirPath, int *count);   | TODO | see scandir() |
+| RLAPI void ClearDirectoryFiles(void);                              | TODO ||
+| RLAPI bool ChangeDirectory(const char *dir);                       | TODO | see chdir() |
+| RLAPI bool IsFileDropped(void);                                    | TODO ||
+| RLAPI char **GetDroppedFiles(int *count);                          | TODO ||
+| RLAPI void ClearDroppedFiles(void);                                | TODO ||
+| RLAPI long GetFileModTime(const char *fileName);                   | TODO | see filemtime() |
+| RLAPI unsigned char *CompressData(unsigned char *data, int dataLength, int *compDataLength);        | TODO ||
+| RLAPI unsigned char *DecompressData(unsigned char *compData, int compDataLength, int *dataLength);  | TODO ||
+
+
 
 ###  Persistent storage management
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void StorageSaveValue(int position, int value);             | N/A | May implement, See pack() |
-| int StorageLoadValue(int position);                         | N/A | May implement, See unpack() |
+| RLAPI void StorageSaveValue(int position, int value);             | N/A | May implement, See pack() |
+| RLAPI int StorageLoadValue(int position);                         | N/A | May implement, See unpack() |
 
 ###  Input Handling Functions (Module: core)
 
 ####  Input-related functions: keyboard
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool IsKeyPressed(int key);                             | raylib\Key::isPressed(int key) : bool ||
-| bool IsKeyDown(int key);                                | raylib\Key::isDown(int key) : bool ||
-| bool IsKeyReleased(int key);                            | raylib\Key::isReleased(int key) : bool ||
-| bool IsKeyUp(int key);                                  | raylib\Key::isUp(int key) : bool ||
-| int GetKeyPressed(void);                                | raylib\Key::getPressed(void) : int ||
-| void SetExitKey(int key);                               | raylib\Key::setExit(int $key) | This may move to Window class |
+| RLAPI bool IsKeyPressed(int key);                             | raylib\Key::isPressed(int key) : bool ||
+| RLAPI bool IsKeyDown(int key);                                | raylib\Key::isDown(int key) : bool ||
+| RLAPI bool IsKeyReleased(int key);                            | raylib\Key::isReleased(int key) : bool ||
+| RLAPI bool IsKeyUp(int key);                                  | raylib\Key::isUp(int key) : bool ||
+| RLAPI void SetExitKey(int key);                               | raylib\Key::setExit(int $key) | This may move to Window class |
+| RLAPI int GetKeyPressed(void);                                | raylib\Key::getPressed(void) : int ||
 
 ####  Input-related functions: gamepads
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool IsGamepadAvailable(int gamepad);                   | TODO ||
-| bool IsGamepadName(int gamepad, const char *name);      | TODO ||
-| const char *GetGamepadName(int gamepad);                | TODO ||
-| bool IsGamepadButtonPressed(int gamepad, int button);   | TODO ||
-| bool IsGamepadButtonDown(int gamepad, int button);      | TODO ||
-| bool IsGamepadButtonReleased(int gamepad, int button);  | TODO ||
-| bool IsGamepadButtonUp(int gamepad, int button);        | TODO ||
-| int GetGamepadButtonPressed(void);                      | TODO ||
-| int GetGamepadAxisCount(int gamepad);                   | TODO ||
-| float GetGamepadAxisMovement(int gamepad, int axis);    | TODO ||
+| RLAPI bool IsGamepadAvailable(int gamepad);                   | raylib\Input\Gamepad::isAvailable(int $gamepad) ||
+| RLAPI bool IsGamepadName(int gamepad, const char *name);      | raylib\Input\Gamepad::isName(int $gamepad, string $name) | probably better off using stristr() |
+| RLAPI const char *GetGamepadName(int gamepad);                | raylib\Input\Gamepad::getName(int $gamepad) : string ||
+| RLAPI bool IsGamepadButtonPressed(int gamepad, int button);   | raylib\Input\Gamepad::isButtonPressed(int $gamepad, int $button) : bool ||
+| RLAPI bool IsGamepadButtonDown(int gamepad, int button);      | raylib\Input\Gamepad::isButtonDown(int $gamepad, int $button) : bool ||
+| RLAPI bool IsGamepadButtonReleased(int gamepad, int button);  | raylib\Input\Gamepad::isButtonReleased(int $gamepad, int $button) : bool ||
+| RLAPI bool IsGamepadButtonUp(int gamepad, int button);        | raylib\Input\Gamepad::isButtonUp(int $gamepad, int $button) : bool ||
+| RLAPI int GetGamepadButtonPressed(void);                      | raylib\Input\Gamepad::getButtonPressed() : int ||
+| RLAPI int GetGamepadAxisCount(int gamepad);                   | raylib\Input\Gamepad::getAxisCount(int $gamepad) : int ||
+| RLAPI float GetGamepadAxisMovement(int gamepad, int axis);    | raylib\Input\Gamepad::getAxisMovement(int $gamepad, int $axis) : float ||
 
 ####  Input-related functions: mouse
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool IsMouseButtonPressed(int button);                  | TODO ||
-| bool IsMouseButtonDown(int button);                     | TODO ||
-| bool IsMouseButtonReleased(int button);                 | TODO ||
-| bool IsMouseButtonUp(int button);                       | TODO ||
-| int GetMouseX(void);                                    | TODO ||
-| int GetMouseY(void);                                    | TODO ||
-| Vector2 GetMousePosition(void);                         | TODO ||
-| void SetMousePosition(Vector2 position);                | TODO ||
-| void SetMouseScale(float scale);                        | TODO ||
-| int GetMouseWheelMove(void);                            | TODO ||
+| RLAPI bool IsMouseButtonPressed(int button);                  | raylib\Input\Mouse::isButtonPressed(int $button) : bool ||
+| RLAPI bool IsMouseButtonDown(int button);                     | raylib\Input\Mouse::isButtonDown(int $button) : bool ||
+| RLAPI bool IsMouseButtonReleased(int button);                 | raylib\Input\Mouse::isButtonReleased(int $button) : bool ||
+| RLAPI bool IsMouseButtonUp(int button);                       | raylib\Input\Mouse::isButtonUp(int $button) : bool ||
+| RLAPI int GetMouseX(void);                                    | raylib\Input\Mouse::getX() : int ||
+| RLAPI int GetMouseY(void);                                    | raylib\Input\Mouse::getY() : int ||
+| RLAPI Vector2 GetMousePosition(void);                         | raylib\Input\Mouse::getPosition() : Vector2 ||
+| RLAPI void SetMousePosition(Vector2 position);                | raylib\Input\Mouse::setPosition(Vector2 $position) ||
+| RLAPI void SetMouseOffset(int offsetX, int offsetY);          | raylib\Input\Mouse::setOffset(int $offsetX, int $offsetY) ||
+| RLAPI void SetMouseScale(float scaleX, float scaleY);         | raylib\Input\Mouse::setScale(float $scaleX, float $scaleY) ||
+| RLAPI int GetMouseWheelMove(void);                            | raylib\Input\Mouse::getWheelMove() : int ||
 
 ####  Input-related functions: touch
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| int GetTouchX(void);                                    | TODO ||
-| int GetTouchY(void);                                    | TODO ||
-| Vector2 GetTouchPosition(int index);                    | TODO ||
+| RLAPI int GetTouchX(void);                                    | TODO ||
+| RLAPI int GetTouchY(void);                                    | TODO ||
+| RLAPI Vector2 GetTouchPosition(int index);                    | TODO ||
 
 ###  Gestures and Touch Handling Functions (Module: gestures)
-| void SetGesturesEnabled(unsigned int gestureFlags);     | TODO ||
-| bool IsGestureDetected(int gesture);                    | TODO ||
-| int GetGestureDetected(void);                           | TODO ||
-| int GetTouchPointsCount(void);                          | TODO ||
-| float GetGestureHoldDuration(void);                     | TODO ||
-| Vector2 GetGestureDragVector(void);                     | TODO ||
-| float GetGestureDragAngle(void);                        | TODO ||
-| Vector2 GetGesturePinchVector(void);                    | TODO ||
-| float GetGesturePinchAngle(void);                       | TODO ||
+| RLAPI void SetGesturesEnabled(unsigned int gestureFlags);     | TODO ||
+| RLAPI bool IsGestureDetected(int gesture);                    | TODO ||
+| RLAPI int GetGestureDetected(void);                           | TODO ||
+| RLAPI int GetTouchPointsCount(void);                          | TODO ||
+| RLAPI float GetGestureHoldDuration(void);                     | TODO ||
+| RLAPI Vector2 GetGestureDragVector(void);                     | TODO ||
+| RLAPI float GetGestureDragAngle(void);                        | TODO ||
+| RLAPI Vector2 GetGesturePinchVector(void);                    | TODO ||
+| RLAPI float GetGesturePinchAngle(void);                       | TODO ||
 
 ###  Camera System Functions (Module: camera3d)
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void SetCameraMode(Camera camera3d, int mode);                | TODO ||
-| void UpdateCamera(Camera *camera3d);                          | TODO ||
-| void SetCameraPanControl(int panKey);                       | TODO ||
-| void SetCameraAltControl(int altKey);                       | TODO ||
-| void SetCameraSmoothZoomControl(int szKey);                 | TODO ||
-| void SetCameraMoveControls(int frontKey, int backKey, int rightKey, int leftKey, int upKey, int downKey);  | TODO ||  
+| RLAPI void SetCameraMode(Camera camera, int mode);                | TODO ||
+| RLAPI void UpdateCamera(Camera *camera);                          | TODO ||
+| RLAPI void SetCameraPanControl(int panKey);                       | TODO ||
+| RLAPI void SetCameraAltControl(int altKey);                       | TODO ||
+| RLAPI void SetCameraSmoothZoomControl(int szKey);                 | TODO ||
+| RLAPI void SetCameraMoveControls(int frontKey, int backKey, int rightKey, int leftKey, int upKey, int downKey); | TODO ||
+
 
 ###  Basic Shapes Drawing Functions (Module: shapes)
 
 ####  Basic shapes drawing functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-|void DrawPixel(int posX, int posY, Color color);                                                   | raylib\Draw::pixel(int $posX, int $posY, array $color) | |
-|void DrawPixelV(Vector2 position, Color color);                                                    | raylib\Draw::pixelV(array $position, array $color) | |
-|void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);                | raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, array $color) | |
-|void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);                                     | raylib\Draw::lineV(array $startPos, array $endPos, array $color) | |
-|void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);                       | raylib\Draw::lineEx(array $startPos, array $endPos, float $thick, array $color) | |
-|void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);                   | raylib\Draw::lineBezier(array $startPos, array $endPos, float $thick, array $color) | |
-|void DrawCircle(int centerX, int centerY, float radius, Color color);                              | raylib\Draw::circle(int $centerX, int $centerY, float $radius, array $color) | |
-|void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);       | raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, array $color1, array $color2) | |
-|void DrawCircleV(Vector2 center, float radius, Color color);                                       | raylib\Draw::circleV(array $center, float $radius, array $color) | |
-|void DrawCircleLines(int centerX, int centerY, float radius, Color color);                         | raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, array $color) | |
-|void DrawRectangle(int posX, int posY, int width, int height, Color color);                        | raylib\Draw::rectangle(int $posX, int $posY, int $width, int $height, array $color) | |
-|void DrawRectangleV(Vector2 position, Vector2 size, Color color);                                  | raylib\Draw::rectangleV(array $position, array $size, array $color) | |
-|void DrawRectangleRec(Rectangle rec, Color color);                                                 | raylib\Draw::rectangleRec(array $rec, array $color) | |
-|void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);                 | raylib\Draw::rectanglePro(array $rec, array $origin, float $rotation, array $color) | |
-|void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);| raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, array $color1, array $color2); | |
-|void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);| raylib\Draw::rectangleGradientH(int $posX, int $posY, int $width, int $height, array $color1, array $color2); | |
-|void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       | raylib\Draw::rectangleGradientEx(array $rec, array $col1, array $col2, array $col3, array $col4) | |
-|void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   | raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, array $color) | |
-|void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              | raylib\Draw::rectangleLinesEx(array $rec, int $lineThick, array $color) | |
-|void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                | raylib\Draw::triangle(array $v1, array $v2, array $v3, array $color) | |
-|void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           | raylib\Draw::triangleLines(array $v1, array $v2, array $v3, array $color) | |
-|void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | raylib\Draw::poly(array $center, int $sides, float $radius, float $rotation, array $color) | |
-|void DrawPolyEx(Vector2 *points, int numPoints, Color color);                                      | raylib\Draw::polyEx(array $points, int $numPoints, array $color) | |
-|void DrawPolyExLines(Vector2 *points, int numPoints, Color color);                                 | raylib\Draw::polyExLines(array $points, int $numPoints, array $color) | |
+| RLAPI void DrawPixel(int posX, int posY, Color color);                                                   | raylib\Draw::pixel(int $posX, int $posY, array $color) | |
+| RLAPI void DrawPixelV(Vector2 position, Color color);                                                    | raylib\Draw::pixelV(array $position, array $color) | |
+| RLAPI void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);                | raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, array $color) | |
+| RLAPI void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);                                     | raylib\Draw::lineV(array $startPos, array $endPos, array $color) | |
+| RLAPI void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);                       | raylib\Draw::lineEx(array $startPos, array $endPos, float $thick, array $color) | |
+| RLAPI void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);                   | raylib\Draw::lineBezier(array $startPos, array $endPos, float $thick, array $color) | |
+| RLAPI void DrawCircle(int centerX, int centerY, float radius, Color color);                              | raylib\Draw::circle(int $centerX, int $centerY, float $radius, array $color) | |
+| RLAPI void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);      | TODO ||
+| RLAPI void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color); | TODO ||
+| RLAPI void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);       | raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, array $color1, array $color2) | |
+| RLAPI void DrawCircleV(Vector2 center, float radius, Color color);                                       | raylib\Draw::circleV(array $center, float $radius, array $color) | |
+| RLAPI void DrawCircleLines(int centerX, int centerY, float radius, Color color);                         | raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, array $color) | |
+| RLAPI void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);              | TODO ||
+| RLAPI void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);         | TODO ||
+| RLAPI void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);      | TODO ||
+| RLAPI void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color); | TODO ||
+| RLAPI void DrawRectangle(int posX, int posY, int width, int height, Color color);                        | raylib\Draw::rectangle(int $posX, int $posY, int $width, int $height, array $color) | |
+| RLAPI void DrawRectangleV(Vector2 position, Vector2 size, Color color);                                  | raylib\Draw::rectangleV(array $position, array $size, array $color) | |
+| RLAPI void DrawRectangleRec(Rectangle rec, Color color);                                                 | raylib\Draw::rectangleRec(array $rec, array $color) | |
+| RLAPI void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);                 | raylib\Draw::rectanglePro(array $rec, array $origin, float $rotation, array $color) | |
+| RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);| raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, array $color1, array $color2); | |
+| RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);| TODO ||
+| RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       | TODO ||
+| RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   | raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, array $color) | |
+| RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              | TODO | |
+| RLAPI void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);              | TODO ||
+| RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color); | TODO ||
+| RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                | raylib\Draw::triangle(array $v1, array $v2, array $v3, array $color) | |
+| RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           | TODO | |
+| RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);                                 | TODO ||
+| RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);                             | TODO ||
+| RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||
+| RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | TODO ||
+| RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||
+| RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | TODO ||
 
 ####  Basic shapes collision detection functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);                                           | raylib\Collision\checkRecs(Rectangle $rec1, Rectangle $rec2) ||
-| bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);        | raylib\Collision\checkCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) ||
-| bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);                         | raylib\Collision\checkCircleRec(Vector2 center, float radius, Rectangle rec) ||
-| Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         | raylib\Collision\getRec(Rectangle rec1, Rectangle rec2) ||
-| bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         | raylib\Collision\checkPointRec(Vector2 point, Rectangle rec) ||
-| bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);                       | raylib\Collision\checkPointCircle(Vector2 point, Vector2 center, float radius) ||
-| bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);               | raylib\Collision\checkPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3) ||
+| RLAPI bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);                                           | raylib\Collision\checkRecs(Rectangle $rec1, Rectangle $rec2) ||
+| RLAPI bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);        | raylib\Collision\checkCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) ||
+| RLAPI bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);                         | raylib\Collision\checkCircleRec(Vector2 center, float radius, Rectangle rec) ||
+| RLAPI Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         | raylib\Collision\getRec(Rectangle rec1, Rectangle rec2) ||
+| RLAPI bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         | raylib\Collision\checkPointRec(Vector2 point, Rectangle rec) ||
+| RLAPI bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);                       | raylib\Collision\checkPointCircle(Vector2 point, Vector2 center, float radius) ||
+| RLAPI bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);               | raylib\Collision\checkPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3) ||
 
 ## Texture Loading and Drawing Functions (Module: textures)
 
 ### Image/Texture2D data loading/unloading/saving functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Image LoadImage(const char *fileName);                                                             | new raylib\Image(string $filename) ||
-| Image LoadImageEx(Color *pixels, int width, int height);                                           | TODO ||
-| Image LoadImagePro(void *data, int width, int height, int format);                                 | TODO ||
-| Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);       | TODO ||
-| void ExportImage(const char *fileName, Image image);                                               | TODO ||
-| Texture2D LoadTexture(const char *fileName);                                                       | new raylib\Texture(string $fileName) ||
-| Texture2D LoadTextureFromImage(Image image);                                                       | TODO ||
-| RenderTexture2D LoadRenderTexture(int width, int height);                                          | new raylib\RenderTexture(int $width, int $height) ||
-| void UnloadImage(Image image);                                                                     | N/A | Use unset() on class |
-| void UnloadTexture(Texture2D texture);                                                             | N/A | Use unset() on class |
-| void UnloadRenderTexture(RenderTexture2D target);                                                  | N/A | Use unset() on class |
-| Color *GetImageData(Image image);                                                                  | TODO ||
-| int GetPixelDataSize(int width, int height, int format);                                           | TODO ||
-| Image GetTextureData(Texture2D texture);                                                           | TODO ||
-| void UpdateTexture(Texture2D texture, const void *pixels);                                         | TODO ||
+| RLAPI Image LoadImage(const char *fileName);                                                             | new raylib\Image(string $filename) ||
+| RLAPI Image LoadImageEx(Color *pixels, int width, int height);                                           | TODO ||
+| RLAPI Image LoadImagePro(void *data, int width, int height, int format);                                 | TODO ||
+| RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);       | TODO ||
+| RLAPI void ExportImage(const char *fileName, Image image);                                               | TODO ||
+| RLAPI void ExportImageAsCode(Image image, const char *fileName);                                         | TODO ||
+| RLAPI Texture2D LoadTexture(const char *fileName);                                                       | new raylib\Texture(string $fileName) ||
+| RLAPI Texture2D LoadTextureFromImage(Image image);                                                       | raylib\Image->toTexture() : Texture ||
+| RLAPI TextureCubemap LoadTextureCubemap(Image image, int layoutType);                                    | TODO ||
+| RLAPI RenderTexture2D LoadRenderTexture(int width, int height);                                          | new raylib\RenderTexture(int $width, int $height) ||
+| RLAPI void UnloadImage(Image image);                                                                     | N/A | Use unset() on class |
+| RLAPI void UnloadTexture(Texture2D texture);                                                             | N/A | Use unset() on class |
+| RLAPI void UnloadRenderTexture(RenderTexture2D target);                                                  | N/A | Use unset() on class |
+| RLAPI Color *GetImageData(Image image);                                                                  | TODO ||
+| RLAPI Vector4 *GetImageDataNormalized(Image image);                                                      | TODO ||
+| RLAPI Rectangle GetImageAlphaBorder(Image image, float threshold);                                       | TODO ||
+| RLAPI int GetPixelDataSize(int width, int height, int format);                                           | TODO ||
+| RLAPI Image GetTextureData(Texture2D texture);                                                           | TODO ||
+| RLAPI Image GetScreenData(void);                                                                         | TODO ||
+| RLAPI void UpdateTexture(Texture2D texture, const void *pixels);                                         | TODO ||
 
 
 ### Image manipulation functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Image ImageCopy(Image image);                                                                                                    | raylib\Image::copy(array $image) : Image ||
-| void ImageToPOT(Image *image, Color fillColor);                                                                                  | raylib\Image::toPOT(array $image, array $fillColor) ||
-| void ImageFormat(Image *image, int newFormat);                                                                                   | raylib\Image::format(array $image, int $newFormat) ||
-| void ImageAlphaMask(Image *image, Image alphaMask);                                                                              | raylib\Image::alphaMask(array $image, array $alphaMask) ||
-| void ImageAlphaClear(Image *image, Color color, float threshold);                                                                | raylib\Image::alphaClear(array $image, array $color, float $threshold) ||
-| void ImageAlphaCrop(Image *image, float threshold);                                                                              | raylib\Image::alphaCrop(array $image, float $threshold) ||
-| void ImageAlphaPremultiply(Image *image);                                                                                        | raylib\Image::alphaPremultiply(array $image) ||
-| void ImageCrop(Image *image, Rectangle crop);                                                                                    | raylib\Image::crop(array $image, array $crop) ||
-| void ImageResize(Image *image, int newWidth, int newHeight);                                                                     | raylib\Image::resize(array $image, int $newWidth, int $newHeight) ||
-| void ImageResizeNN(Image *image,int newWidth,int newHeight);                                                                     | raylib\Image::resizeNN(array $image,int $newWidth,int $newHeight) ||
-| void ImageMipmaps(Image *image);                                                                                                 | raylib\Image::mipmaps(array $image) ||
-| void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);                                                          | raylib\Image::dither(array $image, int $rBpp, int $gBpp, int $bBpp, int $aBpp) ||
-| Image ImageText(const char *text, int fontSize, Color color);                                                                    | raylib\Image::text(string $text, int $fontSize, array $color) : Image ||
-| Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | raylib\Image::textEx(SpriteFont $font, string $text, float $fontSize, int $spacing, array $tint) : Image ||
-| void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                       | raylib\Image::draw(array $dst, array $src, array $srcRec, array $dstRec) ||
-| void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | raylib\Image::drawRectangle(array $dst, array $position, array $rec, array $color) ||
-| void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | raylib\Image::drawText(array $dst, array $position, string $text, int $fontSize, array $color) ||
-| void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, int spacing, Color color); | raylib\Image::drawTextEx(array $dst, array $position, SpriteFont $font, string $text, float $fontSize, int $spacing, array $color) ||
-| void ImageFlipVertical(Image *image);                                                                                            | raylib\Image::flipVertical(array $image) ||
-| void ImageFlipHorizontal(Image *image);                                                                                          | raylib\Image::flipHorizontal(array $image) ||
-| void ImageColorTint(Image *image, Color color);                                                                                  | raylib\Image::colorTint(array $image, array $color) ||
-| void ImageColorInvert(Image *image);                                                                                             | raylib\Image::colorInvert(array $image) ||
-| void ImageColorGrayscale(Image *image);                                                                                          | raylib\Image::colorGrayscale(array $image) ||
-| void ImageColorContrast(Image *image, float contrast);                                                                           | raylib\Image::colorContrast(array $image, float $contrast) ||
-| void ImageColorBrightness(Image *image, int brightness);                                                                         | raylib\Image::colorBrightness(array $image, int $brightness) ||
+| RLAPI Image ImageCopy(Image image);                                                                                                    | raylib\Image::copy(array $image) : Image ||
+| RLAPI Image ImageFromImage(Image image, Rectangle rec);                                                                                | TODO ||
+| RLAPI void ImageToPOT(Image *image, Color fillColor);                                                                                  | raylib\Image::toPot(array $image, array $fillColor) ||
+| RLAPI void ImageFormat(Image *image, int newFormat);                                                                                   | raylib\Image::format(array $image, int $newFormat) ||
+| RLAPI void ImageAlphaMask(Image *image, Image alphaMask);                                                                              | TODO ||
+| RLAPI void ImageAlphaClear(Image *image, Color color, float threshold);                                                                | TODO ||
+| RLAPI void ImageAlphaCrop(Image *image, float threshold);                                                                              | TODO ||
+| RLAPI void ImageAlphaPremultiply(Image *image);                                                                                        | TODO ||
+| RLAPI void ImageCrop(Image *image, Rectangle crop);                                                                                    | TODO ||
+| RLAPI void ImageResize(Image *image, int newWidth, int newHeight);                                                                     | TODO ||
+| RLAPI void ImageResizeNN(Image *image,int newWidth,int newHeight);                                                                     | TODO ||
+| RLAPI void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color color);                        | TODO ||
+| RLAPI void ImageMipmaps(Image *image);                                                                                                 | TODO ||
+| RLAPI void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);                                                          | TODO ||
+| RLAPI Color *ImageExtractPalette(Image image, int maxPaletteSize, int *extractCount);                                                  | TODO ||
+| RLAPI Image ImageText(const char *text, int fontSize, Color color);                                                                    | TODO ||
+| RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | TODO ||
+| RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                       | TODO ||
+| RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | TODO ||
+| RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | TODO ||
+| RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, int spacing, Color color); | TODO ||
+| RLAPI void ImageFlipVertical(Image *image);                                                                                            | TODO ||
+| RLAPI void ImageFlipHorizontal(Image *image);                                                                                          | TODO ||
+| RLAPI void ImageColorTint(Image *image, Color color);                                                                                  | TODO ||
+| RLAPI void ImageColorInvert(Image *image);                                                                                             | TODO ||
+| RLAPI void ImageColorGrayscale(Image *image);                                                                                          | TODO ||
+| RLAPI void ImageColorContrast(Image *image, float contrast);                                                                           | TODO ||
+| RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                         | TODO ||
 
 ### Image generation functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Image GenImageColor(int width, int height, Color color);                                           // Generate image: plain color
-| Image GenImageGradientV(int width, int height, Color top, Color bottom);                           // Generate image: vertical gradient
-| Image GenImageGradientH(int width, int height, Color left, Color right);                           // Generate image: horizontal gradient
-| Image GenImageGradientRadial(int width, int height, float density, Color inner, Color outer);      // Generate image: radial gradient
-| Image GenImageChecked(int width, int height, int checksX, int checksY, Color col1, Color col2);    // Generate image: checked
-| Image GenImageWhiteNoise(int width, int height, float factor);                                     // Generate image: white noise
-| Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale);           // Generate image: perlin noise
-| Image GenImageCellular(int width, int height, int tileSize);                                       // Generate image: cellular algorithm. Bigger tileSize means bigger cells
+| RLAPI Image GenImageColor(int width, int height, Color color);                                           | TODO ||
+| RLAPI Image GenImageGradientV(int width, int height, Color top, Color bottom);                           | TODO ||
+| RLAPI Image GenImageGradientH(int width, int height, Color left, Color right);                           | TODO ||
+| RLAPI Image GenImageGradientRadial(int width, int height, float density, Color inner, Color outer);      | TODO ||
+| RLAPI Image GenImageChecked(int width, int height, int checksX, int checksY, Color col1, Color col2);    | TODO ||
+| RLAPI Image GenImageWhiteNoise(int width, int height, float factor);                                     | TODO ||
+| RLAPI Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale);           | TODO ||
+| RLAPI Image GenImageCellular(int width, int height, int tileSize);                                       | TODO ||
+
 
 ### Texture2D configuration functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-RLAPI void GenTextureMipmaps(Texture2D *texture);                                                        // Generate GPU mipmaps for a texture
-RLAPI void SetTextureFilter(Texture2D texture, int filterMode);                                          // Set texture scaling filter mode
-RLAPI void SetTextureWrap(Texture2D texture, int wrapMode);                                              // Set texture wrapping mode
+| RLAPI void GenTextureMipmaps(Texture2D *texture);                                                        | raylib\Texture->genMipmaps() ||
+| RLAPI void SetTextureFilter(Texture2D texture, int filterMode);                                          | raylib\Texture->setFilter(int $filterMode) ||
+| RLAPI void SetTextureWrap(Texture2D texture, int wrapMode);                                              | raylib\Texture->setWrap(int $wrapMode) ||
 
 ### Texture2D drawing functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-RLAPI void DrawTexture(Texture2D texture, int posX, int posY, Color tint);                               // Draw a Texture2D
-RLAPI void DrawTextureV(Texture2D texture, Vector2 position, Color tint);                                // Draw a Texture2D with position defined as Vector2
-RLAPI void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);  // Draw a Texture2D with extended parameters
-RLAPI void DrawTextureRec(Texture2D texture, Rectangle sourceRec, Vector2 position, Color tint);         // Draw a part of a texture defined by a rectangle
-RLAPI void DrawTexturePro(Texture2D texture, Rectangle sourceRec, Rectangle destRec, Vector2 origin,     // Draw a part of a texture defined by a rectangle with 'pro' parameters
-                    float rotation, Color tint);
+| RLAPI void DrawTexture(Texture2D texture, int posX, int posY, Color tint);                               | raylib\Texture->draw() ||
+| RLAPI void DrawTextureV(Texture2D texture, Vector2 position, Color tint);                                | raylib\Texture->drawV() ||
+| RLAPI void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);  | raylib\Texture->drawEx() ||
+| RLAPI void DrawTextureRec(Texture2D texture, Rectangle sourceRec, Vector2 position, Color tint);         | raylib\Texture->drawRec() ||
+| RLAPI void DrawTexturePro(Texture2D texture, Rectangle sourceRec, Rectangle destRec, Vector2 origin,float rotation, Color tint); | raylib\Texture->drawPro(Rectangle $sourceRec, Rectangle $destRec, Vector2 $origin, float $rotation, Color $tint)  ||
 
-//------------------------------------------------------------------------------------
-// Font Loading and Text Drawing Functions (Module: text)
-//------------------------------------------------------------------------------------
+## Font Loading and Text Drawing Functions (Module: text)
 
-// SpriteFont loading/unloading functions
-RLAPI SpriteFont GetDefaultFont(void);                                                                   // Get the default SpriteFont
-RLAPI SpriteFont LoadSpriteFont(const char *fileName);                                                   // Load SpriteFont from file into GPU memory (VRAM)
-RLAPI SpriteFont LoadSpriteFontEx(const char *fileName, int fontSize, int charsCount, int *fontChars);   // Load SpriteFont from file with extended parameters
-RLAPI void UnloadSpriteFont(SpriteFont font);                                                            // Unload SpriteFont from GPU memory (VRAM)
+### Font loading/unloading functions
 
-// Text drawing functions
-RLAPI void DrawFPS(int posX, int posY);                                                                  // Shows current FPS
-RLAPI void DrawText(const char *text, int posX, int posY, int fontSize, Color color);                    // Draw text (using default font)
-RLAPI void DrawTextEx(SpriteFont font, const char* text, Vector2 position,                               // Draw text using SpriteFont and additional parameters
-                float fontSize, int spacing, Color tint);
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Font GetFontDefault(void);                                                            | TODO ||
+| RLAPI Font LoadFont(const char *fileName);                                                  | TODO ||
+| RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);  | TODO ||
+| RLAPI Font LoadFontFromImage(Image image, Color key, int firstChar);                        | TODO ||
+| RLAPI CharInfo *LoadFontData(const char *fileName, int fontSize, int *fontChars, int charsCount, int type); | TODO ||
+| RLAPI Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod); | TODO ||
+| RLAPI void UnloadFont(Font font);                                                           | TODO ||
 
-// Text misc. functions
-RLAPI int MeasureText(const char *text, int fontSize);                                                   // Measure string width for default font
-RLAPI Vector2 MeasureTextEx(SpriteFont font, const char *text, float fontSize, int spacing);             // Measure string size for SpriteFont
-RLAPI const char *FormatText(const char *text, ...);                                                     // Formatting of text with variables to 'embed'
-RLAPI const char *SubText(const char *text, int position, int length);                                   // Get a piece of a text string
-RLAPI int GetGlyphIndex(SpriteFont font, int character);                                                 // Returns index position for a unicode character on sprite font
+### Text drawing functions
 
-//------------------------------------------------------------------------------------
-// Basic 3d Shapes Drawing Functions (Module: models)
-//------------------------------------------------------------------------------------
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void DrawFPS(int posX, int posY);                                                     | raylib\Text\drawFps(int $posX, int $posY)
+| RLAPI void DrawText(const char *text, int posX, int posY, int fontSize, Color color);       | raylib\Text\draw(string $text, int $posX, int $posY, int $fontSize, Color $color)
+| RLAPI void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);                | TODO ||
+| RLAPI void DrawTextRec(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);   | TODO ||
+| RLAPI void DrawTextRecEx(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint); | TODO ||
+| RLAPI void DrawTextCodepoint(Font font, int codepoint, Vector2 position, float scale, Color tint);   | TODO ||
 
-// Basic geometric 3D shapes drawing functions
-RLAPI void DrawLine3D(Vector3 startPos, Vector3 endPos, Color color);                                    // Draw a line in 3D world space
-RLAPI void DrawCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, Color color); // Draw a circle in 3D world space
-RLAPI void DrawCube(Vector3 position, float width, float height, float length, Color color);             // Draw cube
-RLAPI void DrawCubeV(Vector3 position, Vector3 size, Color color);                                       // Draw cube (Vector version)
-RLAPI void DrawCubeWires(Vector3 position, float width, float height, float length, Color color);        // Draw cube wires
-RLAPI void DrawCubeTexture(Texture2D texture, Vector3 position, float width, float height, float length, Color color); // Draw cube textured
-RLAPI void DrawSphere(Vector3 centerPos, float radius, Color color);                                     // Draw sphere
-RLAPI void DrawSphereEx(Vector3 centerPos, float radius, int rings, int slices, Color color);            // Draw sphere with extended parameters
-RLAPI void DrawSphereWires(Vector3 centerPos, float radius, int rings, int slices, Color color);         // Draw sphere wires
-RLAPI void DrawCylinder(Vector3 position, float radiusTop, float radiusBottom, float height, int slices, Color color); // Draw a cylinder/cone
-RLAPI void DrawCylinderWires(Vector3 position, float radiusTop, float radiusBottom, float height, int slices, Color color); // Draw a cylinder/cone wires
-RLAPI void DrawPlane(Vector3 centerPos, Vector2 size, Color color);                                      // Draw a plane XZ
-RLAPI void DrawRay(Ray ray, Color color);                                                                // Draw a ray line
-RLAPI void DrawGrid(int slices, float spacing);                                                          // Draw a grid (centered at (0, 0, 0))
-RLAPI void DrawGizmo(Vector3 position);                                                                  // Draw simple gizmo
-//DrawTorus(), DrawTeapot() could be useful?
+### Text misc. functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI int MeasureText(const char *text, int fontSize);                                      | raylib\Text\measure(string $text, int $fontSize) ||
+| RLAPI Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);    | TODO ||
+| RLAPI int GetGlyphIndex(Font font, int codepoint);                                          | TODO ||
 
-//------------------------------------------------------------------------------------
-// Model 3d Loading and Drawing Functions (Module: models)
-//------------------------------------------------------------------------------------
+### Text strings management functions (no utf8 strings, only byte chars)
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI int TextCopy(char *dst, const char *src);                                             | TODO ||
+| RLAPI bool TextIsEqual(const char *text1, const char *text2);                               | TODO ||
+| RLAPI unsigned int TextLength(const char *text);                                            | TODO ||
+| RLAPI const char *TextFormat(const char *text, ...);                                        | TODO ||
+| RLAPI const char *TextSubtext(const char *text, int position, int length);                  | TODO ||
+| RLAPI char *TextReplace(char *text, const char *replace, const char *by);                   | TODO ||
+| RLAPI char *TextInsert(const char *text, const char *insert, int position);                 | TODO ||
+| RLAPI const char *TextJoin(const char **textList, int count, const char *delimiter);        | TODO ||
+| RLAPI const char **TextSplit(const char *text, char delimiter, int *count);                 | TODO ||
+| RLAPI void TextAppend(char *text, const char *append, int *position);                       | TODO ||
+| RLAPI int TextFindIndex(const char *text, const char *find);                                | TODO ||
+| RLAPI const char *TextToUpper(const char *text);                      | TODO ||
+| RLAPI const char *TextToLower(const char *text);                      | TODO ||
+| RLAPI const char *TextToPascal(const char *text);                     | TODO ||
+| RLAPI int TextToInteger(const char *text);                            | TODO ||
+| RLAPI char *TextToUtf8(int *codepoints, int length);                  | TODO ||
 
-// Model loading/unloading functions
-RLAPI Model LoadModel(const char *fileName);                                                            // Load model from files (mesh and material)
-RLAPI Model LoadModelFromMesh(Mesh mesh);                                                               // Load model from generated mesh
-RLAPI void UnloadModel(Model model);                                                                    // Unload model from memory (RAM and/or VRAM)
+## UTF8 text strings management functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI int *GetCodepoints(const char *text, int *count);               | TODO ||
+| RLAPI int GetCodepointsCount(const char *text);                       | TODO ||
+| RLAPI int GetNextCodepoint(const char *text, int *bytesProcessed);    | TODO ||
+| RLAPI const char *CodepointToUtf8(int codepoint, int *byteLength);    | TODO ||
 
-// Mesh loading/unloading functions
-RLAPI Mesh LoadMesh(const char *fileName);                                                              // Load mesh from file
-RLAPI void UnloadMesh(Mesh *mesh);                                                                      // Unload mesh from memory (RAM and/or VRAM)
-RLAPI void ExportMesh(const char *fileName, Mesh mesh);                                                 // Export mesh as an OBJ file
+## Basic 3d Shapes Drawing Functions (Module: models)
 
-// Mesh manipulation functions
-RLAPI BoundingBox MeshBoundingBox(Mesh mesh);                                                           // Compute mesh bounding box limits
-RLAPI void MeshTangents(Mesh *mesh);                                                                    // Compute mesh tangents
-RLAPI void MeshBinormals(Mesh *mesh);                                                                   // Compute mesh binormals
+### Basic geometric 3D shapes drawing functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void DrawLine3D(Vector3 startPos, Vector3 endPos, Color color);                                    | TODO ||
+| RLAPI void DrawPoint3D(Vector3 position, Color color);                                                   | TODO ||
+| RLAPI void DrawCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, Color color); | TODO ||
+| RLAPI void DrawCube(Vector3 position, float width, float height, float length, Color color);             | TODO ||
+| RLAPI void DrawCubeV(Vector3 position, Vector3 size, Color color);                                       | TODO ||
+| RLAPI void DrawCubeWires(Vector3 position, float width, float height, float length, Color color);        | TODO ||
+| RLAPI void DrawCubeWiresV(Vector3 position, Vector3 size, Color color);                                  | TODO ||
+| RLAPI void DrawCubeTexture(Texture2D texture, Vector3 position, float width, float height, float length, Color color); | TODO ||
+| RLAPI void DrawSphere(Vector3 centerPos, float radius, Color color);                                     | TODO ||
+| RLAPI void DrawSphereEx(Vector3 centerPos, float radius, int rings, int slices, Color color);            | TODO ||
+| RLAPI void DrawSphereWires(Vector3 centerPos, float radius, int rings, int slices, Color color);         | TODO ||
+| RLAPI void DrawCylinder(Vector3 position, float radiusTop, float radiusBottom, float height, int slices, Color color); | TODO ||
+| RLAPI void DrawCylinderWires(Vector3 position, float radiusTop, float radiusBottom, float height, int slices, Color color); | TODO ||
+| RLAPI void DrawPlane(Vector3 centerPos, Vector2 size, Color color);                                      | TODO ||
+| RLAPI void DrawRay(Ray ray, Color color);                                                                | TODO ||
+| RLAPI void DrawGrid(int slices, float spacing);                                                          | TODO ||
+| RLAPI void DrawGizmo(Vector3 position);                                                                  | TODO ||
 
-// Mesh generation functions
-RLAPI Mesh GenMeshPlane(float width, float length, int resX, int resZ);                                 // Generate plane mesh (with subdivisions)
-RLAPI Mesh GenMeshCube(float width, float height, float length);                                        // Generate cuboid mesh
-RLAPI Mesh GenMeshSphere(float radius, int rings, int slices);                                          // Generate sphere mesh (standard sphere)
-RLAPI Mesh GenMeshHemiSphere(float radius, int rings, int slices);                                      // Generate half-sphere mesh (no bottom cap)
-RLAPI Mesh GenMeshCylinder(float radius, float height, int slices);                                     // Generate cylinder mesh
-RLAPI Mesh GenMeshTorus(float radius, float size, int radSeg, int sides);                               // Generate torus mesh
-RLAPI Mesh GenMeshKnot(float radius, float size, int radSeg, int sides);                                // Generate trefoil knot mesh
-RLAPI Mesh GenMeshHeightmap(Image heightmap, Vector3 size);                                             // Generate heightmap mesh from image data
-RLAPI Mesh GenMeshCubicmap(Image cubicmap, Vector3 cubeSize);                                           // Generate cubes-based map mesh from image data
+## Model 3d Loading and Drawing Functions (Module: models)
 
-// Material loading/unloading functions
-RLAPI Material LoadMaterial(const char *fileName);                                                      // Load material from file
-RLAPI Material LoadMaterialDefault(void);                                                               // Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
-RLAPI void UnloadMaterial(Material material);                                                           // Unload material from GPU memory (VRAM)
+### Model loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Model LoadModel(const char *fileName);                                                            | TODO ||
+| RLAPI Model LoadModelFromMesh(Mesh mesh);                                                               | TODO ||
+| RLAPI void UnloadModel(Model model);                                                                    | TODO ||
 
-// Model drawing functions
-RLAPI void DrawModel(Model model, Vector3 position, float scale, Color tint);                           // Draw a model (with texture if set)
-RLAPI void DrawModelEx(Model model, Vector3 position, Vector3 rotationAxis,
-                       float rotationAngle, Vector3 scale, Color tint);                                 // Draw a model with extended parameters
-RLAPI void DrawModelWires(Model model, Vector3 position, float scale, Color tint);                      // Draw a model wires (with texture if set)
-RLAPI void DrawModelWiresEx(Model model, Vector3 position, Vector3 rotationAxis,
-                            float rotationAngle, Vector3 scale, Color tint);                            // Draw a model wires (with texture if set) with extended parameters
-RLAPI void DrawBoundingBox(BoundingBox box, Color color);                                               // Draw bounding box (wires)
-RLAPI void DrawBillboard(Camera camera3d, Texture2D texture, Vector3 center, float size, Color tint);     // Draw a billboard texture
-RLAPI void DrawBillboardRec(Camera camera3d, Texture2D texture, Rectangle sourceRec,
-                            Vector3 center, float size, Color tint);                                    // Draw a billboard texture defined by sourceRec
+### Mesh loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Mesh *LoadMeshes(const char *fileName, int *meshCount);                                           | TODO ||
+| RLAPI void ExportMesh(Mesh mesh, const char *fileName);                                                 | TODO ||
+| RLAPI void UnloadMesh(Mesh mesh);                                                                       | TODO ||
 
-// Collision detection functions
-RLAPI bool CheckCollisionSpheres(Vector3 centerA, float radiusA, Vector3 centerB, float radiusB);       // Detect collision between two spheres
-RLAPI bool CheckCollisionBoxes(BoundingBox box1, BoundingBox box2);                                     // Detect collision between two bounding boxes
-RLAPI bool CheckCollisionBoxSphere(BoundingBox box, Vector3 centerSphere, float radiusSphere);          // Detect collision between box and sphere
-RLAPI bool CheckCollisionRaySphere(Ray ray, Vector3 spherePosition, float sphereRadius);                // Detect collision between ray and sphere
-RLAPI bool CheckCollisionRaySphereEx(Ray ray, Vector3 spherePosition, float sphereRadius,
-                                     Vector3 *collisionPoint);                                          // Detect collision between ray and sphere, returns collision point
-RLAPI bool CheckCollisionRayBox(Ray ray, BoundingBox box);                                              // Detect collision between ray and box
-RLAPI RayHitInfo GetCollisionRayModel(Ray ray, Model *model);                                           // Get collision info between ray and model
-RLAPI RayHitInfo GetCollisionRayTriangle(Ray ray, Vector3 p1, Vector3 p2, Vector3 p3);                  // Get collision info between ray and triangle
-RLAPI RayHitInfo GetCollisionRayGround(Ray ray, float groundHeight);                                    // Get collision info between ray and ground plane (Y-normal plane)
+### Material loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Material *LoadMaterials(const char *fileName, int *materialCount);                                | TODO ||
+| RLAPI Material LoadMaterialDefault(void);                                                               | TODO ||
+| RLAPI void UnloadMaterial(Material material);                                                           | TODO ||
+| RLAPI void SetMaterialTexture(Material *material, int mapType, Texture2D texture);                      | TODO ||
+| RLAPI void SetModelMeshMaterial(Model *model, int meshId, int materialId);                              | TODO ||
 
-//------------------------------------------------------------------------------------
-// Shaders System Functions (Module: rlgl)
-// NOTE: This functions are useless when using OpenGL 1.1
-//------------------------------------------------------------------------------------
+### Model animations loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI ModelAnimation *LoadModelAnimations(const char *fileName, int *animsCount);                       | TODO ||
+| RLAPI void UpdateModelAnimation(Model model, ModelAnimation anim, int frame);                           | TODO ||
+| RLAPI void UnloadModelAnimation(ModelAnimation anim);                                                   | TODO ||
+| RLAPI bool IsModelAnimationValid(Model model, ModelAnimation anim);                                     | TODO ||
 
-// Shader loading/unloading functions
-RLAPI char *LoadText(const char *fileName);                               // Load chars array from text file
-RLAPI Shader LoadShader(const char *vsFileName, const char *fsFileName);  // Load shader from files and bind default locations
-RLAPI Shader LoadShaderCode(char *vsCode, char *fsCode);                  // Load shader from code strings and bind default locations
-RLAPI void UnloadShader(Shader shader);                                   // Unload shader from GPU memory (VRAM)
+### Mesh generation functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Mesh GenMeshPoly(int sides, float radius);                                                        | TODO ||
+| RLAPI Mesh GenMeshPlane(float width, float length, int resX, int resZ);                                 | TODO ||
+| RLAPI Mesh GenMeshCube(float width, float height, float length);                                        | TODO ||
+| RLAPI Mesh GenMeshSphere(float radius, int rings, int slices);                                          | TODO ||
+| RLAPI Mesh GenMeshHemiSphere(float radius, int rings, int slices);                                      | TODO ||
+| RLAPI Mesh GenMeshCylinder(float radius, float height, int slices);                                     | TODO ||
+| RLAPI Mesh GenMeshTorus(float radius, float size, int radSeg, int sides);                               | TODO ||
+| RLAPI Mesh GenMeshKnot(float radius, float size, int radSeg, int sides);                                | TODO ||
+| RLAPI Mesh GenMeshHeightmap(Image heightmap, Vector3 size);                                             | TODO ||
+| RLAPI Mesh GenMeshCubicmap(Image cubicmap, Vector3 cubeSize);                                           | TODO ||
 
-RLAPI Shader GetShaderDefault(void);                                      // Get default shader
-RLAPI Texture2D GetTextureDefault(void);                                  // Get default texture
+### Mesh manipulation functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI BoundingBox MeshBoundingBox(Mesh mesh);                                                           | TODO ||
+| RLAPI void MeshTangents(Mesh *mesh);                                                                    | TODO ||
+| RLAPI void MeshBinormals(Mesh *mesh);                                                                   | TODO ||
 
-// Shader configuration functions
-RLAPI int GetShaderLocation(Shader shader, const char *uniformName);              // Get shader uniform location
-RLAPI void SetShaderValue(Shader shader, int uniformLoc, const float *value, int size); // Set shader uniform value (float)
-RLAPI void SetShaderValuei(Shader shader, int uniformLoc, const int *value, int size);  // Set shader uniform value (int)
-RLAPI void SetShaderValueMatrix(Shader shader, int uniformLoc, Matrix mat);       // Set shader uniform value (matrix 4x4)
-RLAPI void SetMatrixProjection(Matrix proj);                              // Set a custom projection matrix (replaces internal projection matrix)
-RLAPI void SetMatrixModelview(Matrix view);                               // Set a custom modelview matrix (replaces internal modelview matrix)
-RLAPI Matrix GetMatrixModelview();                                        // Get internal modelview matrix
+### Model drawing functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+RLAPI void DrawModel(Model model, Vector3 position, float scale, Color tint);                                                     | TODO ||
+RLAPI void DrawModelEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint);      | TODO ||
+RLAPI void DrawModelWires(Model model, Vector3 position, float scale, Color tint);                                                | TODO ||
+RLAPI void DrawModelWiresEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint); | TODO ||
+RLAPI void DrawBoundingBox(BoundingBox box, Color color);                                                                         | TODO ||
+RLAPI void DrawBillboard(Camera camera, Texture2D texture, Vector3 center, float size, Color tint);                               | TODO ||
+RLAPI void DrawBillboardRec(Camera camera, Texture2D texture, Rectangle sourceRec, Vector3 center, float size, Color tint);       | TODO ||
 
-// Texture maps generation (PBR)
-// NOTE: Required shaders should be provided
-RLAPI Texture2D GenTextureCubemap(Shader shader, Texture2D skyHDR, int size);       // Generate cubemap texture from HDR texture
-RLAPI Texture2D GenTextureIrradiance(Shader shader, Texture2D cubemap, int size);   // Generate irradiance texture using cubemap data
-RLAPI Texture2D GenTexturePrefilter(Shader shader, Texture2D cubemap, int size);    // Generate prefilter texture using cubemap data
-RLAPI Texture2D GenTextureBRDF(Shader shader, Texture2D cubemap, int size);         // Generate BRDF texture using cubemap data
+### Collision detection functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI bool CheckCollisionSpheres(Vector3 centerA, float radiusA, Vector3 centerB, float radiusB);       | TODO ||
+| RLAPI bool CheckCollisionBoxes(BoundingBox box1, BoundingBox box2);                                     | TODO ||
+| RLAPI bool CheckCollisionBoxSphere(BoundingBox box, Vector3 center, float radius);                      | TODO ||
+| RLAPI bool CheckCollisionRaySphere(Ray ray, Vector3 center, float radius);                              | TODO ||
+| RLAPI bool CheckCollisionRaySphereEx(Ray ray, Vector3 center, float radius, Vector3 *collisionPoint);   | TODO ||
+| RLAPI bool CheckCollisionRayBox(Ray ray, BoundingBox box);                                              | TODO ||
+| RLAPI RayHitInfo GetCollisionRayModel(Ray ray, Model model);                                            | TODO ||
+| RLAPI RayHitInfo GetCollisionRayTriangle(Ray ray, Vector3 p1, Vector3 p2, Vector3 p3);                  | TODO ||
+| RLAPI RayHitInfo GetCollisionRayGround(Ray ray, float groundHeight);                                    | TODO ||
 
-// Shading begin/end functions
-RLAPI void BeginShaderMode(Shader shader);                                // Begin custom shader drawing
-RLAPI void EndShaderMode(void);                                           // End custom shader drawing (use default shader)
-RLAPI void BeginBlendMode(int mode);                                      // Begin blending mode (alpha, additive, multiplied)
-RLAPI void EndBlendMode(void);                                            // End blending mode (reset to default: alpha blending)
+## Shaders System Functions (Module: rlgl)
 
-// VR control functions
-RLAPI VrDeviceInfo GetVrDeviceInfo(int vrDeviceType);   // Get VR device information for some standard devices
-RLAPI void InitVrSimulator(VrDeviceInfo info);          // Init VR simulator for selected device parameters
-RLAPI void CloseVrSimulator(void);                      // Close VR simulator for current device
-RLAPI bool IsVrSimulatorReady(void);                    // Detect if VR simulator is ready
-RLAPI void SetVrDistortionShader(Shader shader);        // Set VR distortion shader for stereoscopic rendering
-RLAPI void UpdateVrTracking(Camera *camera3d);            // Update VR tracking (position and orientation) and camera3d
-RLAPI void ToggleVrMode(void);                          // Enable/Disable VR experience
-RLAPI void BeginVrDrawing(void);                        // Begin VR simulator stereo rendering
-RLAPI void EndVrDrawing(void);                          // End VR simulator stereo rendering
+### Shader loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Shader LoadShader(const char *vsFileName, const char *fsFileName);  | TODO ||
+| RLAPI Shader LoadShaderCode(const char *vsCode, const char *fsCode);      | TODO ||
+| RLAPI void UnloadShader(Shader shader);                                   | TODO ||
+| RLAPI Shader GetShaderDefault(void);                                      | TODO ||
+| RLAPI Texture2D GetTextureDefault(void);                                  | TODO ||
+| RLAPI Texture2D GetShapesTexture(void);                                   | TODO ||
+| RLAPI Rectangle GetShapesTextureRec(void);                                | TODO ||
+| RLAPI void SetShapesTexture(Texture2D texture, Rectangle source);         | TODO ||
 
-//------------------------------------------------------------------------------------
-// Audio Loading and Playing Functions (Module: audio)
-//------------------------------------------------------------------------------------
+### Shader configuration functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI int GetShaderLocation(Shader shader, const char *uniformName);      | TODO ||
+| RLAPI void SetShaderValue(Shader shader, int uniformLoc, const void *value, int uniformType);               | TODO ||
+| RLAPI void SetShaderValueV(Shader shader, int uniformLoc, const void *value, int uniformType, int count);   | TODO ||
+| RLAPI void SetShaderValueMatrix(Shader shader, int uniformLoc, Matrix mat);         | TODO ||
+| RLAPI void SetShaderValueTexture(Shader shader, int uniformLoc, Texture2D texture); | TODO ||
+| RLAPI void SetMatrixProjection(Matrix proj);                              | TODO ||
+| RLAPI void SetMatrixModelview(Matrix view);                               | TODO ||
+| RLAPI Matrix GetMatrixModelview(void);                                    | TODO ||
+| RLAPI Matrix GetMatrixProjection(void);                                   | TODO ||
 
-// Audio device management functions
-RLAPI void InitAudioDevice(void);                                     // Initialize audio device and context
-RLAPI void CloseAudioDevice(void);                                    // Close the audio device and context
-RLAPI bool IsAudioDeviceReady(void);                                  // Check if audio device has been initialized successfully
-RLAPI void SetMasterVolume(float volume);                             // Set master volume (listener)
+### Texture maps generation (PBR)
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Texture2D GenTextureCubemap(Shader shader, Texture2D map, int size);           | TODO ||
+| RLAPI Texture2D GenTextureIrradiance(Shader shader, Texture2D cubemap, int size);    | TODO ||
+| RLAPI Texture2D GenTexturePrefilter(Shader shader, Texture2D cubemap, int size);     | TODO ||
+| RLAPI Texture2D GenTextureBRDF(Shader shader, int size);                             | TODO ||
 
-// Wave/Sound loading/unloading functions
-RLAPI Wave LoadWave(const char *fileName);                            // Load wave data from file
-RLAPI Wave LoadWaveEx(void *data, int sampleCount, int sampleRate, int sampleSize, int channels); // Load wave data from raw array data
-RLAPI Sound LoadSound(const char *fileName);                          // Load sound from file
-RLAPI Sound LoadSoundFromWave(Wave wave);                             // Load sound from wave data
-RLAPI void UpdateSound(Sound sound, const void *data, int samplesCount);// Update sound buffer with new data
-RLAPI void UnloadWave(Wave wave);                                     // Unload wave data
-RLAPI void UnloadSound(Sound sound);                                  // Unload sound
+### Shading begin/end functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void BeginShaderMode(Shader shader);                                | TODO ||
+| RLAPI void EndShaderMode(void);                                           | TODO ||
+| RLAPI void BeginBlendMode(int mode);                                      | TODO ||
+| RLAPI void EndBlendMode(void);                                            | TODO ||
 
-// Wave/Sound management functions
-RLAPI void PlaySound(Sound sound);                                    // Play a sound
-RLAPI void PauseSound(Sound sound);                                   // Pause a sound
-RLAPI void ResumeSound(Sound sound);                                  // Resume a paused sound
-RLAPI void StopSound(Sound sound);                                    // Stop playing a sound
-RLAPI bool IsSoundPlaying(Sound sound);                               // Check if a sound is currently playing
-RLAPI void SetSoundVolume(Sound sound, float volume);                 // Set volume for a sound (1.0 is max level)
-RLAPI void SetSoundPitch(Sound sound, float pitch);                   // Set pitch for a sound (1.0 is base level)
-RLAPI void WaveFormat(Wave *wave, int sampleRate, int sampleSize, int channels);  // Convert wave data to desired format
-RLAPI Wave WaveCopy(Wave wave);                                       // Copy a wave to a new wave
-RLAPI void WaveCrop(Wave *wave, int initSample, int finalSample);     // Crop a wave to defined samples range
-RLAPI float *GetWaveData(Wave wave);                                  // Get samples data from wave as a floats array
+### VR control functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void InitVrSimulator(void);                       | TODO ||
+| RLAPI void CloseVrSimulator(void);                      | TODO ||
+| RLAPI void UpdateVrTracking(Camera *camera);            | TODO ||
+| RLAPI void SetVrConfiguration(VrDeviceInfo info, Shader distortion);      | TODO ||
+| RLAPI bool IsVrSimulatorReady(void);                    | TODO ||
+| RLAPI void ToggleVrMode(void);                          | TODO ||
+| RLAPI void BeginVrDrawing(void);                        | TODO ||
+| RLAPI void EndVrDrawing(void);                          | TODO ||
 
-// Music management functions
-RLAPI Music LoadMusicStream(const char *fileName);                    // Load music stream from file
-RLAPI void UnloadMusicStream(Music music);                            // Unload music stream
-RLAPI void PlayMusicStream(Music music);                              // Start music playing
-RLAPI void UpdateMusicStream(Music music);                            // Updates buffers for music streaming
-RLAPI void StopMusicStream(Music music);                              // Stop music playing
-RLAPI void PauseMusicStream(Music music);                             // Pause music playing
-RLAPI void ResumeMusicStream(Music music);                            // Resume playing paused music
-RLAPI bool IsMusicPlaying(Music music);                               // Check if music is playing
-RLAPI void SetMusicVolume(Music music, float volume);                 // Set volume for music (1.0 is max level)
-RLAPI void SetMusicPitch(Music music, float pitch);                   // Set pitch for a music (1.0 is base level)
-RLAPI void SetMusicLoopCount(Music music, int count);                 // Set music loop count (loop repeats)
-RLAPI float GetMusicTimeLength(Music music);                          // Get music time length (in seconds)
-RLAPI float GetMusicTimePlayed(Music music);                          // Get current music time played (in seconds)
+## Audio Loading and Playing Functions (Module: audio)
 
-// AudioStream management functions
-RLAPI AudioStream InitAudioStream(unsigned int sampleRate, unsigned int sampleSize,
-                                  unsigned int channels);             // Init audio stream (to stream raw audio pcm data)
-RLAPI void UpdateAudioStream(AudioStream stream, const void *data, int samplesCount); // Update audio stream buffers with data
-RLAPI void CloseAudioStream(AudioStream stream);                      // Close audio stream and free memory
-RLAPI bool IsAudioBufferProcessed(AudioStream stream);                // Check if any audio stream buffers requires refill
-RLAPI void PlayAudioStream(AudioStream stream);                       // Play audio stream
-RLAPI void PauseAudioStream(AudioStream stream);                      // Pause audio stream
-RLAPI void ResumeAudioStream(AudioStream stream);                     // Resume audio stream
-RLAPI bool IsAudioStreamPlaying(AudioStream stream);                  // Check if audio stream is playing
-RLAPI void StopAudioStream(AudioStream stream);                       // Stop audio stream
-RLAPI void SetAudioStreamVolume(AudioStream stream, float volume);    // Set volume for audio stream (1.0 is max level)
-RLAPI void SetAudioStreamPitch(AudioStream stream, float pitch);      // Set pitch for audio stream (1.0 is base level)
+### Audio device management functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void InitAudioDevice(void);                                     | raylib\Audio\initDevice() ||
+| RLAPI void CloseAudioDevice(void);                                    | raylib\Audio\closeDevice() ||
+| RLAPI bool IsAudioDeviceReady(void);                                  | raylib\Audio\isDeviceReady() ||
+| RLAPI void SetMasterVolume(float volume);                             | raylib\Audio\setMasterVolume(float $volume) ||
+
+### Wave/Sound loading/unloading functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Wave LoadWave(const char *fileName);                               | new raylib\Wave(string $fileName) ||
+| RLAPI Sound LoadSound(const char *fileName);                             | TODO ||
+| RLAPI Sound LoadSoundFromWave(Wave wave);                                | TODO ||
+| RLAPI void UpdateSound(Sound sound, const void *data, int samplesCount); | TODO ||
+| RLAPI void UnloadWave(Wave wave);                                        | N/A | use built-in unset()|
+| RLAPI void UnloadSound(Sound sound);                                     | TODO ||
+| RLAPI void ExportWave(Wave wave, const char *fileName);                  | raylib\Wave\export(string $fileName) ||
+| RLAPI void ExportWaveAsCode(Wave wave, const char *fileName);            | raylib\Wave\exportAsCode(string $fileName) ||
+
+### Wave/Sound management functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void PlaySound(Sound sound);                                    | TODO ||
+| RLAPI void StopSound(Sound sound);                                    | TODO ||
+| RLAPI void PauseSound(Sound sound);                                   | TODO ||
+| RLAPI void ResumeSound(Sound sound);                                  | TODO ||
+| RLAPI void PlaySoundMulti(Sound sound);                               | TODO ||
+| RLAPI void StopSoundMulti(void);                                      | TODO ||
+| RLAPI int GetSoundsPlaying(void);                                     | TODO ||
+| RLAPI bool IsSoundPlaying(Sound sound);                               | TODO ||
+| RLAPI void SetSoundVolume(Sound sound, float volume);                 | TODO ||
+| RLAPI void SetSoundPitch(Sound sound, float pitch);                   | TODO ||
+| RLAPI void WaveFormat(Wave *wave, int sampleRate, int sampleSize, int channels); | raylib\Wave\format(int $sampleRate, int $sampleSize, int $channels) ||
+| RLAPI Wave WaveCopy(Wave wave);                                       | raylib\Wave\copy() ||
+| RLAPI void WaveCrop(Wave *wave, int initSample, int finalSample);     | raylib\Wave\crop(int $initSample, int $finalSample) ||
+| RLAPI float *GetWaveData(Wave wave);                                  | raylib\Wave\getData() ||
+
+### Music management functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Music LoadMusicStream(const char *fileName);                    | TODO ||
+| RLAPI void UnloadMusicStream(Music music);                            | TODO ||
+| RLAPI void PlayMusicStream(Music music);                              | TODO ||
+| RLAPI void UpdateMusicStream(Music music);                            | TODO ||
+| RLAPI void StopMusicStream(Music music);                              | TODO ||
+| RLAPI void PauseMusicStream(Music music);                             | TODO ||
+| RLAPI void ResumeMusicStream(Music music);                            | TODO ||
+| RLAPI bool IsMusicPlaying(Music music);                               | TODO ||
+| RLAPI void SetMusicVolume(Music music, float volume);                 | TODO ||
+| RLAPI void SetMusicPitch(Music music, float pitch);                   | TODO ||
+| RLAPI void SetMusicLoopCount(Music music, int count);                 | TODO ||
+| RLAPI float GetMusicTimeLength(Music music);                          | TODO ||
+| RLAPI float GetMusicTimePlayed(Music music);                          | TODO ||
+
+### AudioStream management functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI AudioStream InitAudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels); | TODO ||
+| RLAPI void UpdateAudioStream(AudioStream stream, const void *data, int samplesCount); | TODO ||
+| RLAPI void CloseAudioStream(AudioStream stream);                      | TODO ||
+| RLAPI bool IsAudioStreamProcessed(AudioStream stream);                | TODO ||
+| RLAPI void PlayAudioStream(AudioStream stream);                       | TODO ||
+| RLAPI void PauseAudioStream(AudioStream stream);                      | TODO ||
+| RLAPI void ResumeAudioStream(AudioStream stream);                     | TODO ||
+| RLAPI bool IsAudioStreamPlaying(AudioStream stream);                  | TODO ||
+| RLAPI void StopAudioStream(AudioStream stream);                       | TODO ||
+| RLAPI void SetAudioStreamVolume(AudioStream stream, float volume);    | TODO ||
+| RLAPI void SetAudioStreamPitch(AudioStream stream, float pitch);      | TODO ||
+| RLAPI void SetAudioStreamBufferSizeDefault(int size);                 | TODO ||

@@ -1,9 +1,23 @@
 # raylib-php
 
-PHP 7.x bindings for raylib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
+PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
 
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
+
+ - raylib.h - 120 of 426 functions ~ %28 complete
+ - raymath.h - TODO Extra mathy stuff
+ - raygui.h - TODO API for drawing GUI
+ - physac.h - TODO More complex collision detection, more than built-in collision detection
+
+## Isn't PHP A Terrible Choice For Games?
+
+Here are some common misconceptions:
+
+ - **PHP has no multi-threading**. There are native PHP extensions to enable this, pThreads and now a easier way to tackle this issue Parallel - https://github.com/krakjoe/parallel
+ - **PHP is too slow**. Since PHP 7 a lot of things have gotten faster, so it can out perform Python and NodeJS in some area. PHP 8 will include a JIT which should provide even more performance, ETA of PHP is around December of 2020.
+ - **Object Oriented Programming in PHP is horrible**. Since PHP 5.4+ you get a lot of feature parity and since PHP 7 you now get type checking.
+ - **Garbage Collection IS ... GARBAGE** - Until PHP 7.3 this was true. Running PHP in a tight loop for hours/days on end would hit a point where PHP could spend more time doing GC than anything else.
 
 ## Example
 
