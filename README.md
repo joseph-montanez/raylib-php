@@ -73,9 +73,14 @@ RayLib is a library designed for procedural code. All functions live in a global
 
 For example instead of calling `CheckCollisionPointTriangle()`, in PHP you'd call `raylib\Collision::checkPointTriangle()`. That static class method could technically live as a scoped function instead for example `raylib\Collision\checkPointTriangle` however this could become make importing far more tedious. 
 
+If this becomes a bigger problem, I can create a procedural API compatibility later to better align to RayLib's C-API.
+
 ## API Limitation
 
-The PHP C-API has one glaring limitation and that is I cannot provide read AND write to class properties. For example, in RayLib you can call `rec->x += 1`, but in PHP you'll need to use getters and setters `rec->setX(rec->getX() + 1)`. Now this may change as there might be a way to support this but I think until PHP has true support for getters and setters as properties, rather than a magic catch all, I want to avoid this. By using properties, I need to maintain copies of every in two places, so it will add memory for little gain.
+The PHP RayLib implementation has two glaring limitations.
+
+ - All object properties must use **getters** and **setters**. At this time I am not aware of a way to have RayLib structs mirror into PHP object properties. So instead of `$vec->x += 1;` you must instead use `$vec->setX($vec->getX() + 1)`. I know it's a pain but even if there was a way to allow this, I may would have to keep two copies. PHP does have **magic** get and set functions that look to be available through the C-API so if that true then I might be able to introduce this later. 
+ - All RayLib object assignment i.e `$player->position = $position` will **not copy** the variable but instead **link** the property. So if you want to copy the data instead, you need to use PHP's clone feature `clone` i.e `$player->position = clone $position`.
 
 ## How To Build PHP Extension
 

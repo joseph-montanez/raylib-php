@@ -70,8 +70,7 @@ This is a one to one mapping of each raylib function.
 ###  Misc. functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| void ShowLogo(void);                                        | TODO ||
-| void SetConfigFlags(unsigned char flags);                   | TODO ||
+| void SetConfigFlags(unsigned char flags);                   | raylib\setConfigFlags(int flags) ||
 | void SetTraceLog(unsigned char types);                      | TODO ||
 | void TraceLog(int logType, const char *text, ...);          | TODO ||
 | void TakeScreenshot(const char *fileName);                  | TODO ||
@@ -197,13 +196,13 @@ This is a one to one mapping of each raylib function.
 ####  Basic shapes collision detection functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);                                           | TODO ||
-| bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);        | TODO ||
-| bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);                         | TODO ||
-| Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         | TODO ||
-| bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         | TODO ||
-| bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);                       | TODO ||
-| bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);               | TODO ||
+| bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);                                           | raylib\Collision\checkRecs(Rectangle $rec1, Rectangle $rec2) ||
+| bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);        | raylib\Collision\checkCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) ||
+| bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);                         | raylib\Collision\checkCircleRec(Vector2 center, float radius, Rectangle rec) ||
+| Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         | raylib\Collision\getRec(Rectangle rec1, Rectangle rec2) ||
+| bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         | raylib\Collision\checkPointRec(Vector2 point, Rectangle rec) ||
+| bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);                       | raylib\Collision\checkPointCircle(Vector2 point, Vector2 center, float radius) ||
+| bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);               | raylib\Collision\checkPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3) ||
 
 ## Texture Loading and Drawing Functions (Module: textures)
 
