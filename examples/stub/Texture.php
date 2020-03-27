@@ -94,7 +94,7 @@ class Texture
      * @param float         $scale
      * @param \raylib\Color $tint     The color [red,blue,green,alpha] i.e [0,0,0,255]
      */
-    public function drawEx(array $position, float $rotation, float $scale, Color $tint): void
+    public function drawEx(\raylib\Vector2 $position, float $rotation, float $scale, Color $tint): void
     {
     }
 
@@ -103,11 +103,11 @@ class Texture
      *
      * {@internal RLAPI void DrawTextureRec(Texture2D texture, Rectangle sourceRec, Vector2 position, Color tint);}}
      *
-     * @param array         $sourceRec Rectangle array ['x' => 0, 'y' => 0, 'width' => 0, 'height' => 0]
-     * @param array         $position  Vector2 array ['x' => 0, 'y' => 0]
+     * @param \raylib\Rectangle         $sourceRec Rectangle array ['x' => 0, 'y' => 0, 'width' => 0, 'height' => 0]
+     * @param \raylib\Vector2          $position  Vector2 array ['x' => 0, 'y' => 0]
      * @param \raylib\Color $tint
      */
-    public function drawRec(array $sourceRec, array $position, Color $tint): void
+    public function drawRec(\raylib\Rectangle $sourceRec, \raylib\Vector2  $position, Color $tint): void
     {
     }
 
@@ -125,7 +125,7 @@ class Texture
      *
      * @return void
      */
-    public function drawTexturePro(Rectangle $sourceRec, Rectangle $destRec, Vector2 $origin, float $rotation, Color $tint): void
+    public function drawPro(Rectangle $sourceRec, Rectangle $destRec, Vector2 $origin, float $rotation, Color $tint): void
     {
     }
 }

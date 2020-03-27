@@ -30,7 +30,7 @@ class Rectangle
     {
     }
 
-    public function setX(): void
+    public function setX(float $x): void
     {
     }
 
@@ -38,7 +38,7 @@ class Rectangle
     {
     }
 
-    public function setY(): void
+    public function setY(float $y): void
     {
     }
 
@@ -46,7 +46,7 @@ class Rectangle
     {
     }
 
-    public function setWidth(): void
+    public function setWidth(float $width): void
     {
     }
 
@@ -54,7 +54,7 @@ class Rectangle
     {
     }
 
-    public function setHeight(): void
+    public function setHeight(float $height): void
     {
     }
 }

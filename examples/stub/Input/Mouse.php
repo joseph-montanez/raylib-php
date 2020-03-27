@@ -62,18 +62,18 @@ class Mouse
 	/**
 	* Returns mouse position XY
 	*
-	* @return array The position of the mouse - Vector2 array ['x' => 0, 'y' => 0]
+	* @return \raylib\Vector2 - The position of the mouse
 	*/
-    public static function getPosition() : array {}
+    public static function getPosition() : \raylib\Vector2 {}
 
     /**
      * Set mouse position XY
      *
-     * @param array $position The position to set the mouse - Vector2 array ['x' => 0, 'y' => 0]
+     * @param \raylib\Vector2 $position - The position to set the mouse
      *
      * @return void
      */
-    public static function setPosition(array $position) : void {}
+    public static function setPosition(\raylib\Vector2 $position) : void {}
 
     /**
      * Set mouse scaling
