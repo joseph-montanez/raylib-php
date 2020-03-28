@@ -114,7 +114,7 @@ PHP_METHOD(Rectangle, __construct)
 
 PHP_METHOD(Rectangle, getX)
 {
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.x);
 }
 
@@ -126,14 +126,14 @@ PHP_METHOD(Rectangle, setX)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle.x = zend_double_2float(val);
 }
 
 PHP_METHOD(Rectangle, getY)
 {
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.y);
 }
 
@@ -145,14 +145,14 @@ PHP_METHOD(Rectangle, setY)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle.y = zend_double_2float(val);
 }
 
 PHP_METHOD(Rectangle, getWidth)
 {
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.width);
 }
 
@@ -164,14 +164,14 @@ PHP_METHOD(Rectangle, setWidth)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle.width = zend_double_2float(val);
 }
 
 PHP_METHOD(Rectangle, getHeight)
 {
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.height);
 }
 
@@ -183,7 +183,7 @@ PHP_METHOD(Rectangle, setHeight)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(getThis());
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle.height = zend_double_2float(val);
 }

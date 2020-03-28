@@ -107,7 +107,7 @@ PHP_METHOD(Vector2, __construct)
             Z_PARAM_ZVAL(y)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(getThis());
+    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
 
     intern->vector2 = (Vector2) {
             .x = zend_double_2float(x),
@@ -118,7 +118,7 @@ PHP_METHOD(Vector2, __construct)
 
 PHP_METHOD(Vector2, getX)
 {
-    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(getThis());
+    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector2.x);
 }
 
@@ -130,14 +130,14 @@ PHP_METHOD(Vector2, setX)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(getThis());
+    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
 
     intern->vector2.x = zend_double_2float(val);
 }
 
 PHP_METHOD(Vector2, getY)
 {
-    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(getThis());
+    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector2.y);
 }
 
@@ -149,7 +149,7 @@ PHP_METHOD(Vector2, setY)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(getThis());
+    php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
 
     intern->vector2.y = zend_double_2float(val);
 }

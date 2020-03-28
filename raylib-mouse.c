@@ -90,7 +90,7 @@ zend_object * php_raylib_mouse_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Mouse, __construct)
 {
-    php_raylib_mouse_object *intern = Z_MOUSE_OBJ_P(getThis());
+    php_raylib_mouse_object *intern = Z_MOUSE_OBJ_P(ZEND_THIS);
 }
 
 //bool IsMouseButtonPressed(int button)

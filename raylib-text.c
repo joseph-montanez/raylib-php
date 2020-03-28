@@ -83,7 +83,7 @@ zend_object * php_raylib_text_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Text, __construct)
 {
-    php_raylib_text_object *intern = Z_TEXT_OBJ_P(getThis());
+    php_raylib_text_object *intern = Z_TEXT_OBJ_P(ZEND_THIS);
 }
 
 

@@ -90,7 +90,7 @@ PHP_METHOD(Audio, __construct)
         Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_audio_object *intern = Z_AUDIO_OBJ_P(getThis());
+    php_raylib_audio_object *intern = Z_AUDIO_OBJ_P(ZEND_THIS);
 }
 
 PHP_METHOD(Audio, initDevice)

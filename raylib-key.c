@@ -89,7 +89,7 @@ zend_object * php_raylib_key_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Key, __construct)
 {
-    php_raylib_key_object *intern = Z_KEY_OBJ_P(getThis());
+    php_raylib_key_object *intern = Z_KEY_OBJ_P(ZEND_THIS);
 }
 
 /*

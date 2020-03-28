@@ -315,13 +315,13 @@ PHP_METHOD(Image, __construct)
             Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(getThis());
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
     intern->image = LoadImage(fileName->val);
 }
 
 PHP_METHOD(Image, toTexture)
 {
-    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(getThis());
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
 
     object_init_ex(return_value, php_raylib_texture_ce);
 
@@ -337,7 +337,7 @@ PHP_METHOD(Image, toTexture)
 //Image ImageCopy(Image image);
 PHP_METHOD(Image, copy)
 {
-    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(getThis());
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
 
     object_init_ex(return_value, php_raylib_image_ce);
 
@@ -353,7 +353,7 @@ PHP_METHOD(Image, copy)
 //void ImageToPOT(Image *image, Color fillColor);
 PHP_METHOD(Image, toPot)
 {
-    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(getThis());
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
     zval *colorArr;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)

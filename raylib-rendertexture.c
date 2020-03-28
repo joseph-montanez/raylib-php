@@ -90,13 +90,13 @@ PHP_METHOD(RenderTexture, __construct)
             Z_PARAM_LONG(height)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(getThis());
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
     intern->rendertexture = LoadRenderTexture(zend_long_2int(width), zend_long_2int(height));
 }
 
 PHP_METHOD(RenderTexture, texture)
 {
-    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(getThis());
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
 
     //-- TODO: Implement
     //RETURN_LONG(intern->rendertexture.texture);
@@ -104,7 +104,7 @@ PHP_METHOD(RenderTexture, texture)
 
 PHP_METHOD(RenderTexture, depth)
 {
-    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(getThis());
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
 
     //-- TODO: Implement
     //RETURN_LONG(intern->rendertexture.depth);
@@ -112,8 +112,23 @@ PHP_METHOD(RenderTexture, depth)
 
 PHP_METHOD(RenderTexture, id)
 {
-    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(getThis());
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
+
     RETURN_LONG(intern->rendertexture.id);
+}
+
+// RLAPI void BeginTextureMode(RenderTexture2D target);
+PHP_METHOD(RenderTexture, begin)
+{
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
+
+    BeginTextureMode(intern->rendertexture);
+}
+
+// RLAPI void EndTextureMode(void);/
+PHP_METHOD(RenderTexture, end)
+{
+    EndTextureMode();
 }
 
 const zend_function_entry php_raylib_rendertexture_methods[] = {
@@ -121,6 +136,8 @@ const zend_function_entry php_raylib_rendertexture_methods[] = {
         PHP_ME(RenderTexture, texture, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(RenderTexture, depth, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(RenderTexture, id, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, begin, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, end, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

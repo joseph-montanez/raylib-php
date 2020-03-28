@@ -83,7 +83,7 @@ zend_object * php_raylib_camera2d_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Camera2d, __construct)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     intern->camera2d = (Camera2D) {
             .offset = (Vector2) {.x = 0, .y = 0},
@@ -95,7 +95,7 @@ PHP_METHOD(Camera2d, __construct)
 
 PHP_METHOD(Camera2d, getOffset)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     zval *obj = malloc(sizeof(zval));
     object_init_ex(obj, php_raylib_vector2_ce);
@@ -108,7 +108,7 @@ PHP_METHOD(Camera2d, getOffset)
 
 PHP_METHOD(Camera2d, setOffset)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     zval *offset;
 
@@ -124,7 +124,7 @@ PHP_METHOD(Camera2d, setOffset)
 
 PHP_METHOD(Camera2d, getTarget)
 {
-    php_raylib_camera2d_object *self = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *self = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     zval *obj = malloc(sizeof(zval));
     object_init_ex(obj, php_raylib_vector2_ce);
@@ -137,7 +137,7 @@ PHP_METHOD(Camera2d, getTarget)
 
 PHP_METHOD(Camera2d, setTarget)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     zval *target;
 
@@ -152,14 +152,14 @@ PHP_METHOD(Camera2d, setTarget)
 
 PHP_METHOD(Camera2d, getRotation)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     RETURN_DOUBLE((double) intern->camera2d.rotation)
 }
 
 PHP_METHOD(Camera2d, setRotation)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     double rotation;
 
@@ -172,14 +172,14 @@ PHP_METHOD(Camera2d, setRotation)
 
 PHP_METHOD(Camera2d, getZoom)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     RETURN_DOUBLE((double) intern->camera2d.zoom)
 }
 
 PHP_METHOD(Camera2d, setZoom)
 {
-    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(getThis());
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
     double zoom;
 

@@ -90,14 +90,14 @@ PHP_METHOD(Wave, __construct)
         Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave = LoadWave(fileName->val);
 }
 
 PHP_METHOD(Wave, getSampleCount)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleCount);
 }
 
@@ -109,7 +109,7 @@ PHP_METHOD(Wave, setSampleCount)
             Z_PARAM_LONG(sampleCount)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave.sampleCount = (unsigned int) sampleCount;
 }
@@ -117,7 +117,7 @@ PHP_METHOD(Wave, setSampleCount)
 
 PHP_METHOD(Wave, getSampleRate)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleRate);
 }
 
@@ -129,14 +129,14 @@ PHP_METHOD(Wave, setSampleRate)
         Z_PARAM_LONG(sampleRate)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave.sampleRate = (unsigned int) sampleRate;
 }
 
 PHP_METHOD(Wave, getSampleSize)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleSize);
 }
 
@@ -148,14 +148,14 @@ PHP_METHOD(Wave, setSampleSize)
         Z_PARAM_LONG(sampleSize)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave.sampleSize = (unsigned int) sampleSize;
 }
 
 PHP_METHOD(Wave, getChannels)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.channels);
 }
 
@@ -167,14 +167,14 @@ PHP_METHOD(Wave, setChannels)
         Z_PARAM_LONG(channels)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave.channels = (unsigned int) channels;
 }
 
 PHP_METHOD(Wave, getData)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     zend_string *str = zend_string_init(intern->wave.data, sizeof(intern->wave.data)-1, 0);
 
@@ -189,7 +189,7 @@ PHP_METHOD(Wave, export)
     Z_PARAM_STR(data)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     ExportWave(intern->wave, data->val);
 }
@@ -203,7 +203,7 @@ PHP_METHOD(Wave, exportAsCode)
         Z_PARAM_STR(data)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     ExportWaveAsCode(intern->wave, data->val);
 }
@@ -216,7 +216,7 @@ PHP_METHOD(Wave, setData)
         Z_PARAM_STR(data)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     intern->wave.data = data->val;
 }
@@ -231,7 +231,7 @@ PHP_METHOD(Wave, crop)
         Z_PARAM_LONG(finalSample)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     WaveCrop(&intern->wave, (unsigned int) initSample, (unsigned int) finalSample);
 }
@@ -248,7 +248,7 @@ PHP_METHOD(Wave, format)
         Z_PARAM_LONG(channels)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     WaveFormat(&intern->wave, (unsigned int) sampleRate, (unsigned int) sampleSize, (unsigned int) channels);
 }
@@ -256,7 +256,7 @@ PHP_METHOD(Wave, format)
 
 PHP_METHOD(Wave, getDataArray)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     float *data = GetWaveData(intern->wave);
 
@@ -279,7 +279,7 @@ PHP_METHOD(Wave, getDataArray)
 
 PHP_METHOD(Wave, copy)
 {
-    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(getThis());
+    php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
     object_init_ex(return_value, php_raylib_wave_ce);
 

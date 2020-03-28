@@ -9,13 +9,13 @@ This is a one to one mapping of each raylib function.
 | RLAPI void InitWindow(int width, int height, const char *title) | raylib\Window::init() ||
 | RLAPI bool WindowShouldClose(void);                             | raylib\Window::shouldClose() ||
 | RLAPI void CloseWindow(void);                                   | raylib\Window::close() ||
-| RLAPI bool IsWindowReady(void);                                 | raylib\Window::isReady() ||
-| RLAPI bool IsWindowMinimized(void);                             | raylib\Window::isMinimized() ||
-| RLAPI bool IsWindowResized(void);                               | TODO
-| RLAPI bool IsWindowHidden(void);                                | TODO
-| RLAPI bool IsWindowFullscreen(void);                            | TODO
-| RLAPI void UnhideWindow(void);                                  | TODO
-| RLAPI void HideWindow(void);                                    | TODO
+| RLAPI bool IsWindowReady(void);                                 | raylib\Window::isReady() : bool ||
+| RLAPI bool IsWindowMinimized(void);                             | raylib\Window::isMinimized() : bool ||
+| RLAPI bool IsWindowResized(void);                               | raylib\Window::isResized() : bool ||
+| RLAPI bool IsWindowHidden(void);                                | raylib\Window::isHidden() : bool ||
+| RLAPI bool IsWindowFullscreen(void);                            | raylib\Window::isWindowFullscreen() | Waiting on RayLib 3.0 release|
+| RLAPI void UnhideWindow(void);                                  | raylib\Window::unhideWindow() ||
+| RLAPI void HideWindow(void);                                    | raylib\Window::hideWindow() ||
 | RLAPI void ToggleFullscreen(void);                              | raylib\Window::toggleFullscreen() ||
 | RLAPI void SetWindowIcon(Image image);                          | raylib\Window::setIcon(Image $image) ||
 | RLAPI void SetWindowTitle(const char *title);                   | raylib\Window::setTitle(string $title) ||
@@ -23,18 +23,18 @@ This is a one to one mapping of each raylib function.
 | RLAPI void SetWindowMonitor(int monitor);                       | raylib\Window::setMonitor(int $monitor) ||
 | RLAPI void SetWindowMinSize(int width, int height);             | raylib\Window::setMinSize(int $width, int $height) ||
 | RLAPI void SetWindowSize(int width, int height);                | raylib\Window::setSize(int $width, int $height) ||
-| RLAPI void *GetWindowHandle(void);                              | TODO
+| RLAPI void *GetWindowHandle(void);                              | N/A | At this time this will not be implemented as its OS dependant :( |
 | RLAPI int GetScreenWidth(void);                                 | raylib\Window::getWidth() : int ||
 | RLAPI int GetScreenHeight(void);                                | raylib\Window::getHeight() : int ||
-| RLAPI int GetMonitorCount(void);                                | TODO
-| RLAPI int GetMonitorWidth(int monitor);                         | TODO
-| RLAPI int GetMonitorHeight(int monitor);                        | TODO
-| RLAPI int GetMonitorPhysicalWidth(int monitor);                 | TODO
-| RLAPI int GetMonitorPhysicalHeight(int monitor);                | TODO
-| RLAPI Vector2 GetWindowPosition(void);                          | TODO
-| RLAPI const char *GetMonitorName(int monitor);                  | TODO
-| RLAPI const char *GetClipboardText(void);                       | TODO
-| RLAPI void SetClipboardText(const char *text);                  | TODO
+| RLAPI int GetMonitorCount(void);                                | raylib\Window::getMonitorCount() : int ||
+| RLAPI int GetMonitorWidth(int monitor);                         | raylib\Window::getMonitorWidth(int monitor) : int ||
+| RLAPI int GetMonitorHeight(int monitor);                        | raylib\Window::getMonitorHeight(int monitor) : int ||
+| RLAPI int GetMonitorPhysicalWidth(int monitor);                 | raylib\Window::getMonitorPhysicalWidth(int monitor) : int ||
+| RLAPI int GetMonitorPhysicalHeight(int monitor);                | raylib\Window::getMonitorPhysicalHeight(int monitor) : int ||
+| RLAPI Vector2 GetWindowPosition(void);                          | raylib\Window::getWindowPosition() : Vector2 ||
+| RLAPI const char *GetMonitorName(int monitor);                  | raylib\Window::getMonitorName(int monitor) : string ||
+| RLAPI const char *GetClipboardText(void);                       | raylib\Window::getClipboardText() : string ||
+| RLAPI void SetClipboardText(const char *text);                  | raylib\Window::getMonitorCount(string $text) ||
 
 ###  Cursor-related functions
 | C API | PHP API | Comment |
@@ -55,10 +55,10 @@ This is a one to one mapping of each raylib function.
 | RLAPI void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
 | RLAPI void BeginMode3D(Camera camera3d);                          | raylib\Draw::beginMode3d(Camera camera3d); ||
 | RLAPI void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
-| RLAPI void BeginTextureMode(RenderTexture2D target);              | raylib\Draw::beginTextureMode(RenderTexture2D $target); ||
-| RLAPI void EndTextureMode(void);                                  | raylib\Draw::endTextureMode(void); ||                    
-| RLAPI void BeginScissorMode(int x, int y, int width, int height); | TODO
-| RLAPI void EndScissorMode(void);                                  | TODO
+| RLAPI void BeginTextureMode(RenderTexture2D target);              | raylib\RenderTexture::begind(); ||
+| RLAPI void EndTextureMode(void);                                  | raylib\RenderTexture::end(void); ||                    
+| RLAPI void BeginScissorMode(int x, int y, int width, int height); | raylib\Draw::beginScissorMode ||
+| RLAPI void EndScissorMode(void);                                  | raylib\Draw::endScissorMode ||
 
 ###  Screen-space-related functions
 | C API | PHP API | Comment |

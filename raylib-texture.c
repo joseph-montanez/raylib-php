@@ -322,37 +322,37 @@ PHP_METHOD(Texture, __construct)
             Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     intern->texture = LoadTexture(fileName->val);
 }
 
 PHP_METHOD(Texture, width)
 {
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.width);
 }
 
 PHP_METHOD(Texture, height)
 {
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.height);
 }
 
 PHP_METHOD(Texture, format)
 {
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.format);
 }
 
 PHP_METHOD(Texture, id)
 {
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.id);
 }
 
 PHP_METHOD(Texture, mipmaps)
 {
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.mipmaps);
 }
 
@@ -365,14 +365,14 @@ PHP_METHOD(Texture, draw)
     ZEND_PARSE_PARAMETERS_START(3, 3)
             Z_PARAM_LONG(posX)
             Z_PARAM_LONG(posY)
-            Z_PARAM_ZVAL(color)
+            Z_PARAM_ZVAL(tint)
     ZEND_PARSE_PARAMETERS_END();
 
 
 //    php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTexture(intern->texture, (int) posX, (int) posY, phpTint->color);
 }
@@ -390,11 +390,10 @@ PHP_METHOD(Texture, drawV)
         Z_PARAM_ZVAL(tint)
     ZEND_PARSE_PARAMETERS_END();
 
-
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTextureV(intern->texture, phpPosition->vector2, phpTint->color);
 }
@@ -418,7 +417,7 @@ PHP_METHOD(Texture, drawEx)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTextureEx(intern->texture, phpPosition->vector2, (float) rotation, (float) scale, phpTint->color);
 }
@@ -440,7 +439,7 @@ PHP_METHOD(Texture, drawRec)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTextureRec(intern->texture, phpSourceRec->rectangle, phpPosition->vector2, phpTint->color);
 }
@@ -464,7 +463,7 @@ PHP_METHOD(Texture, drawQuad)
     php_raylib_rectangle_object *phpQuad = Z_RECTANGLE_OBJ_P(quad);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTextureQuad(intern->texture, phpTiling->vector2, phpOffset->vector2, phpQuad->rectangle, phpTint->color);
 }
@@ -493,7 +492,7 @@ PHP_METHOD(Texture, drawPro)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(getThis());
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
 
     DrawTexturePro(intern->texture, phpSourceRec->rectangle, phpDestRec->rectangle, phpOrigin->vector2, (float) rotation, phpColor->color);
 }

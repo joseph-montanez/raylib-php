@@ -114,8 +114,8 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
             $bunny->speed->setY(-$bunnySpeedY);
         }
     }
-    //----------------------------------------------------------------------------------
 
+    //----------------------------------------------------------------------------------
     // Draw
     //----------------------------------------------------------------------------------
     Draw::begin();
@@ -130,7 +130,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
         // Process of sending data is costly and it could happen that GPU data has not been completely
         // processed for drawing while new data is tried to be sent (updating current in-use buffers)
         // it could generates a stall and consequently a frame drop, limiting the number of drawn bunnies
-        $texBunny->draw($bunny->position->getX(), $bunny->position->getY(), $bunny->color);
+        $texBunny->drawV($bunny->position, $bunny->color);
     }
 
     Draw::Rectangle(0, 0, $screenWidth, 40, $black);

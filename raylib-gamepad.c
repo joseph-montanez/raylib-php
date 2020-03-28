@@ -90,7 +90,7 @@ zend_object * php_raylib_gamepad_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Gamepad, __construct)
 {
-    php_raylib_gamepad_object *intern = Z_GAMEPAD_OBJ_P(getThis());
+    php_raylib_gamepad_object *intern = Z_GAMEPAD_OBJ_P(ZEND_THIS);
 }
 
 // Detect if a gamepad is available

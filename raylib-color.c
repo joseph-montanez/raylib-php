@@ -109,7 +109,7 @@ PHP_METHOD(Color, __construct)
             Z_PARAM_LONG(a)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
     intern->color = (Color) {
             .r = (unsigned char) r,
@@ -142,13 +142,13 @@ PHP_METHOD(Color, normalize)
 
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(color);
 
-//    zval *obj = malloc(sizeof(zval));
-//    object_init_ex(obj, php_raylib_vector4_ce);
-//
-//    php_raylib_vector4_object *result = Z_VECTOR4_OBJ_P(obj);
-//    result->vector4 = ColorNormalize(intern->color);
-//
-//    RETURN_OBJ(&result->std);
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector4_ce);
+
+    php_raylib_vector4_object *result = Z_VECTOR4_OBJ_P(obj);
+    result->vector4 = ColorNormalize(intern->color);
+
+    RETURN_OBJ(&result->std);
 }
 
 PHP_METHOD(Color, fade)
@@ -174,7 +174,7 @@ PHP_METHOD(Color, fade)
 
 PHP_METHOD(Color, getAlpha)
 {
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.a);
 }
 
@@ -186,14 +186,14 @@ PHP_METHOD(Color, setAlpha)
             Z_PARAM_ZVAL(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
     intern->color.a = zend_double_2float(alpha);
 }
 
 PHP_METHOD(Color, getRed)
 {
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.r);
 }
 
@@ -205,14 +205,14 @@ PHP_METHOD(Color, setRed)
             Z_PARAM_ZVAL(red)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
     intern->color.r = zend_double_2float(red);
 }
 
 PHP_METHOD(Color, getGreen)
 {
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.g);
 }
 
@@ -224,14 +224,14 @@ PHP_METHOD(Color, setGreen)
             Z_PARAM_ZVAL(green)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
     intern->color.g = zend_double_2float(green);
 }
 
 PHP_METHOD(Color, getBlue)
 {
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.b);
 }
 
@@ -243,7 +243,7 @@ PHP_METHOD(Color, setBlue)
             Z_PARAM_ZVAL(blue)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_color_object *intern = Z_COLOR_OBJ_P(getThis());
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
     intern->color.b = zend_double_2float(blue);
 }

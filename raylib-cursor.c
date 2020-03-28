@@ -81,7 +81,7 @@ zend_object * php_raylib_cursor_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Cursor, __construct)
 {
-    php_raylib_cursor_object *intern = Z_CURSOR_OBJ_P(getThis());
+    php_raylib_cursor_object *intern = Z_CURSOR_OBJ_P(ZEND_THIS);
 }
 
 //void ShowCursor(void);

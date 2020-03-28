@@ -93,7 +93,7 @@ zend_object * php_raylib_camera3d_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Camera, __construct)
 {
-    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(getThis());
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
     intern->camera3d = (Camera) {
             .position = (Vector3) {.x = 0, .y = 0, .z = 0},
@@ -106,7 +106,7 @@ PHP_METHOD(Camera, __construct)
 
 PHP_METHOD(Camera, getPosition)
 {
-    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(getThis());
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
     array_init(return_value);
     add_assoc_double(return_value, "x", (double) intern->camera3d.position.x);
@@ -116,7 +116,7 @@ PHP_METHOD(Camera, getPosition)
 
 PHP_METHOD(Camera, setPosition)
 {
-    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(getThis());
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
     zval *positionArr;
 

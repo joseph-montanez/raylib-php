@@ -87,7 +87,7 @@ zend_object * php_raylib_draw_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Draw, __construct)
 {
-    php_raylib_draw_object *intern = Z_DRAW_OBJ_P(getThis());
+    php_raylib_draw_object *intern = Z_DRAW_OBJ_P(ZEND_THIS);
 }
 
 //void ClearBackground(Color color);
@@ -156,16 +156,28 @@ PHP_METHOD(Draw, endMode3d)
     EndMode3D();
 }
 
-//void BeginTextureMode(RenderTexture2D target);
-PHP_METHOD(Draw, beginTextureMode)
+//void RLAPI void BeginScissorMode(int x, int y, int width, int height);
+PHP_METHOD(Draw, beginScissorMode)
 {
-    // TODO
+    zend_long x;
+    zend_long y;
+    zend_long width;
+    zend_long height;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(x)
+        Z_PARAM_LONG(y)
+        Z_PARAM_LONG(width)
+        Z_PARAM_LONG(height)
+    ZEND_PARSE_PARAMETERS_END();
+
+    BeginScissorMode(x, y, width, height);
 }
 
-//void end3dMode(void);
-PHP_METHOD(Draw, endTextureMode)
+//RLAPI void EndScissorMode(void);
+PHP_METHOD(Draw, endScissorMode)
 {
-    EndTextureMode();
+    EndScissorMode();
 }
 
 //void DrawPixel(int posX, int posY, Color color);
@@ -542,8 +554,8 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, endMode2d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, beginMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, endMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, beginTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, endTextureMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginScissorMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endScissorMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 
         // Basic shapes drawing functions
         PHP_ME(Draw, pixel, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

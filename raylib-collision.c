@@ -84,7 +84,7 @@ zend_object * php_raylib_collision_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Collision, __construct)
 {
-    php_raylib_collision_object *intern = Z_COLLISION_OBJ_P(getThis());
+    php_raylib_collision_object *intern = Z_COLLISION_OBJ_P(ZEND_THIS);
 }
 
 

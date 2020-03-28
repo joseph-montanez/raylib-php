@@ -94,7 +94,7 @@ PHP_METHOD(Vector4, __construct)
             Z_PARAM_ZVAL(w)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4 = (Vector4) {
             .x = zend_double_2float(x),
@@ -107,7 +107,7 @@ PHP_METHOD(Vector4, __construct)
 
 PHP_METHOD(Vector4, getX)
 {
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector4.x);
 }
 
@@ -119,14 +119,14 @@ PHP_METHOD(Vector4, setX)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.x = zend_double_2float(val);
 }
 
 PHP_METHOD(Vector4, getY)
 {
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector4.y);
 }
 
@@ -138,7 +138,7 @@ PHP_METHOD(Vector4, setY)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.y = zend_double_2float(val);
 }
@@ -146,7 +146,7 @@ PHP_METHOD(Vector4, setY)
 
 PHP_METHOD(Vector4, getZ)
 {
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector4.z);
 }
 
@@ -158,7 +158,7 @@ PHP_METHOD(Vector4, setZ)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.z = zend_double_2float(val);
 }
@@ -166,7 +166,7 @@ PHP_METHOD(Vector4, setZ)
 
 PHP_METHOD(Vector4, getW)
 {
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->vector4.w);
 }
 
@@ -178,7 +178,7 @@ PHP_METHOD(Vector4, setW)
             Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(getThis());
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.w = zend_double_2float(val);
 }

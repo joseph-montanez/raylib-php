@@ -88,7 +88,7 @@ PHP_METHOD(Font, __construct)
             Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_font_object *intern = Z_FONT_OBJ_P(getThis());
+    php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
     intern->font = LoadFont(fileName->val);
 }
 
