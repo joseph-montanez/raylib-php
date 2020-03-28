@@ -51,6 +51,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib.h"
 #include "raylib-image.h"
 #include "raylib-utils.h"
+#include "raylib-vector2.h"
 #include "raylib-window.h"
 
 
@@ -319,19 +320,19 @@ PHP_METHOD(Window, getMonitorName)
 //RLAPI const char *GetClipboardText(void);
 PHP_METHOD(Window, getClipboardText)
 {
-    RETURN_STRING(GetClipboardText(());
+    RETURN_STRING(GetClipboardText());
 }
 
 //RLAPI void SetClipboardText(const char *text);
-PHP_METHOD(Window, getScreenHeight)
+PHP_METHOD(Window, setClipboardText)
 {
-    char *text;
+    zend_string *text;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
         Z_PARAM_STR(text)
     ZEND_PARSE_PARAMETERS_END();
 
-    SetClipboardText(text);
+    SetClipboardText((const char *)text);
 }
 
 //void CloseWindow(void);
