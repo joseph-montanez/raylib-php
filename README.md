@@ -70,6 +70,12 @@ Window::close();        // Close window and OpenGL context
 //--------------------------------------------------------------------------------------
 ```
 
+## Autocomplete
+
+In this branch there is a [stub](./stub) directory is that contains all the classes and methods so you get information on everything and anything implemented.
+
+![IDE Autocomplete](img/autocomplete.png)
+
 ## License
 
 raylib-php is licensed under an unmodified zlib/libpng license, which is an OSI-certified, 
