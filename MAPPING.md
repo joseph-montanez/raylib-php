@@ -234,7 +234,7 @@ This is a one to one mapping of each raylib function.
 | RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);| TODO ||
 | RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       | TODO ||
 | RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   | raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, array $color) | |
-| RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              | TODO | |
+| RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              | raylib\Draw::rectangleRec(array $rec, int $lineThick, array $color) | |
 | RLAPI void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);              | TODO ||
 | RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color); | TODO ||
 | RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                | raylib\Draw::triangle(array $v1, array $v2, array $v3, array $color) | |

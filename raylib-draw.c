@@ -164,7 +164,7 @@ PHP_METHOD(Draw, beginScissorMode)
     zend_long width;
     zend_long height;
 
-    ZEND_PARSE_PARAMETERS_START(1, 1)
+    ZEND_PARSE_PARAMETERS_START(4, 4)
         Z_PARAM_LONG(x)
         Z_PARAM_LONG(y)
         Z_PARAM_LONG(width)
@@ -505,6 +505,25 @@ PHP_METHOD(Draw, rectangleLines)
     DrawRectangleLines(zend_long_2int(posX), zend_long_2int(posY),  zend_long_2int(width),  zend_long_2int(height), phpColor->color);
 }
 
+// Draw rectangle outline with extended parameters
+//RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);
+PHP_METHOD(Draw, rectangleLinesEx)
+{
+    zval *rec;
+    zend_long lineThick;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_ZVAL(rec)
+        Z_PARAM_LONG(lineThick)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawRectangleLinesEx(phpRec->rectangle, (int) lineThick, phpColor->color);
+}
 
 // Draw a color-filled triangle
 //RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
@@ -573,6 +592,7 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, rectangleRec, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectanglePro, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleLinesEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, triangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
