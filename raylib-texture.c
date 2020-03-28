@@ -64,7 +64,7 @@ zend_object_handlers php_raylib_texture_object_handlers;
 
 static HashTable php_raylib_texture_prop_handlers;
 
-typedef int (*raylib_texture_read_int_t)(struct Texture2D *texture);
+typedef zend_long (*raylib_texture_read_int_t)(php_raylib_texture_object *texture);
 
 typedef struct _raylib_texture_prop_handler {
     raylib_texture_read_int_t read_int_func;
@@ -85,17 +85,17 @@ static void php_raylib_texture_register_prop_handler(HashTable *prop_handler, ch
 
 static zval *php_raylib_texture_property_reader(php_raylib_texture_object *obj, raylib_texture_prop_handler *hnd, zval *rv) /* {{{ */
 {
-    int retint = 0;
+    zend_long retint = 0;
 
     if (obj != NULL && hnd->read_int_func) {
-        retint = hnd->read_int_func(&obj->texture);
+        retint = hnd->read_int_func(obj);
         if (retint == -1) {
             php_error_docref(NULL, E_WARNING, "Internal raylib texture error returned");
             return NULL;
         }
     }
 
-    ZVAL_LONG(rv, (long)retint);
+    ZVAL_LONG(rv, retint);
 
     return rv;
 }
@@ -107,7 +107,7 @@ static zval *php_raylib_texture_get_property_ptr_ptr(zval *object, zval *member,
     zval tmp_member;
     zval *retval = NULL;
     raylib_texture_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     if (Z_TYPE_P(member) != IS_STRING) {
         ZVAL_COPY(&tmp_member, member);
@@ -141,7 +141,7 @@ static zval *php_raylib_texture_read_property(zval *object, zval *member, int ty
     zval tmp_member;
     zval *retval = NULL;
     raylib_texture_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     if (Z_TYPE_P(member) != IS_STRING) {
         ZVAL_COPY(&tmp_member, member);
@@ -179,7 +179,7 @@ static int php_raylib_texture_has_property(zval *object, zval *member, int type,
     php_raylib_texture_object *obj;
     zval tmp_member;
     raylib_texture_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
     int retval = 0;
 
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -282,33 +282,33 @@ zend_object * php_raylib_texture_new(zend_class_entry *ce TSRMLS_DC)
 
 // PHP property handling
 
-static int php_raylib_texture_width(struct Texture2D *texture) /* {{{ */
+static zend_long php_raylib_texture_width(php_raylib_texture_object *obj) /* {{{ */
 {
-    return texture->width;
+    return (zend_long) obj->texture.width;
 }
 /* }}} */
 
-static int php_raylib_texture_height(struct Texture2D *texture) /* {{{ */
+static zend_long php_raylib_texture_height(php_raylib_texture_object *obj) /* {{{ */
 {
-    return texture->height;
+    return (zend_long) obj->texture.height;
 }
 /* }}} */
 
-static int php_raylib_texture_mipmaps(struct Texture2D *texture) /* {{{ */
+static zend_long php_raylib_texture_mipmaps(php_raylib_texture_object *obj) /* {{{ */
 {
-    return texture->mipmaps;
+    return (zend_long) obj->texture.mipmaps;
 }
 /* }}} */
 
-static int php_raylib_texture_format(struct Texture2D *texture) /* {{{ */
+static zend_long php_raylib_texture_format(php_raylib_texture_object *obj) /* {{{ */
 {
-    return texture->format;
+    return (zend_long) obj->texture.format;
 }
 /* }}} */
 
-static int php_raylib_texture_id(struct Texture2D *texture) /* {{{ */
+static zend_long php_raylib_texture_id(php_raylib_texture_object *obj) /* {{{ */
 {
-    return texture->id;
+    return (zend_long) obj->texture.id;
 }
 /* }}} */
 
