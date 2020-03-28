@@ -75,22 +75,25 @@ class Draw
     }
 
     /**
-     * Initializes render texture for drawing
+     * Begin scissor mode (define screen area for following drawing)
      *
-     * @param RenderTexture2D $target
+     * @param int $x
+     * @param int $y
+     * @param int $width
+     * @param int $height
      *
      * @return void
      */
-    public static function beginTextureMode(RenderTexture2D $target): void
+    public static function beginScissorMode(int $x, int $y, int $width, int $height): void
     {
     }
 
     /**
-     * Ends drawing to render texture
+     * End scissor mode
      *
      * @return void
      */
-    public static function endTextureMode(): void
+    public static function endScissorMode(): void
     {
     }
 

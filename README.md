@@ -5,7 +5,7 @@ PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video gam
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
 
- - raylib.h - 120 of 426 functions ~ %28 complete
+ - raylib.h - 141 of 426 functions ~ %33 complete
  - raymath.h - TODO Extra mathy stuff
  - raygui.h - TODO API for drawing GUI
  - physac.h - TODO More complex collision detection, more than built-in collision detection
@@ -17,7 +17,7 @@ Here are some common misconceptions:
  - **PHP has no multi-threading**. There are native PHP extensions to enable this, pThreads and now a easier way to tackle this issue Parallel - https://github.com/krakjoe/parallel
  - **PHP is too slow**. Since PHP 7 a lot of things have gotten faster, so it can out perform Python and NodeJS in some area. PHP 8 will include a JIT which should provide even more performance, ETA of PHP is around December of 2020.
  - **Object Oriented Programming in PHP is horrible**. Since PHP 5.4+ you get a lot of feature parity and since PHP 7 you now get type checking.
- - **Garbage Collection IS ... GARBAGE** - Until PHP 7.3 this was true. Running PHP in a tight loop for hours/days on end would hit a point where PHP could spend more time doing GC than anything else.
+ - **Garbage Collection IS ... GARBAGE** - Until PHP 7.3 this was true. Running PHP in a tight loop for hours/days on end would hit a point where PHP could spend more time doing GC than anything else. This has been greatly improved.
 
 ## Example
 
@@ -93,7 +93,7 @@ If this becomes a bigger problem, I can create a procedural API compatibility la
 
 The PHP RayLib implementation has two glaring limitations.
 
- - All object properties must use **getters** and **setters**. At this time I am not aware of a way to have RayLib structs mirror into PHP object properties. So instead of `$vec->x += 1;` you must instead use `$vec->setX($vec->getX() + 1)`. I know it's a pain but even if there was a way to allow this, I may would have to keep two copies. PHP does have **magic** get and set functions that look to be available through the C-API so if that true then I might be able to introduce this later. 
+ - Not all object properties are read and write, for example `/raylib/Image::width` is a read-only property but `/raylib/Vector2::x` is a read/write properties. When you want to alter a property that is read-only there should be method calls such as `/raylib/Image::resize()` that will adjust the properties for you.
  - All RayLib object assignment i.e `$player->position = $position` will **not copy** the variable but instead **link** the property. So if you want to copy the data instead, you need to use PHP's clone feature `clone` i.e `$player->position = clone $position`.
 
 ## How To Build PHP Extension

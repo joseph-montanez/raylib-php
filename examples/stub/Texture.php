@@ -77,10 +77,10 @@ class Texture
      *
      * {@internal RLAPI void DrawTextureV(Texture2D texture, Vector2 position, Color tint); }}
      *
-     * @param array         $position Vector2 array ['x' => 0, 'y' => 0]
-     * @param \raylib\Color $tint     The color [red,blue,green,alpha] i.e [0,0,0,255]
+     * @param \raylib\Vector2 $position Where to draw the texture on screen
+     * @param \raylib\Color   $tint     The color [red,blue,green,alpha] i.e [0,0,0,255]
      */
-    public function drawV(array $position, Color $tint): void
+    public function drawV(\raylib\Vector2 $position, Color $tint): void
     {
     }
 
@@ -89,10 +89,10 @@ class Texture
      *
      * {@internal RLAPI void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint); }}
      *
-     * @param array         $position Vector2 array ['x' => 0, 'y' => 0]
-     * @param float         $rotation
-     * @param float         $scale
-     * @param \raylib\Color $tint     The color [red,blue,green,alpha] i.e [0,0,0,255]
+     * @param \raylib\Vector2 $position Vector2 array ['x' => 0, 'y' => 0]
+     * @param float           $rotation
+     * @param float           $scale
+     * @param \raylib\Color   $tint     The color [red,blue,green,alpha] i.e [0,0,0,255]
      */
     public function drawEx(\raylib\Vector2 $position, float $rotation, float $scale, Color $tint): void
     {
@@ -103,11 +103,11 @@ class Texture
      *
      * {@internal RLAPI void DrawTextureRec(Texture2D texture, Rectangle sourceRec, Vector2 position, Color tint);}}
      *
-     * @param \raylib\Rectangle         $sourceRec Rectangle array ['x' => 0, 'y' => 0, 'width' => 0, 'height' => 0]
-     * @param \raylib\Vector2          $position  Vector2 array ['x' => 0, 'y' => 0]
-     * @param \raylib\Color $tint
+     * @param \raylib\Rectangle $sourceRec Rectangle array ['x' => 0, 'y' => 0, 'width' => 0, 'height' => 0]
+     * @param \raylib\Vector2   $position  Vector2 array ['x' => 0, 'y' => 0]
+     * @param \raylib\Color     $tint
      */
-    public function drawRec(\raylib\Rectangle $sourceRec, \raylib\Vector2  $position, Color $tint): void
+    public function drawRec(\raylib\Rectangle $sourceRec, \raylib\Vector2 $position, Color $tint): void
     {
     }
 

@@ -58,6 +58,9 @@ $texBunny = new \raylib\Texture(__DIR__ . "/resources/wabbit_alpha.png");
 $texWidth = $texBunny->width / 2;
 $texHeight = $texBunny->height / 2;
 
+/**
+ * @var $bunniesCount Vector2[]
+ */
 $bunnies = [];
 
 $bunniesCount = 0;           // Bunnies counter
@@ -74,13 +77,15 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
         // Create more bunnies
         for ($i = 0; $i < 100; $i++) {
             if ($bunniesCount < MAX_BUNNIES) {
-                $bunnies[$bunniesCount] = new Bunny();
-
-                $bunnies[$bunniesCount]->position = Mouse::getPosition();
-                $bunnies[$bunniesCount]->speed = new Vector2((float)rand(-250, 250) / 60.0, (float)rand(-250, 250) / 60.0);
-                $bunnies[$bunniesCount]->color = new Color(rand(50, 240),
+                $bunny = new Bunny();
+                $bunny->position = clone Mouse::getPosition();
+                $bunny->speed = new Vector2((float)rand(-250, 250) / 60.0, (float)rand(-250, 250) / 60.0);
+                $bunny->color = new Color(rand(50, 240),
                     rand(80, 240),
                     rand(100, 240), 255);
+
+                $bunnies[$bunniesCount] = $bunny;
+
                 $bunniesCount++;
             }
         }
@@ -92,28 +97,15 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     for ($i = 0; $i < $bunniesCount; $i++) {
         $bunny = $bunnies[$i];
 
-        $bunnyX = $bunny->position->getX();
-        $bunnyY = $bunny->position->getY();
+        $bunny->position->x += $bunny->speed->x;
+        $bunny->position->y += $bunny->speed->y;
 
-        $bunnySpeedX = $bunny->speed->getX();
-        $bunnySpeedY = $bunny->speed->getY();
-
-        $bunnyX += $bunnySpeedX;
-        $bunnyY += $bunnySpeedY;
-
-        $bunnyTexPosX = $bunnyX + $texWidth;
-        $bunnyTexPosY = $bunnyY + $texHeight;
-
-        $bunny->position->setX($bunnyX);
-        $bunny->position->setY($bunnyY);
-
-        if ((($bunnyTexPosX) > $screenWidth) || (($bunnyTexPosX) < 0)) {
-            $bunny->speed->setX(-$bunnySpeedX);
-        }
-        if ((($bunnyTexPosY) > $screenHeight) || (($bunnyTexPosY - 40) < 0)) {
-            $bunny->speed->setY(-$bunnySpeedY);
-        }
+        if ((($bunny->position->x + $texBunny->width / 2) > Window::getScreenWidth()) ||
+            (($bunny->position->x + $texBunny->width / 2) < 0)) $bunny->speed->x *= -1;
+        if ((($bunny->position->y + $texBunny->height / 2) > Window::getScreenHeight()) ||
+            (($bunny->position->y + $texBunny->height / 2 - 40) < 0)) $bunny->speed->y *= -1;
     }
+    //----------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------
     // Draw

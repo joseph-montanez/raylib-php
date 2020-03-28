@@ -24,4 +24,21 @@ class RenderTexture2D
 
     }
 
+    /**
+     * Initializes render texture for drawing
+     *
+     * @return void
+     */
+    public static function begin(): void
+    {
+    }
+
+    /**
+     * Ends drawing to render texture
+     *
+     * @return void
+     */
+    public static function end(): void
+    {
+    }
 }
