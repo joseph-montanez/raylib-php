@@ -19,6 +19,13 @@ class Window {
     public static function init(int $width, int $height, string $title) {}
 
     /**
+     * Check if raylib\Input\Key::ESCAPE pressed or Close icon pressed
+     *
+     * @return bool
+     */
+    public static function shouldClose() : bool {}
+
+    /**
      * Close window and unload OpenGL context
      */
     public static function close() {}
@@ -31,19 +38,32 @@ class Window {
     public static function isReady() : bool {}
 
     /**
-     * Check if raylib\Input\Key::ESCAPE pressed or Close icon pressed
-     *
-     * @return bool
-     */
-    public static function shouldClose() : bool {}
-
-    /**
      * Check if window has been minimized (or lost focus)
      *
      * @return bool
      */
     public static function isMinimized() : bool {}
 
+    /**
+     * Check if window has been resized
+     *
+     * @return bool
+     */
+    public static function isWindowResized() : bool {}
+
+    /**
+     * Check if window is currently hidden
+     *
+     * @return bool
+     */
+    public static function isWindowHidden() : bool {}
+
+    /**
+     * Check if window is currently fullscreen
+     *
+     * @return bool
+     */
+    public static function isWindowFullscreen() : bool {}
 
     /**
      * Toggle fullscreen mode (only PLATFORM_DESKTOP)
@@ -51,11 +71,21 @@ class Window {
     public static function toggleFullscreen() {}
 
     /**
-     * Set icon for window (only PLATFORM_DESKTOP)
-     *
-     * @param resource $image
+     * Toggle fullscreen mode (only PLATFORM_DESKTOP)
      */
-    public static function setIcon($image) {}
+    public static function unhideWindow() {}
+
+    /**
+     * Show the window
+     */
+    public static function hideWindow() {}
+
+    /**
+     * Hide the window
+     *
+     * @param \raylib\Image $image
+     */
+    public static function setIcon(\raylib\Image $image) {}
 
     /**
      * Set title for window (only PLATFORM_DESKTOP)
@@ -107,4 +137,79 @@ class Window {
      * @return int
      */
     public static function getScreenHeight() : int {}
+
+    /**
+     * Get number of connected monitors
+     *
+     * @return int
+     */
+    public static function getMonitorCount() : int {}
+
+    /**
+     * Get primary monitor width
+     *
+     * @param int $monitor
+     *
+     * @return int
+     */
+    public static function getMonitorWidth(int $monitor) : int {}
+
+    /**
+     * Get primary monitor height
+     *
+     * @param int $monitor
+     *
+     * @return int
+     */
+    public static function getMonitorHeight(int $monitor) : int {}
+
+    /**
+     * Get primary monitor physical width in millimetres
+     *
+     * @param int $monitor
+     *
+     * @return int
+     */
+    public static function getMonitorPhysicalWidth(int $monitor) : int {}
+
+    /**
+     * Get primary monitor physical height in millimetres
+     *
+     * @param int $monitor
+     *
+     * @return int
+     */
+    public static function getMonitorPhysicalHeight(int $monitor) : int {}
+
+    /**
+     * Get window position XY on monitor
+     */
+    public static function getWindowPosition() : \raylib\Vector2 {}
+
+    /**
+     * Get the human-readable, UTF-8 encoded name of the primary monitor
+     *
+     * @param int $monitor
+     *
+     * @return string
+     */
+    public static function getMonitorName(int $monitor) : string {}
+
+    /**
+     * Get clipboard text content
+     *
+     * @param int $monitor
+     *
+     * @return string
+     */
+    public static function getClipboardText(int $monitor) : string {}
+
+    /**
+     * Set clipboard text content
+     *
+     * @param string $text
+     *
+     * @return void
+     */
+    public static function setClipboardText(string $text) : void {}
 }

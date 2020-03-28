@@ -83,7 +83,7 @@ zend_object * php_raylib_window_new(zend_class_entry *ce TSRMLS_DC)
 
 PHP_METHOD(Window, __construct)
 {
-    php_raylib_window_object *intern = Z_WINDOW_OBJ_P(getThis());
+    php_raylib_window_object *intern = Z_WINDOW_OBJ_P(ZEND_THIS);
 }
 
 PHP_METHOD(Window, init)
@@ -116,12 +116,32 @@ PHP_METHOD(Window, isMinimized)
     RETURN_BOOL(IsWindowMinimized());
 }
 
+PHP_METHOD(Window, isResized)
+{
+    RETURN_BOOL(IsWindowResized());
+}
+
+PHP_METHOD(Window, isHidden)
+{
+    RETURN_BOOL(IsWindowHidden());
+}
+
 // TODO: Need to link raylib 3.0
 //RLAPI bool IsWindowFullscreen(void);
 PHP_METHOD(Window, isFullscreen)
 {
     RETURN_BOOL(false);
 //    RETURN_BOOL(IsWindowFullscreen());
+}
+
+PHP_METHOD(Window, unhideWindow)
+{
+    UnhideWindow();
+}
+
+PHP_METHOD(Window, hideWindow)
+{
+    HideWindow();
 }
 
 PHP_METHOD(Window, toggleFullscreen)
@@ -218,6 +238,102 @@ PHP_METHOD(Window, getScreenHeight)
     RETURN_LONG(GetScreenHeight());
 }
 
+//RLAPI int GetMonitorCount(void);
+PHP_METHOD(Window, getMonitorCount)
+{
+    RETURN_LONG(GetMonitorCount());
+}
+
+//RLAPI int GetMonitorWidth(int monitor);
+PHP_METHOD(Window, getMonitorWidth)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetMonitorWidth((int) monitor));
+}
+
+//RLAPI int GetMonitorHeight(int monitor);
+PHP_METHOD(Window, getMonitorHeight)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetMonitorHeight((int) monitor));
+}
+
+//RLAPI int GetMonitorPhysicalWidth(int monitor);
+PHP_METHOD(Window, getMonitorPhysicalWidth)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetMonitorPhysicalWidth((int) monitor));
+}
+
+//RLAPI int GetMonitorPhysicalHeight(int monitor);
+PHP_METHOD(Window, getMonitorPhysicalHeight)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetMonitorPhysicalHeight((int) monitor));
+}
+
+//RLAPI Vector2 GetWindowPosition(void);
+PHP_METHOD(Window, getWindowPosition)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector2_ce);
+
+    php_raylib_vector2_object *result = Z_VECTOR2_OBJ_P(obj);
+    result->vector2 = GetWindowPosition();
+
+    RETURN_OBJ(&result->std);
+}
+
+//RLAPI const char *GetMonitorName(int monitor);
+PHP_METHOD(Window, getMonitorName)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_STRING(GetMonitorName((int) monitor));
+}
+
+//RLAPI const char *GetClipboardText(void);
+PHP_METHOD(Window, getClipboardText)
+{
+    RETURN_STRING(GetClipboardText(());
+}
+
+//RLAPI void SetClipboardText(const char *text);
+PHP_METHOD(Window, getScreenHeight)
+{
+    char *text;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(text)
+    ZEND_PARSE_PARAMETERS_END();
+
+    SetClipboardText(text);
+}
+
 //void CloseWindow(void);
 PHP_METHOD(Window, close)
 {
@@ -229,11 +345,15 @@ PHP_METHOD(Window, close)
 const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Window, init, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, close, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isResized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isHidden, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, unhideWindow, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, hideWindow, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, toggleFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setIcon, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setTitle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -243,6 +363,15 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, setSize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getScreenWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getScreenHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorCount, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorPhysicalWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorPhysicalHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getWindowPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
