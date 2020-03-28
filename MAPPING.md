@@ -211,14 +211,14 @@ This is a one to one mapping of each raylib function.
 | C API | PHP API | Comment |
 |-------|---------|---------|
 | RLAPI void DrawPixel(int posX, int posY, Color color);                                                   | raylib\Draw::pixel(int $posX, int $posY, array $color) | |
-| RLAPI void DrawPixelV(Vector2 position, Color color);                                                    | raylib\Draw::pixelV(array $position, array $color) | |
-| RLAPI void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);                | raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, array $color) | |
-| RLAPI void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);                                     | raylib\Draw::lineV(array $startPos, array $endPos, array $color) | |
-| RLAPI void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);                       | raylib\Draw::lineEx(array $startPos, array $endPos, float $thick, array $color) | |
-| RLAPI void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);                   | raylib\Draw::lineBezier(array $startPos, array $endPos, float $thick, array $color) | |
-| RLAPI void DrawCircle(int centerX, int centerY, float radius, Color color);                              | raylib\Draw::circle(int $centerX, int $centerY, float $radius, array $color) | |
-| RLAPI void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);      | TODO ||
-| RLAPI void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color); | TODO ||
+| RLAPI void DrawPixelV(Vector2 position, Color color);                                                    | raylib\Draw::pixelV(\raylib\Vector2 $position, array $color) | |
+| RLAPI void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);                | raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, \raylib\Color $color) | |
+| RLAPI void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);                                     | raylib\Draw::lineV(\raylib\Vector2 $startPos, \raylib\Vector2 $endPos, array $color) | |
+| RLAPI void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);                       | raylib\Draw::lineEx(\raylib\Vector2 $startPos, \raylib\Vector2 $endPos, float $thick, \raylib\Color $color) | |
+| RLAPI void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);                   | raylib\Draw::lineBezier(\raylib\Vector2 $startPos, \raylib\Vector2 $endPos, float $thick, \raylib\Color $color) | |
+| RLAPI void DrawCircle(int centerX, int centerY, float radius, Color color);                              | raylib\Draw::circle(int $centerX, int $centerY, float $radius, \raylib\Color $color) | |
+| RLAPI void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);      | raylib\Draw::circleSector(\raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color) ||
+| RLAPI void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color); | raylib\Draw::circleSectorLines(\raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color) ||
 | RLAPI void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);       | raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, array $color1, array $color2) | |
 | RLAPI void DrawCircleV(Vector2 center, float radius, Color color);                                       | raylib\Draw::circleV(array $center, float $radius, array $color) | |
 | RLAPI void DrawCircleLines(int centerX, int centerY, float radius, Color color);                         | raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, array $color) | |
@@ -239,8 +239,8 @@ This is a one to one mapping of each raylib function.
 | RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color); | TODO ||
 | RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                | raylib\Draw::triangle(array $v1, array $v2, array $v3, array $color) | |
 | RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           | TODO | |
-| RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);                                 | TODO ||
-| RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);                             | TODO ||
+| RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);                                 | TODO | raylib\Draw::triangleFan(array $points, Color $gray) |
+| RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);                             | TODO | raylib\Draw::triangleStrip(array $points, Color $gray) |
 | RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||
 | RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | TODO ||
 | RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||

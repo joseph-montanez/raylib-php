@@ -171,7 +171,7 @@ PHP_METHOD(Draw, beginScissorMode)
         Z_PARAM_LONG(height)
     ZEND_PARSE_PARAMETERS_END();
 
-    BeginScissorMode(x, y, width, height);
+    BeginScissorMode((int) x, (int) y, (int) width, (int) height);
 }
 
 //RLAPI void EndScissorMode(void);
@@ -302,6 +302,108 @@ PHP_METHOD(Draw, lineBezier)
     DrawLineBezier(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
 }
 
+
+// Draw lines sequence
+// RLAPI void DrawLineStrip(Vector2 *points, int numPoints, Color color);
+PHP_METHOD(Draw, lineStrip)
+{
+    zval *points;
+    zval *color;
+    HashTable *pointsArr;
+    zval *zv;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ARRAY(points)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    pointsArr = Z_ARRVAL_P(points);
+
+
+    int numPoints = zend_hash_num_elements(pointsArr);
+    Vector2 *pointsP = (Vector2 *)safe_emalloc(numPoints, sizeof(Vector2), 0);
+
+    int n = 0;
+    ZEND_HASH_FOREACH_VAL(pointsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_vector2_object *obj = Z_VECTOR2_OBJ_P(zv);
+            pointsP[n] = obj->vector2;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawLineStrip(pointsP, numPoints, phpColor->color);
+}
+
+
+// Draw a triangle fan defined by points (first vertex is the center)
+// RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);
+PHP_METHOD(Draw, triangleFan)
+{
+    zval *points;
+    zval *color;
+    HashTable *pointsArr;
+    zval *zv;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ARRAY(points)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    pointsArr = Z_ARRVAL_P(points);
+
+    int numPoints = zend_hash_num_elements(pointsArr);
+    Vector2 *pointsP = (Vector2 *)safe_emalloc(numPoints, sizeof(Vector2), 0);
+
+    int n = 0;
+    ZEND_HASH_FOREACH_VAL(pointsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_vector2_object *obj = Z_VECTOR2_OBJ_P(zv);
+            pointsP[n] = obj->vector2;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawTriangleFan(pointsP, numPoints, phpColor->color);
+}
+
+// Draw a triangle strip defined by points
+// RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);
+PHP_METHOD(Draw, triangleStrip)
+{
+    zval *points;
+    zval *color;
+    HashTable *pointsArr;
+    zval *zv;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ARRAY(points)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    pointsArr = Z_ARRVAL_P(points);
+
+    int numPoints = zend_hash_num_elements(pointsArr);
+    Vector2 *pointsP = (Vector2 *)safe_emalloc(numPoints, sizeof(Vector2), 0);
+
+    int n = 0;
+    ZEND_HASH_FOREACH_VAL(pointsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_vector2_object *obj = Z_VECTOR2_OBJ_P(zv);
+            pointsP[n] = obj->vector2;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawTriangleStrip(pointsP, numPoints, phpColor->color);
+}
+
 //void DrawCircle(int centerX, int centerY, float radius, Color color);
 PHP_METHOD(Draw, circle)
 {
@@ -320,6 +422,59 @@ PHP_METHOD(Draw, circle)
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
     DrawCircle(zend_long_2int(centerX), zend_long_2int(centerY), (float) radius, phpColor->color);
+}
+
+// Draw a piece of a circle
+// RLAPI void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);
+PHP_METHOD(Draw, circleSector)
+{
+    zval *center;
+    double radius;
+    zend_long startAngle;
+    zend_long endAngle;
+    zend_long segments;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(6, 6)
+        Z_PARAM_ZVAL(center)
+        Z_PARAM_DOUBLE(radius)
+        Z_PARAM_LONG(startAngle)
+        Z_PARAM_LONG(endAngle)
+        Z_PARAM_LONG(segments)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_color_object *phpCenter = Z_COLOR_OBJ_P(center);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawCircleSector(phpCenter->vector2, (float) radius, (int) startAngle, (int) endAngle, (int) segments, phpColor->color);
+}
+
+
+// Draw circle sector outline
+// RLAPI void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);
+PHP_METHOD(Draw, circleSectorLines)
+{
+    zval *center;
+    double radius;
+    zend_long startAngle;
+    zend_long endAngle;
+    zend_long segments;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(6, 6)
+        Z_PARAM_ZVAL(center)
+        Z_PARAM_DOUBLE(radius)
+        Z_PARAM_LONG(startAngle)
+        Z_PARAM_LONG(endAngle)
+        Z_PARAM_LONG(segments)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_color_object *phpCenter = Z_COLOR_OBJ_P(center);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    DrawCircleSectorLines(phpCenter->vector2, (float) radius, (int) startAngle, (int) endAngle, (int) segments, phpColor->color);
 }
 
 //void DrawCircle(Vector2 center, float radius, Color color);
@@ -584,6 +739,8 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, lineEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, lineBezier, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, circle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleSector, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleSectorLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, circleGradient, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, circleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, circleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -593,7 +750,10 @@ const zend_function_entry php_raylib_draw_methods[] = {
         PHP_ME(Draw, rectanglePro, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, rectangleLinesEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineStrip, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Draw, triangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangleFan, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangleStrip, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

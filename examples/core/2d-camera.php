@@ -57,7 +57,7 @@ for ($i = 0; $i < MAX_BUILDINGS; $i++) {
 
 $camera = new Camera2D();
 $camera->setOffset(new Vector2($screenWidth / 2, $screenHeight / 2));
-$camera->setTarget(new Vector2($player->getX() + 20 ,$player->getY() + 20));
+$camera->setTarget(new Vector2($player->x + 20 ,$player->y + 20));
 $camera->setRotation(0.0);
 $camera->setZoom(1.0);
 
@@ -70,14 +70,14 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     // Update
     //----------------------------------------------------------------------------------
     if (Key::isDown(Key::RIGHT)) {
-        $player->setX($player->getX() + 2);
+        $player->x += 2;
     } else if (Key::isDown(Key::LEFT)) {
-        $player->setX($player->getX() - 2);
+        $player->x -= 2;
     }
 
     // Camera target follows player
-    $target->setX($player->getX() + 20);
-    $target->setY($player->getY() + 20);
+    $target->x = $player->x + 20;
+    $target->y = $player->y + 20;
     $camera->setTarget($target);
 
     // Camera rotation controls
@@ -99,6 +99,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     if ($camera->getZoom() > 3.0) {
         $camera->setZoom(3.0);
+        Mouse::
     } else if ($camera->getZoom() < 0.1) {
         $camera->setZoom(0.1);
     }
@@ -126,8 +127,8 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
         Draw::rectangleRec($player, $red);
 
-        Draw::Line($camera->getTarget()->getX(), -$screenHeight * 10, $camera->getTarget()->getX(), $screenHeight * 10, $green);
-        Draw::Line(-$screenWidth * 10, $camera->getTarget()->getY(), $screenWidth * 10, $camera->getTarget()->getY(), $green);
+        Draw::Line($camera->getTarget()->x, -$screenHeight * 10, $camera->getTarget()->x, $screenHeight * 10, $green);
+        Draw::Line(-$screenWidth * 10, $camera->getTarget()->y, $screenWidth * 10, $camera->getTarget()->y, $green);
 
     Draw::endMode2d();
 

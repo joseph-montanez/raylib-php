@@ -106,10 +106,10 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
         // Draw four rectangles around selected rectangle
         if ($selected[$i]) {
-            Draw::rectangle($colorsRecs[$i]->getX(), $colorsRecs[$i]->getY(), 100, 10, $raywhite);        // Square top rectangle
-            Draw::rectangle($colorsRecs[$i]->getX(), $colorsRecs[$i]->getY(), 10, 100, $raywhite);        // Square left rectangle
-            Draw::rectangle($colorsRecs[$i]->getX() + 90, $colorsRecs[$i]->getY(), 10, 100, $raywhite);   // Square right rectangle
-            Draw::rectangle($colorsRecs[$i]->getX(), $colorsRecs[$i]->getY() + 90, 100, 10, $raywhite);   // Square bottom rectangle
+            Draw::rectangle($colorsRecs[$i]->x, $colorsRecs[$i]->y, 100, 10, $raywhite);        // Square top rectangle
+            Draw::rectangle($colorsRecs[$i]->x, $colorsRecs[$i]->y, 10, 100, $raywhite);        // Square left rectangle
+            Draw::rectangle($colorsRecs[$i]->x + 90, $colorsRecs[$i]->y, 10, 100, $raywhite);   // Square right rectangle
+            Draw::rectangle($colorsRecs[$i]->x, $colorsRecs[$i]->y + 90, 100, 10, $raywhite);   // Square bottom rectangle
         }
     }
 

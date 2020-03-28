@@ -47,7 +47,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
         Draw::clearBackground($rayWhite);
         Draw::rectangle($screenWidth / 2 - 40, $ballPositionY, 80, 80, $maroon);
         Text::draw("Use mouse wheel to move the cube up and down!", 10, 10, 20, $gray);
-        Text::draw(sprintf("Box position Y: %03i", $boxPositionY), 10, 40, 20, $lightGray);
+        Text::draw(sprintf("Box position Y: %03d", $ballPositionY), 10, 40, 20, $lightGray);
     Draw::end();
     //----------------------------------------------------------------------------------
 }

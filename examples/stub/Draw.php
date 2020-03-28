@@ -202,6 +202,39 @@ class Draw
     }
 
     /**
+     * Draw a piece of a circle
+     *
+     * @param \raylib\Vector2 $center
+     * @param float           $radius
+     * @param int             $startAngle
+     * @param int             $endAngle
+     * @param int             $segments
+     * @param \raylib\Color   $color
+     *
+     * @return void
+     */
+    public static function circleSector(\raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color): void
+    {
+    }
+
+
+    /**
+     * Draw circle sector outline
+     *
+     * @param \raylib\Vector2 $center
+     * @param float           $radius
+     * @param int             $startAngle
+     * @param int             $endAngle
+     * @param int             $segments
+     * @param \raylib\Color   $color
+     *
+     * @return void
+     */
+    public static function circleSectorLines(\raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color): void
+    {
+    }
+
+    /**
      * Draw a gradient-filled circle
      *
      * @param int           $centerX
@@ -384,6 +417,26 @@ class Draw
      * @return void
      */
     public static function triangleLines(Vector2 $v1, Vector2 $v2, Vector2 $v3, Color $color): void
+    {
+    }
+
+    /**
+     * Draw a triangle fan defined by points (first vertex is the center)
+     *
+     * @param \raylib\Vector2[] $points
+     * @param \raylib\Color     $gray
+     */
+    public static function triangleFan(array $points, Color $gray)
+    {
+    }
+
+    /**
+     * Draw a triangle strip defined by points
+     *
+     * @param \raylib\Vector2[] $points
+     * @param \raylib\Color     $gray
+     */
+    public static function triangleStrip(array $points, Color $gray)
     {
     }
 

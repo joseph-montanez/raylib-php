@@ -30,16 +30,16 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     // Update
     //----------------------------------------------------------------------------------
     if (Key::isDown(Key::RIGHT)) {
-        $ballPosition->setX($ballPosition->getX() + 0.8);
+        $ballPosition->x += 0.8;
     }
     if (Key::isDown(Key::LEFT)) {
-        $ballPosition->setX($ballPosition->getX() - 0.8);
+        $ballPosition->x -= 0.8;
     }
     if (Key::isDown(Key::UP)) {
-        $ballPosition->setY($ballPosition->getY() - 0.8);
+        $ballPosition->y -= 0.8;
     }
     if (Key::isDown(Key::DOWN)) {
-        $ballPosition->setY($ballPosition->getY() + 0.8);
+        $ballPosition->y += 0.8;
     }
     //----------------------------------------------------------------------------------
 
