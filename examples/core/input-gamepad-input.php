@@ -22,7 +22,7 @@ const PS3_NAME_ID = "PLAYSTATION(R)3 Controller";
 $screenWidth = 800;
 $screenHeight = 450;
 
-raylib\SetConfigFlags(raylib\flags\MSAA_4X_HINT);
+raylib\SetConfigFlags(raylib\Flags\MSAA_4X_HINT);
 
 $rayWhite = new Color(245, 245, 245, 255);
 $lightGray = new Color(200, 200, 200, 255);

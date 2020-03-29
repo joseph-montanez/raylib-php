@@ -313,14 +313,8 @@ zend_object * php_raylib_rectangle_new(zend_class_entry *ce TSRMLS_DC)
 
     intern->std.handlers = &php_raylib_rectangle_object_handlers;
 
-//    zend_declare_property_double(ce, "x", strlen("x"), 0.1f, ZEND_ACC_PUBLIC);
-//    zend_declare_property_double(ce, "y", strlen("y"), 0.1f, ZEND_ACC_PUBLIC);
-//    zend_declare_property_double(ce, "width", strlen("width"), 0.1f, ZEND_ACC_PUBLIC);
-//    zend_declare_property_double(ce, "height", strlen("height"), 0.1f, ZEND_ACC_PUBLIC);
-
     return &intern->std;
 }
-
 /* }}} */
 
 

@@ -82,24 +82,24 @@ This is a one to one mapping of each raylib function.
 ###  Color-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI int ColorToInt(Color color);                                | TODO ||
-| RLAPI Vector4 ColorNormalize(Color color);                        | TODO ||
-| RLAPI Color ColorFromNormalized(Vector4 normalized);              | TODO ||
-| RLAPI Vector3 ColorToHSV(Color color);                            | TODO ||
-| RLAPI Color ColorFromHSV(Vector3 hsv);                            | TODO ||
-| RLAPI Color GetColor(int hexValue);                               | TODO ||
-| RLAPI Color Fade(Color color, float alpha);                       | raylib\Color->fade(float $alpha) | This does not return a new color at this time |
+| RLAPI int ColorToInt(Color color);                                | \raylib\Color->toInt(/raylib/Color $color) ||
+| RLAPI Vector4 ColorNormalize(Color color);                        | \raylib\Color->normalize(/raylib/Color $color) : /raylib/Vector4 ||
+| RLAPI Color ColorFromNormalized(Vector4 normalized);              | \raylib\Color::fromNormalized(/raylib/Vector4 $normalized) : /raylib/Color ||
+| RLAPI Vector3 ColorToHSV(Color color);                            | \raylib\Color->toHSV(/raylib/Color $color) : /raylib/Vector3 ||
+| RLAPI Color ColorFromHSV(Vector3 hsv);                            | \raylib\Color::fromHSV(/raylib/Vector4 $normalized) : /raylib/Color ||
+| RLAPI Color GetColor(int hexValue);                               | \raylib\Color::fromInt(int $hexValue) : /raylib/Color ||
+| RLAPI Color Fade(Color color, float alpha);                       | \raylib\Color->fade(float $alpha) : \raylib\Color | |
 
 ###  Misc. functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI void SetConfigFlags(unsigned int flags);                    | raylib\setConfigFlags(int flags) ||
+| RLAPI void SetConfigFlags(unsigned int flags);                    | \raylib\SetConfigFlags(int $flags) ||
 | RLAPI void SetTraceLogLevel(int logType);                         | TODO ||
 | RLAPI void SetTraceLogExit(int logType);                          | TODO ||
 | RLAPI void SetTraceLogCallback(TraceLogCallback callback);        | TODO ||
 | RLAPI void TraceLog(int logType, const char *text, ...);          | TODO ||
-| RLAPI void TakeScreenshot(const char *fileName);                  | TODO ||
-| RLAPI int GetRandomValue(int min, int max);                       | TODO ||
+| RLAPI void TakeScreenshot(const char *fileName);                  | \raylib\TakeScreenshot(string $fileName) ||
+| RLAPI int GetRandomValue(int min, int max);                       | see rand() ||
 
 ###  Files management functions
 | C API | PHP API | Comment |
@@ -140,12 +140,12 @@ This is a one to one mapping of each raylib function.
 ####  Input-related functions: keyboard
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI bool IsKeyPressed(int key);                             | raylib\Key::isPressed(int key) : bool ||
-| RLAPI bool IsKeyDown(int key);                                | raylib\Key::isDown(int key) : bool ||
-| RLAPI bool IsKeyReleased(int key);                            | raylib\Key::isReleased(int key) : bool ||
-| RLAPI bool IsKeyUp(int key);                                  | raylib\Key::isUp(int key) : bool ||
-| RLAPI void SetExitKey(int key);                               | raylib\Key::setExit(int $key) | This may move to Window class |
-| RLAPI int GetKeyPressed(void);                                | raylib\Key::getPressed(void) : int ||
+| RLAPI bool IsKeyPressed(int key);                             | raylib\Input\Key::isPressed(int key) : bool ||
+| RLAPI bool IsKeyDown(int key);                                | raylib\Input\Key::isDown(int key) : bool ||
+| RLAPI bool IsKeyReleased(int key);                            | raylib\Input\Key::isReleased(int key) : bool ||
+| RLAPI bool IsKeyUp(int key);                                  | raylib\Input\Key::isUp(int key) : bool ||
+| RLAPI void SetExitKey(int key);                               | raylib\Input\Key::setExit(int $key) | This may move to Window class |
+| RLAPI int GetKeyPressed(void);                                | raylib\Input\Key::getPressed(void) : int ||
 
 ####  Input-related functions: gamepads
 | C API | PHP API | Comment |

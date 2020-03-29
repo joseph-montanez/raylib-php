@@ -99,7 +99,7 @@ $superfx = false;
 // Initialization
 //---------------------------------------------------------
 
-raylib\SetConfigFlags(raylib\flags\VSYNC_HINT);
+raylib\SetConfigFlags(raylib\Flags\VSYNC_HINT);
 Window::init($screenWidth, $screenHeight, "sample game: floppy");
 
 InitGame();

@@ -51,6 +51,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib.h"
 #include "raylib-image.h"
 #include "raylib-texture.h"
+#include "raylib-color.h"
 #include "raylib-utils.h"
 
 
@@ -106,7 +107,7 @@ static zval *php_raylib_image_get_property_ptr_ptr(zval *object, zval *member, i
     zval tmp_member;
     zval *retval = NULL;
     raylib_image_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     if (Z_TYPE_P(member) != IS_STRING) {
         ZVAL_COPY(&tmp_member, member);
@@ -140,7 +141,7 @@ static zval *php_raylib_image_read_property(zval *object, zval *member, int type
     zval tmp_member;
     zval *retval = NULL;
     raylib_image_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     if (Z_TYPE_P(member) != IS_STRING) {
         ZVAL_COPY(&tmp_member, member);
@@ -178,7 +179,7 @@ static int php_raylib_image_has_property(zval *object, zval *member, int type, v
     php_raylib_image_object *obj;
     zval tmp_member;
     raylib_image_prop_handler *hnd = NULL;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
     int retval = 0;
 
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -319,6 +320,92 @@ PHP_METHOD(Image, __construct)
     intern->image = LoadImage(fileName->val);
 }
 
+// Load image from Color array data (RGBA - 32bit)
+// RLAPI Image LoadImageEx(Color *pixels, int width, int height);
+PHP_METHOD(Image, fromColors)
+{
+    zval *pixels;
+    zend_long width;
+    zend_long height;
+    HashTable *pixelsArr;
+    zval *zv;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+            Z_PARAM_ARRAY(pixels)
+            Z_PARAM_LONG(width)
+            Z_PARAM_LONG(height)
+    ZEND_PARSE_PARAMETERS_END();
+
+    pixelsArr = Z_ARRVAL_P(pixels);
+
+    // Count the number of elements in array
+    int numPixels = zend_hash_num_elements(pixelsArr);
+    Color *pixelsP = (Color *)safe_emalloc(numPixels, sizeof(Color), 0);
+
+    // Load pixels from hash to an array
+    int n = 0;
+    ZEND_HASH_FOREACH_VAL(pixelsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_color_object *obj = Z_COLOR_OBJ_P(zv);
+            pixelsP[n] = obj->color;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    // Create Image Object
+    object_init_ex(return_value, php_raylib_image_ce);
+    zend_object *object = php_raylib_image_new(php_raylib_image_ce);
+    php_raylib_image_object *internImage = php_raylib_image_fetch_object(object);
+
+    // Load From Pixels
+    internImage->image = LoadImageEx(pixelsP, (int) width, (int) height);
+
+    ZVAL_OBJ(return_value, object);
+}
+
+// Load image from raw data with parameters
+// RLAPI Image LoadImagePro(void *data, int width, int height, int format);
+//PHP_METHOD(Image, fromPixels)
+//{
+//    zval *pixels;
+//    zend_long width;
+//    zend_long height;
+//    HashTable *pixelsArr;
+//    zval *zv;
+//
+//    ZEND_PARSE_PARAMETERS_START(3, 3)
+//            Z_PARAM_ARRAY(pixels)
+//            Z_PARAM_LONG(width)
+//            Z_PARAM_LONG(height)
+//    ZEND_PARSE_PARAMETERS_END();
+//
+//    pixelsArr = Z_ARRVAL_P(points);
+//
+//    // Count the number of elements in array
+//    int numPixels = zend_hash_num_elements(pointsArr);
+//    Color *pixelsP = (Color *)safe_emalloc(numPixels, sizeof(Color), 0);
+//
+//    // Load pixels from hash to an array
+//    int n = 0;
+//    ZEND_HASH_FOREACH_VAL(pixelsArr, zv) {
+//        if (Z_TYPE_P(zv) == IS_OBJECT) {
+//            php_raylib_color_object *obj = Z_COLOR_OBJ_P(zv);
+//            pointsP[n] = obj->color;
+//        }
+//        n++;
+//    } ZEND_HASH_FOREACH_END();
+//
+//    // Create Image Object
+//    object_init_ex(return_value, php_raylib_image_ce);
+//    zend_object *object = php_raylib_image_new(php_raylib_color_ce);
+//    php_raylib_color_object *internImage = php_raylib_image_fetch_object(object);
+//
+//    // Load From Pixels
+//    internImage->image = LoadImageEx(pixelsP, (int) width, (int) height);
+//
+//    ZVAL_OBJ(return_value, object);
+//}
+
 PHP_METHOD(Image, toTexture)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -366,6 +453,7 @@ PHP_METHOD(Image, toPot)
 
 const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
@@ -406,4 +494,5 @@ void php_raylib_image_startup(INIT_FUNC_ARGS)
     php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_height);
     php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "mipmaps", php_raylib_image_mipmaps);
     php_raylib_image_register_prop_handler(&php_raylib_image_prop_handlers, "height", php_raylib_image_format);
+
 }

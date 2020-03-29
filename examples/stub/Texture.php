@@ -14,6 +14,50 @@ namespace raylib;
  */
 class Texture
 {
+    const
+        /**
+         * @var int FILTER_POINT No filter, just pixel aproximation
+         */
+        FILTER_POINT = 0,
+        /**
+         * @var int FILTER_BILINEAR Linear filtering
+         */
+        FILTER_BILINEAR = 1,
+        /**
+         * @var int FILTER_TRILINEAR Trilinear filtering (linear with mipmaps)
+         */
+        FILTER_TRILINEAR = 2,
+        /**
+         * @var int FILTER_ANISOTROPIC_4X Anisotropic filtering 4x
+         */
+        FILTER_ANISOTROPIC_4X = 3,
+        /**
+         * @var int FILTER_ANISOTROPIC_8X Anisotropic filtering 8x
+         */
+        FILTER_ANISOTROPIC_8X = 4,
+        /**
+         * @var int FILTER_ANISOTROPIC_16X Anisotropic filtering 16x
+         */
+        FILTER_ANISOTROPIC_16X = 5;
+
+    const
+        /**
+         * @var int WRAP_REPEAT Repeats texture in tiled mode
+         */
+        WRAP_REPEAT = 0,
+        /**
+         * @var int WRAP_CLAMP Clamps texture to edge pixel in tiled mode
+         */
+        WRAP_CLAMP = 1,
+        /**
+         * @var int WRAP_MIRROR_REPEAT Mirrors and repeats the texture in tiled mode
+         */
+        WRAP_MIRROR_REPEAT = 2,
+        /**
+         * @var int WRAP_MIRROR_CLAMP Mirrors and clamps to border the texture in tiled mode
+         */
+        WRAP_MIRROR_CLAMP = 3;
+
     public function __construct(string $fileName)
     {
     }

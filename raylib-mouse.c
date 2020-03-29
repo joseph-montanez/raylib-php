@@ -172,18 +172,19 @@ PHP_METHOD(Mouse, getPosition)
     RETURN_OBJ(&intern->std);
 }
 
-//void SetMousePosition(Vector2 position);
+// Set mouse position XY
+//RLAPI void SetMousePosition(int x, int y);
 PHP_METHOD(Mouse, setPosition)
 {
-    double positionX;
-    double positionY;
+    zend_long x;
+    zend_long y;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_DOUBLE(positionX)
-        Z_PARAM_DOUBLE(positionY)
+        Z_PARAM_LONG(x)
+        Z_PARAM_LONG(y)
     ZEND_PARSE_PARAMETERS_END();
 
-    SetMousePosition((float) positionX, (float) positionY);
+    SetMousePosition((int) x, (int) y);
 }
 
 //void SetMouseScale(float scale);

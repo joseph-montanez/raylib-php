@@ -9,6 +9,7 @@ extern zend_class_entry *php_raylib_color_ce;
 
 typedef struct _php_raylib_color_object {
     Color color;
+    HashTable *prop_handler;
     zend_object std;
 } php_raylib_color_object;
 

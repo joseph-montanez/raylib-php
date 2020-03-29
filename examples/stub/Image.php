@@ -16,6 +16,13 @@ class Image {
     public function __construct(string $fileName) {}
 
     /**
+     * Create an image from an array of pixels
+     *
+     * @return \raylib\Image
+     */
+    public static function fromColors() : \raylib\Image {}
+
+    /**
      * Load texture from image data
      *
      * @return Texture

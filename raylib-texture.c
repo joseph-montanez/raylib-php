@@ -60,6 +60,7 @@ typedef struct tagMSG *LPMSG;
 //-- raylib Texture PHP Custom Object
 //------------------------------------------------------------------------------------------------------
 /* {{{ ZE2 OO definitions */
+
 zend_object_handlers php_raylib_texture_object_handlers;
 
 static HashTable php_raylib_texture_prop_handlers;
@@ -312,6 +313,11 @@ static zend_long php_raylib_texture_id(php_raylib_texture_object *obj) /* {{{ */
 }
 /* }}} */
 
+/* {{{ REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG */
+#define REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG(const_name, value) \
+	    zend_declare_class_constant_long(php_raylib_texture_ce, const_name, sizeof(const_name)-1, (zend_long)value);
+/* }}} */
+
 // PHP object handling
 
 PHP_METHOD(Texture, __construct)
@@ -545,4 +551,18 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "mipmaps", php_raylib_texture_mipmaps);
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "height", php_raylib_texture_format);
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "id", php_raylib_texture_id);
+
+    // Filters
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_POINT", FILTER_POINT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_BILINEAR", FILTER_BILINEAR);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_TRILINEAR", FILTER_TRILINEAR);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_4X", FILTER_ANISOTROPIC_4X);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_8X", FILTER_ANISOTROPIC_8X);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_16X", FILTER_ANISOTROPIC_16X);
+
+    // Wraps
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_REPEAT", WRAP_REPEAT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_CLAMP", WRAP_CLAMP);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_MIRROR_REPEAT", WRAP_MIRROR_REPEAT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_MIRROR_CLAMP", WRAP_MIRROR_CLAMP);
 }
