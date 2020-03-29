@@ -98,15 +98,6 @@ class Draw
     }
 
     /**
-     * @param Vector2       $center
-     * @param float         $radius
-     * @param \raylib\Color $color The color [red,blue,green,alpha] i.e [0,0,0,255]
-     */
-    public static function circleV(Vector2 $center, float $radius, Color $color): void
-    {
-    }
-
-    /**
      * Draw a pixel
      *
      * @param int           $posX
@@ -188,6 +179,19 @@ class Draw
     }
 
     /**
+     * Draw lines sequence
+     *
+     * @param \raylib\Vector2[] $points
+     * @param int               $numPoints
+     * @param \raylib\Color     $color
+     *
+     * @return void
+     */
+    public static function lineStrip(array $points, int $numPoints, \raylib\Color $color): void
+    {
+    }
+
+    /**
      * Draw a color-filled circle
      *
      * @param int           $centerX
@@ -250,6 +254,19 @@ class Draw
     }
 
     /**
+     * Draw a color-filled circle (Vector version)
+     *
+     * @param \raylib\Vector2 $center
+     * @param float           $radius
+     * @param \raylib\Color   $color
+     *
+     * @return void
+     */
+    public static function circleV(\raylib\Vector2 $center, float $radius, Color $color): void
+    {
+    }
+
+    /**
      * Draw circle outline
      *
      * @param int           $centerX
@@ -260,6 +277,70 @@ class Draw
      * @return void
      */
     public static function circleLines(int $centerX, int $centerY, float $radius, Color $color): void
+    {
+    }
+
+    /**
+     * Draw ellipse
+     *
+     * @param int           $centerX
+     * @param int           $centerY
+     * @param float         $radiusH
+     * @param float         $radiusV
+     * @param \raylib\Color $color
+     *
+     * @return void
+     */
+    public static function ellipse(int $centerX, int $centerY, float $radiusH, float $radiusV, \raylib\Color $color): void
+    {
+    }
+
+    /**
+     * Draw ellipse outline
+     *
+     * @param int           $centerX
+     * @param int           $centerY
+     * @param float         $radiusH
+     * @param float         $radiusV
+     * @param \raylib\Color $color
+     *
+     * @return void
+     */
+    public static function ellipseLines(int $centerX, int $centerY, float $radiusH, float $radiusV, \raylib\Color $color): void
+    {
+    }
+
+    /**
+     * Draw ring
+     *
+     * @param \raylib\Vector2 $center
+     * @param float           $innerRadius
+     * @param float           $outerRadius
+     * @param int             $startAngle
+     * @param int             $endAngle
+     * @param int             $segments
+     * @param \raylib\Color   $color
+     *
+     * @return void
+     */
+    public static function ring(\raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color): void
+    {
+    }
+
+    /**
+     * Draw ring outline
+     *
+     * @param \raylib\Vector2 $center
+     * @param float           $innerRadius
+     * @param float           $outerRadius
+     * @param int             $startAngle
+     * @param int             $endAngle
+     * @param int             $segments
+     * @param \raylib\Color   $color
+     *
+     * @return void
+     */
+    public static function ringLines(\raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color): void
     {
     }
 
@@ -456,7 +537,7 @@ class Draw
     }
 
     /**
-     * Draw a closed polygon defined by points
+     * Draw a polygon outline of n sides
      *
      * @param \raylib\Vector2[] $points The array of points - [Vector2 array ['x' => 0, 'y' => 0]]
      * @param int               $numPoints
@@ -464,20 +545,7 @@ class Draw
      *
      * @return void
      */
-    public static function polyEx(array $points, int $numPoints, Color $color): void
-    {
-    }
-
-    /**
-     * Draw polygon lines
-     *
-     * @param \raylib\Vector2[] $points The array of points - [Vector2 array ['x' => 0, 'y' => 0]]
-     * @param int               $numPoints
-     * @param \raylib\Color     $color  The color [red,blue,green,alpha] i.e [0,0,0,255]
-     *
-     * @return void
-     */
-    public static function polyExLines(array $points, int $numPoints, Color $color): void
+    public static function polyLines(array $points, int $numPoints, Color $color): void
     {
     }
 }

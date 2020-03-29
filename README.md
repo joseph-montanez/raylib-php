@@ -5,7 +5,7 @@ PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video gam
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
 
- - raylib.h - 141 of 426 functions ~ %33 complete
+ - raylib.h - 153 of 424 functions ~ %36 complete
  - raymath.h - TODO Extra mathy stuff
  - raygui.h - TODO API for drawing GUI
  - physac.h - TODO More complex collision detection, more than built-in collision detection

@@ -222,29 +222,27 @@ This is a one to one mapping of each raylib function.
 | RLAPI void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);       | raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, array $color1, array $color2) | |
 | RLAPI void DrawCircleV(Vector2 center, float radius, Color color);                                       | raylib\Draw::circleV(array $center, float $radius, array $color) | |
 | RLAPI void DrawCircleLines(int centerX, int centerY, float radius, Color color);                         | raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, array $color) | |
-| RLAPI void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);              | TODO ||
-| RLAPI void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);         | TODO ||
-| RLAPI void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);      | TODO ||
-| RLAPI void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color); | TODO ||
+| RLAPI void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);              | raylib\Draw::ellipse(int $centerX, int $centerY, float $radiusH, float $radiusV, Color $color) ||
+| RLAPI void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);         | raylib\Draw::ellipseLines(int $centerX, int $centerY, float $radiusH, float $radiusV, Color $color) ||
+| RLAPI void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);      | raylib\Draw::ring(\raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color) ||
+| RLAPI void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color); | raylib\Draw::ringLines(\raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, \raylib\Color $color) ||
 | RLAPI void DrawRectangle(int posX, int posY, int width, int height, Color color);                        | raylib\Draw::rectangle(int $posX, int $posY, int $width, int $height, array $color) | |
 | RLAPI void DrawRectangleV(Vector2 position, Vector2 size, Color color);                                  | raylib\Draw::rectangleV(array $position, array $size, array $color) | |
 | RLAPI void DrawRectangleRec(Rectangle rec, Color color);                                                 | raylib\Draw::rectangleRec(array $rec, array $color) | |
 | RLAPI void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);                 | raylib\Draw::rectanglePro(array $rec, array $origin, float $rotation, array $color) | |
 | RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);| raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, array $color1, array $color2); | |
-| RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);| TODO ||
-| RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       | TODO ||
+| RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);| raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, array $color1, array $color2) ||
+| RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       | raylib\Draw::rectangleGradientEx(\raylib\Rectangle $rec, \raylib\Color $col1, \raylib\Color $col2, \raylib\Color $col3, Color $col4) ||
 | RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   | raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, array $color) | |
 | RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              | raylib\Draw::rectangleRec(array $rec, int $lineThick, array $color) | |
-| RLAPI void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);              | TODO ||
-| RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color); | TODO ||
+| RLAPI void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);              | \Draw::rectangleRounded(\raylib\Rectangle $rec, float $roundness, int $segments, \raylib\Color color) ||
+| RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color); | \Draw::rectangleRoundedLines(\raylib\Rectangle $rec, float $roundness, int $segments, int $lineThick, \raylib\Color color) ||
 | RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                | raylib\Draw::triangle(array $v1, array $v2, array $v3, array $color) | |
-| RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           | TODO | |
-| RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);                                 | TODO | raylib\Draw::triangleFan(array $points, Color $gray) |
-| RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);                             | TODO | raylib\Draw::triangleStrip(array $points, Color $gray) |
-| RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||
-| RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | TODO ||
-| RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | TODO ||
-| RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | TODO ||
+| RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           | raylib\triangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color) | |
+| RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);                                 | raylib\Draw::triangleFan(array $points, Color $gray) ||
+| RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);                             | raylib\Draw::triangleStrip(array $points, Color $gray) ||
+| RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               | raylib\Draw::poly(\raylib\Vector2 $center, int $sides, float $radius, float $rotation, \raylib\Color $color) ||
+| RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);          | raylib\Draw::polyLines(\raylib\Vector2 $center, int $sides, float $radius, float $rotation, \raylib\Color $color) ||
 
 ####  Basic shapes collision detection functions
 | C API | PHP API | Comment |
