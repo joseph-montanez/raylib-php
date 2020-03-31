@@ -381,6 +381,11 @@ static int php_raylib_font_write_y(php_raylib_font_object *font_object, zval *ne
 }
 /* }}} */
 
+/* {{{ REGISTER_RAYLIB_CHARINFO_CLASS_CONST_LONG */
+#define REGISTER_RAYLIB_FONT_CLASS_CONST_LONG(const_name, value) \
+	    zend_declare_class_constant_long(php_raylib_font_ce, const_name, sizeof(const_name)-1, (zend_long)value);
+/* }}} */
+
 // PHP object handling
 
 PHP_METHOD(Font, __construct)
@@ -484,4 +489,10 @@ void php_raylib_font_startup(INIT_FUNC_ARGS)
     zend_hash_init(&php_raylib_font_prop_handlers, 0, NULL, php_raylib_font_free_prop_handler, 1);
 //    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "x", php_raylib_font_x, php_raylib_font_write_x);
 //    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "y", php_raylib_font_y, php_raylib_font_write_y);
+
+
+    // Types
+    REGISTER_RAYLIB_FONT_CLASS_CONST_LONG("FONT_DEFAULT", FONT_DEFAULT);
+    REGISTER_RAYLIB_FONT_CLASS_CONST_LONG("FONT_BITMAP", FONT_BITMAP);
+    REGISTER_RAYLIB_FONT_CLASS_CONST_LONG("FONT_SDF", FONT_SDF);
 }

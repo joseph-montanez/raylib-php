@@ -61,22 +61,44 @@ zend_object_handlers php_raylib_charinfo_object_handlers;
 
 static HashTable php_raylib_charinfo_prop_handlers;
 
-typedef double (*raylib_charinfo_read_float_t)(php_raylib_charinfo_object *obj);
+typedef zend_long (*raylib_charinfo_read_long_t)(php_raylib_charinfo_object *obj);
 
-typedef int (*raylib_charinfo_write_float_t)(php_raylib_charinfo_object *obj, zval *value);
+typedef int (*raylib_charinfo_write_long_t)(php_raylib_charinfo_object *obj, zval *value);
+
+typedef zval* (*raylib_charinfo_read_image_object_t)(php_raylib_charinfo_object *obj);
+
+typedef int (*raylib_charinfo_write_image_object_t)(php_raylib_charinfo_object *obj, zval *value);
 
 typedef struct _raylib_charinfo_prop_handler {
-    raylib_charinfo_read_float_t read_float_func;
-    raylib_charinfo_write_float_t write_float_func;
+    raylib_charinfo_read_long_t read_long_func;
+    raylib_charinfo_write_long_t write_long_func;
+    raylib_charinfo_read_image_object_t read_image_func;
+    raylib_charinfo_write_image_object_t write_image_func;
 } raylib_charinfo_prop_handler;
 /* }}} */
 
-static void php_raylib_charinfo_register_prop_handler(HashTable *prop_handler, char *name, raylib_charinfo_read_float_t read_float_func, raylib_charinfo_write_float_t write_float_func) /* {{{ */
+static void php_raylib_charinfo_register_prop_handler(HashTable *prop_handler, char *name, raylib_charinfo_read_long_t read_long_func, raylib_charinfo_write_long_t write_long_func) /* {{{ */
 {
     raylib_charinfo_prop_handler hnd;
 
-    hnd.read_float_func = read_float_func;
-    hnd.write_float_func = write_float_func;
+    hnd.read_long_func = read_long_func;
+    hnd.write_long_func = write_long_func;
+    hnd.read_image_func = NULL;
+    hnd.write_image_func = NULL;
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_charinfo_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_charinfo_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+
+static void php_raylib_charinfo_register_prop_handler_image(HashTable *prop_handler, char *name, raylib_charinfo_read_image_object_t read_image_func, raylib_charinfo_write_image_object_t write_image_func) /* {{{ */
+{
+    raylib_charinfo_prop_handler hnd;
+
+    hnd.read_long_func = NULL;
+    hnd.write_long_func = NULL;
+    hnd.read_image_func = read_image_func;
+    hnd.write_image_func = write_image_func;
     zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_charinfo_prop_handler));
 
     /* Register for reflection */
@@ -86,16 +108,21 @@ static void php_raylib_charinfo_register_prop_handler(HashTable *prop_handler, c
 
 static zval *php_raylib_charinfo_property_reader(php_raylib_charinfo_object *obj, raylib_charinfo_prop_handler *hnd, zval *rv) /* {{{ */
 {
-    double ret = 0;
+    if (obj != NULL && hnd->read_long_func) {
+        zend_long ret = 0;
+        ret = hnd->read_long_func(obj);
+        ZVAL_LONG(rv, (zend_long) ret);
+    }
+    if (obj != NULL && hnd->read_image_func) {
+        zval *ret;
+        ret = hnd->read_image_func(obj);
 
-    if (obj != NULL && hnd->read_float_func) {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib charinfo found");
-        ret = hnd->read_float_func(obj);
+        php_raylib_image_object *result = Z_IMAGE_OBJ_P(ret);
+        ZVAL_OBJ(rv, &result->std);
     } else {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
     }
 
-    ZVAL_DOUBLE(rv, (double) ret);
 
     return rv;
 }
@@ -198,8 +225,8 @@ zval *php_raylib_charinfo_write_property(zval *object, zval *member, zval *value
 
     hnd = zend_hash_find_ptr(&php_raylib_charinfo_prop_handlers, Z_STR_P(member));
 
-    if (hnd && hnd->write_float_func) {
-        hnd->write_float_func(obj, value);
+    if (hnd && hnd->write_long_func) {
+        hnd->write_long_func(obj, value);
     } else {
         value = zend_std_write_property(object, member, value, cache_slot);
     }
@@ -335,48 +362,110 @@ static zend_object *php_raylib_charinfo_clone(zval *zobject)
 
 // PHP property handling
 
-static double php_raylib_charinfo_x(php_raylib_charinfo_object *obj) /* {{{ */
+static zend_long php_raylib_charinfo_value(php_raylib_charinfo_object *obj) /* {{{ */
 {
-    return (double) 0; //obj->charinfo.value;
+    return (zend_long) obj->charinfo.value;
 }
 /* }}} */
 
-static double php_raylib_charinfo_y(php_raylib_charinfo_object *obj) /* {{{ */
+static zend_long php_raylib_charinfo_offset_x(php_raylib_charinfo_object *obj) /* {{{ */
 {
-    return (double) 0; // obj->charinfo.offsetX;
+    return (zend_long) obj->charinfo.offsetX;
+}
+
+static zend_long php_raylib_charinfo_offset_y(php_raylib_charinfo_object *obj) /* {{{ */
+{
+    return (zend_long) obj->charinfo.offsetY;
+}
+
+static zend_long php_raylib_charinfo_advance_x(php_raylib_charinfo_object *obj) /* {{{ */
+{
+    return (zend_long) obj->charinfo.advanceX;
+}
+
+static zval * php_raylib_charinfo_image(php_raylib_charinfo_object *obj) /* {{{ */
+{
+    zval *image = malloc(sizeof(zval));
+    object_init_ex(image, php_raylib_image_ce);
+
+    php_raylib_image_object *result = Z_IMAGE_OBJ_P(image);
+    result->image = obj->charinfo.image;
+
+    return image;
 }
 /* }}} */
 
 
 
-static int php_raylib_charinfo_write_x(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
+static int php_raylib_charinfo_write_value(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
 {
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        //charinfo_object->charinfo.x = 0;
+        charinfo_object->charinfo.value = 0;
         return ret;
     }
 
-    //charinfo_object->charinfo.x = (float) zval_get_double(newval);
+    charinfo_object->charinfo.value = (int) zval_get_long(newval);
 
     return ret;
 }
 /* }}} */
 
-static int php_raylib_charinfo_write_y(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
+static int php_raylib_charinfo_write_offset_x(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
 {
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        //charinfo_object->charinfo.y = 0;
+        charinfo_object->charinfo.offsetX = 0;
         return ret;
     }
 
-//    php_error_docref(NULL, E_WARNING, "'%f': no value set", zval_get_double(newval));
+    charinfo_object->charinfo.offsetX = (int) zval_get_long(newval);
 
+    return ret;
+}
 
-    //charinfo_object->charinfo.y = (float) zval_get_double(newval);
+static int php_raylib_charinfo_write_offset_y(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        charinfo_object->charinfo.offsetY = 0;
+        return ret;
+    }
+
+    charinfo_object->charinfo.offsetY = (int) zval_get_long(newval);
+
+    return ret;
+}
+
+static int php_raylib_charinfo_write_advance_x(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        charinfo_object->charinfo.advanceX = 0;
+        return ret;
+    }
+
+    charinfo_object->charinfo.advanceX = (int) zval_get_long(newval);
+
+    return ret;
+}
+
+static int php_raylib_charinfo_write_image(php_raylib_charinfo_object *charinfo_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
+
+    charinfo_object->charinfo.image = phpImage->image;
 
     return ret;
 }
@@ -397,7 +486,7 @@ PHP_METHOD(CharInfo, __construct)
             Z_PARAM_ZVAL(image)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(ZEND_THIS);
+    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
 
@@ -411,50 +500,179 @@ PHP_METHOD(CharInfo, __construct)
 
 }
 
-//PHP_METHOD(CharInfo, getX)
-//{
-//    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
-//    RETURN_DOUBLE(intern->charinfo.x);
-//}
-//
-//PHP_METHOD(CharInfo, setX)
-//{
-//    zval *val;
-//
-//    ZEND_PARSE_PARAMETERS_START(1, 1)
-//            Z_PARAM_ZVAL(val)
-//    ZEND_PARSE_PARAMETERS_END();
-//
-//    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
-//
-//    intern->charinfo.x = zend_double_2float(val);
-//}
-//
-//PHP_METHOD(CharInfo, getY)
-//{
-//    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
-//    RETURN_DOUBLE(intern->charinfo.y);
-//}
-//
-//PHP_METHOD(CharInfo, setY)
-//{
-//    zval *val;
-//
-//    ZEND_PARSE_PARAMETERS_START(1, 1)
-//            Z_PARAM_ZVAL(val)
-//    ZEND_PARSE_PARAMETERS_END();
-//
-//    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
-//
-//    intern->charinfo.y = zend_double_2float(val);
-//}
+
+PHP_METHOD(CharInfo, fromFontData)
+{
+
+    zend_string *fileName;
+    zval *fontChars;
+    HashTable *fontCharsArr;
+    zend_long fontSize, type;
+    zval *zv;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+        Z_PARAM_STR(fileName)
+        Z_PARAM_LONG(fontSize)
+        Z_PARAM_ARRAY(fontChars)
+        Z_PARAM_LONG(type)
+    ZEND_PARSE_PARAMETERS_END();
+
+    fontCharsArr = Z_ARRVAL_P(fontChars);
+    int numFontChars = zend_hash_num_elements(fontCharsArr);
+    int *fontCharsP = (int *)safe_emalloc(numFontChars, sizeof(int), 0);
+
+    int n = 0;
+    ZEND_HASH_FOREACH_VAL(fontCharsArr, zv) {
+        switch (Z_TYPE_P(zv)) {
+            case IS_LONG:
+                if (n < numFontChars) {
+                    zend_long val = zval_get_long(zv);
+                    fontCharsP[n] = (int) val;
+                    n++;
+                }
+                break;
+            default:
+                php_error_docref(NULL, E_WARNING, "Invalid type for element %i", n);
+                RETURN_FALSE;
+        }
+    } ZEND_HASH_FOREACH_END();
+
+    zval *charinfo = malloc(sizeof(zval));
+    object_init_ex(charinfo, php_raylib_charinfo_ce);
+
+    php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(charinfo);
+
+    CharInfo *charInfos = LoadFontData(
+            fileName->val,
+            (int) fontSize,
+            fontCharsP,
+            numFontChars,
+            (int) type
+    );
+
+    array_init_size(return_value, numFontChars);
+
+    for (int i = 0; i < numFontChars; i++) {
+        zval *charInfo = malloc(sizeof(zval));
+        object_init_ex(charInfo, php_raylib_charinfo_ce);
+
+        php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(charInfo);
+        result->charinfo = charInfos[i];
+        add_index_zval(return_value, i, charInfo);
+    }
+}
+
+PHP_METHOD(CharInfo, getValue)
+{
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+    RETURN_LONG(intern->charinfo.value);
+}
+
+PHP_METHOD(CharInfo, setValue)
+{
+    zend_long value;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(value)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+
+    intern->charinfo.value = (int) value;
+}
+
+PHP_METHOD(CharInfo, getOffsetX)
+{
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+    RETURN_LONG(intern->charinfo.offsetX);
+}
+
+PHP_METHOD(CharInfo, setOffsetX)
+{
+    zend_long offsetX;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(offsetX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+
+    intern->charinfo.offsetX = (int) offsetX;
+}
+
+PHP_METHOD(CharInfo, getOffsetY)
+{
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+    RETURN_LONG(intern->charinfo.offsetY);
+}
+
+PHP_METHOD(CharInfo, setOffsetY)
+{
+    zend_long offsetY;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(offsetY)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+
+    intern->charinfo.offsetY = (int) offsetY;
+}
+
+PHP_METHOD(CharInfo, getAdvanceX)
+{
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+    RETURN_LONG(intern->charinfo.advanceX);
+}
+
+PHP_METHOD(CharInfo, setAdvanceX)
+{
+    zend_long advanceX;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(advanceX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+
+    intern->charinfo.advanceX = (int) advanceX;
+}
+
+PHP_METHOD(CharInfo, getImage)
+{
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+    RETURN_OBJ(&intern->std);
+}
+
+PHP_METHOD(CharInfo, setImage)
+{
+    zval *image;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(image)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+
+    php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
+
+    intern->charinfo.image = phpImage->image;
+}
+
 
 const zend_function_entry php_raylib_charinfo_methods[] = {
         PHP_ME(CharInfo, __construct, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(CharInfo, getX, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(CharInfo, setX, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(CharInfo, getY, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(CharInfo, setY, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, fromFontData, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(CharInfo, getValue, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setValue, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getOffsetX, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setOffsetX, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getOffsetY, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setOffsetY, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getAdvanceX, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setAdvanceX, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getImage, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setImage, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
@@ -477,9 +695,9 @@ void php_raylib_charinfo_startup(INIT_FUNC_ARGS)
     php_raylib_charinfo_object_handlers.get_property_ptr_ptr = php_raylib_charinfo_get_property_ptr_ptr;
     php_raylib_charinfo_object_handlers.get_gc               = php_raylib_charinfo_get_gc;
     php_raylib_charinfo_object_handlers.get_properties       = php_raylib_charinfo_get_properties;
-    php_raylib_charinfo_object_handlers.read_property	    = php_raylib_charinfo_read_property;
+    php_raylib_charinfo_object_handlers.read_property	     = php_raylib_charinfo_read_property;
     php_raylib_charinfo_object_handlers.write_property       = php_raylib_charinfo_write_property;
-    php_raylib_charinfo_object_handlers.has_property	        = php_raylib_charinfo_has_property;
+    php_raylib_charinfo_object_handlers.has_property	     = php_raylib_charinfo_has_property;
 
     // Init
     INIT_NS_CLASS_ENTRY(ce, "raylib", "CharInfo", php_raylib_charinfo_methods);
@@ -488,6 +706,9 @@ void php_raylib_charinfo_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_charinfo_prop_handlers, 0, NULL, php_raylib_charinfo_free_prop_handler, 1);
-    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "x", php_raylib_charinfo_x, php_raylib_charinfo_write_x);
-    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "y", php_raylib_charinfo_y, php_raylib_charinfo_write_y);
+    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "value", php_raylib_charinfo_value, php_raylib_charinfo_write_value);
+    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "offsetX", php_raylib_charinfo_offset_x, php_raylib_charinfo_write_offset_x);
+    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "offsetY", php_raylib_charinfo_offset_y, php_raylib_charinfo_write_offset_y);
+    php_raylib_charinfo_register_prop_handler(&php_raylib_charinfo_prop_handlers, "advanceX", php_raylib_charinfo_advance_x, php_raylib_charinfo_write_advance_x);
+    php_raylib_charinfo_register_prop_handler_image(&php_raylib_charinfo_prop_handlers, "image", php_raylib_charinfo_image, php_raylib_charinfo_write_image);
 }

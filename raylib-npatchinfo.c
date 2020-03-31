@@ -409,7 +409,6 @@ static int php_raylib_npatchinfo_write_source_rec(php_raylib_npatchinfo_object *
 
     if (Z_TYPE_P(newval) == IS_NULL) {
         // Cannot set this to null...
-//        npatchinfo_object->npatchinfo.sourceRec = NULL;
         return ret;
     }
 
@@ -648,7 +647,7 @@ PHP_METHOD(NPatchInfo, setSourceRec)
 const zend_function_entry php_raylib_npatchinfo_methods[] = {
         PHP_ME(NPatchInfo, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(NPatchInfo, getLeft, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(NPatchInfo, setRight, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(NPatchInfo, setLeft, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(NPatchInfo, getTop, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(NPatchInfo, setTop, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(NPatchInfo, getRight, NULL, ZEND_ACC_PUBLIC)

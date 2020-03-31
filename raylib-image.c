@@ -451,12 +451,42 @@ PHP_METHOD(Image, toPot)
     ImageToPOT(&intern->image, php_array_to_color(colorArr));
 }
 
+// RLAPI void ExportImage(const char *fileName, Image image);
+PHP_METHOD(Image, export)
+{
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+
+    ExportImage(intern->image, fileName->val);
+}
+
+// RLAPI void ExportImageAsCode(Image image, const char *fileName);
+PHP_METHOD(Image, exportAsCode)
+{
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+
+    ExportImageAsCode(intern->image, fileName->val);
+}
+
 const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, exportAsCode, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

@@ -261,7 +261,7 @@ This is a one to one mapping of each raylib function.
 | C API | PHP API | Comment |
 |-------|---------|---------|
 | RLAPI Image LoadImage(const char *fileName);                                                             | new raylib\Image(string $filename) ||
-| RLAPI Image LoadImageEx(Color *pixels, int width, int height);                                           | TODO ||
+| RLAPI Image LoadImageEx(Color *pixels, int width, int height);                                           | raylib\Image::fromColors(raylib\Color[] $pixels, int $width, int $height) ||
 | RLAPI Image LoadImagePro(void *data, int width, int height, int format);                                 | TODO ||
 | RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);       | TODO ||
 | RLAPI void ExportImage(const char *fileName, Image image);                                               | TODO ||
@@ -353,7 +353,7 @@ This is a one to one mapping of each raylib function.
 | RLAPI Font LoadFont(const char *fileName);                                                  | TODO ||
 | RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);  | TODO ||
 | RLAPI Font LoadFontFromImage(Image image, Color key, int firstChar);                        | TODO ||
-| RLAPI CharInfo *LoadFontData(const char *fileName, int fontSize, int *fontChars, int charsCount, int type); | TODO ||
+| RLAPI CharInfo *LoadFontData(const char *fileName, int fontSize, int *fontChars, int charsCount, int type); | \raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type) ||
 | RLAPI Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod); | TODO ||
 | RLAPI void UnloadFont(Font font);                                                           | TODO ||
 

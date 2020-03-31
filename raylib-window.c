@@ -131,8 +131,8 @@ PHP_METHOD(Window, isHidden)
 //RLAPI bool IsWindowFullscreen(void);
 PHP_METHOD(Window, isFullscreen)
 {
-    RETURN_BOOL(false);
-//    RETURN_BOOL(IsWindowFullscreen());
+//    RETURN_BOOL(false);
+    RETURN_BOOL(IsWindowFullscreen());
 }
 
 PHP_METHOD(Window, unhideWindow)

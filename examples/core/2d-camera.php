@@ -99,7 +99,6 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
 
     if ($camera->getZoom() > 3.0) {
         $camera->setZoom(3.0);
-        Mouse::
     } else if ($camera->getZoom() < 0.1) {
         $camera->setZoom(0.1);
     }
