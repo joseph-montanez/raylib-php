@@ -22,7 +22,7 @@ class Image
      * Create an image from an array of pixels
      *
      * @param \raylib\Color[] $pixels Array of colors to load from
-     * @param int             $width The width of image
+     * @param int             $width  The width of image
      * @param int             $height The height of image
      *
      * @return \raylib\Image
@@ -207,33 +207,6 @@ class Image
     {
     }
 
-
-    /**
-     * Create an image from text (default font)
-     *
-     * @param string $text
-     * @param int    $fontSize
-     * @param array  $color
-     *
-     * @return Image
-     */
-    public static function text(string $text, int $fontSize, array $color): Image
-    {
-    }
-
-    /**
-     * @param SpriteFont $font
-     * @param string     $text
-     * @param float      $fontSize
-     * @param int        $spacing
-     * @param array      $tint The tint color [red,blue,green,alpha] i.e [0,0,0,255]
-     *
-     * @return Image
-     */
-    public static function textEx(SpriteFont $font, string $text, float $fontSize, int $spacing, array $tint): Image
-    {
-    }
-
     /**
      * Draw a source image within a destination image
      *
@@ -261,30 +234,66 @@ class Image
     /**
      * Draw text (default font) within an image (destination)
      *
-     * @param array  $position The position to place the text - Vector2 array ['x' => 0, 'y' => 0]
-     * @param string $text     The text to draw on the image
-     * @param int    $fontSize The font size of the text
-     * @param array  $color    The color [red,blue,green,alpha] i.e [0,0,0,255]
+     * {@internal RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color); }}
+     *
+     * @param \raylib\Vector2 $position The position to place the text - Vector2 array ['x' => 0, 'y' => 0]
+     * @param string          $text     The text to draw on the image
+     * @param int             $fontSize The font size of the text
+     * @param \raylib\Color   $color    The color [red,blue,green,alpha] i.e [0,0,0,255]
      *
      * @return void
      */
-    public function drawText(array $position, string $text, int $fontSize, array $color): void
+    public function drawText(Vector2 $position, string $text, int $fontSize, Color $color): void
     {
     }
 
     /**
      * Draw text (custom sprite font) within an image (destination)
      *
-     * @param array      $position The position to place the text - Vector2 array ['x' => 0, 'y' => 0]
-     * @param SpriteFont $font
-     * @param string     $text
-     * @param float      $fontSize
-     * @param int        $spacing
-     * @param array      $color    The color [red,blue,green,alpha] i.e [0,0,0,255]
+     * {@internal RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, Font font, const char *text, float fontSize, float spacing, Color color); }}
+     *
+     * @param \raylib\Vector2 $position The position to place the text - Vector2 array ['x' => 0, 'y' => 0]
+     * @param \raylib\Font    $font
+     * @param string          $text
+     * @param float           $fontSize
+     * @param int             $spacing
+     * @param \raylib\Color   $color    The color [red,blue,green,alpha] i.e [0,0,0,255]
      *
      * @return void
      */
-    public function drawTextEx(array $position, SpriteFont $font, string $text, float $fontSize, int $spacing, array $color): void
+    public function drawTextEx(Vector2 $position, Font $font, string $text, float $fontSize, int $spacing, Color $color): void
+    {
+    }
+
+    /**
+     * Draw text (default font) within an image (destination)
+     *
+     * {@internal RLAPI Image ImageText(const char *text, int fontSize, Color color);}}
+     *
+     * @param string        $text     The text to draw on the image
+     * @param int           $fontSize The font size of the text
+     * @param \raylib\Color $color    The color
+     *
+     * @return void
+     */
+    public static function fromDefaultFont(string $text, int $fontSize, Color $color): void
+    {
+    }
+
+    /**
+     * Draw text (custom sprite font) within an image (destination)
+     *
+     * Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);
+     *
+     * @param \raylib\Font  $font
+     * @param string        $text
+     * @param float         $fontSize
+     * @param int           $spacing
+     * @param \raylib\Color $color The color
+     *
+     * @return void
+     */
+    public static function fromFont(Font $font, string $text, float $fontSize, int $spacing, Color $color): void
     {
     }
 

@@ -49,6 +49,9 @@ typedef struct tagMSG *LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "raylib-rectangle.h"
+#include "raylib-texture.h"
+#include "raylib-charinfo.h"
 #include "raylib-font.h"
 #include "raylib-utils.h"
 
@@ -60,22 +63,104 @@ zend_object_handlers php_raylib_font_object_handlers;
 
 static HashTable php_raylib_font_prop_handlers;
 
-typedef double (*raylib_font_read_float_t)(php_raylib_font_object *obj);
+typedef zend_long (*raylib_font_read_long_t)(php_raylib_font_object *obj);
 
-typedef int (*raylib_font_write_float_t)(php_raylib_font_object *obj, zval *value);
+typedef int (*raylib_font_write_long_t)(php_raylib_font_object *obj, zval *value);
+
+typedef zval* (*raylib_font_read_texture_object_t)(php_raylib_font_object *obj);
+
+typedef int (*raylib_font_write_texture_object_t)(php_raylib_font_object *obj, zval *value);
+
+typedef zval* (*raylib_font_read_charinfo_object_t)(php_raylib_font_object *obj);
+
+typedef int (*raylib_font_write_charinfo_object_t)(php_raylib_font_object *obj, zval *value);
+
+typedef zval* (*raylib_font_read_rectangle_object_t)(php_raylib_font_object *obj);
+
+typedef int (*raylib_font_write_rectangle_object_t)(php_raylib_font_object *obj, zval *value);
 
 typedef struct _raylib_font_prop_handler {
-    raylib_font_read_float_t read_float_func;
-    raylib_font_write_float_t write_float_func;
+    raylib_font_read_long_t read_long_func;
+    raylib_font_write_long_t write_long_func;
+    raylib_font_read_texture_object_t read_texture_func;
+    raylib_font_write_texture_object_t write_texture_func;
+    raylib_font_read_charinfo_object_t read_charinfo_func;
+    raylib_font_write_charinfo_object_t write_charinfo_func;
+    raylib_font_read_rectangle_object_t read_rectangle_func;
+    raylib_font_write_rectangle_object_t write_rectangle_func;
 } raylib_font_prop_handler;
 /* }}} */
 
-static void php_raylib_font_register_prop_handler(HashTable *prop_handler, char *name, raylib_font_read_float_t read_float_func, raylib_font_write_float_t write_float_func) /* {{{ */
+static void php_raylib_font_register_prop_handler(HashTable *prop_handler, char *name, raylib_font_read_long_t read_long_func, raylib_font_write_long_t write_long_func) /* {{{ */
 {
     raylib_font_prop_handler hnd;
 
-    hnd.read_float_func = read_float_func;
-    hnd.write_float_func = write_float_func;
+    hnd.read_long_func = read_long_func;
+    hnd.write_long_func = write_long_func;
+    hnd.read_rectangle_func = NULL;
+    hnd.write_rectangle_func = NULL;
+    hnd.read_charinfo_func = NULL;
+    hnd.write_charinfo_func = NULL;
+    hnd.read_texture_func = NULL;
+    hnd.write_texture_func = NULL;
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_font_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_font_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+/* }}} */
+
+
+static void php_raylib_font_register_prop_handler_texture(HashTable *prop_handler, char *name, raylib_font_read_texture_object_t read_texture_func, raylib_font_write_texture_object_t write_texture_func) /* {{{ */
+{
+    raylib_font_prop_handler hnd;
+
+    hnd.read_long_func = NULL;
+    hnd.write_long_func = NULL;
+    hnd.read_rectangle_func = NULL;
+    hnd.write_rectangle_func = NULL;
+    hnd.read_charinfo_func = NULL;
+    hnd.write_charinfo_func = NULL;
+    hnd.read_texture_func = read_texture_func;
+    hnd.write_texture_func = write_texture_func;
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_font_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_font_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+/* }}} */
+
+static void php_raylib_font_register_prop_handler_rectangle(HashTable *prop_handler, char *name, raylib_font_read_rectangle_object_t read_rectangle_func, raylib_font_write_rectangle_object_t write_rectangle_func) /* {{{ */
+{
+    raylib_font_prop_handler hnd;
+
+    hnd.read_long_func = NULL;
+    hnd.write_long_func = NULL;
+    hnd.read_rectangle_func = read_rectangle_func;
+    hnd.write_rectangle_func = write_rectangle_func;
+    hnd.read_charinfo_func = NULL;
+    hnd.write_charinfo_func = NULL;
+    hnd.read_texture_func = NULL;
+    hnd.write_texture_func = NULL;
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_font_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_font_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+/* }}} */
+
+static void php_raylib_font_register_prop_handler_charinfo(HashTable *prop_handler, char *name, raylib_font_read_charinfo_object_t read_charinfo_func, raylib_font_write_charinfo_object_t write_charinfo_func) /* {{{ */
+{
+    raylib_font_prop_handler hnd;
+
+    hnd.read_long_func = NULL;
+    hnd.write_long_func = NULL;
+    hnd.read_rectangle_func = NULL;
+    hnd.write_rectangle_func = NULL;
+    hnd.read_charinfo_func = read_charinfo_func;
+    hnd.write_charinfo_func = write_charinfo_func;
+    hnd.read_texture_func = NULL;
+    hnd.write_texture_func = NULL;
     zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_font_prop_handler));
 
     /* Register for reflection */
@@ -85,19 +170,39 @@ static void php_raylib_font_register_prop_handler(HashTable *prop_handler, char 
 
 static zval *php_raylib_font_property_reader(php_raylib_font_object *obj, raylib_font_prop_handler *hnd, zval *rv) /* {{{ */
 {
-    double ret = 0;
+    if (obj != NULL && hnd->read_long_func) {
+        zend_long ret = 0;
+        ret = hnd->read_long_func(obj);
+        ZVAL_LONG(rv, (zend_long) ret);
+    }
+    else if (obj != NULL && hnd->read_rectangle_func) {
+        zval *ret;
+        ret = hnd->read_rectangle_func(obj);
 
-    if (obj != NULL && hnd->read_float_func) {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib font found");
-        ret = hnd->read_float_func(obj);
+        php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(ret);
+        ZVAL_OBJ(rv, &result->std);
+    }
+    else if (obj != NULL && hnd->read_charinfo_func) {
+        zval *ret;
+        ret = hnd->read_charinfo_func(obj);
+
+        php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(ret);
+        ZVAL_OBJ(rv, &result->std);
+    }
+    else if (obj != NULL && hnd->read_texture_func) {
+        zval *ret;
+        ret = hnd->read_texture_func(obj);
+
+        php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(ret);
+        ZVAL_OBJ(rv, &result->std);
     } else {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
     }
 
-    ZVAL_DOUBLE(rv, (double) ret);
 
     return rv;
 }
+/* }}} */
 /* }}} */
 
 static zval *php_raylib_font_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
@@ -197,8 +302,8 @@ zval *php_raylib_font_write_property(zval *object, zval *member, zval *value, vo
 
     hnd = zend_hash_find_ptr(&php_raylib_font_prop_handlers, Z_STR_P(member));
 
-    if (hnd && hnd->write_float_func) {
-        hnd->write_float_func(obj, value);
+    if (hnd && hnd->write_long_func) {
+        hnd->write_long_func(obj, value);
     } else {
         value = zend_std_write_property(object, member, value, cache_slot);
     }
@@ -334,48 +439,178 @@ static zend_object *php_raylib_font_clone(zval *zobject)
 
 // PHP property handling
 
-static double php_raylib_font_x(php_raylib_font_object *obj) /* {{{ */
+static zend_long php_raylib_font_base_size(php_raylib_font_object *obj) /* {{{ */
 {
-    return 0;// (double) obj->font.x;
+    return (zend_long) obj->font.baseSize;
 }
 /* }}} */
 
-static double php_raylib_font_y(php_raylib_font_object *obj) /* {{{ */
+static zend_long php_raylib_font_chars_count(php_raylib_font_object *obj) /* {{{ */
 {
-    return 0; // (double) obj->font.y;
+    return (zend_long) obj->font.charsCount;
+}
+/* }}} */
+
+static zval * php_raylib_font_texture(php_raylib_font_object *obj) /* {{{ */
+{
+    zval *texture = malloc(sizeof(zval));
+    object_init_ex(texture, php_raylib_texture_ce);
+
+    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
+    result->texture = obj->font.texture;
+
+    return texture;
+}
+/* }}} */
+
+static zval * php_raylib_font_recs(php_raylib_font_object *obj) /* {{{ */
+{
+    zval *rectangles = malloc(sizeof(zval));
+//    object_init_ex(rectangles, php_raylib_texture_ce);
+
+//    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
+//    result->texture = obj->charinfo.texture;
+
+    array_init_size(rectangles, obj->font.charsCount);
+
+    for (int i = 0; i < obj->font.charsCount; i++) {
+        zval *rectangle = malloc(sizeof(zval));
+        object_init_ex(rectangle, php_raylib_rectangle_ce);
+
+        php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(rectangle);
+        result->rectangle = obj->font.recs[i];
+        add_index_zval(rectangles, i, rectangle);
+    }
+
+    return rectangles;
+}
+/* }}} */
+
+static zval * php_raylib_font_chars(php_raylib_font_object *obj) /* {{{ */
+{
+    zval *charinfos = malloc(sizeof(zval));
+//    object_init_ex(charinfos, php_raylib_texture_ce);
+
+//    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
+//    result->texture = obj->charinfo.texture;
+
+    array_init_size(charinfos, obj->font.charsCount);
+
+    for (int i = 0; i < obj->font.charsCount; i++) {
+        zval *charinfo = malloc(sizeof(zval));
+        object_init_ex(charinfo, php_raylib_charinfo_ce);
+
+        php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(charinfo);
+        result->charinfo = obj->font.chars[i];
+        add_index_zval(charinfos, i, charinfo);
+    }
+
+    return charinfos;
 }
 /* }}} */
 
 
 
-static int php_raylib_font_write_x(php_raylib_font_object *font_object, zval *newval) /* {{{ */
+static int php_raylib_font_write_base_size(php_raylib_font_object *font_object, zval *newval) /* {{{ */
 {
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-//        font_object->font.x = 0;
+        font_object->font.baseSize = 0;
         return ret;
     }
 
-//    font_object->font.x = (float) zval_get_double(newval);
+    font_object->font.baseSize = (int) zval_get_long(newval);
 
     return ret;
 }
 /* }}} */
 
-static int php_raylib_font_write_y(php_raylib_font_object *font_object, zval *newval) /* {{{ */
+static int php_raylib_font_write_chars_count(php_raylib_font_object *font_object, zval *newval) /* {{{ */
 {
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-//        font_object->font.y = 0;
+        font_object->font.charsCount = 0;
         return ret;
     }
 
-//    php_error_docref(NULL, E_WARNING, "'%f': no value set", zval_get_double(newval));
+    font_object->font.charsCount = (int) zval_get_long(newval);
 
+    return ret;
+}
+/* }}} */
 
-//    font_object->font.y = (float) zval_get_double(newval);
+static int php_raylib_font_write_texture(php_raylib_font_object *font_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_texture_object *phpImage = Z_TEXTURE_OBJ_P(newval);
+
+    font_object->font.texture = phpImage->texture;
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_font_write_recs(php_raylib_font_object *font_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    HashTable *rectsArr = Z_ARRVAL_P(newval);
+    int numRecs = zend_hash_num_elements(rectsArr);
+    Rectangle *recsP = (Rectangle *)safe_emalloc(numRecs, sizeof(Rectangle), 0);
+
+    int n = 0;
+    zval *zv;
+    ZEND_HASH_FOREACH_VAL(rectsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_rectangle_object *obj = Z_RECTANGLE_OBJ_P(zv);
+            recsP[n] = obj->rectangle;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    font_object->font.recs = recsP;
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_font_write_chars(php_raylib_font_object *font_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    HashTable *charsArr = Z_ARRVAL_P(newval);
+    int numChars = zend_hash_num_elements(charsArr);
+    CharInfo *charsP = (CharInfo *)safe_emalloc(numChars, sizeof(CharInfo), 0);
+
+    int n = 0;
+    zval *zv;
+    ZEND_HASH_FOREACH_VAL(charsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_charinfo_object *obj = Z_CHARINFO_OBJ_P(zv);
+            charsP[n] = obj->charinfo;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    font_object->font.chars = charsP;
 
     return ret;
 }
@@ -392,22 +627,57 @@ PHP_METHOD(Font, __construct)
 {
     zend_long baseSize;
     zend_long charsCount;
-//    zval *texture;
-//    zval *recs;
-//    zval *chars;
+    zval *texture;
+    zval *recs;
+    zval *chars;
+    HashTable *recsArr, *charsArr;
+    zval *zv;
+    int numRecs, numChars, n;
+    Rectangle *recsP;
+    CharInfo *charsP;
 
-    ZEND_PARSE_PARAMETERS_START(2, 2)
+    ZEND_PARSE_PARAMETERS_START(5, 5)
             Z_PARAM_LONG(baseSize)
             Z_PARAM_LONG(charsCount)
+            Z_PARAM_ZVAL(texture)
+            Z_PARAM_ARRAY(recs)
+            Z_PARAM_ARRAY(chars)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-//    intern->font = (Font) {
-//            .baseSize = zend_double_2float(x),
-//            .charsCount = zend_double_2float(y)
-//    };
 
+    recsArr = Z_ARRVAL_P(recs);
+    numRecs = zend_hash_num_elements(recsArr);
+    recsP = (Rectangle *)safe_emalloc(numRecs, sizeof(Rectangle), 0);
+    n = 0;
+    ZEND_HASH_FOREACH_VAL(recsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_rectangle_object *obj = Z_RECTANGLE_OBJ_P(zv);
+            recsP[n] = obj->rectangle;
+        }
+        n++;
+    } ZEND_HASH_FOREACH_END();
+
+    charsArr = Z_ARRVAL_P(chars);
+    numChars = zend_hash_num_elements(charsArr);
+    charsP = (CharInfo *)safe_emalloc(numChars, sizeof(CharInfo), 0);
+    ZEND_HASH_FOREACH_VAL(charsArr, zv) {
+        if (Z_TYPE_P(zv) == IS_OBJECT) {
+            php_raylib_charinfo_object *obj = Z_CHARINFO_OBJ_P(zv);
+            charsP[n] = obj->charinfo;
+        }
+    } ZEND_HASH_FOREACH_END();
+
+
+    intern->font = (Font) {
+            .baseSize = (int) baseSize,
+            .charsCount = (int) charsCount,
+            .texture = phpTexture->texture,
+            .recs = recsP,
+            .chars = charsP
+    };
 }
 
 //PHP_METHOD(Font, getX)
@@ -450,10 +720,16 @@ PHP_METHOD(Font, __construct)
 
 const zend_function_entry php_raylib_font_methods[] = {
         PHP_ME(Font, __construct, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Font, getX, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Font, setX, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Font, getY, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Font, setY, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, getBaseSize, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, setBaseSize, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, getCharsCount, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, setCharsCount, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, getTexture, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, setTexture, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, getRecs, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, setRecs, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, getChars, NULL, ZEND_ACC_PUBLIC)
+//        PHP_ME(Font, setChars, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
@@ -487,8 +763,11 @@ void php_raylib_font_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_font_prop_handlers, 0, NULL, php_raylib_font_free_prop_handler, 1);
-//    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "x", php_raylib_font_x, php_raylib_font_write_x);
-//    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "y", php_raylib_font_y, php_raylib_font_write_y);
+    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "baseSize", php_raylib_font_base_size, php_raylib_font_write_base_size);
+    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "charCount", php_raylib_font_chars_count, php_raylib_font_write_chars_count);
+    php_raylib_font_register_prop_handler_texture(&php_raylib_font_prop_handlers, "texture", php_raylib_font_texture, php_raylib_font_write_texture);
+    php_raylib_font_register_prop_handler_rectangle(&php_raylib_font_prop_handlers, "recs", php_raylib_font_recs, php_raylib_font_write_recs);
+    php_raylib_font_register_prop_handler_charinfo(&php_raylib_font_prop_handlers, "chars", php_raylib_font_chars, php_raylib_font_write_chars);
 
 
     // Types

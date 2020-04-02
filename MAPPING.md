@@ -300,8 +300,8 @@ This is a one to one mapping of each raylib function.
 | RLAPI void ImageMipmaps(Image *image);                                                                                                 | TODO ||
 | RLAPI void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);                                                          | TODO ||
 | RLAPI Color *ImageExtractPalette(Image image, int maxPaletteSize, int *extractCount);                                                  | TODO ||
-| RLAPI Image ImageText(const char *text, int fontSize, Color color);                                                                    | TODO ||
-| RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | TODO ||
+| RLAPI Image ImageText(const char *text, int fontSize, Color color);                                                                    | raylib\Image::fromDefaultFont(string $text, int $fontSize, Color $color) ||
+| RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | raylib\Image::fromFont(Font $font, string $text, float $fontSize, int $spacing, Color $tint) ||
 | RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                       | TODO ||
 | RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | TODO ||
 | RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | TODO ||
