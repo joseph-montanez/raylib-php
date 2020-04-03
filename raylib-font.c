@@ -188,11 +188,7 @@ static zval *php_raylib_font_property_reader(php_raylib_font_object *obj, raylib
         ZVAL_ARR(rv, ret);
     }
     else if (obj != NULL && hnd->read_texture_func) {
-        zval *ret;
-        ret = hnd->read_texture_func(obj);
-
-        php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(ret);
-        ZVAL_OBJ(rv, &result->std);
+        rv = hnd->read_texture_func(obj);
     } else {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
     }
@@ -453,13 +449,8 @@ static zend_long php_raylib_font_chars_count(php_raylib_font_object *obj) /* {{{
 
 static zval * php_raylib_font_texture(php_raylib_font_object *obj) /* {{{ */
 {
-    zval *texture = malloc(sizeof(zval));
-    object_init_ex(texture, php_raylib_texture_ce);
-
-    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
-    result->texture = obj->font.texture;
-
-    return texture;
+//    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(obj->texture);
+    return &obj->texture;
 }
 /* }}} */
 
@@ -631,6 +622,15 @@ PHP_METHOD(Font, __construct)
     php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
 
     intern->font = LoadFont(fileName->val);
+
+    //-- Create PHP Texture Object
+    zval *texture = malloc(sizeof(zval));
+    object_init_ex(texture, php_raylib_texture_ce);
+
+    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
+    result->texture = intern->font.texture;
+
+    intern->texture = *texture;
 }
 
 // Draw text using font and additional parameters
@@ -720,6 +720,15 @@ PHP_METHOD(Font, fromCustom)
     } else {
         result->font = LoadFontEx(fileName->val, (int) fontSize, NULL, (int) charsCount);
     }
+
+    //-- Create PHP Texture Object
+    zval texture;
+    object_init_ex(&texture, php_raylib_texture_ce);
+
+    php_raylib_texture_object *texture_result = Z_TEXTURE_OBJ_P(&texture);
+    texture_result->texture = result->font.texture;
+
+    result->texture = texture;
 
     RETURN_OBJ(&result->std);
 }

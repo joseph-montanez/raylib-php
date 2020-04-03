@@ -11,6 +11,7 @@ typedef struct _php_raylib_font_object {
     Font font;
     HashTable *prop_handler;
     zend_object std;
+    zval texture;
 } php_raylib_font_object;
 
 static inline php_raylib_font_object *php_raylib_font_fetch_object(zend_object *obj) {
