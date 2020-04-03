@@ -178,18 +178,14 @@ static zval *php_raylib_font_property_reader(php_raylib_font_object *obj, raylib
         ZVAL_LONG(rv, (zend_long) ret);
     }
     else if (obj != NULL && hnd->read_rectangle_func) {
-        zval *ret;
+        HashTable *ret;
         ret = hnd->read_rectangle_func(obj);
-
-        php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(ret);
-        ZVAL_ARR(rv, &result->std);
+        ZVAL_ARR(rv, ret);
     }
     else if (obj != NULL && hnd->read_charinfo_func) {
-        zval *ret;
+        HashTable *ret;
         ret = hnd->read_charinfo_func(obj);
-
-        php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(ret);
-        ZVAL_ARR(rv, &result->std);
+        ZVAL_ARR(rv, ret);
     }
     else if (obj != NULL && hnd->read_texture_func) {
         zval *ret;
@@ -469,7 +465,7 @@ static zval * php_raylib_font_texture(php_raylib_font_object *obj) /* {{{ */
 
 static zval * php_raylib_font_recs(php_raylib_font_object *obj) /* {{{ */
 {
-    zval *rectangles;
+    zval *rectangles = malloc(sizeof(zval));
 
     array_init_size(rectangles, obj->font.charsCount);
 
