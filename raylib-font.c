@@ -182,14 +182,14 @@ static zval *php_raylib_font_property_reader(php_raylib_font_object *obj, raylib
         ret = hnd->read_rectangle_func(obj);
 
         php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(ret);
-        ZVAL_OBJ(rv, &result->std);
+        ZVAL_ARR(rv, &result->std);
     }
     else if (obj != NULL && hnd->read_charinfo_func) {
         zval *ret;
         ret = hnd->read_charinfo_func(obj);
 
         php_raylib_charinfo_object *result = Z_CHARINFO_OBJ_P(ret);
-        ZVAL_OBJ(rv, &result->std);
+        ZVAL_ARR(rv, &result->std);
     }
     else if (obj != NULL && hnd->read_texture_func) {
         zval *ret;
@@ -406,6 +406,8 @@ void php_raylib_font_free_storage(zend_object *object TSRMLS_DC)
     php_raylib_font_object *intern = php_raylib_font_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
+
+    UnloadFont(intern->font);
 }
 
 zend_object * php_raylib_font_new(zend_class_entry *ce TSRMLS_DC)
@@ -467,11 +469,7 @@ static zval * php_raylib_font_texture(php_raylib_font_object *obj) /* {{{ */
 
 static zval * php_raylib_font_recs(php_raylib_font_object *obj) /* {{{ */
 {
-    zval *rectangles = malloc(sizeof(zval));
-//    object_init_ex(rectangles, php_raylib_texture_ce);
-
-//    php_raylib_texture_object *result = Z_TEXTURE_OBJ_P(texture);
-//    result->texture = obj->charinfo.texture;
+    zval *rectangles;
 
     array_init_size(rectangles, obj->font.charsCount);
 
@@ -481,6 +479,7 @@ static zval * php_raylib_font_recs(php_raylib_font_object *obj) /* {{{ */
 
         php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(rectangle);
         result->rectangle = obj->font.recs[i];
+
         add_index_zval(rectangles, i, rectangle);
     }
 
@@ -721,7 +720,7 @@ PHP_METHOD(Font, fromCustom)
     php_raylib_font_object *result = Z_FONT_OBJ_P(obj);
 
     if (Z_TYPE_P(fontChars) != IS_NULL) {
-        result->font = LoadFontEx(fileName->val, (int) fontSize, (int) Z_LVAL_P(fontChars), (int) charsCount);
+        result->font = LoadFontEx(fileName->val, (int) fontSize, (int *) Z_LVAL_P(fontChars), (int) charsCount);
     } else {
         result->font = LoadFontEx(fileName->val, (int) fontSize, NULL, (int) charsCount);
     }
