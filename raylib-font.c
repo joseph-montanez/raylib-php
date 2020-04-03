@@ -51,7 +51,9 @@ typedef struct tagMSG *LPMSG;
 #include "raylib.h"
 #include "raylib-rectangle.h"
 #include "raylib-texture.h"
+#include "raylib-color.h"
 #include "raylib-charinfo.h"
+#include "raylib-vector2.h"
 #include "raylib-font.h"
 #include "raylib-utils.h"
 
@@ -622,8 +624,112 @@ static int php_raylib_font_write_chars(php_raylib_font_object *font_object, zval
 /* }}} */
 
 // PHP object handling
-
+// RLAPI Font LoadFont(const char *fileName);
 PHP_METHOD(Font, __construct)
+{
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
+
+    intern->font = LoadFont(fileName->val);
+}
+
+// Draw text using font and additional parameters
+// RLAPI void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
+PHP_METHOD(Font, draw)
+{
+    zend_string *text;
+    zval *position;
+    double fontSize;
+    double spacing;
+    zval *tint;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_STR(text)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_DOUBLE(fontSize)
+        Z_PARAM_DOUBLE(spacing)
+        Z_PARAM_ZVAL(tint)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
+
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+
+    DrawTextEx(intern->font, text->val, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
+}
+
+// RLAPI Font GetFontDefault(void);
+PHP_METHOD(Font, fromDefault)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_font_ce);
+    
+    php_raylib_font_object *result = Z_FONT_OBJ_P(obj);
+    result->font = GetFontDefault();
+    
+    RETURN_OBJ(&result->std);
+}
+
+// RLAPI Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);
+PHP_METHOD(Font, measureText)
+{
+    zend_string *text;
+    double fontSize;
+    double spacing;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_STR(text)
+        Z_PARAM_DOUBLE(fontSize)
+        Z_PARAM_DOUBLE(spacing)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
+
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector2_ce);
+
+    php_raylib_vector2_object *result = Z_VECTOR2_OBJ_P(obj);
+    result->vector2 = MeasureTextEx(intern->font, text->val, (float) fontSize, (float) spacing);
+
+    RETURN_OBJ(&result->std);
+}
+
+//RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount)
+PHP_METHOD(Font, fromCustom)
+{
+    zend_string *fileName;
+    zend_long fontSize;
+    zend_long charsCount;
+    zval *fontChars;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+            Z_PARAM_STR(fileName)
+            Z_PARAM_LONG(fontSize)
+            Z_PARAM_ZVAL(fontChars)
+            Z_PARAM_LONG(charsCount)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_font_ce);
+    
+    php_raylib_font_object *result = Z_FONT_OBJ_P(obj);
+
+    if (Z_TYPE_P(fontChars) != IS_NULL) {
+        result->font = LoadFontEx(fileName->val, (int) fontSize, (int) Z_LVAL_P(fontChars), (int) charsCount);
+    } else {
+        result->font = LoadFontEx(fileName->val, (int) fontSize, NULL, (int) charsCount);
+    }
+
+    RETURN_OBJ(&result->std);
+}
+
+PHP_METHOD(Font, fromRaw)
 {
     zend_long baseSize;
     zend_long charsCount;
@@ -720,6 +826,11 @@ PHP_METHOD(Font, __construct)
 
 const zend_function_entry php_raylib_font_methods[] = {
         PHP_ME(Font, __construct, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Font, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, fromDefault, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, fromCustom, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, measureText, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Font, draw, NULL, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, getBaseSize, NULL, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, setBaseSize, NULL, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, getCharsCount, NULL, ZEND_ACC_PUBLIC)

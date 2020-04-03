@@ -51,6 +51,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib.h"
 #include "raylib-image.h"
 #include "raylib-font.h"
+#include "raylib-vector2.h"
 #include "raylib-texture.h"
 #include "raylib-color.h"
 #include "raylib-utils.h"
@@ -481,6 +482,55 @@ PHP_METHOD(Image, exportAsCode)
     ExportImageAsCode(intern->image, fileName->val);
 }
 
+// RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);
+PHP_METHOD(Image, drawText)
+{
+    zval *position;
+    zend_string *text;
+    zend_long fontSize;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_STR(text)
+        Z_PARAM_LONG(fontSize)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    ImageDrawText(&intern->image, phpPosition->vector2, text->val, (int) fontSize, phpColor->color);
+}
+
+// RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, Font font, const char *text, float fontSize, float spacing, Color color);
+PHP_METHOD(Image, drawTextEx)
+{
+    zval *position;
+    zval *font;
+    zend_string *text;
+    double fontSize;
+    double spacing;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_ZVAL(font)
+        Z_PARAM_STR(text)
+        Z_PARAM_DOUBLE(fontSize)
+        Z_PARAM_DOUBLE(spacing)
+        Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+
+    ImageDrawTextEx(&intern->image, phpPosition->vector2, phpFont->font, text->val, (float) fontSize, (float) spacing, phpColor->color);
+}
+
 // RLAPI Image ImageText(const char *text, int fontSize, Color color);
 PHP_METHOD(Image, fromDefaultFont)
 {
@@ -546,8 +596,8 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, exportAsCode, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, fromDefaultFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END

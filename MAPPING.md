@@ -304,8 +304,8 @@ This is a one to one mapping of each raylib function.
 | RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | raylib\Image::fromFont(Font $font, string $text, float $fontSize, int $spacing, Color $tint) ||
 | RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                       | TODO ||
 | RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | TODO ||
-| RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | TODO ||
-| RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, int spacing, Color color); | TODO ||
+| RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | raylib\Image->ImageDrawText(Image $dst, Vector2 $position, string $text, int $fontSize, Color $color) ||
+| RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, float spacing, Color color); | raylib\Image->drawTextEx(Image $dst, Vector2 $position, Font $font, string $text, float $fontSize, float $spacing, Color $color) ||
 | RLAPI void ImageFlipVertical(Image *image);                                                                                            | TODO ||
 | RLAPI void ImageFlipHorizontal(Image *image);                                                                                          | TODO ||
 | RLAPI void ImageColorTint(Image *image, Color color);                                                                                  | TODO ||
@@ -350,7 +350,7 @@ This is a one to one mapping of each raylib function.
 | C API | PHP API | Comment |
 |-------|---------|---------|
 | RLAPI Font GetFontDefault(void);                                                            | TODO ||
-| RLAPI Font LoadFont(const char *fileName);                                                  | TODO ||
+| RLAPI Font LoadFont(const char *fileName);                                                  | new \raylib\Font(string $fileName); ||
 | RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);  | TODO ||
 | RLAPI Font LoadFontFromImage(Image image, Color key, int firstChar);                        | TODO ||
 | RLAPI CharInfo *LoadFontData(const char *fileName, int fontSize, int *fontChars, int charsCount, int type); | \raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type) ||

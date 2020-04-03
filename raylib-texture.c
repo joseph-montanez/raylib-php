@@ -362,6 +362,39 @@ PHP_METHOD(Texture, mipmaps)
     RETURN_LONG(intern->texture.mipmaps);
 }
 
+// RLAPI void SetTextureFilter(Texture2D texture, int filterMode);
+PHP_METHOD(Texture, setFilter)
+{
+    zend_long filterMode;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(filterMode)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
+    SetTextureFilter(intern->texture, (int) filterMode);
+}
+
+// RLAPI void GenTextureMipmaps(Texture2D *texture);
+PHP_METHOD(Texture, genMipmaps)
+{
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
+    GenTextureMipmaps(&intern->texture);
+}
+
+// RLAPI void SetTextureWrap(Texture2D texture, int wrapMode);
+PHP_METHOD(Texture, setWrap)
+{
+    zend_long wrapMode;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(wrapMode)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
+    SetTextureWrap(intern->texture, (int) wrapMode);
+}
+
 PHP_METHOD(Texture, draw)
 {
     zend_long posX;
@@ -510,6 +543,9 @@ const zend_function_entry php_raylib_texture_methods[] = {
         PHP_ME(Texture, format, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Texture, id, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Texture, mipmaps, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, genMipmaps, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, setFilter, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, setWrap, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Texture, draw, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Texture, drawV, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Texture, drawEx, NULL, ZEND_ACC_PUBLIC)
