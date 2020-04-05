@@ -70,12 +70,12 @@ class Player
     public Vector2 $size;
 
     public Vector2 $aimingPoint;
-    public int $aimingAngle;
-    public int $aimingPower;
+    public float $aimingAngle;
+    public float $aimingPower;
 
     public Vector2 $previousPoint;
-    public int $previousAngle;
-    public int $previousPower;
+    public float $previousAngle;
+    public float $previousPower;
 
     public Vector2 $impactPoint;
 
