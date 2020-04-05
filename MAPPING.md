@@ -349,9 +349,9 @@ This is a one to one mapping of each raylib function.
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI Font GetFontDefault(void);                                                            | TODO ||
+| RLAPI Font GetFontDefault(void);                                                            |  \raylib\Font::fromDefault() ||
 | RLAPI Font LoadFont(const char *fileName);                                                  | new \raylib\Font(string $fileName); ||
-| RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);  | TODO ||
+| RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);  | \raylib\Font::fromCustom(string $fileName,  int $fontSize, int $fontChars, int $charsCount); ||
 | RLAPI Font LoadFontFromImage(Image image, Color key, int firstChar);                        | TODO ||
 | RLAPI CharInfo *LoadFontData(const char *fileName, int fontSize, int *fontChars, int charsCount, int type); | \raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type) ||
 | RLAPI Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod); | TODO ||
@@ -372,7 +372,7 @@ This is a one to one mapping of each raylib function.
 | C API | PHP API | Comment |
 |-------|---------|---------|
 | RLAPI int MeasureText(const char *text, int fontSize);                                      | raylib\Text\measure(string $text, int $fontSize) ||
-| RLAPI Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);    | TODO ||
+| RLAPI Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);    | \raylib\Font->measureText(string $text, float $fontSize, float $spacing) ||
 | RLAPI int GetGlyphIndex(Font font, int codepoint);                                          | TODO ||
 
 ### Text strings management functions (no utf8 strings, only byte chars)

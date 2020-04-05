@@ -41,7 +41,6 @@ $font = Font::fromCustom(__DIR__ . "/resources/KAISG.ttf", 96, 0, 0);
 // NOTE: On 2D drawing it won't be noticeable, it looks like FILTER_BILINEAR
 $font->texture->genMipmaps();
 
-//var_dump($font);
 
 $fontSize = $font->baseSize;
 $fontPosition = new \raylib\Vector2(40, $screenHeight / 2 - 80);
