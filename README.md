@@ -5,7 +5,7 @@ PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video gam
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
 
- - raylib.h - 171 of 424 functions ~ %40 complete
+ - raylib.h - 191 of 436 functions ~ %43 complete
  - raymath.h - TODO Extra mathy stuff
  - raygui.h - TODO API for drawing GUI
  - physac.h - TODO More complex collision detection, more than built-in collision detection
@@ -74,9 +74,15 @@ Window::close();        // Close window and OpenGL context
 
 ## Autocomplete
 
-In this branch there is a [stub](./stub) directory is that contains all the classes and methods so you get information on everything and anything implemented.
+Classes and method calls are available via a stub repository. Its contains all the classes and methods so you get information on everything and anything implemented.
 
 ![IDE Autocomplete](img/autocomplete.png)
+
+Install via composer:
+
+    composer require --dev joseph-montanez/raylib-php-stubs
+
+More information on the stubs can be found here at the repository [RayLib-PHP-Stubs](https://github.com/joseph-montanez/RayLib-PHP-Stubs)
 
 ## License
 
