@@ -485,7 +485,7 @@ PHP_METHOD(Image, exportAsCode)
 
 // Draw a source image within a destination image (tint applied to source)
 // RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
-PHP_METHOD(Image, drawText)
+PHP_METHOD(Image, draw)
 {
     zval *src;
     zval *srcRec;
@@ -506,7 +506,13 @@ PHP_METHOD(Image, drawText)
     php_raylib_rectangle_object *phpDstRec = Z_RECTANGLE_OBJ_P(dstRec);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    ImageDraw(&intern->image, phpSrc->image, phpSrcRec->rectangle, phpDstRect->retangle, phpTint->color);
+    ImageDraw(
+        &intern->image,
+        phpSrc->image,
+        phpSrcRec->rectangle,
+        phpDstRec->rectangle,
+        phpTint->color
+    );
 }
 
 // Draw text (default font) within an image (destination)
