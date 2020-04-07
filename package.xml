@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.4.7" version="2.0"
+         xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+    <name>raylib</name>
+    <channel>pecl.php.net</channel>
+    <summary>Provides a wrapper to the RayLib library.</summary>
+    <description>
+        RayLib-PHP is a native php extension to create games using the RayLib API.
+        This extension requires RayLib version 3.0+ and PHP 7.4.0+.
+    </description>
+    <lead>
+        <name>Joseph Montañez</name>
+        <user>sutabi</user>
+        <email>sutabi@gmail.com</email>
+        <active>yes</active>
+    </lead>
+    <date>2020-04-04</date>
+    <version>
+        <release>0.3.4</release>
+        <api>3.0.0</api>
+    </version>
+    <stability>
+        <release>alpha</release>
+        <api>stable</api>
+    </stability>
+    <license uri="http://www.php.net/license">PHP License</license>
+    <notes>
+
+    </notes>
+    <contents>
+        <dir name="/">
+            <file name="config.m4" role="src"/>
+            <file name="config.w32" role="src"/>
+            <file name="CREDITS" role="doc"/>
+            <file name="php_raylib.h" role="src"/>
+            <file name="raylib.c" role="src"/>
+            <file name="raylib-audio.c" role="src"/>
+            <file name="raylib-audio.h" role="src"/>
+            <file name="raylib-camera2d.c" role="src"/>
+            <file name="raylib-camera2d.h" role="src"/>
+            <file name="raylib-camera3d.c" role="src"/>
+            <file name="raylib-camera3d.h" role="src"/>
+            <file name="raylib-charinfo.c" role="src"/>
+            <file name="raylib-charinfo.h" role="src"/>
+            <file name="raylib-collision.c" role="src"/>
+            <file name="raylib-collision.h" role="src"/>
+            <file name="raylib-color.c" role="src"/>
+            <file name="raylib-color.h" role="src"/>
+            <file name="raylib-cursor.c" role="src"/>
+            <file name="raylib-cursor.h" role="src"/>
+            <file name="raylib-draw.c" role="src"/>
+            <file name="raylib-draw.h" role="src"/>
+            <file name="raylib-font.c" role="src"/>
+            <file name="raylib-font.h" role="src"/>
+            <file name="raylib-gamepad.c" role="src"/>
+            <file name="raylib-gamepad.h" role="src"/>
+            <file name="raylib-image.c" role="src"/>
+            <file name="raylib-image.h" role="src"/>
+            <file name="raylib-key.c" role="src"/>
+            <file name="raylib-key.h" role="src"/>
+            <file name="raylib-mouse.c" role="src"/>
+            <file name="raylib-mouse.h" role="src"/>
+            <file name="raylib-npatchinfo.c" role="src"/>
+            <file name="raylib-npatchinfo.h" role="src"/>
+            <file name="raylib-rectangle.c" role="src"/>
+            <file name="raylib-rectangle.h" role="src"/>
+            <file name="raylib-rendertexture.c" role="src"/>
+            <file name="raylib-rendertexture.h" role="src"/>
+            <file name="raylib-text.c" role="src"/>
+            <file name="raylib-text.h" role="src"/>
+            <file name="raylib-texture.c" role="src"/>
+            <file name="raylib-texture.h" role="src"/>
+            <file name="raylib-timming.c" role="src"/>
+            <file name="raylib-timming.h" role="src"/>
+            <file name="raylib-utils.c" role="src"/>
+            <file name="raylib-utils.h" role="src"/>
+            <file name="raylib-vector2.c" role="src"/>
+            <file name="raylib-vector2.h" role="src"/>
+            <file name="raylib-vector3.c" role="src"/>
+            <file name="raylib-vector3.h" role="src"/>
+            <file name="raylib-vector4.c" role="src"/>
+            <file name="raylib-vector4.h" role="src"/>
+            <file name="raylib-wave.c" role="src"/>
+            <file name="raylib-wave.h" role="src"/>
+            <file name="raylib-window.c" role="src"/>
+            <file name="raylib-window.h" role="src"/>
+            <file name="ChangeLog" role="doc"/>
+            <file name="LICENSE" role="doc"/>
+            <dir name="examples">
+                <file name="core/2d-camera.php" role="doc"/>
+                <file name="core/basic-window.php" role="doc"/>
+                <file name="core/color-select.php" role="doc"/>
+                <file name="core/input-gamepad-input.php" role="doc"/>
+                <file name="core/input-keys.php" role="doc"/>
+                <file name="core/input-mouse.php" role="doc"/>
+                <file name="core/input-mouse-wheel.php" role="doc"/>
+                <file name="core/scissor-test.php" role="doc"/>
+                <file name="games/floppy.php" role="doc"/>
+                <file name="games/gorilas.php" role="doc"/>
+                <file name="text/font-filters.php" role="doc"/>
+                <file name="textures/bunnymark.php" role="doc"/>
+                <file name="textures/image-loading.php" role="doc"/>
+                <file name="textures/ops.php" role="doc"/>
+            </dir>
+            <dir name="tests">
+                <file name="001.phpt" role="test"/>
+            </dir>
+        </dir>
+    </contents>
+    <dependencies>
+        <required>
+            <php>
+                <min>7.4.0</min>
+            </php>
+            <pearinstaller>
+                <min>1.4.0</min>
+            </pearinstaller>
+        </required>
+    </dependencies>
+    <providesextension>raylib</providesextension>
+    <extsrcrelease>
+        <configureoption default="autodetect" name="with-raylib"
+                         prompt="Please provide the prefix of RayLib installation"/>
+    </extsrcrelease>
+</package>
