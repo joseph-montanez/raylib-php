@@ -285,34 +285,30 @@ This is a one to one mapping of each raylib function.
 ### Image manipulation functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI Image ImageCopy(Image image);                                                                                                    | raylib\Image::copy(array $image) : Image ||
-| RLAPI Image ImageFromImage(Image image, Rectangle rec);                                                                                | TODO ||
-| RLAPI void ImageToPOT(Image *image, Color fillColor);                                                                                  | raylib\Image::toPot(array $image, array $fillColor) ||
-| RLAPI void ImageFormat(Image *image, int newFormat);                                                                                   | raylib\Image::format(array $image, int $newFormat) ||
-| RLAPI void ImageAlphaMask(Image *image, Image alphaMask);                                                                              | TODO ||
-| RLAPI void ImageAlphaClear(Image *image, Color color, float threshold);                                                                | TODO ||
-| RLAPI void ImageAlphaCrop(Image *image, float threshold);                                                                              | TODO ||
-| RLAPI void ImageAlphaPremultiply(Image *image);                                                                                        | TODO ||
-| RLAPI void ImageCrop(Image *image, Rectangle crop);                                                                                    | TODO ||
-| RLAPI void ImageResize(Image *image, int newWidth, int newHeight);                                                                     | TODO ||
-| RLAPI void ImageResizeNN(Image *image,int newWidth,int newHeight);                                                                     | TODO ||
-| RLAPI void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color color);                        | TODO ||
-| RLAPI void ImageMipmaps(Image *image);                                                                                                 | TODO ||
-| RLAPI void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);                                                          | TODO ||
-| RLAPI Color *ImageExtractPalette(Image image, int maxPaletteSize, int *extractCount);                                                  | TODO ||
-| RLAPI Image ImageText(const char *text, int fontSize, Color color);                                                                    | raylib\Image::fromDefaultFont(string $text, int $fontSize, Color $color) ||
-| RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                   | raylib\Image::fromFont(Font $font, string $text, float $fontSize, int $spacing, Color $tint) ||
-| RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                       | TODO ||
-| RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | TODO ||
-| RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | raylib\Image->ImageDrawText(Image $dst, Vector2 $position, string $text, int $fontSize, Color $color) ||
-| RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, float spacing, Color color); | raylib\Image->drawTextEx(Image $dst, Vector2 $position, Font $font, string $text, float $fontSize, float $spacing, Color $color) ||
-| RLAPI void ImageFlipVertical(Image *image);                                                                                            | raylib\Image->ImageFlipVertical(Image *image); ||
-| RLAPI void ImageFlipHorizontal(Image *image);                                                                                          | raylib\Image->ImageFlipHorizontal(Image *image) ||
-| RLAPI void ImageColorTint(Image *image, Color color);                                                                                  | raylib\Image->ImageColorTint(Image *image, Color color) ||
-| RLAPI void ImageColorInvert(Image *image);                                                                                             | raylib\Image->ImageColorInvert(Image *image) ||
-| RLAPI void ImageColorGrayscale(Image *image);                                                                                          | raylib\Image->ImageColorGrayscale(Image *image) ||
-| RLAPI void ImageColorContrast(Image *image, float contrast);                                                                           | raylib\Image->ImageColorContrast(Image *image, float contrast) ||
-| RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                         | raylib\Image->ImageColorBrightness(Image *image, int brightness) ||
+| RLAPI Image ImageCopy(Image image);                                                                                                      | raylib\Image::copy(array $image) : Image ||
+| RLAPI Image ImageFromImage(Image image, Rectangle rec);                                                                                  | raylib\Image::fromImage(Image $image, Rectangle $rec) ||
+| RLAPI void ImageToPOT(Image *image, Color fillColor);                                                                                    | raylib\Image::toPot(array $image, array $fillColor) ||
+| RLAPI void ImageFormat(Image *image, int newFormat);                                                                                     | raylib\Image::format(array $image, int $newFormat) ||
+| RLAPI void ImageAlphaMask(Image *image, Image alphaMask);                                                                                | raylib\Image->alphaMask(Image $alphaMask) ||
+| RLAPI void ImageAlphaClear(Image *image, Color color, float threshold);                                                                  | raylib\Image->alphaClear(Color $color, float $threshold) ||
+| RLAPI void ImageAlphaCrop(Image *image, float threshold);                                                                                | raylib\Image->alphaCrop(float $threshold) ||
+| RLAPI void ImageAlphaPremultiply(Image *image);                                                                                          | raylib\Image->alphaPremultiply() ||
+| RLAPI void ImageCrop(Image *image, Rectangle crop);                                                                                      | raylib\Image->crop(Rectangle $crop) ||
+| RLAPI void ImageResize(Image *image, int newWidth, int newHeight);                                                                       | raylib\Image->resize(int $newWidth, int $newHeight) ||
+| RLAPI void ImageResizeNN(Image *image,int newWidth,int newHeight);                                                                       | raylib\Image->resizeNearestNeighbor(int $newWidth, int $newHeight) ||
+| RLAPI void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color color);                          | raylib\Image->resizeCanvas(int $newWidth, int $newHeight, int $offsetX, int $offsetY, Color $color) ||
+| RLAPI void ImageMipmaps(Image *image);                                                                                                   | raylib\Image->genMipmaps() ||
+| RLAPI void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);                                                            | raylib\Image->dither(int $rBpp, int $gBpp, int $bBpp, int $aBpp) ||
+| RLAPI Color *ImageExtractPalette(Image image, int maxPaletteSize, int *extractCount);                                                    | raylib\Image->extractPalette(int $maxPaletteSize, int &$extractCount) ||
+| RLAPI Image ImageText(const char *text, int fontSize, Color color);                                                                      | raylib\Image::fromDefaultFont(string $text, int $fontSize, Color $color) ||
+| RLAPI Image ImageTextEx(SpriteFont font, const char *text, float fontSize, int spacing, Color tint);                                     | raylib\Image::fromFont(Font $font, string $text, float $fontSize, int $spacing, Color $tint) ||
+| RLAPI void ImageFlipVertical(Image *image);                                                                                              | raylib\Image->ImageFlipVertical(Image *image); ||
+| RLAPI void ImageFlipHorizontal(Image *image);                                                                                            | raylib\Image->ImageFlipHorizontal(Image *image) ||
+| RLAPI void ImageColorTint(Image *image, Color color);                                                                                    | raylib\Image->ImageColorTint(Image *image, Color color) ||
+| RLAPI void ImageColorInvert(Image *image);                                                                                               | raylib\Image->ImageColorInvert(Image *image) ||
+| RLAPI void ImageColorGrayscale(Image *image);                                                                                            | raylib\Image->ImageColorGrayscale(Image *image) ||
+| RLAPI void ImageColorContrast(Image *image, float contrast);                                                                             | raylib\Image->ImageColorContrast(Image *image, float contrast) ||
+| RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                           | raylib\Image->ImageColorBrightness(Image *image, int brightness) ||
 
 ### Image generation functions
 | C API | PHP API | Comment |
@@ -325,6 +321,27 @@ This is a one to one mapping of each raylib function.
 | RLAPI Image GenImageWhiteNoise(int width, int height, float factor);                                     | TODO ||
 | RLAPI Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale);           | TODO ||
 | RLAPI Image GenImageCellular(int width, int height, int tileSize);                                       | TODO ||
+
+### Image drawing functions
+
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI void ImageClearBackground(Image *dst, Color color);                                                                                | TODO || 
+| RLAPI void ImageDrawPixel(Image *dst, int posX, int posY, Color color);                                                                  | TODO || 
+| RLAPI void ImageDrawPixelV(Image *dst, Vector2 position, Color color);                                                                   | TODO || 
+| RLAPI void ImageDrawLine(Image *dst, int startPosX, int startPosY, int endPosX, int endPosY, Color color);                               | TODO || 
+| RLAPI void ImageDrawLineV(Image *dst, Vector2 start, Vector2 end, Color color);                                                          | TODO || 
+| RLAPI void ImageDrawCircle(Image *dst, int centerX, int centerY, int radius, Color color);                                               | TODO || 
+| RLAPI void ImageDrawCircleV(Image *dst, Vector2 center, int radius, Color color);                                                        | TODO || 
+| RLAPI void ImageDrawRectangle(Image *dst, int posX, int posY, int width, int height, Color color);                                       | TODO || 
+| RLAPI void ImageDrawRectangleV(Image *dst, Vector2 position, Vector2 size, Color color);                                                 | TODO || 
+| RLAPI void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color);                                                                | TODO || 
+| RLAPI void ImageDrawRectangleLines(Image *dst, Rectangle rec, int thick, Color color);                                                   | TODO || 
+| RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);                                             | TODO ||   
+| RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                         | raylib\Image->draw(Image $src, Rectangle $srcRec, Rectangle $dstRec) ||
+| RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                                 | TODO ||
+| RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                     | raylib\Image->ImageDrawText(Image $dst, Vector2 $position, string $text, int $fontSize, Color $color) ||
+| RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, float spacing, Color color); | raylib\Image->drawTextEx(Image $dst, Vector2 $position, Font $font, string $text, float $fontSize, float $spacing, Color $color) ||
 
 
 ### Texture2D configuration functions
