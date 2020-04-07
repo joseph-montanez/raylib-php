@@ -483,6 +483,33 @@ PHP_METHOD(Image, exportAsCode)
     ExportImageAsCode(intern->image, fileName->val);
 }
 
+// Draw a source image within a destination image (tint applied to source)
+// RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
+PHP_METHOD(Image, drawText)
+{
+    zval *src;
+    zval *srcRec;
+    zval *dstRec;
+    zval *tint;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+        Z_PARAM_ZVAL(src)
+        Z_PARAM_ZVAL(srcRec)
+        Z_PARAM_ZVAL(dstRec)
+        Z_PARAM_ZVAL(tint)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+
+    php_raylib_image_object *phpSrc = Z_IMAGE_OBJ_P(src);
+    php_raylib_rectangle_object *phpSrcRec = Z_RECTANGLE_OBJ_P(srcRec);
+    php_raylib_rectangle_object *phpDstRec = Z_RECTANGLE_OBJ_P(dstRec);
+    php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+
+    ImageDraw(&intern->image, phpSrc->image, phpSrcRec->rectangle, phpDstRect->retangle, phpTint->color);
+}
+
+// Draw text (default font) within an image (destination)
 // RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);
 PHP_METHOD(Image, drawText)
 {
@@ -505,6 +532,8 @@ PHP_METHOD(Image, drawText)
     ImageDrawText(&intern->image, phpPosition->vector2, text->val, (int) fontSize, phpColor->color);
 }
 
+
+// Draw text (custom sprite font) within an image (destination)
 // RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, Font font, const char *text, float fontSize, float spacing, Color color);
 PHP_METHOD(Image, drawTextEx)
 {
@@ -515,7 +544,7 @@ PHP_METHOD(Image, drawTextEx)
     double spacing;
     zval *color;
 
-    ZEND_PARSE_PARAMETERS_START(4, 4)
+    ZEND_PARSE_PARAMETERS_START(6, 6)
         Z_PARAM_ZVAL(position)
         Z_PARAM_ZVAL(font)
         Z_PARAM_STR(text)
@@ -967,6 +996,7 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, exportAsCode, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, draw, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
