@@ -306,13 +306,13 @@ This is a one to one mapping of each raylib function.
 | RLAPI void ImageDrawRectangle(Image *dst, Vector2 position, Rectangle rec, Color color);                                               | TODO ||
 | RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);                                   | raylib\Image->ImageDrawText(Image $dst, Vector2 $position, string $text, int $fontSize, Color $color) ||
 | RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, SpriteFont font, const char *text, float fontSize, float spacing, Color color); | raylib\Image->drawTextEx(Image $dst, Vector2 $position, Font $font, string $text, float $fontSize, float $spacing, Color $color) ||
-| RLAPI void ImageFlipVertical(Image *image);                                                                                            | TODO ||
-| RLAPI void ImageFlipHorizontal(Image *image);                                                                                          | TODO ||
-| RLAPI void ImageColorTint(Image *image, Color color);                                                                                  | TODO ||
-| RLAPI void ImageColorInvert(Image *image);                                                                                             | TODO ||
-| RLAPI void ImageColorGrayscale(Image *image);                                                                                          | TODO ||
-| RLAPI void ImageColorContrast(Image *image, float contrast);                                                                           | TODO ||
-| RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                         | TODO ||
+| RLAPI void ImageFlipVertical(Image *image);                                                                                            | raylib\Image->ImageFlipVertical(Image *image); ||
+| RLAPI void ImageFlipHorizontal(Image *image);                                                                                          | raylib\Image->ImageFlipHorizontal(Image *image) ||
+| RLAPI void ImageColorTint(Image *image, Color color);                                                                                  | raylib\Image->ImageColorTint(Image *image, Color color) ||
+| RLAPI void ImageColorInvert(Image *image);                                                                                             | raylib\Image->ImageColorInvert(Image *image) ||
+| RLAPI void ImageColorGrayscale(Image *image);                                                                                          | raylib\Image->ImageColorGrayscale(Image *image) ||
+| RLAPI void ImageColorContrast(Image *image, float contrast);                                                                           | raylib\Image->ImageColorContrast(Image *image, float contrast) ||
+| RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                         | raylib\Image->ImageColorBrightness(Image *image, int brightness) ||
 
 ### Image generation functions
 | C API | PHP API | Comment |
