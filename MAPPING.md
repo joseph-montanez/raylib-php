@@ -260,27 +260,42 @@ This is a one to one mapping of each raylib function.
 ### Image/Texture2D data loading/unloading/saving functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI Image LoadImage(const char *fileName);                                                             | new raylib\Image(string $filename) ||
-| RLAPI Image LoadImageEx(Color *pixels, int width, int height);                                           | raylib\Image::fromColors(raylib\Color[] $pixels, int $width, int $height) ||
-| RLAPI Image LoadImagePro(void *data, int width, int height, int format);                                 | TODO ||
-| RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);       | TODO ||
-| RLAPI void ExportImage(const char *fileName, Image image);                                               | TODO ||
-| RLAPI void ExportImageAsCode(Image image, const char *fileName);                                         | TODO ||
 | RLAPI Texture2D LoadTexture(const char *fileName);                                                       | new raylib\Texture(string $fileName) ||
 | RLAPI Texture2D LoadTextureFromImage(Image image);                                                       | raylib\Image->toTexture() : Texture ||
 | RLAPI TextureCubemap LoadTextureCubemap(Image image, int layoutType);                                    | TODO ||
 | RLAPI RenderTexture2D LoadRenderTexture(int width, int height);                                          | new raylib\RenderTexture(int $width, int $height) ||
-| RLAPI void UnloadImage(Image image);                                                                     | N/A | Use unset() on class |
 | RLAPI void UnloadTexture(Texture2D texture);                                                             | N/A | Use unset() on class |
 | RLAPI void UnloadRenderTexture(RenderTexture2D target);                                                  | N/A | Use unset() on class |
-| RLAPI Color *GetImageData(Image image);                                                                  | TODO ||
-| RLAPI Vector4 *GetImageDataNormalized(Image image);                                                      | TODO ||
 | RLAPI Rectangle GetImageAlphaBorder(Image image, float threshold);                                       | TODO ||
 | RLAPI int GetPixelDataSize(int width, int height, int format);                                           | TODO ||
 | RLAPI Image GetTextureData(Texture2D texture);                                                           | TODO ||
 | RLAPI Image GetScreenData(void);                                                                         | TODO ||
 | RLAPI void UpdateTexture(Texture2D texture, const void *pixels);                                         | TODO ||
 
+// Image loading functions
+// NOTE: This functions do not require GPU access
+RLAPI Image LoadImage(const char *fileName);                                                             | new raylib\Image(string $filename) ||
+RLAPI Image LoadImageEx(Color *pixels, int width, int height);                                           | raylib\Image::fromColors(raylib\Color[] $pixels, int $width, int $height) ||
+RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);       | raylib\Image::fromColors(string $fileName, int $width, int $height, int $format, int $headerSize) ||
+RLAPI void UnloadImage(Image image);                                                                     | unset($image) ||
+RLAPI void ExportImage(Image image, const char *fileName);                                               | raylib\Image::export(string $fileName) ||
+RLAPI void ExportImageAsCode(Image image, const char *fileName);                                         | raylib\Image::exportAsCode(string $fileName) ||
+RLAPI Color *GetImageData(Image image);                                                                  |
+RLAPI Vector4 *GetImageDataNormalized(Image image);                                                      |
+
+
+
+### Image generation functions
+| C API | PHP API | Comment |
+|-------|---------|---------|
+| RLAPI Image GenImageColor(int width, int height, Color color);                                           | TODO ||
+| RLAPI Image GenImageGradientV(int width, int height, Color top, Color bottom);                           | TODO ||
+| RLAPI Image GenImageGradientH(int width, int height, Color left, Color right);                           | TODO ||
+| RLAPI Image GenImageGradientRadial(int width, int height, float density, Color inner, Color outer);      | TODO ||
+| RLAPI Image GenImageChecked(int width, int height, int checksX, int checksY, Color col1, Color col2);    | TODO ||
+| RLAPI Image GenImageWhiteNoise(int width, int height, float factor);                                     | TODO ||
+| RLAPI Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale);           | TODO ||
+| RLAPI Image GenImageCellular(int width, int height, int tileSize);                                       | TODO ||
 
 ### Image manipulation functions
 | C API | PHP API | Comment |
@@ -310,17 +325,6 @@ This is a one to one mapping of each raylib function.
 | RLAPI void ImageColorContrast(Image *image, float contrast);                                                                             | raylib\Image->ImageColorContrast(Image *image, float contrast) ||
 | RLAPI void ImageColorBrightness(Image *image, int brightness);                                                                           | raylib\Image->ImageColorBrightness(Image *image, int brightness) ||
 
-### Image generation functions
-| C API | PHP API | Comment |
-|-------|---------|---------|
-| RLAPI Image GenImageColor(int width, int height, Color color);                                           | TODO ||
-| RLAPI Image GenImageGradientV(int width, int height, Color top, Color bottom);                           | TODO ||
-| RLAPI Image GenImageGradientH(int width, int height, Color left, Color right);                           | TODO ||
-| RLAPI Image GenImageGradientRadial(int width, int height, float density, Color inner, Color outer);      | TODO ||
-| RLAPI Image GenImageChecked(int width, int height, int checksX, int checksY, Color col1, Color col2);    | TODO ||
-| RLAPI Image GenImageWhiteNoise(int width, int height, float factor);                                     | TODO ||
-| RLAPI Image GenImagePerlinNoise(int width, int height, int offsetX, int offsetY, float scale);           | TODO ||
-| RLAPI Image GenImageCellular(int width, int height, int tileSize);                                       | TODO ||
 
 ### Image drawing functions
 
