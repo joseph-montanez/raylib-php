@@ -366,48 +366,34 @@ PHP_METHOD(Image, fromColors)
     ZVAL_OBJ(return_value, object);
 }
 
-// Load image from raw data with parameters
-// RLAPI Image LoadImagePro(void *data, int width, int height, int format);
-//PHP_METHOD(Image, fromPixels)
-//{
-//    zval *pixels;
-//    zend_long width;
-//    zend_long height;
-//    HashTable *pixelsArr;
-//    zval *zv;
-//
-//    ZEND_PARSE_PARAMETERS_START(3, 3)
-//            Z_PARAM_ARRAY(pixels)
-//            Z_PARAM_LONG(width)
-//            Z_PARAM_LONG(height)
-//    ZEND_PARSE_PARAMETERS_END();
-//
-//    pixelsArr = Z_ARRVAL_P(points);
-//
-//    // Count the number of elements in array
-//    int numPixels = zend_hash_num_elements(pointsArr);
-//    Color *pixelsP = (Color *)safe_emalloc(numPixels, sizeof(Color), 0);
-//
-//    // Load pixels from hash to an array
-//    int n = 0;
-//    ZEND_HASH_FOREACH_VAL(pixelsArr, zv) {
-//        if (Z_TYPE_P(zv) == IS_OBJECT) {
-//            php_raylib_color_object *obj = Z_COLOR_OBJ_P(zv);
-//            pointsP[n] = obj->color;
-//        }
-//        n++;
-//    } ZEND_HASH_FOREACH_END();
-//
-//    // Create Image Object
-//    object_init_ex(return_value, php_raylib_image_ce);
-//    zend_object *object = php_raylib_image_new(php_raylib_color_ce);
-//    php_raylib_color_object *internImage = php_raylib_image_fetch_object(object);
-//
-//    // Load From Pixels
-//    internImage->image = LoadImageEx(pixelsP, (int) width, (int) height);
-//
-//    ZVAL_OBJ(return_value, object);
-//}
+// Load image from RAW file data
+// RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
+PHP_METHOD(Image, fromRaw)
+{
+    zend_string *fileName;
+    zend_long width;
+    zend_long height;
+    zend_long format;
+    zend_long headerSize;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_STR(fileName)
+        Z_PARAM_LONG(width)
+        Z_PARAM_LONG(height)
+        Z_PARAM_LONG(format)
+        Z_PARAM_LONG(headerSize)
+    ZEND_PARSE_PARAMETERS_END();
+
+    // Create Image Object
+    object_init_ex(return_value, php_raylib_image_ce);
+    zend_object *object = php_raylib_image_new(php_raylib_image_ce);
+    php_raylib_image_object *internImage = php_raylib_image_fetch_object(object);
+
+    // Load From Pixels
+    internImage->image = LoadImageRaw(fileName->val, (int) width, (int) height, (int) format, (int) headerSize);
+
+    ZVAL_OBJ(return_value, object);
+}
 
 PHP_METHOD(Image, toTexture)
 {
@@ -481,6 +467,32 @@ PHP_METHOD(Image, exportAsCode)
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
 
     ExportImageAsCode(intern->image, fileName->val);
+}
+
+// Get pixel data from image as a Color struct array
+// RLAPI Color *GetImageData(Image image);
+PHP_METHOD(Image, getData)
+{
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+
+    int numOfPixels = intern->image.width * intern->image.height;
+
+    Color* colors = GetImageData(intern->image);
+
+    array_init_size(return_value, numOfPixels);
+
+    for (int i = 0; i < numOfPixels; i++) {
+        zval *color = malloc(sizeof(zval));
+        object_init_ex(color, php_raylib_color_ce);
+
+        php_raylib_color_object *result = Z_COLOR_OBJ_P(color);
+        result->color = (Color){.r = colors[i].r, .b = colors[i].b, .g = colors[i].g, .a = colors[i].a};
+
+//    php_error_docref(NULL, E_WARNING, "PIXEL1 %i %i %i %i", colors[i].r, colors[i].b, colors[i].g, colors[i].a);
+//    php_error_docref(NULL, E_WARNING, "PIXEL2 %i %i %i %i", result->color.r, result->color.b, result->color.g, result->color.a);
+
+        add_index_zval(return_value, i, color);
+    }
 }
 
 // Draw a source image within a destination image (tint applied to source)
@@ -996,8 +1008,10 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, fromFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Image, fromImage, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // new ImageFromImage
+        PHP_ME(Image, fromImage, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Image, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, getData, NULL, ZEND_ACC_PUBLIC) // RLAPI Color *GetImageData(Image image);
         PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
@@ -1005,29 +1019,29 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, draw, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, format, NULL, ZEND_ACC_PUBLIC) // new ImageFormat
-        PHP_ME(Image, alphaMask, NULL, ZEND_ACC_PUBLIC) // new AlphaMask
-        PHP_ME(Image, alphaClear, NULL, ZEND_ACC_PUBLIC) // new ImageAlphaClear
-        PHP_ME(Image, alphaCrop, NULL, ZEND_ACC_PUBLIC) // new ImageAlphaCrop
-        PHP_ME(Image, alphaPremultiply, NULL, ZEND_ACC_PUBLIC) // new ImageAlphaPremultiply
-        PHP_ME(Image, crop, NULL, ZEND_ACC_PUBLIC) // new ImageCrop
-        PHP_ME(Image, resize, NULL, ZEND_ACC_PUBLIC) // new ImageResize
-        PHP_ME(Image, resizeNearestNeighbor, NULL, ZEND_ACC_PUBLIC) // new ImageResizeNN
-        PHP_ME(Image, resizeCanvas, NULL, ZEND_ACC_PUBLIC) // new ImageResizeCanvas
-        PHP_ME(Image, genMipmaps, NULL, ZEND_ACC_PUBLIC) // new ImageMipmaps
-        PHP_ME(Image, dither, NULL, ZEND_ACC_PUBLIC) // new ImageDither
-        PHP_ME(Image, flipVertical, NULL, ZEND_ACC_PUBLIC) // new ImageFlipVertical
-        PHP_ME(Image, flipHorizontal, NULL, ZEND_ACC_PUBLIC) // new ImageFlipHorizontal
-        PHP_ME(Image, rotateClockwise, NULL, ZEND_ACC_PUBLIC) // new ImageRotateCW
-        PHP_ME(Image, rotateCounterClockwise, NULL, ZEND_ACC_PUBLIC) // new ImageRotateCCW
-        PHP_ME(Image, colorTint, NULL, ZEND_ACC_PUBLIC) // new ImageColorTint
-        PHP_ME(Image, colorInvert, NULL, ZEND_ACC_PUBLIC) // new ImageColorInvert
-        PHP_ME(Image, colorGrayscale, NULL, ZEND_ACC_PUBLIC) // new ImageColorGrayscale
-        PHP_ME(Image, colorContrast, NULL, ZEND_ACC_PUBLIC) // new ImageColorContrast
-        PHP_ME(Image, colorBrightness, NULL, ZEND_ACC_PUBLIC) // new ImageColorBrightness
-        PHP_ME(Image, colorReplace, NULL, ZEND_ACC_PUBLIC) // new ImageColorReplace
-        PHP_ME(Image, extractPalette, NULL, ZEND_ACC_PUBLIC) // new ImageExtractPalette
-        PHP_ME(Image, getAlphaBorder, NULL, ZEND_ACC_PUBLIC) // new GetImageAlphaBorder
+        PHP_ME(Image, format, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaMask, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaClear, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaCrop, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaPremultiply, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, crop, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resize, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resizeNearestNeighbor, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resizeCanvas, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, genMipmaps, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, dither, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, flipVertical, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, flipHorizontal, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, rotateClockwise, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, rotateCounterClockwise, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorTint, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorInvert, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorGrayscale, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorContrast, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorBrightness, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorReplace, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, extractPalette, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, getAlphaBorder, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
