@@ -62,22 +62,22 @@ zend_object_handlers php_raylib_color_object_handlers;
 
 static HashTable php_raylib_color_prop_handlers;
 
-typedef double (*raylib_color_read_float_t)(php_raylib_color_object *obj);
+typedef unsigned char (*raylib_color_read_float_t)(php_raylib_color_object *obj);
 
 typedef int (*raylib_color_write_float_t)(php_raylib_color_object *obj, zval *value);
 
 typedef struct _raylib_color_prop_handler {
-    raylib_color_read_float_t read_float_func;
+    raylib_color_read_float_t read_unsigned_char_func;
     raylib_color_write_float_t write_float_func;
 } raylib_color_prop_handler;
 /* }}} */
 
 
-static void php_raylib_color_register_prop_handler(HashTable *prop_handler, char *name, raylib_color_read_float_t read_float_func, raylib_color_write_float_t write_float_func) /* {{{ */
+static void php_raylib_color_register_prop_handler(HashTable *prop_handler, char *name, raylib_color_read_float_t read_unsigned_char_func, raylib_color_write_float_t write_float_func) /* {{{ */
 {
     raylib_color_prop_handler hnd;
 
-    hnd.read_float_func = read_float_func;
+    hnd.read_unsigned_char_func = read_unsigned_char_func;
     hnd.write_float_func = write_float_func;
     zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_color_prop_handler));
 
@@ -88,16 +88,16 @@ static void php_raylib_color_register_prop_handler(HashTable *prop_handler, char
 
 static zval *php_raylib_color_property_reader(php_raylib_color_object *obj, raylib_color_prop_handler *hnd, zval *rv) /* {{{ */
 {
-    double ret = 0;
+    zend_long ret = 0;
 
-    if (obj != NULL && hnd->read_float_func) {
+    if (obj != NULL && hnd->read_unsigned_char_func) {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib color found");
-        ret = hnd->read_float_func(obj);
+        ret = hnd->read_unsigned_char_func(obj);
     } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
+        php_error_docref(NULL, E_WARNING, "Internal raylib color error returned");
     }
 
-    ZVAL_DOUBLE(rv, (double) ret);
+    ZVAL_LONG(rv, ret);
 
     return rv;
 }
@@ -163,7 +163,7 @@ static zval *php_raylib_color_read_property(zval *object, zval *member, int type
     if (hnd != NULL) {
         retval = php_raylib_color_property_reader(obj, hnd, rv);
         if (retval == NULL) {
-//            php_error_docref(NULL, E_WARNING, "Internal raylib color retval is null");
+            php_error_docref(NULL, E_WARNING, "Internal raylib color retval is null");
             retval = &EG(uninitialized_zval);
         }
     } else {
@@ -320,27 +320,27 @@ zend_object * php_raylib_color_new(zend_class_entry *ce TSRMLS_DC)
 
 // PHP property handling
 
-static double php_raylib_color_r(php_raylib_color_object *obj) /* {{{ */
+static unsigned char php_raylib_color_r(php_raylib_color_object *obj) /* {{{ */
 {
-    return (double) obj->color.r;
+    return (unsigned char) obj->color.r;
 }
 /* }}} */
 
-static double php_raylib_color_g(php_raylib_color_object *obj) /* {{{ */
+static unsigned char php_raylib_color_g(php_raylib_color_object *obj) /* {{{ */
 {
-    return (double) obj->color.g;
+    return (unsigned char) obj->color.g;
 }
 /* }}} */
 
-static double php_raylib_color_b(php_raylib_color_object *obj) /* {{{ */
+static unsigned char php_raylib_color_b(php_raylib_color_object *obj) /* {{{ */
 {
-    return (double) obj->color.b;
+    return (unsigned char) obj->color.b;
 }
 /* }}} */
 
-static double php_raylib_color_a(php_raylib_color_object *obj) /* {{{ */
+static unsigned char php_raylib_color_a(php_raylib_color_object *obj) /* {{{ */
 {
-    return (double) obj->color.a;
+    return (unsigned char) obj->color.a;
 }
 /* }}} */
 
@@ -409,10 +409,10 @@ static int php_raylib_color_write_a(php_raylib_color_object *color_object, zval 
 // PHP object handling
 PHP_METHOD(Color, __construct)
 {
-    zend_long r = 0;
-    zend_long g = 0;
-    zend_long b = 0;
-    zend_long a = 0;
+    zend_long r;
+    zend_long g;
+    zend_long b;
+    zend_long a;
 
     ZEND_PARSE_PARAMETERS_START(4, 4)
             Z_PARAM_LONG(r)
@@ -675,9 +675,11 @@ static void php_raylib_color_free_prop_handler(zval *el) /* {{{ */ {
 void php_raylib_color_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "Color", php_raylib_color_methods);
-    php_raylib_color_ce = zend_register_internal_class(&ce TSRMLS_CC);
-    php_raylib_color_ce->create_object = php_raylib_color_new;
+
+    memcpy(&php_raylib_color_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    php_raylib_color_object_handlers.offset = XtOffsetOf(php_raylib_color_object, std);
+    php_raylib_color_object_handlers.free_obj = &php_raylib_color_free_storage;
+    php_raylib_color_object_handlers.clone_obj = NULL;
 
     // Props Handlers
     php_raylib_color_object_handlers.get_property_ptr_ptr = php_raylib_color_get_property_ptr_ptr;
@@ -687,10 +689,9 @@ void php_raylib_color_startup(INIT_FUNC_ARGS)
     php_raylib_color_object_handlers.write_property       = php_raylib_color_write_property;
     php_raylib_color_object_handlers.has_property	      = php_raylib_color_has_property;
 
-    memcpy(&php_raylib_color_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-    php_raylib_color_object_handlers.offset = XtOffsetOf(php_raylib_color_object, std);
-    php_raylib_color_object_handlers.free_obj = &php_raylib_color_free_storage;
-    php_raylib_color_object_handlers.clone_obj = NULL;
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Color", php_raylib_color_methods);
+    php_raylib_color_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_color_ce->create_object = php_raylib_color_new;
 
     // Object Props
     zend_hash_init(&php_raylib_color_prop_handlers, 0, NULL, php_raylib_color_free_prop_handler, 1);
