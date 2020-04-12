@@ -1,0 +1,22 @@
+{
+    "name": "raylib",
+    "type": "extension",
+    "license": [
+        "PHP License"
+    ],
+    "authors": [
+        {
+            "name": "Joseph Monta\u00f1ez",
+            "email": "sutabi@gmail.com"
+        }
+    ],
+    "description": "Provides a wrapper to the RayLib library.",
+    "extra": {
+        "configure-options": {
+            "with-raylib": {
+                "default": "autodetect",
+                "prompt": "Please provide the prefix of RayLib installation"
+            }
+        }
+    }
+}

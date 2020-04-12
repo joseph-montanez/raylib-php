@@ -1005,7 +1005,6 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, draw, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, format, NULL, ZEND_ACC_PUBLIC) // new ImageFormat
         PHP_ME(Image, alphaMask, NULL, ZEND_ACC_PUBLIC) // new AlphaMask
         PHP_ME(Image, alphaClear, NULL, ZEND_ACC_PUBLIC) // new ImageAlphaClear
