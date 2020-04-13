@@ -9,6 +9,7 @@ extern zend_class_entry *php_raylib_vector3_ce;
 
 typedef struct _php_raylib_vector3_object {
     Vector3 vector3;
+    HashTable *prop_handler;
     zend_object std;
 } php_raylib_vector3_object;
 

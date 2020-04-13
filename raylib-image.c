@@ -53,6 +53,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib-rectangle.h"
 #include "raylib-font.h"
 #include "raylib-vector2.h"
+#include "raylib-vector4.h"
 #include "raylib-texture.h"
 #include "raylib-color.h"
 #include "raylib-utils.h"
@@ -486,12 +487,33 @@ PHP_METHOD(Image, getData)
         object_init_ex(color, php_raylib_color_ce);
 
         php_raylib_color_object *result = Z_COLOR_OBJ_P(color);
-        result->color = (Color){.r = colors[i].r, .b = colors[i].b, .g = colors[i].g, .a = colors[i].a};
-
-//    php_error_docref(NULL, E_WARNING, "PIXEL1 %i %i %i %i", colors[i].r, colors[i].b, colors[i].g, colors[i].a);
-//    php_error_docref(NULL, E_WARNING, "PIXEL2 %i %i %i %i", result->color.r, result->color.b, result->color.g, result->color.a);
+        result->color = colors[i];
 
         add_index_zval(return_value, i, color);
+    }
+}
+
+
+// Get pixel data from image as Vector4 array (float normalized)
+// Vector4 *GetImageDataNormalized(Image image)
+PHP_METHOD(Image, getDataNormalized)
+{
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+
+    int numOfPixels = intern->image.width * intern->image.height;
+
+    Vector4* vector4s = GetImageDataNormalized(intern->image);
+
+    array_init_size(return_value, numOfPixels);
+
+    for (int i = 0; i < numOfPixels; i++) {
+        zval *vector4 = malloc(sizeof(zval));
+        object_init_ex(vector4, php_raylib_vector4_ce);
+
+        php_raylib_vector4_object *result = Z_VECTOR4_OBJ_P(vector4);
+        result->vector4 = vector4s[i];
+
+        add_index_zval(return_value, i, vector4);
     }
 }
 
@@ -1012,6 +1034,7 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, getData, NULL, ZEND_ACC_PUBLIC) // RLAPI Color *GetImageData(Image image);
+        PHP_ME(Image, getDataNormalized, NULL, ZEND_ACC_PUBLIC) // RLAPI Vector4 *GetImageDataNormalized(Image image)
         PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)

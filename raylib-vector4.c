@@ -58,6 +58,242 @@ typedef struct tagMSG *LPMSG;
 //------------------------------------------------------------------------------------------------------
 zend_object_handlers php_raylib_vector4_object_handlers;
 
+static HashTable php_raylib_vector4_prop_handlers;
+
+typedef double (*raylib_vector4_read_float_t)(php_raylib_vector4_object *obj);
+
+typedef int (*raylib_vector4_write_float_t)(php_raylib_vector4_object *obj, zval *value);
+
+typedef struct _raylib_vector4_prop_handler {
+    raylib_vector4_read_float_t read_float_func;
+    raylib_vector4_write_float_t write_float_func;
+} raylib_vector4_prop_handler;
+/* }}} */
+
+static void php_raylib_vector4_register_prop_handler(HashTable *prop_handler, char *name, raylib_vector4_read_float_t read_float_func, raylib_vector4_write_float_t write_float_func) /* {{{ */
+{
+    raylib_vector4_prop_handler hnd;
+
+    hnd.read_float_func = read_float_func;
+    hnd.write_float_func = write_float_func;
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_vector4_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_vector4_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+/* }}} */
+
+static zval *php_raylib_vector4_property_reader(php_raylib_vector4_object *obj, raylib_vector4_prop_handler *hnd, zval *rv) /* {{{ */
+{
+    double ret = 0;
+
+    if (obj != NULL && hnd->read_float_func) {
+//        php_error_docref(NULL, E_WARNING, "Internal raylib vector4 found");
+        ret = hnd->read_float_func(obj);
+    } else {
+//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
+    }
+
+    ZVAL_DOUBLE(rv, (double) ret);
+
+    return rv;
+}
+/* }}} */
+
+static zval *php_raylib_vector4_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+{
+    php_raylib_vector4_object *obj;
+    zval tmp_member;
+    zval *retval = NULL;
+    raylib_vector4_prop_handler *hnd = NULL;
+    const zend_object_handlers *std_hnd;
+
+    if (Z_TYPE_P(member) != IS_STRING) {
+        ZVAL_COPY(&tmp_member, member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+        cache_slot = NULL;
+    }
+
+    obj = Z_VECTOR4_OBJ_P(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+    }
+
+    if (hnd == NULL) {
+        std_hnd = zend_get_std_object_handlers();
+        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+/* }}} */
+
+static zval *php_raylib_vector4_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) /* {{{ */
+{
+    php_raylib_vector4_object *obj;
+    zval tmp_member;
+    zval *retval = NULL;
+    raylib_vector4_prop_handler *hnd = NULL;
+    const zend_object_handlers *std_hnd;
+
+    if (Z_TYPE_P(member) != IS_STRING) {
+        ZVAL_COPY(&tmp_member, member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+        cache_slot = NULL;
+    }
+
+    obj = Z_VECTOR4_OBJ_P(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+    } else {
+//        php_error_docref(NULL, E_WARNING, "Internal raylib vector4 hnd not found");
+    }
+
+    if (hnd != NULL) {
+        retval = php_raylib_vector4_property_reader(obj, hnd, rv);
+        if (retval == NULL) {
+//            php_error_docref(NULL, E_WARNING, "Internal raylib vector4 retval is null");
+            retval = &EG(uninitialized_zval);
+        }
+    } else {
+        std_hnd = zend_get_std_object_handlers();
+        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+/* }}} */
+
+/* {{{ php_raylib_vector4_write_property(zval *object, zval *member, zval *value[, const zend_literal *key])
+   Generic object property writer */
+zval *php_raylib_vector4_write_property(zval *object, zval *member, zval *value, void **cache_slot)
+{
+    zval tmp_member;
+    php_raylib_vector4_object *obj;
+    raylib_vector4_prop_handler *hnd;
+
+    if (Z_TYPE_P(member) != IS_STRING) {
+        zend_string *str = zval_try_get_string_func(member);
+        if (UNEXPECTED(!str)) {
+            return value;
+        }
+        ZVAL_STR(&tmp_member, str);
+        member = &tmp_member;
+    }
+
+    obj = Z_VECTOR4_OBJ_P(object);
+
+    hnd = zend_hash_find_ptr(&php_raylib_vector4_prop_handlers, Z_STR_P(member));
+
+    if (hnd && hnd->write_float_func) {
+        hnd->write_float_func(obj, value);
+    } else {
+        value = zend_std_write_property(object, member, value, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_ptr_dtor(member);
+    }
+
+    return value;
+}
+/* }}} */
+
+static int php_raylib_vector4_has_property(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+{
+    php_raylib_vector4_object *obj;
+    zval tmp_member;
+    raylib_vector4_prop_handler *hnd = NULL;
+    const zend_object_handlers *std_hnd;
+    int retval = 0;
+
+    if (Z_TYPE_P(member) != IS_STRING) {
+        ZVAL_COPY(&tmp_member, member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+        cache_slot = NULL;
+    }
+
+    obj = Z_VECTOR4_OBJ_P(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+    }
+
+    if (hnd != NULL) {
+        zval tmp, *prop;
+
+        if (type == 2) {
+            retval = 1;
+        } else if ((prop = php_raylib_vector4_property_reader(obj, hnd, &tmp)) != NULL) {
+            if (type == 1) {
+                retval = zend_is_true(&tmp);
+            } else if (type == 0) {
+                retval = (Z_TYPE(tmp) != IS_NULL);
+            }
+        }
+
+        zval_ptr_dtor(&tmp);
+    } else {
+        std_hnd = zend_get_std_object_handlers();
+        retval = std_hnd->has_property(object, member, type, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+/* }}} */
+
+static HashTable *php_raylib_vector4_get_gc(zval *object, zval **gc_data, int *gc_data_count) /* {{{ */
+{
+    *gc_data = NULL;
+    *gc_data_count = 0;
+    return zend_std_get_properties(object);
+}
+/* }}} */
+
+static HashTable *php_raylib_vector4_get_properties(zval *object)/* {{{ */
+{
+    php_raylib_vector4_object *obj;
+    HashTable *props;
+    raylib_vector4_prop_handler *hnd;
+    zend_string *key;
+
+    obj = Z_VECTOR4_OBJ_P(object);
+    props = zend_std_get_properties(object);
+
+    if (obj->prop_handler == NULL) {
+        return NULL;
+    }
+
+    ZEND_HASH_FOREACH_STR_KEY_PTR(obj->prop_handler, key, hnd) {
+        zval *ret, val;
+        ret = php_raylib_vector4_property_reader(obj, hnd, &val);
+        if (ret == NULL) {
+            ret = &EG(uninitialized_zval);
+        }
+        zend_hash_update(props, key, ret);
+    } ZEND_HASH_FOREACH_END();
+
+    return props;
+}
+/* }}} */
+
 void php_raylib_vector4_free_storage(zend_object *object TSRMLS_DC)
 {
     php_raylib_vector4_object *intern = php_raylib_vector4_fetch_object(object);
@@ -69,6 +305,7 @@ zend_object * php_raylib_vector4_new(zend_class_entry *ce TSRMLS_DC)
 {
     php_raylib_vector4_object *intern;
     intern = (php_raylib_vector4_object*) ecalloc(1, sizeof(php_raylib_vector4_object) + zend_object_properties_size(ce));
+    intern->prop_handler = &php_raylib_vector4_prop_handlers;
 
     zend_object_std_init(&intern->std, ce TSRMLS_CC);
     object_properties_init(&intern->std, ce);
@@ -78,29 +315,128 @@ zend_object * php_raylib_vector4_new(zend_class_entry *ce TSRMLS_DC)
     return &intern->std;
 }
 
+static zend_object *php_raylib_vector4_clone(zval *zobject)
+{
+    zend_object *old_object;
+    zend_object *new_object;
+
+    old_object = Z_OBJ_P(zobject);
+    new_object = php_raylib_vector4_new(old_object->ce);
+
+    // zend_objects_clone_members(new_object, old_object);
+
+    php_raylib_vector4_object *old_vector4 = php_raylib_vector4_fetch_object(old_object);
+    php_raylib_vector4_object *new_vector4 = php_raylib_vector4_fetch_object(new_object);
+    new_vector4->vector4 = old_vector4->vector4;
+
+    return new_object;
+}
+
+// PHP property handling
+
+static double php_raylib_vector4_x(php_raylib_vector4_object *obj) /* {{{ */
+{
+    return (double) obj->vector4.x;
+}
+/* }}} */
+
+static double php_raylib_vector4_y(php_raylib_vector4_object *obj) /* {{{ */
+{
+    return (double) obj->vector4.y;
+}
+/* }}} */
+
+static double php_raylib_vector4_z(php_raylib_vector4_object *obj) /* {{{ */
+{
+    return (double) obj->vector4.z;
+}
+/* }}} */
+
+static double php_raylib_vector4_w(php_raylib_vector4_object *obj) /* {{{ */
+{
+    return (double) obj->vector4.w;
+}
+/* }}} */
+
+
+
+static int php_raylib_vector4_write_x(php_raylib_vector4_object *vector4_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        vector4_object->vector4.x = 0;
+        return ret;
+    }
+
+    vector4_object->vector4.x = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_vector4_write_y(php_raylib_vector4_object *vector4_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        vector4_object->vector4.y = 0;
+        return ret;
+    }
+
+    vector4_object->vector4.y = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_vector4_write_z(php_raylib_vector4_object *vector4_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        vector4_object->vector4.z = 0;
+        return ret;
+    }
+
+    vector4_object->vector4.z = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_vector4_write_w(php_raylib_vector4_object *vector4_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        vector4_object->vector4.w = 0;
+        return ret;
+    }
+
+    vector4_object->vector4.w = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
 // PHP object handling
 
 PHP_METHOD(Vector4, __construct)
 {
     zval *x;
     zval *y;
-    zval *z;
-    zval *w;
 
-    ZEND_PARSE_PARAMETERS_START(4, 4)
-            Z_PARAM_ZVAL(x)
-            Z_PARAM_ZVAL(y)
-            Z_PARAM_ZVAL(z)
-            Z_PARAM_ZVAL(w)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(x)
+        Z_PARAM_ZVAL(y)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4 = (Vector4) {
-            .x = zend_double_2float(x),
-            .y = zend_double_2float(y),
-            .z = zend_double_2float(z),
-            .w = zend_double_2float(w)
+        .x = zend_double_2float(x),
+        .y = zend_double_2float(y)
     };
 
 }
@@ -116,7 +452,7 @@ PHP_METHOD(Vector4, setX)
     zval *val;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
@@ -135,14 +471,13 @@ PHP_METHOD(Vector4, setY)
     zval *val;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.y = zend_double_2float(val);
 }
-
 
 PHP_METHOD(Vector4, getZ)
 {
@@ -155,14 +490,13 @@ PHP_METHOD(Vector4, setZ)
     zval *val;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
 
     intern->vector4.z = zend_double_2float(val);
 }
-
 
 PHP_METHOD(Vector4, getW)
 {
@@ -175,7 +509,7 @@ PHP_METHOD(Vector4, setW)
     zval *val;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_ZVAL(val)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
@@ -196,17 +530,38 @@ const zend_function_entry php_raylib_vector4_methods[] = {
         PHP_FE_END
 };
 
+static void php_raylib_vector4_free_prop_handler(zval *el) /* {{{ */ {
+    pefree(Z_PTR_P(el), 1);
+} /* }}} */
+
 // Extension class startup
 
 void php_raylib_vector4_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "Vector4", php_raylib_vector4_methods);
-    php_raylib_vector4_ce = zend_register_internal_class(&ce TSRMLS_CC);
-    php_raylib_vector4_ce->create_object = php_raylib_vector4_new;
 
     memcpy(&php_raylib_vector4_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     php_raylib_vector4_object_handlers.offset = XtOffsetOf(php_raylib_vector4_object, std);
     php_raylib_vector4_object_handlers.free_obj = &php_raylib_vector4_free_storage;
-    php_raylib_vector4_object_handlers.clone_obj = NULL;
+    php_raylib_vector4_object_handlers.clone_obj = php_raylib_vector4_clone;
+
+    // Props
+    php_raylib_vector4_object_handlers.get_property_ptr_ptr = php_raylib_vector4_get_property_ptr_ptr;
+    php_raylib_vector4_object_handlers.get_gc               = php_raylib_vector4_get_gc;
+    php_raylib_vector4_object_handlers.get_properties       = php_raylib_vector4_get_properties;
+    php_raylib_vector4_object_handlers.read_property	    = php_raylib_vector4_read_property;
+    php_raylib_vector4_object_handlers.write_property       = php_raylib_vector4_write_property;
+    php_raylib_vector4_object_handlers.has_property	        = php_raylib_vector4_has_property;
+
+    // Init
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Vector4", php_raylib_vector4_methods);
+    php_raylib_vector4_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_vector4_ce->create_object = php_raylib_vector4_new;
+
+    // Props
+    zend_hash_init(&php_raylib_vector4_prop_handlers, 0, NULL, php_raylib_vector4_free_prop_handler, 1);
+    php_raylib_vector4_register_prop_handler(&php_raylib_vector4_prop_handlers, "x", php_raylib_vector4_x, php_raylib_vector4_write_x);
+    php_raylib_vector4_register_prop_handler(&php_raylib_vector4_prop_handlers, "y", php_raylib_vector4_y, php_raylib_vector4_write_y);
+    php_raylib_vector4_register_prop_handler(&php_raylib_vector4_prop_handlers, "z", php_raylib_vector4_z, php_raylib_vector4_write_z);
+    php_raylib_vector4_register_prop_handler(&php_raylib_vector4_prop_handlers, "w", php_raylib_vector4_w, php_raylib_vector4_write_w);
 }

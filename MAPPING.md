@@ -280,8 +280,8 @@ RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format
 RLAPI void UnloadImage(Image image);                                                                     | unset($image) ||
 RLAPI void ExportImage(Image image, const char *fileName);                                               | raylib\Image::export(string $fileName) ||
 RLAPI void ExportImageAsCode(Image image, const char *fileName);                                         | raylib\Image::exportAsCode(string $fileName) ||
-RLAPI Color *GetImageData(Image image);                                                                  |
-RLAPI Vector4 *GetImageDataNormalized(Image image);                                                      |
+RLAPI Color *GetImageData(Image image);                                                                  | raylib\Image->getData() ||
+RLAPI Vector4 *GetImageDataNormalized(Image image);                                                      | raylib\Image->getDataNormalized() ||
 
 
 
