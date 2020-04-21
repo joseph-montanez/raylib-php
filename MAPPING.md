@@ -339,7 +339,7 @@ RLAPI Vector4 *GetImageDataNormalized(Image image);                             
 | RLAPI void ImageDrawCircleV(Image *dst, Vector2 center, int radius, Color color);                                                        | TODO || 
 | RLAPI void ImageDrawRectangle(Image *dst, int posX, int posY, int width, int height, Color color);                                       | TODO || 
 | RLAPI void ImageDrawRectangleV(Image *dst, Vector2 position, Vector2 size, Color color);                                                 | TODO || 
-| RLAPI void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color);                                                                | TODO || 
+| RLAPI void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color);                                                                | raylib\Image->drawRectangleRec(Rectangle $rec, Color $color) || 
 | RLAPI void ImageDrawRectangleLines(Image *dst, Rectangle rec, int thick, Color color);                                                   | TODO || 
 | RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);                                             | TODO ||   
 | RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec);                                                         | raylib\Image->draw(Image $src, Rectangle $srcRec, Rectangle $dstRec) ||
