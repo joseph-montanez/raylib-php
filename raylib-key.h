@@ -15,8 +15,8 @@ static inline php_raylib_key_object *php_raylib_key_fetch_object(zend_object *ob
     return (php_raylib_key_object *)((char *)obj - XtOffsetOf(php_raylib_key_object, std));
 }
 
-void php_raylib_key_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_key_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_key_free_storage(zend_object *object);
+zend_object * php_raylib_key_new(zend_class_entry *ce);
 
 #define Z_KEY_OBJ_P(zv) php_raylib_key_fetch_object(Z_OBJ_P(zv));
 

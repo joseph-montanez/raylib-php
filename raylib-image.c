@@ -261,7 +261,7 @@ static HashTable *php_raylib_image_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_image_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_image_free_storage(zend_object *object)
 {
     php_raylib_image_object *intern = php_raylib_image_fetch_object(object);
 
@@ -270,13 +270,13 @@ void php_raylib_image_free_storage(zend_object *object TSRMLS_DC)
     UnloadImage(intern->image);
 }
 
-zend_object * php_raylib_image_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_image_new(zend_class_entry *ce)
 {
     php_raylib_image_object *intern;
     intern = (php_raylib_image_object*) ecalloc(1, sizeof(php_raylib_image_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_image_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_image_object_handlers;
@@ -326,46 +326,46 @@ PHP_METHOD(Image, __construct)
 
 // Load image from Color array data (RGBA - 32bit)
 // RLAPI Image LoadImageEx(Color *pixels, int width, int height);
-PHP_METHOD(Image, fromColors)
-{
-    zval *pixels;
-    zend_long width;
-    zend_long height;
-    HashTable *pixelsArr;
-    zval *zv;
-
-    ZEND_PARSE_PARAMETERS_START(3, 3)
-            Z_PARAM_ARRAY(pixels)
-            Z_PARAM_LONG(width)
-            Z_PARAM_LONG(height)
-    ZEND_PARSE_PARAMETERS_END();
-
-    pixelsArr = Z_ARRVAL_P(pixels);
-
-    // Count the number of elements in array
-    int numPixels = zend_hash_num_elements(pixelsArr);
-    Color *pixelsP = (Color *)safe_emalloc(numPixels, sizeof(Color), 0);
-
-    // Load pixels from hash to an array
-    int n = 0;
-    ZEND_HASH_FOREACH_VAL(pixelsArr, zv) {
-        if (Z_TYPE_P(zv) == IS_OBJECT) {
-            php_raylib_color_object *obj = Z_COLOR_OBJ_P(zv);
-            pixelsP[n] = obj->color;
-        }
-        n++;
-    } ZEND_HASH_FOREACH_END();
-
-    // Create Image Object
-    object_init_ex(return_value, php_raylib_image_ce);
-    zend_object *object = php_raylib_image_new(php_raylib_image_ce);
-    php_raylib_image_object *internImage = php_raylib_image_fetch_object(object);
-
-    // Load From Pixels
-    internImage->image = LoadImageEx(pixelsP, (int) width, (int) height);
-
-    ZVAL_OBJ(return_value, object);
-}
+//PHP_METHOD(Image, fromColors)
+//{
+//    zval *pixels;
+//    zend_long width;
+//    zend_long height;
+//    HashTable *pixelsArr;
+//    zval *zv;
+//
+//    ZEND_PARSE_PARAMETERS_START(3, 3)
+//            Z_PARAM_ARRAY(pixels)
+//            Z_PARAM_LONG(width)
+//            Z_PARAM_LONG(height)
+//    ZEND_PARSE_PARAMETERS_END();
+//
+//    pixelsArr = Z_ARRVAL_P(pixels);
+//
+//    // Count the number of elements in array
+//    int numPixels = zend_hash_num_elements(pixelsArr);
+//    Color *pixelsP = (Color *)safe_emalloc(numPixels, sizeof(Color), 0);
+//
+//    // Load pixels from hash to an array
+//    int n = 0;
+//    ZEND_HASH_FOREACH_VAL(pixelsArr, zv) {
+//        if (Z_TYPE_P(zv) == IS_OBJECT) {
+//            php_raylib_color_object *obj = Z_COLOR_OBJ_P(zv);
+//            pixelsP[n] = obj->color;
+//        }
+//        n++;
+//    } ZEND_HASH_FOREACH_END();
+//
+//    // Create Image Object
+//    object_init_ex(return_value, php_raylib_image_ce);
+//    zend_object *object = php_raylib_image_new(php_raylib_image_ce);
+//    php_raylib_image_object *internImage = php_raylib_image_fetch_object(object);
+//
+//    // Load From Pixels
+//    internImage->image = LoadImageEx(pixelsP, (int) width, (int) height);
+//
+//    ZVAL_OBJ(return_value, object);
+//}
 
 // Load image from RAW file data
 // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
@@ -550,31 +550,32 @@ PHP_METHOD(Image, draw)
 }
 
 // Draw text (default font) within an image (destination)
-// RLAPI void ImageDrawText(Image *dst, Vector2 position, const char *text, int fontSize, Color color);
+// RLAPI void ImageDrawText(Image *dst, const char *text, int posX, int posY, int fontSize, Color color);
 PHP_METHOD(Image, drawText)
 {
-    zval *position;
+    zend_long posX;
+    zend_long posY;
     zend_string *text;
     zend_long fontSize;
     zval *color;
 
-    ZEND_PARSE_PARAMETERS_START(4, 4)
-        Z_PARAM_ZVAL(position)
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_LONG(posX)
+        Z_PARAM_LONG(posY)
         Z_PARAM_STR(text)
         Z_PARAM_LONG(fontSize)
         Z_PARAM_ZVAL(color)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
-    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawText(&intern->image, phpPosition->vector2, text->val, (int) fontSize, phpColor->color);
+    ImageDrawText(&intern->image, text->val, (int) posX, (int) posY, (int) fontSize, phpColor->color);
 }
 
 
 // Draw text (custom sprite font) within an image (destination)
-// RLAPI void ImageDrawTextEx(Image *dst, Vector2 position, Font font, const char *text, float fontSize, float spacing, Color color);
+// RLAPI void ImageDrawTextEx(Image *dst, Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
 PHP_METHOD(Image, drawTextEx)
 {
     zval *position;
@@ -582,7 +583,7 @@ PHP_METHOD(Image, drawTextEx)
     zend_string *text;
     double fontSize;
     double spacing;
-    zval *color;
+    zval *tint;
 
     ZEND_PARSE_PARAMETERS_START(6, 6)
         Z_PARAM_ZVAL(position)
@@ -590,15 +591,15 @@ PHP_METHOD(Image, drawTextEx)
         Z_PARAM_STR(text)
         Z_PARAM_DOUBLE(fontSize)
         Z_PARAM_DOUBLE(spacing)
-        Z_PARAM_ZVAL(color)
+        Z_PARAM_ZVAL(tint)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
-    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    ImageDrawTextEx(&intern->image, phpPosition->vector2, phpFont->font, text->val, (float) fontSize, (float) spacing, phpColor->color);
+    ImageDrawTextEx(&intern->image, phpFont->font, ZSTR_VAL(text), phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
 }
 
 // RLAPI Image ImageText(const char *text, int fontSize, Color color);
@@ -1029,7 +1030,7 @@ PHP_METHOD(Image, getAlphaBorder)
 const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, fromFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+//        PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromImage, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
@@ -1094,7 +1095,7 @@ void php_raylib_image_startup(INIT_FUNC_ARGS)
 
     //-- Class Methods
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Image", php_raylib_image_methods);
-    php_raylib_image_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_image_ce = zend_register_internal_class(&ce);
     php_raylib_image_ce->create_object = php_raylib_image_new;
 
     zend_hash_init(&php_raylib_image_prop_handlers, 0, NULL, php_raylib_image_free_prop_handler, 1);

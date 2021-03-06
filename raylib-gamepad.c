@@ -61,19 +61,19 @@ typedef struct tagMSG *LPMSG;
 static zend_class_entry *php_raylib_gamepad_class_entry;
 zend_object_handlers php_raylib_gamepad_object_handlers;
 
-void php_raylib_gamepad_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_gamepad_free_storage(zend_object *object)
 {
     php_raylib_gamepad_object *intern = php_raylib_gamepad_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_gamepad_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_gamepad_new(zend_class_entry *ce)
 {
     php_raylib_gamepad_object *intern;
     intern = (php_raylib_gamepad_object*) ecalloc(1, sizeof(php_raylib_gamepad_object) + zend_object_properties_size(ce));
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_gamepad_object_handlers;
@@ -253,7 +253,7 @@ void php_raylib_gamepad_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
     INIT_NS_CLASS_ENTRY(ce, "raylib\\Input", "Gamepad", php_raylib_gamepad_methods);
-    php_raylib_gamepad_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_gamepad_ce = zend_register_internal_class(&ce);
     php_raylib_gamepad_ce->create_object = php_raylib_gamepad_new;
     php_raylib_gamepad_class_entry = zend_register_internal_class(&ce);
 
@@ -304,7 +304,7 @@ void php_raylib_gamepad_startup(INIT_FUNC_ARGS)
 
 
     // This is here just for error checking
-    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("AXIS_UNKNOWN", GAMEPAD_AXIS_UNKNOWN);
+//    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("AXIS_UNKNOWN", GAMEPAD_AXIS_UNKNOWN);
 
     // Left stick
     REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("AXIS_LEFT_X", GAMEPAD_AXIS_LEFT_X);

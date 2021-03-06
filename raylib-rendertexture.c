@@ -58,7 +58,7 @@ typedef struct tagMSG *LPMSG;
 //------------------------------------------------------------------------------------------------------
 zend_object_handlers php_raylib_rendertexture_object_handlers;
 
-void php_raylib_rendertexture_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_rendertexture_free_storage(zend_object *object)
 {
     php_raylib_rendertexture_object *intern = php_raylib_rendertexture_fetch_object(object);
 
@@ -67,12 +67,12 @@ void php_raylib_rendertexture_free_storage(zend_object *object TSRMLS_DC)
     UnloadRenderTexture(intern->rendertexture);
 }
 
-zend_object * php_raylib_rendertexture_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_rendertexture_new(zend_class_entry *ce)
 {
     php_raylib_rendertexture_object *intern;
     intern = (php_raylib_rendertexture_object*) ecalloc(1, sizeof(php_raylib_rendertexture_object) + zend_object_properties_size(ce));
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_rendertexture_object_handlers;
@@ -145,7 +145,7 @@ void php_raylib_rendertexture_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
     INIT_NS_CLASS_ENTRY(ce, "raylib", "RenderTexture", php_raylib_rendertexture_methods);
-    php_raylib_rendertexture_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_rendertexture_ce = zend_register_internal_class(&ce);
     php_raylib_rendertexture_ce->create_object = php_raylib_rendertexture_new;
 
     memcpy(&php_raylib_rendertexture_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

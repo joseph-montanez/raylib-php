@@ -20,8 +20,8 @@ static inline php_raylib_texture_object *php_raylib_texture_fetch_object(zend_ob
     return (php_raylib_texture_object *)((char *)obj - XtOffsetOf(php_raylib_texture_object, std));
 }
 
-void php_raylib_texture_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_texture_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_texture_free_storage(zend_object *object);
+zend_object * php_raylib_texture_new(zend_class_entry *ce);
 
 #define Z_TEXTURE_OBJ_P(zv) php_raylib_texture_fetch_object(Z_OBJ_P(zv));
 

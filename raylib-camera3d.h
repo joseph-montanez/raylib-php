@@ -16,8 +16,8 @@ static inline php_raylib_camera3d_object *php_raylib_camera3d_fetch_object(zend_
     return (php_raylib_camera3d_object *)((char *)obj - XtOffsetOf(php_raylib_camera3d_object, std));
 }
 
-void php_raylib_camera3d_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_camera3d_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_camera3d_free_storage(zend_object *object);
+zend_object * php_raylib_camera3d_new(zend_class_entry *ce);
 
 #define Z_CAMERA3D_OBJ_P(zv) php_raylib_camera3d_fetch_object(Z_OBJ_P(zv));
 

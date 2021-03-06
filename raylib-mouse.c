@@ -61,19 +61,19 @@ typedef struct tagMSG *LPMSG;
 static zend_class_entry *php_raylib_mouse_class_entry;
 zend_object_handlers php_raylib_mouse_object_handlers;
 
-void php_raylib_mouse_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_mouse_free_storage(zend_object *object)
 {
     php_raylib_mouse_object *intern = php_raylib_mouse_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_mouse_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_mouse_new(zend_class_entry *ce)
 {
     php_raylib_mouse_object *intern;
     intern = (php_raylib_mouse_object*) ecalloc(1, sizeof(php_raylib_mouse_object) + zend_object_properties_size(ce));
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_mouse_object_handlers;
@@ -161,7 +161,7 @@ PHP_METHOD(Mouse, getPosition)
     //-- Allocate vector2
     intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(php_raylib_vector2_ce));
     //-- Intialize vector2
-    zend_object_std_init(&intern->std, php_raylib_vector2_ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, php_raylib_vector2_ce);
     object_properties_init(&intern->std, php_raylib_vector2_ce);
     //-- Assigned handler
     intern->std.handlers = &php_raylib_vector2_object_handlers;
@@ -229,7 +229,7 @@ void php_raylib_mouse_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
     INIT_NS_CLASS_ENTRY(ce, "raylib\\Input", "Mouse", php_raylib_mouse_methods);
-    php_raylib_mouse_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_mouse_ce = zend_register_internal_class(&ce);
     php_raylib_mouse_ce->create_object = php_raylib_mouse_new;
     php_raylib_mouse_class_entry = zend_register_internal_class(&ce);
 

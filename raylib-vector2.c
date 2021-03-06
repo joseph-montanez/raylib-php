@@ -294,20 +294,20 @@ static HashTable *php_raylib_vector2_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_vector2_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_vector2_free_storage(zend_object *object)
 {
     php_raylib_vector2_object *intern = php_raylib_vector2_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_vector2_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_vector2_new(zend_class_entry *ce)
 {
     php_raylib_vector2_object *intern;
     intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_vector2_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_vector2_object_handlers;
@@ -474,7 +474,7 @@ void php_raylib_vector2_startup(INIT_FUNC_ARGS)
 
     // Init
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Vector2", php_raylib_vector2_methods);
-    php_raylib_vector2_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_vector2_ce = zend_register_internal_class(&ce);
     php_raylib_vector2_ce->create_object = php_raylib_vector2_new;
 
     // Props

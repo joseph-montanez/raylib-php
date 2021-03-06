@@ -15,8 +15,8 @@ static inline php_raylib_collision_object *php_raylib_collision_fetch_object(zen
     return (php_raylib_collision_object *)((char *)obj - XtOffsetOf(php_raylib_collision_object, std));
 }
 
-void php_raylib_collision_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_collision_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_collision_free_storage(zend_object *object);
+zend_object * php_raylib_collision_new(zend_class_entry *ce);
 
 #define Z_COLLISION_OBJ_P(zv) php_raylib_collision_fetch_object(Z_OBJ_P(zv));
 

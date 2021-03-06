@@ -17,8 +17,8 @@ static inline php_raylib_color_object *php_raylib_color_fetch_object(zend_object
     return (php_raylib_color_object *)((char *)obj - XtOffsetOf(php_raylib_color_object, std));
 }
 
-void php_raylib_color_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_color_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_color_free_storage(zend_object *object);
+zend_object * php_raylib_color_new(zend_class_entry *ce);
 
 #define Z_COLOR_OBJ_P(zv) php_raylib_color_fetch_object(Z_OBJ_P(zv));
 

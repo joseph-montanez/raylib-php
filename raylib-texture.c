@@ -258,7 +258,7 @@ static HashTable *php_raylib_texture_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_texture_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_texture_free_storage(zend_object *object)
 {
     php_raylib_texture_object *intern = php_raylib_texture_fetch_object(object);
 
@@ -267,13 +267,13 @@ void php_raylib_texture_free_storage(zend_object *object TSRMLS_DC)
     UnloadTexture(intern->texture);
 }
 
-zend_object * php_raylib_texture_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_texture_new(zend_class_entry *ce)
 {
     php_raylib_texture_object *intern;
     intern = (php_raylib_texture_object*) ecalloc(1, sizeof(php_raylib_texture_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_texture_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_texture_object_handlers;
@@ -577,7 +577,7 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
     php_raylib_texture_object_handlers.has_property	= php_raylib_texture_has_property;
     
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Texture", php_raylib_texture_methods);
-    php_raylib_texture_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_texture_ce = zend_register_internal_class(&ce);
     php_raylib_texture_ce->create_object = php_raylib_texture_new;
     
     // Props
@@ -589,16 +589,16 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
     php_raylib_texture_register_prop_handler(&php_raylib_texture_prop_handlers, "id", php_raylib_texture_id);
 
     // Filters
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_POINT", FILTER_POINT);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_BILINEAR", FILTER_BILINEAR);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_TRILINEAR", FILTER_TRILINEAR);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_4X", FILTER_ANISOTROPIC_4X);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_8X", FILTER_ANISOTROPIC_8X);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("FILTER_ANISOTROPIC_16X", FILTER_ANISOTROPIC_16X);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_POINT", TEXTURE_FILTER_POINT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_BILINEAR", TEXTURE_FILTER_BILINEAR);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_TRILINEAR", TEXTURE_FILTER_TRILINEAR);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_ANISOTROPIC_4X", TEXTURE_FILTER_ANISOTROPIC_4X);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_ANISOTROPIC_8X", TEXTURE_FILTER_ANISOTROPIC_8X);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_FILTER_ANISOTROPIC_16X", TEXTURE_FILTER_ANISOTROPIC_16X);
 
     // Wraps
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_REPEAT", WRAP_REPEAT);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_CLAMP", WRAP_CLAMP);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_MIRROR_REPEAT", WRAP_MIRROR_REPEAT);
-    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("WRAP_MIRROR_CLAMP", WRAP_MIRROR_CLAMP);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_WRAP_REPEAT", TEXTURE_WRAP_REPEAT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_WRAP_CLAMP", TEXTURE_WRAP_CLAMP);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_WRAP_MIRROR_REPEAT", TEXTURE_WRAP_MIRROR_REPEAT);
+    REGISTER_RAYLIB_TEXTURE_CLASS_CONST_LONG("TEXTURE_WRAP_MIRROR_CLAMP", TEXTURE_WRAP_MIRROR_CLAMP);
 }

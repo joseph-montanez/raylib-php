@@ -297,20 +297,20 @@ static HashTable *php_raylib_color_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_color_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_color_free_storage(zend_object *object)
 {
     php_raylib_color_object *intern = php_raylib_color_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_color_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_color_new(zend_class_entry *ce)
 {
     php_raylib_color_object *intern;
     intern = (php_raylib_color_object*) ecalloc(1, sizeof(php_raylib_color_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_color_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_color_object_handlers;
@@ -497,13 +497,15 @@ PHP_METHOD(Color, toHSV)
 // RLAPI Color ColorFromHSV(Vector3 hsv);
 PHP_METHOD(Color, fromHSV)
 {
-    zval *normalized;
+    double hue;
+    double saturation;
+    double value;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(normalized)
+            Z_PARAM_DOUBLE(hue)
+            Z_PARAM_DOUBLE(saturation)
+            Z_PARAM_DOUBLE(value)
     ZEND_PARSE_PARAMETERS_END();
-
-    php_raylib_vector3_object *phpNormalized = Z_VECTOR3_OBJ_P(normalized);
 
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
 
@@ -511,7 +513,7 @@ PHP_METHOD(Color, fromHSV)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color = ColorFromHSV(phpNormalized->vector3);
+    result->color = ColorFromHSV((float) hue, (float) saturation, (float) value);
 
     RETURN_OBJ(&result->std);
 }
@@ -690,7 +692,7 @@ void php_raylib_color_startup(INIT_FUNC_ARGS)
     php_raylib_color_object_handlers.has_property	      = php_raylib_color_has_property;
 
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Color", php_raylib_color_methods);
-    php_raylib_color_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_color_ce = zend_register_internal_class(&ce);
     php_raylib_color_ce->create_object = php_raylib_color_new;
 
     // Object Props

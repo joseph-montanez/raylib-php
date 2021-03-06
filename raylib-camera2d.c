@@ -59,19 +59,19 @@ typedef struct tagMSG *LPMSG;
 //------------------------------------------------------------------------------------------------------
 zend_object_handlers php_raylib_camera2d_object_handlers;
 
-void php_raylib_camera2d_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_camera2d_free_storage(zend_object *object)
 {
     php_raylib_camera2d_object *intern = php_raylib_camera2d_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_camera2d_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_camera2d_new(zend_class_entry *ce)
 {
     php_raylib_camera2d_object *intern;
     intern = (php_raylib_camera2d_object*) ecalloc(1, sizeof(php_raylib_camera2d_object) + zend_object_properties_size(ce));
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_camera2d_object_handlers;
@@ -154,7 +154,7 @@ PHP_METHOD(Camera2d, getRotation)
 {
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
-    RETURN_DOUBLE((double) intern->camera2d.rotation)
+    RETURN_DOUBLE((double) intern->camera2d.rotation);
 }
 
 PHP_METHOD(Camera2d, setRotation)
@@ -174,7 +174,7 @@ PHP_METHOD(Camera2d, getZoom)
 {
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
 
-    RETURN_DOUBLE((double) intern->camera2d.zoom)
+    RETURN_DOUBLE((double) intern->camera2d.zoom);
 }
 
 PHP_METHOD(Camera2d, setZoom)
@@ -207,7 +207,7 @@ void php_raylib_camera2d_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Camera2d", php_raylib_camera2d_methods);
-    php_raylib_camera2d_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_camera2d_ce = zend_register_internal_class(&ce);
     php_raylib_camera2d_ce->create_object = php_raylib_camera2d_new;
 
     memcpy(&php_raylib_camera2d_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));

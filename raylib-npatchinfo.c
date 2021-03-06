@@ -323,20 +323,20 @@ static HashTable *php_raylib_npatchinfo_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_npatchinfo_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_npatchinfo_free_storage(zend_object *object)
 {
     php_raylib_npatchinfo_object *intern = php_raylib_npatchinfo_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_npatchinfo_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_npatchinfo_new(zend_class_entry *ce)
 {
     php_raylib_npatchinfo_object *intern;
     intern = (php_raylib_npatchinfo_object*) ecalloc(1, sizeof(php_raylib_npatchinfo_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_npatchinfo_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_npatchinfo_object_handlers;
@@ -369,7 +369,7 @@ static zval * php_raylib_npatchinfo_source_rec(php_raylib_npatchinfo_object *obj
     object_init_ex(sourceRec, php_raylib_rectangle_ce);
 
     php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(sourceRec);
-    result->rectangle = obj->npatchinfo.sourceRec;
+    result->rectangle = obj->npatchinfo.source;
 
     return sourceRec;
 }
@@ -414,7 +414,7 @@ static int php_raylib_npatchinfo_write_source_rec(php_raylib_npatchinfo_object *
 
     php_raylib_rectangle_object *phpSourceRec = Z_RECTANGLE_OBJ_P(newval);
 
-    npatchinfo_object->npatchinfo.sourceRec = phpSourceRec->rectangle;
+    npatchinfo_object->npatchinfo.source = phpSourceRec->rectangle;
 
     return ret;
 }
@@ -511,7 +511,7 @@ PHP_METHOD(NPatchInfo, __construct)
     php_raylib_npatchinfo_object *intern = Z_NPATCHINFO_OBJ_P(ZEND_THIS);
 
     intern->npatchinfo = (NPatchInfo) {
-            .sourceRec = phpSourceRec->rectangle,
+            .source = phpSourceRec->rectangle,
             .left = (int) left,
             .top = (int) top,
             .right = (int) right,
@@ -624,7 +624,7 @@ PHP_METHOD(NPatchInfo, getSourceRec)
     object_init_ex(obj, php_raylib_rectangle_ce);
     
     php_raylib_rectangle_object *result = Z_RECTANGLE_OBJ_P(obj);
-    result->rectangle = intern->npatchinfo.sourceRec;
+    result->rectangle = intern->npatchinfo.source;
 
     RETURN_OBJ(&result->std);
 }
@@ -640,7 +640,7 @@ PHP_METHOD(NPatchInfo, setSourceRec)
     php_raylib_rectangle_object *phpSourceRec = Z_RECTANGLE_OBJ_P(sourceRec);
     php_raylib_npatchinfo_object *intern = Z_NPATCHINFO_OBJ_P(ZEND_THIS);
 
-    intern->npatchinfo.sourceRec = phpSourceRec->rectangle;
+    intern->npatchinfo.source = phpSourceRec->rectangle;
 }
 
 
@@ -690,7 +690,7 @@ void php_raylib_npatchinfo_startup(INIT_FUNC_ARGS)
 
     // Init
     INIT_NS_CLASS_ENTRY(ce, "raylib", "NPatchInfo", php_raylib_npatchinfo_methods);
-    php_raylib_npatchinfo_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_npatchinfo_ce = zend_register_internal_class(&ce);
     php_raylib_npatchinfo_ce->create_object = php_raylib_npatchinfo_new;
 
     // Props
@@ -703,7 +703,7 @@ void php_raylib_npatchinfo_startup(INIT_FUNC_ARGS)
     php_raylib_npatchinfo_register_prop_handler(&php_raylib_npatchinfo_prop_handlers, "type", php_raylib_npatchinfo_type, php_raylib_npatchinfo_write_type);
 
     // Types
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_9PATCH", NPT_9PATCH);
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_VERTICAL", NPT_3PATCH_VERTICAL);
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_HORIZONTAL", NPT_3PATCH_HORIZONTAL);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPATCH_NINE_PATCH", NPATCH_NINE_PATCH);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPATCH_THREE_PATCH_VERTICAL", NPATCH_THREE_PATCH_VERTICAL);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPATCH_THREE_PATCH_HORIZONTAL", NPATCH_THREE_PATCH_HORIZONTAL);
 }

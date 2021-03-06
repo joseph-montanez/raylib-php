@@ -322,20 +322,20 @@ static HashTable *php_raylib_charinfo_get_properties(zval *object)/* {{{ */
 }
 /* }}} */
 
-void php_raylib_charinfo_free_storage(zend_object *object TSRMLS_DC)
+void php_raylib_charinfo_free_storage(zend_object *object)
 {
     php_raylib_charinfo_object *intern = php_raylib_charinfo_fetch_object(object);
 
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_charinfo_new(zend_class_entry *ce TSRMLS_DC)
+zend_object * php_raylib_charinfo_new(zend_class_entry *ce)
 {
     php_raylib_charinfo_object *intern;
     intern = (php_raylib_charinfo_object*) ecalloc(1, sizeof(php_raylib_charinfo_object) + zend_object_properties_size(ce));
     intern->prop_handler = &php_raylib_charinfo_prop_handlers;
 
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
+    zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
 
     intern->std.handlers = &php_raylib_charinfo_object_handlers;
@@ -500,18 +500,20 @@ PHP_METHOD(CharInfo, __construct)
 
 }
 
-
+// Load font data for further use
+// RLAPI CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);
 PHP_METHOD(CharInfo, fromFontData)
 {
 
     zend_string *fileName;
     zval *fontChars;
     HashTable *fontCharsArr;
-    zend_long fontSize, type;
+    zend_long dataSize, fontSize, type;
     zval *zv;
 
-    ZEND_PARSE_PARAMETERS_START(4, 4)
+    ZEND_PARSE_PARAMETERS_START(5, 5)
         Z_PARAM_STR(fileName)
+        Z_PARAM_LONG(dataSize)
         Z_PARAM_LONG(fontSize)
         Z_PARAM_ARRAY(fontChars)
         Z_PARAM_LONG(type)
@@ -544,6 +546,7 @@ PHP_METHOD(CharInfo, fromFontData)
 
     CharInfo *charInfos = LoadFontData(
             fileName->val,
+            (int) dataSize,
             (int) fontSize,
             fontCharsP,
             numFontChars,
@@ -701,7 +704,7 @@ void php_raylib_charinfo_startup(INIT_FUNC_ARGS)
 
     // Init
     INIT_NS_CLASS_ENTRY(ce, "raylib", "CharInfo", php_raylib_charinfo_methods);
-    php_raylib_charinfo_ce = zend_register_internal_class(&ce TSRMLS_CC);
+    php_raylib_charinfo_ce = zend_register_internal_class(&ce);
     php_raylib_charinfo_ce->create_object = php_raylib_charinfo_new;
 
     // Props

@@ -15,8 +15,8 @@ static inline php_raylib_timming_object *php_raylib_timming_fetch_object(zend_ob
     return (php_raylib_timming_object *)((char *)obj - XtOffsetOf(php_raylib_timming_object, std));
 }
 
-void php_raylib_timming_free_storage(zend_object *object TSRMLS_DC);
-zend_object * php_raylib_timming_new(zend_class_entry *ce TSRMLS_DC);
+void php_raylib_timming_free_storage(zend_object *object);
+zend_object * php_raylib_timming_new(zend_class_entry *ce);
 
 #define Z_TIMMING_OBJ_P(zv) php_raylib_timming_fetch_object(Z_OBJ_P(zv));
 
