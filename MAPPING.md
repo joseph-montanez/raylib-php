@@ -32,6 +32,7 @@ This is a one to one mapping of each raylib function.
 | RLAPI int GetMonitorPhysicalWidth(int monitor);                 | raylib\Window::getMonitorPhysicalWidth(int monitor) : int ||
 | RLAPI int GetMonitorPhysicalHeight(int monitor);                | raylib\Window::getMonitorPhysicalHeight(int monitor) : int ||
 | RLAPI Vector2 GetWindowPosition(void);                          | raylib\Window::getWindowPosition() : Vector2 ||
+| RLAPI Vector2 GetWindowScaleDPI(void);                                        // Get window scale DPI factor
 | RLAPI const char *GetMonitorName(int monitor);                  | raylib\Window::getMonitorName(int monitor) : string ||
 | RLAPI const char *GetClipboardText(void);                       | raylib\Window::getClipboardText() : string ||
 | RLAPI void SetClipboardText(const char *text);                  | raylib\Window::getMonitorCount(string $text) ||

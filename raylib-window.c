@@ -87,6 +87,8 @@ PHP_METHOD(Window, __construct)
     php_raylib_window_object *intern = Z_WINDOW_OBJ_P(ZEND_THIS);
 }
 
+// Initialize window and OpenGL context
+// void InitWindow(int width, int height, const char *title);
 PHP_METHOD(Window, init)
 {
     zend_long width;
@@ -102,54 +104,140 @@ PHP_METHOD(Window, init)
     InitWindow(zend_long_2int(width), zend_long_2int(height), title->val);
 }
 
-PHP_METHOD(Window, isReady)
-{
-    RETURN_BOOL(IsWindowReady());
-}
-
+// Check if KEY_ESCAPE pressed or Close icon pressed
+// bool WindowShouldClose(void);
 PHP_METHOD(Window, shouldClose)
 {
     RETURN_BOOL(WindowShouldClose());
 }
 
-PHP_METHOD(Window, isMinimized)
+// Close window and unload OpenGL context
+// void CloseWindow(void);
+PHP_METHOD(Window, close)
 {
-    RETURN_BOOL(IsWindowMinimized());
+    CloseWindow();
 }
 
-PHP_METHOD(Window, isResized)
+// Check if window has been initialized successfully
+// bool IsWindowReady(void);
+PHP_METHOD(Window, isReady)
 {
-    RETURN_BOOL(IsWindowResized());
+    RETURN_BOOL(IsWindowReady());
 }
 
-PHP_METHOD(Window, isHidden)
-{
-    RETURN_BOOL(IsWindowHidden());
-}
-
-// TODO: Need to link raylib 3.0
-//RLAPI bool IsWindowFullscreen(void);
+// Check if window is currently fullscreen
+// bool IsWindowFullscreen(void);
 PHP_METHOD(Window, isFullscreen)
 {
 //    RETURN_BOOL(false);
     RETURN_BOOL(IsWindowFullscreen());
 }
 
-PHP_METHOD(Window, unhideWindow)
+// Check if window is currently hidden (only PLATFORM_DESKTOP)
+// bool IsWindowHidden(void);
+PHP_METHOD(Window, isHidden)
 {
-    UnhideWindow();
+    RETURN_BOOL(IsWindowHidden());
 }
 
-PHP_METHOD(Window, hideWindow)
+// Check if window is currently minimized (only PLATFORM_DESKTOP)
+// bool IsWindowMinimized(void);
+PHP_METHOD(Window, isMinimized)
 {
-    HideWindow();
+    RETURN_BOOL(IsWindowMinimized());
 }
 
+// Check if window is currently maximized (only PLATFORM_DESKTOP)
+// bool IsWindowMaximized(void);
+PHP_METHOD(Window, isMaximized)
+{
+    RETURN_BOOL(IsWindowMaximized());
+}
+
+// Check if window is currently focused (only PLATFORM_DESKTOP)
+// bool IsWindowFocused(void);
+PHP_METHOD(Window, isFocused)
+{
+    RETURN_BOOL(IsWindowFocused());
+}
+
+// Check if window has been resized last frame
+// bool IsWindowResized(void);
+PHP_METHOD(Window, isResized)
+{
+    RETURN_BOOL(IsWindowResized());
+}
+
+// Check if one specific window flag is enabled
+// bool IsWindowState(unsigned int flag);
+PHP_METHOD(Window, isState)
+{
+    zend_long flag;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(flag)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(IsWindowState(zend_long_2int(flag)));
+}
+
+// Set window configuration state using flags
+// void SetWindowState(unsigned int flags);
+PHP_METHOD(Window, setState)
+{
+    zend_long flag;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(flag)
+    ZEND_PARSE_PARAMETERS_END();
+
+    SetWindowState(zend_long_2int(flag));
+}
+
+
+// Clear window configuration state flags
+// void ClearWindowState(unsigned int flags);
+PHP_METHOD(Window, clearState)
+{
+    zend_long flag;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_LONG(flag)
+    ZEND_PARSE_PARAMETERS_END();
+
+    ClearWindowState(zend_long_2int(flag));
+}
+
+// Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
+// void ToggleFullscreen(void);
 PHP_METHOD(Window, toggleFullscreen)
 {
     ToggleFullscreen();
 }
 
+// Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
+// void MinimizeWindow(void);
+PHP_METHOD(Window, minimize)
+{
+    MaximizeWindow();
+}
+
+// Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
+// void MinimizeWindow(void);
+PHP_METHOD(Window, minimize)
+{
+    MinimizeWindow();
+}
+
+// Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
+// void RestoreWindow(void);
+PHP_METHOD(Window, minimize)
+{
+    RestoreWindow();
+}
+
+// Set icon for window (only PLATFORM_DESKTOP)
+// void SetWindowIcon(Image image);
 PHP_METHOD(Window, setIcon)
 {
     zval *image;
@@ -163,6 +251,8 @@ PHP_METHOD(Window, setIcon)
     SetWindowIcon(intern->image);
 }
 
+// Set title for window (only PLATFORM_DESKTOP)
+// void SetWindowTitle(const char *title);
 PHP_METHOD(Window, setTitle)
 {
     zend_string *title;
@@ -174,6 +264,8 @@ PHP_METHOD(Window, setTitle)
     SetWindowTitle(title->val);
 }
 
+// Set window position on screen (only PLATFORM_DESKTOP)
+// void SetWindowPosition(int x, int y);
 PHP_METHOD(Window, setPosition)
 {
     zend_long x;
@@ -305,6 +397,19 @@ PHP_METHOD(Window, getWindowPosition)
     RETURN_OBJ(&result->std);
 }
 
+// Get window scale DPI factor
+// RLAPI Vector2 GetWindowScaleDPI(void);
+PHP_METHOD(Window, getWindowScaleDPI)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_vector2_ce);
+
+    php_raylib_vector2_object *result = Z_VECTOR2_OBJ_P(obj);
+    result->vector2 = GetWindowScaleDPI();
+
+    RETURN_OBJ(&result->std);
+}
+
 //RLAPI const char *GetMonitorName(int monitor);
 PHP_METHOD(Window, getMonitorName)
 {
@@ -335,12 +440,6 @@ PHP_METHOD(Window, setClipboardText)
     SetClipboardText((const char *)text);
 }
 
-//void CloseWindow(void);
-PHP_METHOD(Window, close)
-{
-    CloseWindow();
-}
-
 
 
 const zend_function_entry php_raylib_window_methods[] = {
@@ -349,13 +448,18 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, close, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isResized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isHidden, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, unhideWindow, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, hideWindow, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isHidden, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isMaximized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isFocused, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isResized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, clearState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, toggleFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, maximize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, minimize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setIcon, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setTitle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -370,6 +474,7 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, getMonitorPhysicalWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getMonitorPhysicalHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getWindowPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getWindowScaleDPI, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getMonitorName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
