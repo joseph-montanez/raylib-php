@@ -216,8 +216,8 @@ PHP_METHOD(Window, toggleFullscreen)
 }
 
 // Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
-// void MinimizeWindow(void);
-PHP_METHOD(Window, minimize)
+// void MaximizeWindow(void);
+PHP_METHOD(Window, maximize)
 {
     MaximizeWindow();
 }
@@ -231,7 +231,7 @@ PHP_METHOD(Window, minimize)
 
 // Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
 // void RestoreWindow(void);
-PHP_METHOD(Window, minimize)
+PHP_METHOD(Window, restore)
 {
     RestoreWindow();
 }
@@ -460,6 +460,7 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, toggleFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, maximize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, minimize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, restore, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setIcon, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setTitle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
