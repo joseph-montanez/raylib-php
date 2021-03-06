@@ -61,6 +61,8 @@ $camera->setTarget(new Vector2($player->x + 20 ,$player->y + 20));
 $camera->setRotation(0.0);
 $camera->setZoom(1.0);
 
+
+
 Timming::setTargetFPS(60);
 //--------------------------------------------------------------------------------------
 
