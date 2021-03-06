@@ -1027,6 +1027,29 @@ PHP_METHOD(Image, getAlphaBorder)
     RETURN_OBJ(&result->std);
 }
 
+// Draw rectangle within an image
+// RLAPI void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color);
+PHP_METHOD(Image, drawRectangleRec)
+{
+    zval *rec;
+    zval *color;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(rec);
+        Z_PARAM_ZVAL(color);
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+    php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+
+    ImageDrawRectangleRec(
+        &intern->image,
+        phpRec->rectangle,
+        phpColor->color
+    );
+}
+
 const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, fromFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -1043,7 +1066,8 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, draw, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, format, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawRectangleRec, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, alphaMask, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, alphaClear, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, alphaCrop, NULL, ZEND_ACC_PUBLIC)
