@@ -24,7 +24,7 @@ if test "$PHP_RAYLIB" != "no"; then
   AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
   AC_MSG_CHECKING(for libraylib)
   if test -x "$PKG_CONFIG" && $PKG_CONFIG --exists raylib; then
-    if $PKG_CONFIG raylib --atleast-version 2.6.0; then
+    if $PKG_CONFIG raylib --atleast-version 3.5.0; then
       LIBRAYLIB_CFLAGS=`$PKG_CONFIG raylib --cflags`
       LIBRAYLIB_LIBDIR=`$PKG_CONFIG raylib --libs`
       LIBRAYLIB_VERSON=`$PKG_CONFIG raylib --modversion`

@@ -478,7 +478,7 @@ PHP_METHOD(Image, getData)
 
     int numOfPixels = intern->image.width * intern->image.height;
 
-    Color* colors = GetImageData(intern->image);
+    Color* colors = LoadImageColors(intern->image);
 
     array_init_size(return_value, numOfPixels);
 

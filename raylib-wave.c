@@ -258,7 +258,7 @@ PHP_METHOD(Wave, getDataArray)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
-    float *data = GetWaveData(intern->wave);
+    float *data = LoadWaveSamples(intern->wave);
 
 //    int dataLength = 0;
 //    float **dataP = data;

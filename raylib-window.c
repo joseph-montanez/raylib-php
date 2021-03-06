@@ -89,6 +89,11 @@ PHP_METHOD(Window, __construct)
 
 // Initialize window and OpenGL context
 // void InitWindow(int width, int height, const char *title);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_init, 0, 0, 3)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, title)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, init)
 {
     zend_long width;
@@ -106,6 +111,8 @@ PHP_METHOD(Window, init)
 
 // Check if KEY_ESCAPE pressed or Close icon pressed
 // bool WindowShouldClose(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_shouldClose, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, shouldClose)
 {
     RETURN_BOOL(WindowShouldClose());
@@ -444,8 +451,8 @@ PHP_METHOD(Window, setClipboardText)
 
 const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Window, init, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, shouldClose, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, init, arginfo_window_init, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, shouldClose, arginfo_window_shouldClose, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, close, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, isFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
