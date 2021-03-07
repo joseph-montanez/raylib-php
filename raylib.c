@@ -146,10 +146,18 @@ PHP_FUNCTION(IsKeyUp)
     RETURN_BOOL(IsKeyUp(zend_long_2int(key)));
 }
 
-//int GetKeyPressed(void);
-PHP_FUNCTION(GetKeyPressed)
+// Get key pressed (keycode), call it multiple times for keys queued
+// int GetKeyPressed(void);
+PHP_FUNCTION(getKeyPressed)
 {
     RETURN_LONG(GetKeyPressed());
+}
+
+// Get char pressed (unicode), call it multiple times for chars queued
+// RLAPI int GetCharPressed(void);
+PHP_FUNCTION(getCharPressed)
+{
+    RETURN_LONG(GetCharPressed());
 }
 
 //void SetExitKey(void);
@@ -390,7 +398,8 @@ const zend_function_entry raylib_functions[] = {
         ZEND_NS_FE("raylib", IsKeyDown, NULL)
         ZEND_NS_FE("raylib", IsKeyReleased, NULL)
         ZEND_NS_FE("raylib", IsKeyUp, NULL)
-        ZEND_NS_FE("raylib", GetKeyPressed, NULL)
+        ZEND_NS_FE("raylib", getKeyPressed, NULL)
+        ZEND_NS_FE("raylib", getCharPressed, NULL)
         ZEND_NS_FE("raylib", SetExitKey, NULL)
 
         // Misc. functions

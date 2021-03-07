@@ -201,10 +201,11 @@ PHP_METHOD(Mouse, setScale)
     SetMouseScale((float) scaleX, (float) scaleY);
 }
 
-//int GetMouseWheelMove(void)
+// Returns mouse wheel movement Y
+// float GetMouseWheelMove(void);
 PHP_METHOD(Mouse, getWheelMove)
 {
-    RETURN_LONG(GetMouseWheelMove());
+    RETURN_DOUBLE((double) GetMouseWheelMove());
 }
 
 

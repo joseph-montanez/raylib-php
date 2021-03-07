@@ -150,12 +150,6 @@ PHP_METHOD(Key, isUp)
     RETURN_BOOL(IsKeyUp(zend_long_2int(key)));
 }
 
-//int GetKeyPressed(void)
-PHP_METHOD(Key, getPressed)
-{
-    RETURN_LONG(GetKeyPressed());
-}
-
 //void SetExitKey(int key)
 PHP_METHOD(Key, setExit)
 {
@@ -168,14 +162,33 @@ PHP_METHOD(Key, setExit)
     SetExitKey(zend_long_2int(key));
 }
 
+// Get key pressed (keycode), call it multiple times for keys queued
+// int GetKeyPressed(void);
+PHP_METHOD(Key, getPressed)
+{
+RETURN_LONG(GetKeyPressed());
+}
+
+// Get char pressed (unicode), call it multiple times for chars queued
+// int GetKeyPressed(void)
+PHP_METHOD(Key, getCharPressed)
+{
+    RETURN_LONG(GetCharPressed());
+}
+
+
+// RLAPI int GetKeyPressed(void);                                // Get key pressed (keycode), call it multiple times for keys queued
+// RLAPI int GetCharPressed(void);                               // Get char pressed (unicode), call it multiple times for chars queued
+
 
 const zend_function_entry php_raylib_key_methods[] = {
         PHP_ME(Key, __construct, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Key, isPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Key, isDown, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Key, isReleased, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Key, getPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Key, setExit, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Key, getPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Key, getCharPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
