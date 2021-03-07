@@ -101,41 +101,7 @@ static zval *php_raylib_rectangle_property_reader(php_raylib_rectangle_object *o
 }
 /* }}} */
 
-static zval *php_raylib_rectangle_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
-{
-    php_raylib_rectangle_object *obj;
-    zval tmp_member;
-    zval *retval = NULL;
-    raylib_rectangle_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
-
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_RECTANGLE_OBJ_P(object);
-
-    if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    }
-
-    if (hnd == NULL) {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
-    return retval;
-}
-/* }}} */
-
-static zval *php_raylib_rectangle_read_property(zval *object, zend_string *member, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_rectangle_get_property_ptr_ptr(zval *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_rectangle_object *obj;
     zval *retval = NULL;
@@ -144,7 +110,27 @@ static zval *php_raylib_rectangle_read_property(zval *object, zend_string *membe
     obj = php_raylib_rectangle_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, member);
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
+    }
+
+    if (hnd == NULL) {
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
+    }
+
+    return retval;
+}
+/* }}} */
+
+static zval *php_raylib_rectangle_read_property(zval *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
+{
+    php_raylib_rectangle_object *obj;
+    zval *retval = NULL;
+    raylib_rectangle_prop_handler *hnd = NULL;
+
+    obj = php_raylib_rectangle_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd) {
@@ -154,16 +140,16 @@ static zval *php_raylib_rectangle_read_property(zval *object, zend_string *membe
             retval = &EG(uninitialized_zval);
         }
     } else {
-        retval = zend_std_read_property(object, member, type, cache_slot, rv);
+        retval = zend_std_read_property(object, name, type, cache_slot, rv);
     }
 
     return retval;
 }
 /* }}} */
 
-/* {{{ php_raylib_rectangle_write_property(zval *object, zend_string *member, zval *value[, const zend_literal *key])
+/* {{{ php_raylib_rectangle_write_property(zval *object, zend_string *name, zval *value[, const zend_literal *key])
    Generic object property writer */
-zval *php_raylib_rectangle_write_property(zval *object, zend_string *member, zval *value, void **cache_slot)
+zval *php_raylib_rectangle_write_property(zval *object, zend_string *name, zval *value, void **cache_slot)
 {
     php_raylib_rectangle_object *obj;
     raylib_rectangle_prop_handler *hnd;
@@ -171,13 +157,13 @@ zval *php_raylib_rectangle_write_property(zval *object, zend_string *member, zva
     obj = php_raylib_rectangle_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, member);
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd) {
         hnd->write_float_func(obj, value);
     } else {
-        value = zend_std_write_property(object, member, value, cache_slot);
+        value = zend_std_write_property(object, name, value, cache_slot);
     }
 
     return value;
