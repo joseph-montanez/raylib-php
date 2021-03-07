@@ -60,7 +60,7 @@ zend_object_handlers php_raylib_vector2_object_handlers;
 
 static HashTable php_raylib_vector2_prop_handlers;
 
-typedef double (*raylib_vector2_read_float_t)(php_raylib_vector2_object *obj, zval *rv);
+typedef double (*raylib_vector2_read_float_t)(php_raylib_vector2_object *obj);
 
 typedef int (*raylib_vector2_write_float_t)(php_raylib_vector2_object *obj, zval *value);
 
@@ -88,10 +88,7 @@ static zval *php_raylib_vector2_property_reader(php_raylib_vector2_object *obj, 
     double ret = 0;
 
     if (obj != NULL && hnd->read_float_func) {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vector2 found");
-        ret = hnd->read_float_func(obj, rv);
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
+        ret = hnd->read_float_func(obj);
     }
 
     ZVAL_DOUBLE(rv, (double) ret);
@@ -100,41 +97,7 @@ static zval *php_raylib_vector2_property_reader(php_raylib_vector2_object *obj, 
 }
 /* }}} */
 
-static zval *php_raylib_vector2_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
-{
-    php_raylib_vector2_object *obj;
-    zval tmp_member;
-    zval *retval = NULL;
-    raylib_vector2_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
-
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_VECTOR2_OBJ_P(object);
-
-    if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    }
-
-    if (hnd == NULL) {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
-    return retval;
-}
-/* }}} */
-
-static zval *php_raylib_vector2_read_property(zval *object, zend_string *member, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_vector2_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_vector2_object *obj;
     zval *retval = NULL;
@@ -143,17 +106,33 @@ static zval *php_raylib_vector2_read_property(zval *object, zend_string *member,
     obj = php_raylib_vector2_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, member);
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
+    }
+
+    if (hnd == NULL) {
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
+    }
+
+    return retval;
+}
+/* }}} */
+
+static zval *php_raylib_vector2_read_property(zend_object *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
+{
+    php_raylib_vector2_object *obj;
+    zval *retval = NULL;
+    raylib_vector2_prop_handler *hnd = NULL;
+
+    obj = php_raylib_vector2_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd) {
-        if (hnd->read_float_func(obj, rv) == SUCCESS) {
-            retval = rv;
-        } else {
-            retval = &EG(uninitialized_zval);
-        }
+        retval = php_raylib_vector2_property_reader(obj, hnd, rv);
     } else {
-        retval = zend_std_read_property(object, member, type, cache_slot, rv);
+        retval = zend_std_read_property(object, name, type, cache_slot, rv);
     }
 
     return retval;
@@ -357,19 +336,19 @@ static int php_raylib_vector2_write_y(php_raylib_vector2_object *vector2_object,
 
 PHP_METHOD(Vector2, __construct)
 {
-    zval *x;
-    zval *y;
+    double x;
+    double y;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_ZVAL(x)
-            Z_PARAM_ZVAL(y)
+            Z_PARAM_DOUBLE(x)
+            Z_PARAM_DOUBLE(y)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *intern = Z_VECTOR2_OBJ_P(ZEND_THIS);
 
     intern->vector2 = (Vector2) {
-            .x = zend_double_2float(x),
-            .y = zend_double_2float(y)
+            .x = (float) x,
+            .y = (float) y
     };
 
 }

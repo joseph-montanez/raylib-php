@@ -70,7 +70,6 @@ typedef struct _raylib_rectangle_prop_handler {
 } raylib_rectangle_prop_handler;
 /* }}} */
 
-
 static void php_raylib_rectangle_register_prop_handler(HashTable *prop_handler, char *name, raylib_rectangle_read_float_t read_float_func, raylib_rectangle_write_float_t write_float_func) /* {{{ */
 {
     raylib_rectangle_prop_handler hnd;
