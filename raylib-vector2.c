@@ -60,7 +60,7 @@ zend_object_handlers php_raylib_vector2_object_handlers;
 
 static HashTable php_raylib_vector2_prop_handlers;
 
-typedef double (*raylib_vector2_read_float_t)(php_raylib_vector2_object *obj);
+typedef double (*raylib_vector2_read_float_t)(php_raylib_vector2_object *obj, zval *rv);
 
 typedef int (*raylib_vector2_write_float_t)(php_raylib_vector2_object *obj, zval *value);
 
@@ -89,7 +89,7 @@ static zval *php_raylib_vector2_property_reader(php_raylib_vector2_object *obj, 
 
     if (obj != NULL && hnd->read_float_func) {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib vector2 found");
-        ret = hnd->read_float_func(obj);
+        ret = hnd->read_float_func(obj, rv);
     } else {
 //        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
     }
@@ -134,77 +134,49 @@ static zval *php_raylib_vector2_get_property_ptr_ptr(zval *object, zval *member,
 }
 /* }}} */
 
-static zval *php_raylib_vector2_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_vector2_read_property(zval *object, zend_string *member, int type, void **cache_slot, zval *rv) /* {{{ */
 {
     php_raylib_vector2_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_vector2_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_VECTOR2_OBJ_P(object);
+    obj = php_raylib_vector2_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vector2 hnd not found");
+        hnd = zend_hash_find_ptr(obj->prop_handler, member);
     }
 
-    if (hnd != NULL) {
-        retval = php_raylib_vector2_property_reader(obj, hnd, rv);
-        if (retval == NULL) {
-//            php_error_docref(NULL, E_WARNING, "Internal raylib vector2 retval is null");
+    if (hnd) {
+        if (hnd->read_float_func(obj, rv) == SUCCESS) {
+            retval = rv;
+        } else {
             retval = &EG(uninitialized_zval);
         }
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_read_property(object, member, type, cache_slot, rv);
     }
 
     return retval;
 }
 /* }}} */
 
-/* {{{ php_raylib_vector2_write_property(zval *object, zval *member, zval *value[, const zend_literal *key])
+/* {{{ php_raylib_vector2_write_property(zval *object, zend_string *member, zval *value[, const zend_literal *key])
    Generic object property writer */
-zval *php_raylib_vector2_write_property(zval *object, zval *member, zval *value, void **cache_slot)
+zval *php_raylib_vector2_write_property(zval *object, zend_string *member, zval *value, void **cache_slot)
 {
-    zval tmp_member;
     php_raylib_vector2_object *obj;
     raylib_vector2_prop_handler *hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        zend_string *str = zval_try_get_string_func(member);
-        if (UNEXPECTED(!str)) {
-            return value;
-        }
-        ZVAL_STR(&tmp_member, str);
-        member = &tmp_member;
+    obj = php_raylib_vector2_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, member);
     }
 
-    obj = Z_VECTOR2_OBJ_P(object);
-
-    hnd = zend_hash_find_ptr(&php_raylib_vector2_prop_handlers, Z_STR_P(member));
-
-    if (hnd && hnd->write_float_func) {
+    if (hnd) {
         hnd->write_float_func(obj, value);
     } else {
         value = zend_std_write_property(object, member, value, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_ptr_dtor(member);
     }
 
     return value;
