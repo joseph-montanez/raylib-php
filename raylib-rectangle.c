@@ -60,7 +60,7 @@ zend_object_handlers php_raylib_rectangle_object_handlers;
 
 static HashTable php_raylib_rectangle_prop_handlers;
 
-typedef double (*raylib_rectangle_read_float_t)(php_raylib_rectangle_object *obj, zval *rv);
+typedef double (*raylib_rectangle_read_float_t)(php_raylib_rectangle_object *obj);
 
 typedef int (*raylib_rectangle_write_float_t)(php_raylib_rectangle_object *obj, zval *value);
 
@@ -89,10 +89,7 @@ static zval *php_raylib_rectangle_property_reader(php_raylib_rectangle_object *o
     double ret = 0;
 
     if (obj != NULL && hnd->read_float_func) {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib rectangle found");
-        ret = hnd->read_float_func(obj, rv);
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
+        ret = hnd->read_float_func(obj);
     }
 
     ZVAL_DOUBLE(rv, (double) ret);
@@ -101,7 +98,7 @@ static zval *php_raylib_rectangle_property_reader(php_raylib_rectangle_object *o
 }
 /* }}} */
 
-static zval *php_raylib_rectangle_get_property_ptr_ptr(zval *object, zend_string *name, int type, void **cache_slot) /* {{{ */
+static zval *php_raylib_rectangle_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_rectangle_object *obj;
     zval *retval = NULL;
@@ -121,7 +118,7 @@ static zval *php_raylib_rectangle_get_property_ptr_ptr(zval *object, zend_string
 }
 /* }}} */
 
-static zval *php_raylib_rectangle_read_property(zval *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_rectangle_read_property(zend_object *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
 {
     php_raylib_rectangle_object *obj;
     zval *retval = NULL;
@@ -134,11 +131,7 @@ static zval *php_raylib_rectangle_read_property(zval *object, zend_string *name,
     }
 
     if (hnd) {
-        if (hnd->read_float_func(obj, rv) == SUCCESS) {
-            retval = rv;
-        } else {
-            retval = &EG(uninitialized_zval);
-        }
+        retval = php_raylib_rectangle_property_reader(obj, hnd, rv);
     } else {
         retval = zend_std_read_property(object, name, type, cache_slot, rv);
     }
@@ -233,7 +226,7 @@ static HashTable *php_raylib_rectangle_get_properties(zval *object)/* {{{ */
     raylib_rectangle_prop_handler *hnd;
     zend_string *key;
 
-    obj = Z_RECTANGLE_OBJ_P(object);
+    obj = php_raylib_rectangle_fetch_object(object);
     props = zend_std_get_properties(object);
 
     if (obj->prop_handler == NULL) {
@@ -379,27 +372,26 @@ static int php_raylib_rectangle_write_height(php_raylib_rectangle_object *rectan
 
 PHP_METHOD(Rectangle, __construct)
 {
-    zval *x;
-    zval *y;
-    zval *width;
-    zval *height;
+    double x;
+    double y;
+    double width;
+    double height;
 
     ZEND_PARSE_PARAMETERS_START(4, 4)
-            Z_PARAM_ZVAL(x)
-            Z_PARAM_ZVAL(y)
-            Z_PARAM_ZVAL(width)
-            Z_PARAM_ZVAL(height)
+        Z_PARAM_DOUBLE(x)
+        Z_PARAM_DOUBLE(y)
+        Z_PARAM_DOUBLE(width)
+        Z_PARAM_DOUBLE(height)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
     intern->rectangle = (Rectangle) {
-            .x = zend_double_2float(x),
-            .y = zend_double_2float(y),
-            .width = zend_double_2float(width),
-            .height = zend_double_2float(height)
+            .x = (float) x,
+            .y = (float) y,
+            .width = (float) width,
+            .height = (float) height
     };
-
 }
 
 PHP_METHOD(Rectangle, getX)
