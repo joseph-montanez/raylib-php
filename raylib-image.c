@@ -493,30 +493,6 @@ PHP_METHOD(Image, getData)
     }
 }
 
-
-// Get pixel data from image as Vector4 array (float normalized)
-// Vector4 *GetImageDataNormalized(Image image)
-PHP_METHOD(Image, getDataNormalized)
-{
-    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
-
-    int numOfPixels = intern->image.width * intern->image.height;
-
-    Vector4* vector4s = GetImageDataNormalized(intern->image);
-
-    array_init_size(return_value, numOfPixels);
-
-    for (int i = 0; i < numOfPixels; i++) {
-        zval *vector4 = malloc(sizeof(zval));
-        object_init_ex(vector4, php_raylib_vector4_ce);
-
-        php_raylib_vector4_object *result = Z_VECTOR4_OBJ_P(vector4);
-        result->vector4 = vector4s[i];
-
-        add_index_zval(return_value, i, vector4);
-    }
-}
-
 // Draw a source image within a destination image (tint applied to source)
 // RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
 PHP_METHOD(Image, draw)
@@ -975,9 +951,9 @@ PHP_METHOD(Image, colorReplace) // new ImageColorReplace
     ImageColorReplace(&intern->image, phpColor->color, phpReplace->color);
 }
 
-// Extract color palette from image to maximum size (memory should be freed)
-// RLAPI Color *ImageExtractPalette(Image image, int maxPaletteSize, int *extractCount);
-PHP_METHOD(Image, extractPalette)
+// Load colors palette from image as a Color array (RGBA - 32bit)
+// RLAPI Color *LoadImagePalette(Image image, int maxPaletteSize, int *colorsCount);
+PHP_METHOD(Image, loadPalette)
 {
     double maxPaletteSize;
     zval *z_extractCount;
@@ -991,7 +967,7 @@ PHP_METHOD(Image, extractPalette)
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
 
     extractCount = (int) zval_get_long(z_extractCount);
-    Color *colors = ImageExtractPalette(intern->image, (int) maxPaletteSize, &extractCount);
+    Color *colors = LoadImagePalette(intern->image, (int) maxPaletteSize, &extractCount);
     ZEND_TRY_ASSIGN_REF_LONG(z_extractCount, extractCount);
 
     array_init_size(return_value, extractCount);
@@ -1058,7 +1034,6 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
         PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, getData, NULL, ZEND_ACC_PUBLIC) // RLAPI Color *GetImageData(Image image);
-        PHP_ME(Image, getDataNormalized, NULL, ZEND_ACC_PUBLIC) // RLAPI Vector4 *GetImageDataNormalized(Image image)
         PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
@@ -1088,7 +1063,7 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, colorContrast, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, colorBrightness, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, colorReplace, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, extractPalette, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, loadPalette, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Image, getAlphaBorder, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
