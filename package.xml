@@ -85,6 +85,8 @@
             <file name="raylib-wave.h" role="src"/>
             <file name="raylib-window.c" role="src"/>
             <file name="raylib-window.h" role="src"/>
+            <file name="raylib-ray.c" role="src"/>
+            <file name="raylib-ray.h" role="src"/>
             <file name="ChangeLog" role="doc"/>
             <file name="LICENSE" role="doc"/>
             <dir name="examples">

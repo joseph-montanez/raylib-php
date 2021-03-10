@@ -26,6 +26,7 @@
 #include "raylib-vector4.h"
 #include "raylib-vector3.h"
 #include "raylib-vector2.h"
+#include "raylib-ray.h"
 #include "raylib-rectangle.h"
 #include "raylib-utils.h"
 #include "raylib-image.h"
@@ -260,6 +261,7 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_vector4_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_vector3_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_vector2_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_ray_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_rectangle_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_image_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);

@@ -40,6 +40,7 @@ extern zend_module_entry raylib_module_entry;
 zend_class_entry *php_raylib_vector4_ce;
 zend_class_entry *php_raylib_vector3_ce;
 zend_class_entry *php_raylib_vector2_ce;
+zend_class_entry *php_raylib_ray_ce;
 zend_class_entry *php_raylib_rectangle_ce;
 zend_class_entry *php_raylib_image_ce;
 zend_class_entry *php_raylib_texture_ce;
