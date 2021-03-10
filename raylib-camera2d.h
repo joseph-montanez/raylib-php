@@ -9,12 +9,15 @@ extern zend_class_entry *php_raylib_camera2d_ce;
 
 extern void php_raylib_vector2_free_storage(zend_object *object);
 
-extern zend_object * php_raylib_vector2_new(zend_class_entry *ce);
+extern zend_object * php_raylib_camera2d_new(zend_class_entry *ce);
 
-extern zend_object_handlers php_raylib_vector2_object_handlers;
+extern zend_object_handlers php_raylib_camera2d_object_handlers;
 
 typedef struct _php_raylib_camera2d_object {
     Camera2D camera2d;
+    HashTable *prop_handler;
+    php_raylib_vector2_object *offset;
+    php_raylib_vector2_object *target;
     zend_object std;
 } php_raylib_camera2d_object;
 
@@ -23,7 +26,8 @@ static inline php_raylib_camera2d_object *php_raylib_camera2d_fetch_object(zend_
 }
 
 void php_raylib_camera2d_free_storage(zend_object *object);
-zend_object * php_raylib_camera2d_new(zend_class_entry *ce);
+
+zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig);
 
 #define Z_CAMERA2D_OBJ_P(zv) php_raylib_camera2d_fetch_object(Z_OBJ_P(zv));
 

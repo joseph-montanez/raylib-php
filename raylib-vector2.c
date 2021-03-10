@@ -49,6 +49,7 @@ typedef struct tagMSG *LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "raylib-utils.h"
 #include "raylib-vector2.h"
 
 
@@ -260,6 +261,11 @@ zend_object * php_raylib_vector2_new_ex(zend_class_entry *ce, zend_object *orig)
                 .x = other->vector2.x,
                 .y = other->vector2.y
         };
+    } else {
+        intern->vector2 = (Vector2) {
+                .x = 0,
+                .y = 0
+        };
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -271,7 +277,7 @@ zend_object * php_raylib_vector2_new_ex(zend_class_entry *ce, zend_object *orig)
 
 
 /* {{{  */
-static zend_object *php_raylib_vector2_new(zend_class_entry *class_type)
+zend_object *php_raylib_vector2_new(zend_class_entry *class_type)
 {
     return php_raylib_vector2_new_ex(class_type, NULL);
 }
@@ -311,7 +317,7 @@ static int php_raylib_vector2_write_x(php_raylib_vector2_object *vector2_object,
         return ret;
     }
 
-    vector2_object->vector2.x = (float) zval_get_double(newval);
+    vector2_object->vector2.x = zval_get_double(newval);
 
     return ret;
 }
@@ -326,7 +332,7 @@ static int php_raylib_vector2_write_y(php_raylib_vector2_object *vector2_object,
         return ret;
     }
 
-    vector2_object->vector2.y = (float) zval_get_double(newval);
+    vector2_object->vector2.y = zval_get_double(newval);
 
     return ret;
 }

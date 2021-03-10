@@ -21,4 +21,6 @@ static inline php_raylib_vector2_object *php_raylib_vector2_fetch_object(zend_ob
 
 void php_raylib_vector2_startup(INIT_FUNC_ARGS);
 
+zend_object * php_raylib_vector2_new_ex(zend_class_entry *ce, zend_object *orig);
+
 #endif //RAYLIB_RAYLIB_VECTOR2_H
