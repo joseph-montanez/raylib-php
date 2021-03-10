@@ -264,13 +264,13 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)
         intern->ray = (Ray) {
                 .position = (Vector3) {
                         .x = other->position->vector3.x,
-                        .x = other->position->vector3.y,
-                        .x = other->position->vector3.z
+                        .y = other->position->vector3.y,
+                        .z = other->position->vector3.z
                 },
                 .direction = (Vector3) {
                         .x = other->direction->vector3.x,
-                        .x = other->direction->vector3.y,
-                        .x = other->direction->vector3.z
+                        .y = other->direction->vector3.y,
+                        .z = other->direction->vector3.z
                 }
         };
         intern->position = position;
