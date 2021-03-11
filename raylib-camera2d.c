@@ -76,6 +76,15 @@ typedef struct _raylib_camera2d_prop_handler {
     raylib_camera2d_write_vector2_t write_vector2_func;
 } raylib_camera2d_prop_handler;
 
+/**
+ * This will update
+ * @param intern
+ */
+void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
+    intern->camera2d.offset = intern->offset->vector2;
+    intern->camera2d.target = intern->target->vector2;
+}
+
 static void php_raylib_camera2d_register_prop_handler(HashTable *prop_handler, char *name,
                                                       raylib_camera2d_read_float_t read_float_func,
                                                       raylib_camera2d_write_float_t write_float_func,

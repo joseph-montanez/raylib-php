@@ -127,6 +127,7 @@ PHP_METHOD(Draw, beginMode2d)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(camera2d);
+    php_raylib_camera2d_update_intern(intern);
 
     BeginMode2D(intern->camera2d);
 }

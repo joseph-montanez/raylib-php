@@ -33,4 +33,6 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
 
 void php_raylib_camera2d_startup(INIT_FUNC_ARGS);
 
+void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern);
+
 #endif //PHP_RAYLIB_CAMERA2D_H
