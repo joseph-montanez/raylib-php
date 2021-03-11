@@ -61,7 +61,7 @@ zend_object_handlers php_raylib_ray_object_handlers;
 
 static HashTable php_raylib_ray_prop_handlers;
 
-typedef zval* (*raylib_ray_read_vector3_object_t)(php_raylib_ray_object *obj);
+typedef zend_object* (*raylib_ray_read_vector3_object_t)(php_raylib_ray_object *obj);
 
 typedef int (*raylib_ray_write_vector3_object_t)(php_raylib_ray_object *obj, zval *value);
 
@@ -302,14 +302,16 @@ static zend_object *php_raylib_ray_clone(zend_object *old_object)
 
 // PHP property handling
 
-static zval * php_raylib_ray_direction(php_raylib_ray_object *obj) /* {{{ */
+static zend_object * php_raylib_ray_direction(php_raylib_ray_object *obj) /* {{{ */
 {
-    return obj->direction;
+    GC_ADDREF(&obj->direction->std);
+    return &obj->direction->std;
 }
 
-static zval * php_raylib_ray_position(php_raylib_ray_object *obj) /* {{{ */
+static zend_object * php_raylib_ray_position(php_raylib_ray_object *obj) /* {{{ */
 {
-    return obj->position;
+    GC_ADDREF(&obj->position->std);
+    return &obj->position->std;
 }
 /* }}} */
 
