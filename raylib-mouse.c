@@ -173,7 +173,7 @@ PHP_METHOD(Mouse, getPosition)
 }
 
 // Set mouse position XY
-//RLAPI void SetMousePosition(int x, int y);
+// void SetMousePosition(int x, int y);
 PHP_METHOD(Mouse, setPosition)
 {
     zend_long x;
@@ -187,7 +187,22 @@ PHP_METHOD(Mouse, setPosition)
     SetMousePosition((int) x, (int) y);
 }
 
-//void SetMouseScale(float scale);
+// Set mouse offset
+// void SetMouseOffset(int offsetX, int offsetY);
+PHP_METHOD(Mouse, setOffset)
+{
+    zend_long offsetX;
+    zend_long offsetY;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(offsetY)
+    ZEND_PARSE_PARAMETERS_END();
+
+    SetMouseOffset((int) offsetX, (int) offsetY);
+}
+
+// void SetMouseScale(float scale);
 PHP_METHOD(Mouse, setScale)
 {
     double scaleX;
@@ -208,6 +223,26 @@ PHP_METHOD(Mouse, getWheelMove)
     RETURN_DOUBLE((double) GetMouseWheelMove());
 }
 
+// Returns mouse cursor if (MouseCursor enum)
+// int GetMouseCursor(void);
+PHP_METHOD(Mouse, getCursor)
+{
+    RETURN_LONG(GetMouseCursor());
+}
+
+// Set mouse cursor
+// void SetMouseCursor(int cursor);
+PHP_METHOD(Mouse, setCursor)
+{
+    zend_long cursor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(cursor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    SetMouseCursor((int) cursor);
+}
+
 
 const zend_function_entry php_raylib_mouse_methods[] = {
         PHP_ME(Mouse, __construct, NULL, ZEND_ACC_PUBLIC)
@@ -219,8 +254,11 @@ const zend_function_entry php_raylib_mouse_methods[] = {
         PHP_ME(Mouse, getY, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Mouse, getPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Mouse, setPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setOffset, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Mouse, setScale, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Mouse, getWheelMove, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getCursor, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setCursor, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
