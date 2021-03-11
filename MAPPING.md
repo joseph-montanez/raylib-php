@@ -41,7 +41,7 @@ This is a one to one mapping of each raylib function.
 | C API | PHP API | Comment |
 |-------|---------|---------|
 | RLAPI void ShowCursor(void);                                      | raylib\Cursor::show() ||
-| RLAPI void HideCursor(void);                                      | raylib\Cursor::show() ||
+| RLAPI void HideCursor(void);                                      | raylib\Cursor::hide() ||
 | RLAPI bool IsCursorHidden(void);                                  | raylib\Cursor::isHidden() ||
 | RLAPI void EnableCursor(void);                                    | raylib\Cursor::enable() ||
 | RLAPI void DisableCursor(void);                                   | raylib\Cursor::disable() ||
@@ -49,15 +49,15 @@ This is a one to one mapping of each raylib function.
 ###  Drawing-related functions
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| RLAPI void ClearBackground(Color color);                          | raylib\Draw::clearBackground(array $color); ||            
+| RLAPI void ClearBackground(Color color);                          | raylib\Draw::clearBackground(raylib\Color $color); ||            
 | RLAPI void BeginDrawing(void);                                    | raylib\Draw::begin(void); ||                      
 | RLAPI void EndDrawing(void);                                      | raylib\Draw::end(void); ||                        
-| RLAPI void BeginMode2D(Camera2D camera3d);                        | raylib\Draw::beginMode2d(Camera2D $camera3d); ||
+| RLAPI void BeginMode2D(Camera2D camera3d);                        | raylib\Draw::beginMode2d(raylib\Camera2D $camera2d); ||
 | RLAPI void EndMode2D(void);                                       | raylib\Draw::endMode2d(void); ||
-| RLAPI void BeginMode3D(Camera camera3d);                          | raylib\Draw::beginMode3d(Camera camera3d); ||
+| RLAPI void BeginMode3D(Camera camera3d);                          | raylib\Draw::beginMode3d(raylib\Camera3D camera3d); ||
 | RLAPI void End3dMode(void);                                       | raylib\Draw::endMode3d(void); ||
-| RLAPI void BeginTextureMode(RenderTexture2D target);              | raylib\RenderTexture::begind(); ||
-| RLAPI void EndTextureMode(void);                                  | raylib\RenderTexture::end(void); ||                    
+| RLAPI void BeginTextureMode(RenderTexture2D target);              | raylib\RenderTexture->begin(); ||
+| RLAPI void EndTextureMode(void);                                  | raylib\RenderTexture->end(); ||                    
 | RLAPI void BeginScissorMode(int x, int y, int width, int height); | raylib\Draw::beginScissorMode ||
 | RLAPI void EndScissorMode(void);                                  | raylib\Draw::endScissorMode ||
 
