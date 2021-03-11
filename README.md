@@ -5,10 +5,21 @@ PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video gam
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
 
- - raylib.h - 191 of 436 functions ~ %43 complete
+ - raylib.h - 191 of 418 functions ~ %43 complete
  - raymath.h - TODO Extra mathy stuff
  - raygui.h - TODO API for drawing GUI
  - physac.h - TODO More complex collision detection, more than built-in collision detection
+
+## Other PHP RayLib Bindings
+
+While mine may have been the first, its certainly taken a long time as all of code I've written is by hand. If you want 
+to try another binding, then you can try these others.
+
+ - [PHP Raylib FFI](https://github.com/nawarian//raylib-ffi) - Uses PHP's built-in FFI (Foreign Function Interface) to 
+   connect directly to the shared RayLib.dll/.so file. This will be slower than a native binding.
+ - [PHP Raylib CPP](https://github.com/oraoto/raylib-phpcpp) - Uses PHP CPP to create bindings and uses automation to 
+   map functions. This extension has quirks with handling sub-objects. It is will always be up to date soon than 
+   anything I can do.
 
 ## Isn't PHP A Terrible Choice For Games?
 
@@ -107,7 +118,7 @@ If this becomes a bigger problem, I can create a procedural API compatibility la
 
 The PHP RayLib implementation has two glaring limitations.
 
- - Not all object properties are read and write, for example `/raylib/Image::width` is a read-only property but `/raylib/Vector2::x` is a read/write properties. When you want to alter a property that is read-only there should be method calls such as `/raylib/Image::resize()` that will adjust the properties for you.
+ - Not all object properties are read and write, for example `/raylib/Image::width` is a read-only property but `/raylib/Vector2::x` is a read/write property. When you want to alter a property that is read-only there should be method calls such as `/raylib/Image::resize()` that will adjust the properties for you.
  - All RayLib object assignment i.e `$player->position = $position` will **not copy** the variable but instead **link** the property. So if you want to copy the data instead, you need to use PHP's clone feature `clone` i.e `$player->position = clone $position`.
 
 ## How To Build PHP Extension
@@ -130,7 +141,7 @@ Windows is by far the hardest platform to support and build for. Please use the 
 
 Windows requires compiling with PHP sources (Currently Visual Studio 2017 needed), you will still get a .dll in the end.
 
-You will need to also compile RayLib as well. At the time writing I am using Visual Studio 2017 compiler, since PHP 7.4 requires this. Once compiled paste the following files:
+You will need to also compile RayLib as well. At the time writing I am using Visual Studio 2019 compiler, since PHP 8 requires this. Once compiled paste the following files:
 
 (Please note your Raylib and PHP paths may be different)
 
