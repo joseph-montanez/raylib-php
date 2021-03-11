@@ -392,8 +392,20 @@ PHP_METHOD(Window, getMonitorPhysicalHeight)
     RETURN_LONG(GetMonitorPhysicalHeight((int) monitor));
 }
 
+//RLAPI int GetMonitorRefreshRate(int monitor);
+PHP_METHOD(Window, getMonitorRefreshRate)
+{
+    zend_long monitor;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_LONG(monitor)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_LONG(GetMonitorRefreshRate((int) monitor));
+}
+
 //RLAPI Vector2 GetWindowPosition(void);
-PHP_METHOD(Window, getWindowPosition)
+PHP_METHOD(Window, getPosition)
 {
     zval *obj = malloc(sizeof(zval));
     object_init_ex(obj, php_raylib_vector2_ce);
@@ -406,7 +418,7 @@ PHP_METHOD(Window, getWindowPosition)
 
 // Get window scale DPI factor
 // RLAPI Vector2 GetWindowScaleDPI(void);
-PHP_METHOD(Window, getWindowScaleDPI)
+PHP_METHOD(Window, getScaleDPI)
 {
     zval *obj = malloc(sizeof(zval));
     object_init_ex(obj, php_raylib_vector2_ce);
@@ -481,8 +493,9 @@ const zend_function_entry php_raylib_window_methods[] = {
         PHP_ME(Window, getMonitorHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getMonitorPhysicalWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getMonitorPhysicalHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getWindowPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getWindowScaleDPI, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorRefreshRate, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getScaleDPI, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getMonitorName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, getClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Window, setClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
