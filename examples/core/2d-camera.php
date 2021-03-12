@@ -140,7 +140,7 @@ while (!Window::shouldClose())    // Detect window close button or ESC key
     Draw::rectangle($screenWidth - 5, 5, 5, $screenHeight - 10, $red);
     Draw::rectangle(0, $screenHeight - 5, $screenWidth, 5, $red);
 
-    Draw::rectangle(10, 10, 250, 113, Color::fade($skyblue, 0.5));
+    Draw::rectangle(10, 10, 250, 113, $skyblue->fade(0.5));
     Draw::rectangleLines(10, 10, 250, 113, $blue);
 
 

@@ -543,11 +543,9 @@ PHP_METHOD(Color, fromInt)
 // RLAPI Color Fade(Color color, float alpha);
 PHP_METHOD(Color, fade)
 {
-    zval *color;
     double fade;
 
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-            Z_PARAM_ZVAL(color)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
             Z_PARAM_DOUBLE(fade)
     ZEND_PARSE_PARAMETERS_END();
 
@@ -655,7 +653,7 @@ const zend_function_entry php_raylib_color_methods[] = {
         PHP_ME(Color, fromNormalized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Color, toHSV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Color, fromHSV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, fade, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, fade, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Color, setAlpha, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Color, getAlpha, NULL, ZEND_ACC_PUBLIC)
         PHP_ME(Color, setRed, NULL, ZEND_ACC_PUBLIC)
