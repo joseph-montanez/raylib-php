@@ -139,9 +139,9 @@ static zval *php_raylib_rectangle_read_property(zend_object *object, zend_string
 }
 /* }}} */
 
-/* {{{ php_raylib_rectangle_write_property(zval *object, zend_string *name, zval *value[, const zend_literal *key])
+/* {{{ php_raylib_rectangle_write_property(zend_object *object, zend_string *name, zval *value[, const zend_literal *key])
    Generic object property writer */
-zval *php_raylib_rectangle_write_property(zval *object, zend_string *name, zval *value, void **cache_slot)
+zval *php_raylib_rectangle_write_property(zend_object *object, zend_string *name, zval *value, void **cache_slot)
 {
     php_raylib_rectangle_object *obj;
     raylib_rectangle_prop_handler *hnd;
@@ -162,55 +162,46 @@ zval *php_raylib_rectangle_write_property(zval *object, zend_string *name, zval 
 }
 /* }}} */
 
-static int php_raylib_rectangle_has_property(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static int php_raylib_rectangle_has_property(zend_object *object, zend_string *name, int has_set_exists, void **cache_slot) /* {{{ */
 {
     php_raylib_rectangle_object *obj;
-    zval tmp_member;
     raylib_rectangle_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
-    int retval = 0;
+    int ret = 0;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_RECTANGLE_OBJ_P(object);
-
-    if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    }
-
-    if (hnd != NULL) {
-        zval tmp, *prop;
-
-        if (type == 2) {
-            retval = 1;
-        } else if ((prop = php_raylib_rectangle_property_reader(obj, hnd, &tmp)) != NULL) {
-            if (type == 1) {
-                retval = zend_is_true(&tmp);
-            } else if (type == 0) {
-                retval = (Z_TYPE(tmp) != IS_NULL);
+    if ((hnd = zend_hash_find_ptr(obj->prop_handler, name)) != NULL) {
+        switch (has_set_exists) {
+            case ZEND_PROPERTY_EXISTS:
+                ret = 1;
+                break;
+            case ZEND_PROPERTY_NOT_EMPTY: {
+                zval rv;
+                zval *value = php_raylib_rectangle_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    convert_to_boolean(value);
+                    ret = Z_TYPE_P(value) == IS_TRUE ? 1 : 0;
+                }
+                break;
             }
+            case ZEND_PROPERTY_ISSET: {
+                zval rv;
+                zval *value = php_raylib_rectangle_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    ret = Z_TYPE_P(value) != IS_NULL? 1 : 0;
+                    zval_ptr_dtor(value);
+                }
+                break;
+            }
+                EMPTY_SWITCH_DEFAULT_CASE();
         }
-
-        zval_ptr_dtor(&tmp);
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->has_property(object, member, type, cache_slot);
+        ret = zend_std_has_property(object, name, has_set_exists, cache_slot);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
-    return retval;
+    return ret;
 }
 /* }}} */
 
-static HashTable *php_raylib_rectangle_get_gc(zval *object, zval **gc_data, int *gc_data_count) /* {{{ */
+static HashTable *php_raylib_rectangle_get_gc(zend_object *object, zval **gc_data, int *gc_data_count) /* {{{ */
 {
     *gc_data = NULL;
     *gc_data_count = 0;
@@ -218,7 +209,7 @@ static HashTable *php_raylib_rectangle_get_gc(zval *object, zval **gc_data, int 
 }
 /* }}} */
 
-static HashTable *php_raylib_rectangle_get_properties(zval *object)/* {{{ */
+static HashTable *php_raylib_rectangle_get_properties(zend_object *object)/* {{{ */
 {
     php_raylib_rectangle_object *obj;
     HashTable *props;
@@ -368,7 +359,12 @@ static int php_raylib_rectangle_write_height(php_raylib_rectangle_object *rectan
 /* }}} */
 
 // PHP object handling
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle__construct, 0, 0, 4)
+    ZEND_ARG_INFO(0, x)
+    ZEND_ARG_INFO(0, y)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, __construct)
 {
     double x;
@@ -393,92 +389,112 @@ PHP_METHOD(Rectangle, __construct)
     };
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_getX, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, getX)
 {
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.x);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_setX, 0, 0, 1)
+    ZEND_ARG_INFO(0, x)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, setX)
 {
-    zval *val;
+    double x;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+            Z_PARAM_DOUBLE(x)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
-    intern->rectangle.x = zend_double_2float(val);
+    intern->rectangle.x = (float) x;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_getY, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, getY)
 {
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.y);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_setY, 0, 0, 1)
+    ZEND_ARG_INFO(0, y)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, setY)
 {
-    zval *val;
+    double y;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_DOUBLE(y)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
-    intern->rectangle.y = zend_double_2float(val);
+    intern->rectangle.y = (float) y;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_getWidth, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, getWidth)
 {
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.width);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_setWidth, 0, 0, 1)
+    ZEND_ARG_INFO(0, width)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, setWidth)
 {
-    zval *val;
+    double width;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_DOUBLE(width)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
-    intern->rectangle.width = zend_double_2float(val);
+    intern->rectangle.width = (float) width;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_getHeight, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, getHeight)
 {
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->rectangle.height);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle_setHeight, 0, 0, 1)
+    ZEND_ARG_INFO(0, height)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, setHeight)
 {
-    zval *val;
+    double height;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(val)
+        Z_PARAM_DOUBLE(height)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
 
-    intern->rectangle.height = zend_double_2float(val);
+    intern->rectangle.height = (float) height;
 }
 
 const zend_function_entry php_raylib_rectangle_methods[] = {
-        PHP_ME(Rectangle, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, getX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, setX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, getY, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, setY, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, getWidth, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, setWidth, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, getHeight, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Rectangle, setHeight, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, __construct, arginfo_rectangle__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, getX, arginfo_rectangle_getX, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, setX, arginfo_rectangle_setX, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, getY, arginfo_rectangle_getY, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, setY, arginfo_rectangle_setY, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, getWidth, arginfo_rectangle_getWidth, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, setWidth, arginfo_rectangle_setWidth, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, getHeight, arginfo_rectangle_getHeight, ZEND_ACC_PUBLIC)
+        PHP_ME(Rectangle, setHeight, arginfo_rectangle_setHeight, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
