@@ -77,6 +77,9 @@ PHP_INI_END()
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_raylib_compiled(string arg)
    Return a string to confirm that the module is compiled in */
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_confirm_raylib_compiled, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_FUNCTION(confirm_raylib_compiled)
 {
 	char *arg = NULL;
@@ -93,88 +96,11 @@ PHP_FUNCTION(confirm_raylib_compiled)
 	RETURN_STR(strg);
 }
 
-//------------------------------------------------------------------------------------
-// Input Handling Functions (Module: core)
-//------------------------------------------------------------------------------------
-
-// Input-related functions: keyboard
-
-//bool IsKeyPressed(int key);
-PHP_FUNCTION(IsKeyPressed)
-{
-    zend_long key;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(key)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsKeyPressed(zend_long_2int(key)));
-}
-
-//bool IsKeyDown(int key);
-PHP_FUNCTION(IsKeyDown)
-{
-    zend_long key;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(key)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsKeyDown(zend_long_2int(key)));
-}
-
-//bool IsKeyReleased(int key);
-PHP_FUNCTION(IsKeyReleased)
-{
-    zend_long key;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(key)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsKeyReleased(zend_long_2int(key)));
-}
-
-//bool IsKeyUp(int key);
-PHP_FUNCTION(IsKeyUp)
-{
-    zend_long key;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(key)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsKeyUp(zend_long_2int(key)));
-}
-
-// Get key pressed (keycode), call it multiple times for keys queued
-// int GetKeyPressed(void);
-PHP_FUNCTION(getKeyPressed)
-{
-    RETURN_LONG(GetKeyPressed());
-}
-
-// Get char pressed (unicode), call it multiple times for chars queued
-// RLAPI int GetCharPressed(void);
-PHP_FUNCTION(getCharPressed)
-{
-    RETURN_LONG(GetCharPressed());
-}
-
-//void SetExitKey(void);
-PHP_FUNCTION(SetExitKey)
-{
-    zend_long key;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_LONG(key)
-    ZEND_PARSE_PARAMETERS_END();
-
-    SetExitKey(zend_long_2int(key));
-}
-
 // Setup window configuration flags (view FLAGS)
 // RLAPI void SetConfigFlags(unsigned int flags);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetConfigFlags, 0, 0, 1)
+    ZEND_ARG_INFO(0, flags)
+ZEND_END_ARG_INFO()
 PHP_FUNCTION(SetConfigFlags)
 {
     zend_long flags;
@@ -188,6 +114,9 @@ PHP_FUNCTION(SetConfigFlags)
 
 // Takes a screenshot of current screen (saved a .png)
 // RLAPI void TakeScreenshot(const char *fileName);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_TakeScreenshot, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_FUNCTION(TakeScreenshot)
 {
     zend_string *fileName;
@@ -391,22 +320,10 @@ PHP_MINFO_FUNCTION(raylib)
  * Every user visible function must have an entry in raylib_functions[].
  */
 const zend_function_entry raylib_functions[] = {
-		ZEND_NS_FE("raylib", confirm_raylib_compiled, NULL)
-        //------------------------------------------------------------------------------------
-        // Input Handling Functions (Module: core)
-        //------------------------------------------------------------------------------------
-        // Input-related functions: keyboard
-        ZEND_NS_FE("raylib", IsKeyPressed, NULL)
-        ZEND_NS_FE("raylib", IsKeyDown, NULL)
-        ZEND_NS_FE("raylib", IsKeyReleased, NULL)
-        ZEND_NS_FE("raylib", IsKeyUp, NULL)
-        ZEND_NS_FE("raylib", getKeyPressed, NULL)
-        ZEND_NS_FE("raylib", getCharPressed, NULL)
-        ZEND_NS_FE("raylib", SetExitKey, NULL)
-
+		ZEND_NS_FE("raylib", confirm_raylib_compiled, arginfo_confirm_raylib_compiled)
         // Misc. functions
-        ZEND_NS_FE("raylib", SetConfigFlags, NULL)
-        ZEND_NS_FE("raylib", TakeScreenshot, NULL)
+        ZEND_NS_FE("raylib", SetConfigFlags, arginfo_SetConfigFlags)
+        ZEND_NS_FE("raylib", TakeScreenshot, arginfo_TakeScreenshot)
         PHP_FE_END
 };
 /* }}} */
