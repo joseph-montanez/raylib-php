@@ -488,7 +488,7 @@ PHP_METHOD(Vector4, getW)
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_vector4_setW, 0, 0, 1)
-                ZEND_ARG_INFO(0, z)
+                ZEND_ARG_INFO(0, w)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Vector4, setW)
 {
