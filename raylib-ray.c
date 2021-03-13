@@ -87,11 +87,8 @@ static void php_raylib_ray_register_prop_handler(HashTable *prop_handler, char *
 static zval *php_raylib_ray_property_reader(php_raylib_ray_object *obj, raylib_ray_prop_handler *hnd, zval *rv) /* {{{ */
 {
     if (obj != NULL && hnd->read_vector3_func) {
-        zval *ret;
-        ret = hnd->read_vector3_func(obj);
-
-        php_raylib_vector3_object *result = Z_VECTOR3_OBJ_P(ret);
-        ZVAL_OBJ(rv, &result->std);
+        zend_object *ret = hnd->read_vector3_func(obj);
+        ZVAL_OBJ(rv, ret);
     }
 
     return rv;
@@ -258,8 +255,11 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_ray_object *other = php_raylib_ray_fetch_object(orig);
 
-        php_raylib_vector3_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, other->position);
-        php_raylib_vector3_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, other->direction);
+        zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->position->std);
+        zend_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->direction->std);
+
+        php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+        php_raylib_vector3_object *phpDirection = php_raylib_vector3_fetch_object(direction);
 
         intern->ray = (Ray) {
                 .position = (Vector3) {
@@ -273,8 +273,8 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)
                         .z = other->direction->vector3.z
                 }
         };
-        intern->position = position;
-        intern->direction = direction;
+        intern->position = phpPosition;
+        intern->direction = phpDirection;
     }
 
     intern->std.handlers = &php_raylib_ray_object_handlers;
