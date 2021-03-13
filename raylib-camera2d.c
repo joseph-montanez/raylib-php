@@ -288,10 +288,10 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         intern->camera2d = (Camera2D) {
                 .offset = (Vector2) {
                         .x = phpOffset->vector2.x,
-                        .y = phpTarget->vector2.y
+                        .y = phpOffset->vector2.y
                 },
                 .target = (Vector2) {
-                        .x = phpOffset->vector2.x,
+                        .x = phpTarget->vector2.x,
                         .y = phpTarget->vector2.y
                 },
                 .rotation = other->camera2d.rotation,
