@@ -91,7 +91,7 @@ Classes and method calls are available via a stub repository. Its contains all t
 
 Install via composer:
 
-    composer require --dev joseph-montanez/raylib-php-stubs
+    composer require --dev joseph-montanez/raylib-php-stub
 
 More information on the stubs can be found here at the repository [RayLib-PHP-Stubs](https://github.com/joseph-montanez/RayLib-PHP-Stubs)
 
