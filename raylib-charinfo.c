@@ -436,7 +436,13 @@ static int php_raylib_charinfo_write_image(php_raylib_charinfo_object *charinfo_
 /* }}} */
 
 // PHP object handling
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo__construct, 0, 0, 5)
+    ZEND_ARG_INFO(0, value)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, offsetY)
+    ZEND_ARG_INFO(0, advanceX)
+    ZEND_ARG_INFO(0, image)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, __construct)
 {
     zend_long value, offsetX, offsetY, advanceX;
@@ -468,6 +474,13 @@ PHP_METHOD(CharInfo, __construct)
 
 // Load font data for further use
 // RLAPI CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_fromFontData, 0, 0, 5)
+    ZEND_ARG_INFO(0, fileName)
+    ZEND_ARG_INFO(0, dataSize)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, fontChars)
+    ZEND_ARG_INFO(0, type)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, fromFontData)
 {
 
@@ -530,13 +543,17 @@ PHP_METHOD(CharInfo, fromFontData)
         add_index_zval(return_value, i, charInfo);
     }
 }
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_getValue, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, getValue)
 {
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->charinfo.value);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_setValue, 0, 0, 1)
+    ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, setValue)
 {
     zend_long value;
@@ -550,12 +567,17 @@ PHP_METHOD(CharInfo, setValue)
     intern->charinfo.value = (int) value;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_getOffsetX, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, getOffsetX)
 {
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->charinfo.offsetX);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_setOffsetX, 0, 0, 1)
+    ZEND_ARG_INFO(0, offsetX)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, setOffsetX)
 {
     zend_long offsetX;
@@ -569,12 +591,17 @@ PHP_METHOD(CharInfo, setOffsetX)
     intern->charinfo.offsetX = (int) offsetX;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_getOffsetY, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, getOffsetY)
 {
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->charinfo.offsetY);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_setOffsetY, 0, 0, 1)
+    ZEND_ARG_INFO(0, offsetY)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, setOffsetY)
 {
     zend_long offsetY;
@@ -588,12 +615,17 @@ PHP_METHOD(CharInfo, setOffsetY)
     intern->charinfo.offsetY = (int) offsetY;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_getAdvanceX, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, getAdvanceX)
 {
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->charinfo.advanceX);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_setAdvanceX, 0, 0, 1)
+    ZEND_ARG_INFO(0, advanceX)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, setAdvanceX)
 {
     zend_long advanceX;
@@ -607,12 +639,17 @@ PHP_METHOD(CharInfo, setAdvanceX)
     intern->charinfo.advanceX = (int) advanceX;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_getImage, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, getImage)
 {
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
     RETURN_OBJ(&intern->std);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_charinfo_setImage, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
+ZEND_END_ARG_INFO()
 PHP_METHOD(CharInfo, setImage)
 {
     zval *image;
@@ -630,18 +667,18 @@ PHP_METHOD(CharInfo, setImage)
 
 
 const zend_function_entry php_raylib_charinfo_methods[] = {
-        PHP_ME(CharInfo, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, fromFontData, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(CharInfo, getValue, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, setValue, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, getOffsetX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, setOffsetX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, getOffsetY, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, setOffsetY, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, getAdvanceX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, setAdvanceX, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, getImage, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(CharInfo, setImage, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, __construct,  arginfo_charinfo__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, fromFontData, arginfo_charinfo_fromFontData, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(CharInfo, getValue,     arginfo_charinfo_getValue, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setValue,     arginfo_charinfo_setValue, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getOffsetX,   arginfo_charinfo_getOffsetX, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setOffsetX,   arginfo_charinfo_setOffsetX, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getOffsetY,   arginfo_charinfo_getOffsetY, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setOffsetY,   arginfo_charinfo_setOffsetY, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getAdvanceX,  arginfo_charinfo_getAdvanceX, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setAdvanceX,  arginfo_charinfo_setAdvanceX, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, getImage,     arginfo_charinfo_getImage, ZEND_ACC_PUBLIC)
+        PHP_ME(CharInfo, setImage,     arginfo_charinfo_setImage, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
