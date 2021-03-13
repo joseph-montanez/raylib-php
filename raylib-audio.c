@@ -82,6 +82,9 @@ zend_object * php_raylib_audio_new(zend_class_entry *ce)
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audio__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Audio, __construct)
 {
     zend_string *fileName;
@@ -93,21 +96,30 @@ PHP_METHOD(Audio, __construct)
     php_raylib_audio_object *intern = Z_AUDIO_OBJ_P(ZEND_THIS);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audio_initDevice, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Audio, initDevice)
 {
     InitAudioDevice();
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audio_closeDevice, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Audio, closeDevice)
 {
     CloseAudioDevice();
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audio_isDeviceReady, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Audio, isDeviceReady)
 {
     RETURN_BOOL(IsAudioDeviceReady());
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audio_setMasterVolume, 0, 0, 1)
+    ZEND_ARG_INFO(0, volume)
+ZEND_END_ARG_INFO())
 PHP_METHOD(Audio, setMasterVolume)
 {
     double volume;
@@ -121,11 +133,11 @@ PHP_METHOD(Audio, setMasterVolume)
 
 
 const zend_function_entry php_raylib_audio_methods[] = {
-        PHP_ME(Audio, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Audio, initDevice, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Audio, closeDevice, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Audio, isDeviceReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Audio, setMasterVolume, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Audio, __construct, arginfo_audio__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Audio, initDevice, arginfo_audio_initDevice, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Audio, closeDevice, arginfo_audio_closeDevice, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Audio, setMasterVolume, arginfo_audio_setMasterVolume, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Audio, setMasterVolume, arginfo_audio_setMasterVolume, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
