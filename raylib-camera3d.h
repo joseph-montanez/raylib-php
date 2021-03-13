@@ -4,6 +4,7 @@
 
 #ifndef PHP_RAYLIB_CAMERA3D_H
 #define PHP_RAYLIB_CAMERA3D_H
+#include "raylib-vector3.h"
 
 extern zend_class_entry *php_raylib_camera3d_ce;
 
