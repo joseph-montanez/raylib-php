@@ -493,8 +493,8 @@ PHP_METHOD(Camera2d, __construct)
     intern->target = phpTarget;
 
     intern->camera2d = (Camera2D) {
-            .offset = (Vector2) {.x = phpOffset->vector2.x, .y = phpOffset->vector2.x},
-            .target = (Vector2) {.x = phpTarget->vector2.x, .y = phpTarget->vector2.x},
+            .offset = (Vector2) {.x = phpOffset->vector2.x, .y = phpOffset->vector2.y},
+            .target = (Vector2) {.x = phpTarget->vector2.x, .y = phpTarget->vector2.y},
             .rotation = rotation,
             .zoom = zoom
     };
