@@ -119,7 +119,7 @@ PHP_METHOD(Audio, isDeviceReady)
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_audio_setMasterVolume, 0, 0, 1)
     ZEND_ARG_INFO(0, volume)
-ZEND_END_ARG_INFO())
+ZEND_END_ARG_INFO()
 PHP_METHOD(Audio, setMasterVolume)
 {
     double volume;
