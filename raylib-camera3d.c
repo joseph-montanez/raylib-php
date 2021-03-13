@@ -46,15 +46,230 @@ typedef struct tagMSG *LPMSG;
 #undef LOG_INFO
 #undef LOG_WARNING
 #undef LOG_DEBUG
+
 #include "raylib.h"
+#include "raylib-vector3.h"
 #include "raylib-camera3d.h"
 #include "raylib-utils.h"
+#include "raylib-rectangle.h"
 
 
 //------------------------------------------------------------------------------------------------------
-//-- raylib Camera PHP Custom Object
+//-- raylib Camera3d PHP Custom Object
 //------------------------------------------------------------------------------------------------------
 zend_object_handlers php_raylib_camera3d_object_handlers;
+
+static HashTable php_raylib_camera3d_prop_handlers;
+
+typedef double (*raylib_camera3d_read_float_t)(php_raylib_camera3d_object *obj);
+
+typedef int (*raylib_camera3d_write_float_t)(php_raylib_camera3d_object *obj, zval *value);
+
+typedef zend_object* (*raylib_camera3d_read_vector3_t)(php_raylib_camera3d_object *obj);
+
+typedef int (*raylib_camera3d_write_vector3_t)(php_raylib_camera3d_object *obj, zval *value);
+
+typedef zend_long (*raylib_camera3d_read_int_t)(php_raylib_camera3d_object *obj);
+
+typedef int (*raylib_camera3d_write_int_t)(php_raylib_camera3d_object *obj, zval *value);
+
+typedef struct _raylib_camera3d_prop_handler {
+    raylib_camera3d_read_float_t read_float_func;
+    raylib_camera3d_write_float_t write_float_func;
+    raylib_camera3d_read_vector3_t read_vector3_func;
+    raylib_camera3d_write_vector3_t write_vector3_func;
+    raylib_camera3d_read_int_t read_int_func;
+    raylib_camera3d_write_int_t write_int_func;
+} raylib_camera3d_prop_handler;
+
+/**
+ * This will update
+ * @param intern
+ */
+void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern) {
+    intern->camera3d.position = intern->position->vector3;
+    intern->camera3d.target = intern->target->vector3;
+    intern->camera3d.up = intern->up->vector3;
+}
+
+static void php_raylib_camera3d_register_prop_handler(HashTable *prop_handler, char *name,
+                                                      raylib_camera3d_read_float_t read_float_func,
+                                                      raylib_camera3d_write_float_t write_float_func,
+                                                      raylib_camera3d_read_vector3_t read_vector3_func,
+                                                      raylib_camera3d_write_vector3_t write_vector3_func,
+                                                      raylib_camera3d_read_int_t read_int_func,
+                                                      raylib_camera3d_write_int_t write_int_func) /* {{{ */
+{
+    raylib_camera3d_prop_handler hnd;
+
+    hnd.read_float_func = read_float_func;
+    hnd.write_float_func = write_float_func;
+    hnd.read_vector3_func = read_vector3_func;
+    hnd.write_vector3_func = write_vector3_func;
+    hnd.read_int_func = read_int_func;
+    hnd.write_int_func = write_int_func;
+
+    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(raylib_camera3d_prop_handler));
+
+    /* Register for reflection */
+    zend_declare_property_null(php_raylib_camera3d_ce, name, strlen(name), ZEND_ACC_PUBLIC);
+}
+/* }}} */
+
+static zval *php_raylib_camera3d_property_reader(php_raylib_camera3d_object *obj, raylib_camera3d_prop_handler *hnd, zval *rv) /* {{{ */
+{
+    if (obj != NULL && hnd->read_vector3_func) {
+        zend_object *ret = hnd->read_vector3_func(obj);
+        ZVAL_OBJ(rv, ret);
+    } else if (obj != NULL && hnd->read_float_func) {
+        double ret = (double) hnd->read_float_func(obj);
+        ZVAL_DOUBLE(rv, ret);
+    }
+
+    return rv;
+}
+/* }}} */
+
+static zval *php_raylib_camera3d_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
+{
+    php_raylib_camera3d_object *obj;
+    zval *retval = NULL;
+    raylib_camera3d_prop_handler *hnd = NULL;
+
+    obj = php_raylib_camera3d_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
+    }
+
+    if (hnd == NULL) {
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
+    }
+
+    return retval;
+}
+/* }}} */
+
+static zval *php_raylib_camera3d_read_property(zend_object *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
+{
+    php_raylib_camera3d_object *obj;
+    zval *retval = NULL;
+    raylib_camera3d_prop_handler *hnd = NULL;
+
+    obj = php_raylib_camera3d_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
+    }
+
+    if (hnd) {
+        retval = php_raylib_camera3d_property_reader(obj, hnd, rv);
+    } else {
+        retval = zend_std_read_property(object, name, type, cache_slot, rv);
+    }
+
+    return retval;
+}
+/* }}} */
+
+/* {{{ php_raylib_camera3d_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot)
+   Generic object property writer */
+zval *php_raylib_camera3d_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot)
+{
+    php_raylib_camera3d_object *obj;
+    raylib_camera3d_prop_handler *hnd;
+
+    obj = php_raylib_camera3d_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, member);
+    }
+
+    if (hnd && hnd->write_vector3_func) {
+        hnd->write_vector3_func(obj, value);
+    } else if (hnd && hnd->write_float_func) {
+        hnd->write_float_func(obj, value);
+    } else {
+        value = zend_std_write_property(object, member, value, cache_slot);
+    }
+
+    return value;
+}
+/* }}} */
+
+static int php_raylib_camera3d_has_property(zend_object *object, zend_string *name, int has_set_exists, void **cache_slot) /* {{{ */
+{
+    php_raylib_camera3d_object *obj;
+    raylib_camera3d_prop_handler *hnd = NULL;
+    int ret = 0;
+
+    if ((hnd = zend_hash_find_ptr(obj->prop_handler, name)) != NULL) {
+        switch (has_set_exists) {
+            case ZEND_PROPERTY_EXISTS:
+                ret = 1;
+                break;
+            case ZEND_PROPERTY_NOT_EMPTY: {
+                zval rv;
+                zval *value = php_raylib_camera3d_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    convert_to_boolean(value);
+                    ret = Z_TYPE_P(value) == IS_TRUE ? 1 : 0;
+                }
+                break;
+            }
+            case ZEND_PROPERTY_ISSET: {
+                zval rv;
+                zval *value = php_raylib_camera3d_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    ret = Z_TYPE_P(value) != IS_NULL? 1 : 0;
+                    zval_ptr_dtor(value);
+                }
+                break;
+            }
+                EMPTY_SWITCH_DEFAULT_CASE();
+        }
+    } else {
+        ret = zend_std_has_property(object, name, has_set_exists, cache_slot);
+    }
+
+    return ret;
+}
+/* }}} */
+
+static HashTable *php_raylib_camera3d_get_gc(zend_object *object, zval **gc_data, int *gc_data_count) /* {{{ */
+{
+    *gc_data = NULL;
+    *gc_data_count = 0;
+    return zend_std_get_properties(object);
+}
+/* }}} */
+
+static HashTable *php_raylib_camera3d_get_properties(zend_object *object)/* {{{ */
+{
+    php_raylib_camera3d_object *obj;
+    HashTable *props;
+    raylib_camera3d_prop_handler *hnd;
+    zend_string *key;
+
+    obj = php_raylib_camera3d_fetch_object(object);
+    props = zend_std_get_properties(object);
+
+    if (obj->prop_handler == NULL) {
+        return NULL;
+    }
+
+    ZEND_HASH_FOREACH_STR_KEY_PTR(obj->prop_handler, key, hnd) {
+        zval *ret, val;
+        ret = php_raylib_camera3d_property_reader(obj, hnd, &val);
+        if (ret == NULL) {
+            ret = &EG(uninitialized_zval);
+        }
+        zend_hash_update(props, key, ret);
+    } ZEND_HASH_FOREACH_END();
+
+    return props;
+}
+/* }}} */
 
 void php_raylib_camera3d_free_storage(zend_object *object)
 {
@@ -63,88 +278,471 @@ void php_raylib_camera3d_free_storage(zend_object *object)
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_camera3d_new(zend_class_entry *ce)
+
+zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_object *orig)
 {
     php_raylib_camera3d_object *intern;
-    intern = (php_raylib_camera3d_object*) ecalloc(1, sizeof(php_raylib_camera3d_object) + zend_object_properties_size(ce));
+
+    intern = zend_object_alloc(sizeof(php_raylib_camera3d_object), ce);
+
+    intern->prop_handler = &php_raylib_camera3d_prop_handlers;
+
+    if (orig) {
+        php_raylib_camera3d_object *other = php_raylib_camera3d_fetch_object(orig);
+
+        zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->position->std);
+        zend_object *target = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->target->std);
+        zend_object *up = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->up->std);
+
+        php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+        php_raylib_vector3_object *phpTarget = php_raylib_vector3_fetch_object(target);
+        php_raylib_vector3_object *phpUp = php_raylib_vector3_fetch_object(up);
+
+        intern->camera3d = (Camera3D) {
+                .position = (Vector3) {
+                        .x = phpPosition->vector3.x,
+                        .y = phpPosition->vector3.y,
+                        .z = phpPosition->vector3.z
+                },
+                .target = (Vector3) {
+                        .x = phpTarget->vector3.x,
+                        .y = phpTarget->vector3.y,
+                        .z = phpTarget->vector3.z
+                },
+                .up = (Vector3) {
+                        .x = phpUp->vector3.x,
+                        .y = phpUp->vector3.y,
+                        .z = phpUp->vector3.z
+                },
+                .fovy = other->camera3d.fovy,
+                .type = other->camera3d.type
+        };
+        intern->position = phpPosition;
+        intern->target = phpTarget;
+        intern->up = phpUp;
+    } else {
+        zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+        zend_object *target = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+        zend_object *up = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+
+        php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+        php_raylib_vector3_object *phpTarget = php_raylib_vector3_fetch_object(target);
+        php_raylib_vector3_object *phpUp = php_raylib_vector3_fetch_object(up);
+
+        intern->camera3d = (Camera3D) {
+                .position = (Vector3) {
+                        .x = 0,
+                        .y = 0,
+                        .z = 0
+                },
+                .target = (Vector3) {
+                        .x = 0,
+                        .y = 0,
+                        .z = 0
+                },
+                .up = (Vector3) {
+                        .x = 0,
+                        .y = 0,
+                        .z = 0
+                },
+                .fovy = 0,
+                .type = 1
+        };
+        intern->position = phpPosition;
+        intern->target = phpTarget;
+        intern->up = phpUp;
+    }
 
     zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
-
     intern->std.handlers = &php_raylib_camera3d_object_handlers;
 
     return &intern->std;
 }
 
-//static void php_raylib_camera3d_register_prop_handler(HashTable *prop_handler, char *name, zip_read_int_t read_int_func, zip_read_const_char_t read_char_func, zip_read_const_char_from_ze_t read_char_from_obj_func, int rettype) /* {{{ */
-//{
-//    php_raylib_camera3d_object_handlers hnd;
-//
-//    hnd.read_const_char_func = read_char_func;
-//    hnd.read_int_func = read_int_func;
-//    hnd.read_const_char_from_obj_func = read_char_from_obj_func;
-//    hnd.type = rettype;
-//    zend_hash_str_add_mem(prop_handler, name, strlen(name), &hnd, sizeof(php_raylib_camera3d_object_handlers));
-//
-//    /* Register for reflection */
-//    zend_declare_property_null(zip_class_entry, name, strlen(name), ZEND_ACC_PUBLIC);
-//}
-///* }}} */
-
-PHP_METHOD(Camera, __construct)
+/* {{{  */
+zend_object *php_raylib_camera3d_new(zend_class_entry *class_type)
 {
+    return php_raylib_camera3d_new_ex(class_type, NULL);
+}
+/* }}} */
+
+static zend_object *php_raylib_camera3d_clone(zend_object *old_object)
+{
+    zend_object *new_object;
+
+    new_object = php_raylib_camera3d_new_ex(old_object->ce, old_object);
+
+    zend_objects_clone_members(new_object, old_object);
+
+    return new_object;
+}
+
+// PHP property handling
+
+static zend_object * php_raylib_camera3d_position(php_raylib_camera3d_object *obj) /* {{{ */
+{
+    GC_ADDREF(&obj->position->std);
+    return &obj->position->std;
+}
+/* }}} */
+
+static zend_object * php_raylib_camera3d_target(php_raylib_camera3d_object *obj) /* {{{ */
+{
+    GC_ADDREF(&obj->target->std);
+    return &obj->target->std;
+}
+/* }}} */
+
+static zend_object * php_raylib_camera3d_up(php_raylib_camera3d_object *obj) /* {{{ */
+{
+    GC_ADDREF(&obj->up->std);
+    return &obj->up->std;
+}
+/* }}} */
+
+static double php_raylib_camera3d_fovy(php_raylib_camera3d_object *obj) /* {{{ */
+{
+    return (double) obj->camera3d.fovy;
+}
+/* }}} */
+
+static zend_long php_raylib_camera3d_type(php_raylib_camera3d_object *obj) /* {{{ */
+{
+    return (zend_long) obj->camera3d.type;
+}
+/* }}} */
+
+static int php_raylib_camera3d_write_position(php_raylib_camera3d_object *camera3d_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
+    camera3d_object->position = phpPosition;
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_camera3d_write_target(php_raylib_camera3d_object *ray_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpTarget = Z_VECTOR3_OBJ_P(newval);
+    ray_object->target = phpTarget;
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_camera3d_write_up(php_raylib_camera3d_object *ray_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(newval);
+    ray_object->up = phpUp;
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_camera3d_write_fovy(php_raylib_camera3d_object *camera3d_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        camera3d_object->camera3d.fovy = 0;
+        return ret;
+    }
+
+    camera3d_object->camera3d.fovy = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_camera3d_write_type(php_raylib_camera3d_object *camera3d_object, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        camera3d_object->camera3d.type = 0;
+        return ret;
+    }
+
+    camera3d_object->camera3d.type = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+// PHP object handling
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d__construct, 0, 0, 0)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, target)
+    ZEND_ARG_INFO(0, up)
+    ZEND_ARG_INFO(0, fovy)
+    ZEND_ARG_INFO(0, type)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, __construct)
+{
+    zend_object *position = NULL;
+    php_raylib_vector3_object *phpPosition;
+
+    zend_object *target = NULL;
+    php_raylib_vector3_object *phpTarget;
+
+    zend_object *up = NULL;
+    php_raylib_vector3_object *phpUp;
+
+    double fovy;
+    bool fovy_is_null = 1;
+
+    zend_long type;
+    bool type_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(position, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(target, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(up, php_raylib_vector3_ce)
+        Z_PARAM_DOUBLE_OR_NULL(fovy, fovy_is_null)
+        Z_PARAM_LONG_OR_NULL(type, type_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
     php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
-    intern->camera3d = (Camera) {
-            .position = (Vector3) {.x = 0, .y = 0, .z = 0},
-            .target = (Vector3) {.x = 0, .y = 0, .z = 0},
-            .up = (Vector3) {.x = 0, .y = 0, .z = 0},
-            .fovy = 0.4f,
-            .type = CAMERA_PERSPECTIVE
+
+    if (position == NULL) {
+        position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (target == NULL) {
+        target = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (up == NULL) {
+        up = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (fovy_is_null) {
+        fovy = 0.0f;
+    }
+
+    if (type_is_null) {
+        type = 0;
+    }
+
+    phpPosition = php_raylib_vector3_fetch_object(position);
+    phpTarget = php_raylib_vector3_fetch_object(target);
+    phpUp = php_raylib_vector3_fetch_object(up);
+
+    intern->position = phpPosition;
+    intern->target = phpTarget;
+    intern->up = phpUp;
+
+    intern->camera3d = (Camera3D) {
+            .position = (Vector3) {.x = phpPosition->vector3.x, .y = phpPosition->vector3.y, .z = phpPosition->vector3.z},
+            .target = (Vector3) {.x = phpTarget->vector3.x, .y = phpTarget->vector3.y, .z = phpTarget->vector3.z},
+            .up = (Vector3) {.x = phpUp->vector3.x,     .y = phpUp->vector3.y,     .z = phpUp->vector3.z},
+            .fovy = fovy,
+            .type = type
     };
 }
 
-PHP_METHOD(Camera, getPosition)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getPosition, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getPosition)
 {
-    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
-    array_init(return_value);
-    add_assoc_double(return_value, "x", (double) intern->camera3d.position.x);
-    add_assoc_double(return_value, "y", (double) intern->camera3d.position.y);
-    add_assoc_double(return_value, "z", (double) intern->camera3d.position.y);
+RETURN_OBJ(&intern->position->std);
 }
 
-PHP_METHOD(Camera, setPosition)
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setPosition, 0, 0, 1)
+    ZEND_ARG_INFO(0, position)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, setPosition)
 {
     php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
-    zval *positionArr;
+    zval *position;
+    
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(position)
+    ZEND_PARSE_PARAMETERS_END();
+    
+    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    
+    intern->camera3d.position.x = phpPosition->vector3.x;
+    intern->camera3d.position.y = phpPosition->vector3.y;
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getTarget, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getTarget)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    RETURN_OBJ(&intern->target->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setTarget, 0, 0, 1)
+    ZEND_ARG_INFO(0, target)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, setTarget)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    zval *target;
+    
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(target)
+    ZEND_PARSE_PARAMETERS_END();
+    
+    php_raylib_vector3_object *phpTarget = Z_VECTOR3_OBJ_P(target);
+    
+    intern->camera3d.target = phpTarget->vector3;
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getUp, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getUp)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    RETURN_OBJ(&intern->up->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setUp, 0, 0, 1)
+    ZEND_ARG_INFO(0, up)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, setUp)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    zval *up;
+    
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(up)
+    ZEND_PARSE_PARAMETERS_END();
+    
+    php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(up);
+    
+    intern->camera3d.up = phpUp->vector3;
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getFovy, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getFovy)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    RETURN_DOUBLE((double) intern->camera3d.fovy);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setFovy, 0, 0, 1)
+    ZEND_ARG_INFO(0, fovy)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, setFovy)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    
+    double fovy;
+    
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_DOUBLE(fovy)
+    ZEND_PARSE_PARAMETERS_END();
+    
+    intern->camera3d.fovy = (float) fovy;
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getType, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getType)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    RETURN_DOUBLE((double) intern->camera3d.type);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setType, 0, 0, 1)
+    ZEND_ARG_INFO(0, type)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, setType)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    double type;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_ZVAL(positionArr)
+    Z_PARAM_DOUBLE(type)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera3d.position = php_array_to_vector3(positionArr);
-
-    UpdateCamera(&intern->camera3d);
+    intern->camera3d.type = (float) type;
 }
 
 const zend_function_entry php_raylib_camera3d_methods[] = {
-        PHP_ME(Camera, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera, getPosition, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera, setPosition, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, __construct, arginfo_camera3d__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getPosition, arginfo_camera3d_getPosition, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setPosition, arginfo_camera3d_setPosition, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getTarget, arginfo_camera3d_getTarget, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setTarget, arginfo_camera3d_setTarget, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getFovy, arginfo_camera3d_getFovy, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setFovy, arginfo_camera3d_setFovy, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getType, arginfo_camera3d_getType, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setType, arginfo_camera3d_setType, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
+
+static void php_raylib_camera3d_free_prop_handler(zval *el) /* {{{ */ {
+    pefree(Z_PTR_P(el), 1);
+} /* }}} */
 
 void php_raylib_camera3d_startup(INIT_FUNC_ARGS)
 {
     zend_class_entry ce;
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "Camera3d", php_raylib_camera3d_methods);
-    php_raylib_camera3d_ce = zend_register_internal_class(&ce);
-    php_raylib_camera3d_ce->create_object = php_raylib_camera3d_new;
 
     memcpy(&php_raylib_camera3d_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     php_raylib_camera3d_object_handlers.offset = XtOffsetOf(php_raylib_camera3d_object, std);
     php_raylib_camera3d_object_handlers.free_obj = &php_raylib_camera3d_free_storage;
-    php_raylib_camera3d_object_handlers.clone_obj = NULL;
+    php_raylib_camera3d_object_handlers.clone_obj = php_raylib_camera3d_clone;
+
+    // Props
+    php_raylib_camera3d_object_handlers.get_property_ptr_ptr = php_raylib_camera3d_get_property_ptr_ptr;
+    php_raylib_camera3d_object_handlers.get_gc               = php_raylib_camera3d_get_gc;
+    php_raylib_camera3d_object_handlers.get_properties       = php_raylib_camera3d_get_properties;
+    php_raylib_camera3d_object_handlers.read_property	     = php_raylib_camera3d_read_property;
+    php_raylib_camera3d_object_handlers.write_property       = php_raylib_camera3d_write_property;
+    php_raylib_camera3d_object_handlers.has_property	     = php_raylib_camera3d_has_property;
+
+    // Init
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Camera3d", php_raylib_camera3d_methods);
+    php_raylib_camera3d_ce = zend_register_internal_class(&ce);
+    php_raylib_camera3d_ce->create_object = php_raylib_camera3d_new;
+
+    // Props
+    zend_hash_init(&php_raylib_camera3d_prop_handlers, 0, NULL, php_raylib_camera3d_free_prop_handler, 1);
+    php_raylib_camera3d_register_prop_handler(&php_raylib_camera3d_prop_handlers, "position", NULL, NULL, php_raylib_camera3d_position, php_raylib_camera3d_write_position, NULL, NULL);
+    php_raylib_camera3d_register_prop_handler(&php_raylib_camera3d_prop_handlers, "target", NULL, NULL, php_raylib_camera3d_target, php_raylib_camera3d_write_target, NULL, NULL);
+    php_raylib_camera3d_register_prop_handler(&php_raylib_camera3d_prop_handlers, "up", NULL, NULL, php_raylib_camera3d_up, php_raylib_camera3d_write_up, NULL, NULL);
+    php_raylib_camera3d_register_prop_handler(&php_raylib_camera3d_prop_handlers, "fovy", php_raylib_camera3d_fovy, php_raylib_camera3d_write_fovy, NULL, NULL, NULL, NULL);
+    php_raylib_camera3d_register_prop_handler(&php_raylib_camera3d_prop_handlers, "type", NULL, NULL, NULL, NULL, php_raylib_camera3d_type, php_raylib_camera3d_write_type);
 }
