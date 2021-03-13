@@ -570,9 +570,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getPosition, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Camera3d, getPosition)
 {
-php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
-RETURN_OBJ(&intern->position->std);
+    RETURN_OBJ(&intern->position->std);
 }
 
 
