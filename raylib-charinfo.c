@@ -65,7 +65,7 @@ typedef zend_long (*raylib_charinfo_read_long_t)(php_raylib_charinfo_object *obj
 
 typedef int (*raylib_charinfo_write_long_t)(php_raylib_charinfo_object *obj, zval *value);
 
-typedef zval* (*raylib_charinfo_read_image_object_t)(php_raylib_charinfo_object *obj);
+typedef zend_object* (*raylib_charinfo_read_image_object_t)(php_raylib_charinfo_object *obj);
 
 typedef int (*raylib_charinfo_write_image_object_t)(php_raylib_charinfo_object *obj, zval *value);
 
@@ -109,95 +109,53 @@ static void php_raylib_charinfo_register_prop_handler_image(HashTable *prop_hand
 static zval *php_raylib_charinfo_property_reader(php_raylib_charinfo_object *obj, raylib_charinfo_prop_handler *hnd, zval *rv) /* {{{ */
 {
     if (obj != NULL && hnd->read_long_func) {
-        zend_long ret = 0;
-        ret = hnd->read_long_func(obj);
+        zend_long ret = hnd->read_long_func(obj);
         ZVAL_LONG(rv, (zend_long) ret);
+    } else if (obj != NULL && hnd->read_image_func) {
+        zend_object *ret = hnd->read_image_func(obj);
+        ZVAL_OBJ(rv, ret);
     }
-    if (obj != NULL && hnd->read_image_func) {
-        zval *ret;
-        ret = hnd->read_image_func(obj);
-
-        php_raylib_image_object *result = Z_IMAGE_OBJ_P(ret);
-        ZVAL_OBJ(rv, &result->std);
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
-    }
-
 
     return rv;
 }
 /* }}} */
 
-static zval *php_raylib_charinfo_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static zval *php_raylib_charinfo_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_charinfo_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_charinfo_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_CHARINFO_OBJ_P(object);
+    obj = php_raylib_charinfo_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd == NULL) {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
     }
 
     return retval;
 }
 /* }}} */
 
-static zval *php_raylib_charinfo_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_charinfo_read_property(zend_object *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
 {
     php_raylib_charinfo_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_charinfo_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_CHARINFO_OBJ_P(object);
+    obj = php_raylib_charinfo_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib charinfo hnd not found");
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
-    if (hnd != NULL) {
+    if (hnd) {
         retval = php_raylib_charinfo_property_reader(obj, hnd, rv);
-        if (retval == NULL) {
-//            php_error_docref(NULL, E_WARNING, "Internal raylib charinfo retval is null");
-            retval = &EG(uninitialized_zval);
-        }
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_read_property(object, name, type, cache_slot, rv);
     }
 
     return retval;
@@ -206,88 +164,69 @@ static zval *php_raylib_charinfo_read_property(zval *object, zval *member, int t
 
 /* {{{ php_raylib_charinfo_write_property(zval *object, zval *member, zval *value[, const zend_literal *key])
    Generic object property writer */
-zval *php_raylib_charinfo_write_property(zval *object, zval *member, zval *value, void **cache_slot)
+zval *php_raylib_charinfo_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot)
 {
-    zval tmp_member;
     php_raylib_charinfo_object *obj;
     raylib_charinfo_prop_handler *hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        zend_string *str = zval_try_get_string_func(member);
-        if (UNEXPECTED(!str)) {
-            return value;
-        }
-        ZVAL_STR(&tmp_member, str);
-        member = &tmp_member;
+    obj = php_raylib_charinfo_fetch_object(object);
+
+    if (obj->prop_handler != NULL) {
+        hnd = zend_hash_find_ptr(obj->prop_handler, member);
     }
 
-    obj = Z_CHARINFO_OBJ_P(object);
-
-    hnd = zend_hash_find_ptr(&php_raylib_charinfo_prop_handlers, Z_STR_P(member));
-
-    if (hnd && hnd->write_long_func) {
+    if (hnd && hnd->write_image_func) {
+        hnd->write_image_func(obj, value);
+    } else if (hnd && hnd->write_long_func) {
         hnd->write_long_func(obj, value);
     } else {
         value = zend_std_write_property(object, member, value, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_ptr_dtor(member);
     }
 
     return value;
 }
 /* }}} */
 
-static int php_raylib_charinfo_has_property(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static int php_raylib_charinfo_has_property(zend_object *object, zend_string *name, int has_set_exists, void **cache_slot) /* {{{ */
 {
     php_raylib_charinfo_object *obj;
-    zval tmp_member;
     raylib_charinfo_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
-    int retval = 0;
+    int ret = 0;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_CHARINFO_OBJ_P(object);
-
-    if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    }
-
-    if (hnd != NULL) {
-        zval tmp, *prop;
-
-        if (type == 2) {
-            retval = 1;
-        } else if ((prop = php_raylib_charinfo_property_reader(obj, hnd, &tmp)) != NULL) {
-            if (type == 1) {
-                retval = zend_is_true(&tmp);
-            } else if (type == 0) {
-                retval = (Z_TYPE(tmp) != IS_NULL);
+    if ((hnd = zend_hash_find_ptr(obj->prop_handler, name)) != NULL) {
+        switch (has_set_exists) {
+            case ZEND_PROPERTY_EXISTS:
+                ret = 1;
+                break;
+            case ZEND_PROPERTY_NOT_EMPTY: {
+                zval rv;
+                zval *value = php_raylib_charinfo_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    convert_to_boolean(value);
+                    ret = Z_TYPE_P(value) == IS_TRUE ? 1 : 0;
+                }
+                break;
             }
+            case ZEND_PROPERTY_ISSET: {
+                zval rv;
+                zval *value = php_raylib_charinfo_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    ret = Z_TYPE_P(value) != IS_NULL? 1 : 0;
+                    zval_ptr_dtor(value);
+                }
+                break;
+            }
+                EMPTY_SWITCH_DEFAULT_CASE();
         }
-
-        zval_ptr_dtor(&tmp);
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->has_property(object, member, type, cache_slot);
+        ret = zend_std_has_property(object, name, has_set_exists, cache_slot);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
-    return retval;
+    return ret;
 }
 /* }}} */
 
-static HashTable *php_raylib_charinfo_get_gc(zval *object, zval **gc_data, int *gc_data_count) /* {{{ */
+static HashTable *php_raylib_charinfo_get_gc(zend_object *object, zval **gc_data, int *gc_data_count) /* {{{ */
 {
     *gc_data = NULL;
     *gc_data_count = 0;
@@ -295,14 +234,14 @@ static HashTable *php_raylib_charinfo_get_gc(zval *object, zval **gc_data, int *
 }
 /* }}} */
 
-static HashTable *php_raylib_charinfo_get_properties(zval *object)/* {{{ */
+static HashTable *php_raylib_charinfo_get_properties(zend_object *object)/* {{{ */
 {
     php_raylib_charinfo_object *obj;
     HashTable *props;
     raylib_charinfo_prop_handler *hnd;
     zend_string *key;
 
-    obj = Z_CHARINFO_OBJ_P(object);
+    obj = php_raylib_charinfo_fetch_object(object);
     props = zend_std_get_properties(object);
 
     if (obj->prop_handler == NULL) {
@@ -329,33 +268,64 @@ void php_raylib_charinfo_free_storage(zend_object *object)
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_charinfo_new(zend_class_entry *ce)
+
+zend_object * php_raylib_charinfo_new_ex(zend_class_entry *ce, zend_object *orig)
 {
     php_raylib_charinfo_object *intern;
-    intern = (php_raylib_charinfo_object*) ecalloc(1, sizeof(php_raylib_charinfo_object) + zend_object_properties_size(ce));
+
+    intern = zend_object_alloc(sizeof(php_raylib_charinfo_object), ce);
+
     intern->prop_handler = &php_raylib_charinfo_prop_handlers;
+
+    if (orig) {
+        php_raylib_charinfo_object *other = php_raylib_charinfo_fetch_object(orig);
+
+        zend_object *image = php_raylib_image_new_ex(php_raylib_image_ce, &other->image->std);
+
+        php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
+
+        intern->charinfo = (CharInfo) {
+                .value = other->charinfo.value,
+                .offsetX = other->charinfo.offsetX,
+                .offsetY = other->charinfo.offsetY,
+                .advanceX = other->charinfo.advanceX,
+                .image = phpImage->image,
+        };
+        intern->image = phpImage;
+    } else {
+        zend_object *image = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
+
+        php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
+
+        intern->charinfo = (CharInfo) {
+                .value = 0,
+                .offsetX = 0,
+                .offsetY = 0,
+                .advanceX = 0,
+                .image = phpImage->image
+        };
+        intern->image = phpImage;
+    }
 
     zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
-
     intern->std.handlers = &php_raylib_charinfo_object_handlers;
 
     return &intern->std;
 }
 
-static zend_object *php_raylib_charinfo_clone(zval *zobject)
+zend_object * php_raylib_charinfo_new(zend_class_entry *ce)
 {
-    zend_object *old_object;
+    return php_raylib_charinfo_new_ex(ce, NULL);
+}
+
+static zend_object *php_raylib_charinfo_clone(zend_object *old_object)
+{
     zend_object *new_object;
 
-    old_object = Z_OBJ_P(zobject);
-    new_object = php_raylib_charinfo_new(old_object->ce);
+    new_object = php_raylib_charinfo_new_ex(old_object->ce, old_object);
 
-    // zend_objects_clone_members(new_object, old_object);
-
-    php_raylib_charinfo_object *old_charinfo = php_raylib_charinfo_fetch_object(old_object);
-    php_raylib_charinfo_object *new_charinfo = php_raylib_charinfo_fetch_object(new_object);
-    new_charinfo->charinfo = old_charinfo->charinfo;
+    zend_objects_clone_members(new_object, old_object);
 
     return new_object;
 }
@@ -383,15 +353,10 @@ static zend_long php_raylib_charinfo_advance_x(php_raylib_charinfo_object *obj) 
     return (zend_long) obj->charinfo.advanceX;
 }
 
-static zval * php_raylib_charinfo_image(php_raylib_charinfo_object *obj) /* {{{ */
+static zend_object * php_raylib_charinfo_image(php_raylib_charinfo_object *obj) /* {{{ */
 {
-    zval *image = malloc(sizeof(zval));
-    object_init_ex(image, php_raylib_image_ce);
-
-    php_raylib_image_object *result = Z_IMAGE_OBJ_P(image);
-    result->image = obj->charinfo.image;
-
-    return image;
+    GC_ADDREF(&obj->image->std);
+    return &obj->image->std;
 }
 /* }}} */
 
@@ -464,8 +429,7 @@ static int php_raylib_charinfo_write_image(php_raylib_charinfo_object *charinfo_
     }
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
-
-    charinfo_object->charinfo.image = phpImage->image;
+    charinfo_object->image = phpImage;
 
     return ret;
 }
@@ -476,17 +440,17 @@ static int php_raylib_charinfo_write_image(php_raylib_charinfo_object *charinfo_
 PHP_METHOD(CharInfo, __construct)
 {
     zend_long value, offsetX, offsetY, advanceX;
-    zval *image;
+    zend_object *image;
 
     ZEND_PARSE_PARAMETERS_START(5, 5)
             Z_PARAM_LONG(value)
             Z_PARAM_LONG(offsetX)
             Z_PARAM_LONG(offsetY)
             Z_PARAM_LONG(advanceX)
-            Z_PARAM_ZVAL(image)
+            Z_PARAM_OBJ_OF_CLASS(image, php_raylib_image_ce)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
 
     php_raylib_charinfo_object *intern = Z_CHARINFO_OBJ_P(ZEND_THIS);
 
@@ -497,6 +461,8 @@ PHP_METHOD(CharInfo, __construct)
             .advanceX = (int) advanceX,
             .image = phpImage->image,
     };
+
+    intern->image = phpImage;
 
 }
 

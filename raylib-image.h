@@ -24,4 +24,7 @@ static inline php_raylib_image_object *php_raylib_image_fetch_object(zend_object
 
 void php_raylib_image_startup(INIT_FUNC_ARGS);
 
+zend_object * php_raylib_image_new_ex(zend_class_entry *ce, zend_object *orig);
+zend_object * php_raylib_image_new(zend_class_entry *ce);
+
 #endif //PHP_RAYLIB_IMAGE_H

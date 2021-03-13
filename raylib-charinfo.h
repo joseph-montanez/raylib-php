@@ -4,12 +4,14 @@
 
 #ifndef RAYLIB_RAYLIB_CHARINFO_H
 #define RAYLIB_RAYLIB_CHARINFO_H
+#include "raylib-image.h"
 
 extern zend_class_entry *php_raylib_charinfo_ce;
 
 typedef struct _php_raylib_charinfo_object {
     CharInfo charinfo;
     HashTable *prop_handler;
+    php_raylib_image_object *image;
     zend_object std;
 } php_raylib_charinfo_object;
 
