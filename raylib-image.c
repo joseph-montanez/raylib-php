@@ -1159,7 +1159,6 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, draw                  , arginfo_image_draw, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawText              , arginfo_image_drawText, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawTextEx            , arginfo_image_drawTextEx,ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawTextEx            , arginfo_image_drawTextEx, ZEND_ACC_PUBLIC)
         PHP_ME(Image, drawRectangleRec      , arginfo_image_drawRectangleRec, ZEND_ACC_PUBLIC)
         PHP_ME(Image, alphaMask             , arginfo_image_alphaMask, ZEND_ACC_PUBLIC)
         PHP_ME(Image, alphaClear            , arginfo_image_alphaClear, ZEND_ACC_PUBLIC)
