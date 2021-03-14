@@ -82,6 +82,8 @@ zend_object * php_raylib_window_new(zend_class_entry *ce)
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, __construct)
 {
     php_raylib_window_object *intern = Z_WINDOW_OBJ_P(ZEND_THIS);
@@ -120,6 +122,8 @@ PHP_METHOD(Window, shouldClose)
 
 // Close window and unload OpenGL context
 // void CloseWindow(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_close, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, close)
 {
     CloseWindow();
@@ -127,6 +131,8 @@ PHP_METHOD(Window, close)
 
 // Check if window has been initialized successfully
 // bool IsWindowReady(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isReady, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isReady)
 {
     RETURN_BOOL(IsWindowReady());
@@ -134,6 +140,8 @@ PHP_METHOD(Window, isReady)
 
 // Check if window is currently fullscreen
 // bool IsWindowFullscreen(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isFullscreen, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isFullscreen)
 {
 //    RETURN_BOOL(false);
@@ -142,6 +150,8 @@ PHP_METHOD(Window, isFullscreen)
 
 // Check if window is currently hidden (only PLATFORM_DESKTOP)
 // bool IsWindowHidden(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isHidden, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isHidden)
 {
     RETURN_BOOL(IsWindowHidden());
@@ -149,6 +159,8 @@ PHP_METHOD(Window, isHidden)
 
 // Check if window is currently minimized (only PLATFORM_DESKTOP)
 // bool IsWindowMinimized(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isMinimized, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isMinimized)
 {
     RETURN_BOOL(IsWindowMinimized());
@@ -156,6 +168,8 @@ PHP_METHOD(Window, isMinimized)
 
 // Check if window is currently maximized (only PLATFORM_DESKTOP)
 // bool IsWindowMaximized(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isMaximized, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isMaximized)
 {
     RETURN_BOOL(IsWindowMaximized());
@@ -163,6 +177,8 @@ PHP_METHOD(Window, isMaximized)
 
 // Check if window is currently focused (only PLATFORM_DESKTOP)
 // bool IsWindowFocused(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isFocused, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isFocused)
 {
     RETURN_BOOL(IsWindowFocused());
@@ -170,6 +186,8 @@ PHP_METHOD(Window, isFocused)
 
 // Check if window has been resized last frame
 // bool IsWindowResized(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isResized, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isResized)
 {
     RETURN_BOOL(IsWindowResized());
@@ -177,6 +195,9 @@ PHP_METHOD(Window, isResized)
 
 // Check if one specific window flag is enabled
 // bool IsWindowState(unsigned int flag);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_isState, 0, 0, 1)
+    ZEND_ARG_INFO(0, flag)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, isState)
 {
     zend_long flag;
@@ -190,6 +211,9 @@ PHP_METHOD(Window, isState)
 
 // Set window configuration state using flags
 // void SetWindowState(unsigned int flags);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setState, 0, 0, 1)
+    ZEND_ARG_INFO(0, flag)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setState)
 {
     zend_long flag;
@@ -204,6 +228,9 @@ PHP_METHOD(Window, setState)
 
 // Clear window configuration state flags
 // void ClearWindowState(unsigned int flags);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_clearState, 0, 0, 1)
+    ZEND_ARG_INFO(0, flag)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, clearState)
 {
     zend_long flag;
@@ -217,6 +244,8 @@ PHP_METHOD(Window, clearState)
 
 // Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
 // void ToggleFullscreen(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_toggleFullscreen, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, toggleFullscreen)
 {
     ToggleFullscreen();
@@ -224,6 +253,8 @@ PHP_METHOD(Window, toggleFullscreen)
 
 // Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
 // void MaximizeWindow(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_maximize, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, maximize)
 {
     MaximizeWindow();
@@ -231,6 +262,8 @@ PHP_METHOD(Window, maximize)
 
 // Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
 // void MinimizeWindow(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_minimize, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, minimize)
 {
     MinimizeWindow();
@@ -238,6 +271,8 @@ PHP_METHOD(Window, minimize)
 
 // Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
 // void RestoreWindow(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_restore, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, restore)
 {
     RestoreWindow();
@@ -245,6 +280,9 @@ PHP_METHOD(Window, restore)
 
 // Set icon for window (only PLATFORM_DESKTOP)
 // void SetWindowIcon(Image image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setIcon, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setIcon)
 {
     zval *image;
@@ -260,6 +298,9 @@ PHP_METHOD(Window, setIcon)
 
 // Set title for window (only PLATFORM_DESKTOP)
 // void SetWindowTitle(const char *title);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setTitle, 0, 0, 1)
+    ZEND_ARG_INFO(0, title)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setTitle)
 {
     zend_string *title;
@@ -273,6 +314,10 @@ PHP_METHOD(Window, setTitle)
 
 // Set window position on screen (only PLATFORM_DESKTOP)
 // void SetWindowPosition(int x, int y);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setPosition, 0, 0, 2)
+    ZEND_ARG_INFO(0, x)
+    ZEND_ARG_INFO(0, y)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setPosition)
 {
     zend_long x;
@@ -287,6 +332,9 @@ PHP_METHOD(Window, setPosition)
 }
 
 //void SetWindowMonitor(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setMonitor, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setMonitor)
 {
     zend_long monitor;
@@ -299,6 +347,10 @@ PHP_METHOD(Window, setMonitor)
 }
 
 //void SetWindowMinSize(int width, int height);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setMinSize, 0, 0, 2)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setMinSize)
 {
     zend_long width;
@@ -313,6 +365,10 @@ PHP_METHOD(Window, setMinSize)
 }
 
 //void SetWindowSize(int width, int height);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setSize, 0, 0, 2)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setSize)
 {
     zend_long width;
@@ -327,24 +383,33 @@ PHP_METHOD(Window, setSize)
 }
 
 //int GetScreenWidth(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getScreenWidth, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getScreenWidth)
 {
     RETURN_LONG(GetScreenWidth());
 }
 
 //int GetScreenHeight(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getScreenHeight, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getScreenHeight)
 {
     RETURN_LONG(GetScreenHeight());
 }
 
 //RLAPI int GetMonitorCount(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorCount, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorCount)
 {
     RETURN_LONG(GetMonitorCount());
 }
 
 //RLAPI int GetMonitorWidth(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorWidth, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorWidth)
 {
     zend_long monitor;
@@ -357,6 +422,9 @@ PHP_METHOD(Window, getMonitorWidth)
 }
 
 //RLAPI int GetMonitorHeight(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorHeight, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorHeight)
 {
     zend_long monitor;
@@ -369,6 +437,9 @@ PHP_METHOD(Window, getMonitorHeight)
 }
 
 //RLAPI int GetMonitorPhysicalWidth(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorPhysicalWidth, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorPhysicalWidth)
 {
     zend_long monitor;
@@ -381,6 +452,9 @@ PHP_METHOD(Window, getMonitorPhysicalWidth)
 }
 
 //RLAPI int GetMonitorPhysicalHeight(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorPhysicalHeight, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorPhysicalHeight)
 {
     zend_long monitor;
@@ -393,6 +467,9 @@ PHP_METHOD(Window, getMonitorPhysicalHeight)
 }
 
 //RLAPI int GetMonitorRefreshRate(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorRefreshRate, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorRefreshRate)
 {
     zend_long monitor;
@@ -405,6 +482,8 @@ PHP_METHOD(Window, getMonitorRefreshRate)
 }
 
 //RLAPI Vector2 GetWindowPosition(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getPosition, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getPosition)
 {
     zval *obj = malloc(sizeof(zval));
@@ -418,6 +497,8 @@ PHP_METHOD(Window, getPosition)
 
 // Get window scale DPI factor
 // RLAPI Vector2 GetWindowScaleDPI(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getScaleDPI, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getScaleDPI)
 {
     zval *obj = malloc(sizeof(zval));
@@ -430,6 +511,9 @@ PHP_METHOD(Window, getScaleDPI)
 }
 
 //RLAPI const char *GetMonitorName(int monitor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getMonitorName, 0, 0, 1)
+    ZEND_ARG_INFO(0, monitor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getMonitorName)
 {
     zend_long monitor;
@@ -442,12 +526,17 @@ PHP_METHOD(Window, getMonitorName)
 }
 
 //RLAPI const char *GetClipboardText(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_getClipboardText, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, getClipboardText)
 {
     RETURN_STRING(GetClipboardText());
 }
 
 //RLAPI void SetClipboardText(const char *text);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_window_setClipboardText, 0, 0, 1)
+    ZEND_ARG_INFO(0, text)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Window, setClipboardText)
 {
     zend_string *text;
@@ -462,43 +551,43 @@ PHP_METHOD(Window, setClipboardText)
 
 
 const zend_function_entry php_raylib_window_methods[] = {
-        PHP_ME(Window, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Window, init, arginfo_window_init, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, shouldClose, arginfo_window_shouldClose, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, close, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isReady, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isHidden, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isMinimized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isMaximized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isFocused, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isResized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, isState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, clearState, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, toggleFullscreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, maximize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, minimize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, restore, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setIcon, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setTitle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setMonitor, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setMinSize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setSize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getScreenWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getScreenHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorCount, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorPhysicalWidth, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorPhysicalHeight, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorRefreshRate, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getScaleDPI, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getMonitorName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, getClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Window, setClipboardText, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, __construct             , arginfo_window__construct              , ZEND_ACC_PUBLIC)
+        PHP_ME(Window, init                    , arginfo_window_init                    , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, shouldClose             , arginfo_window_shouldClose             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, close                   , arginfo_window_close                   , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isReady                 , arginfo_window_isReady                 , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isFullscreen            , arginfo_window_isFullscreen            , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isHidden                , arginfo_window_isHidden                , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isMinimized             , arginfo_window_isMinimized             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isMaximized             , arginfo_window_isMaximized             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isFocused               , arginfo_window_isFocused               , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isResized               , arginfo_window_isResized               , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, isState                 , arginfo_window_isState                 , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setState                , arginfo_window_setState                , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, clearState              , arginfo_window_clearState              , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, toggleFullscreen        , arginfo_window_toggleFullscreen        , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, maximize                , arginfo_window_maximize                , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, minimize                , arginfo_window_minimize                , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, restore                 , arginfo_window_restore                 , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setIcon                 , arginfo_window_setIcon                 , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setTitle                , arginfo_window_setTitle                , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setPosition             , arginfo_window_setPosition             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setMonitor              , arginfo_window_setMonitor              , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setMinSize              , arginfo_window_setMinSize              , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setSize                 , arginfo_window_setSize                 , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getScreenWidth          , arginfo_window_getScreenWidth          , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getScreenHeight         , arginfo_window_getScreenHeight         , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorCount         , arginfo_window_getMonitorCount         , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorWidth         , arginfo_window_getMonitorWidth         , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorHeight        , arginfo_window_getMonitorHeight        , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorPhysicalWidth , arginfo_window_getMonitorPhysicalWidth , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorPhysicalHeight, arginfo_window_getMonitorPhysicalHeight, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorRefreshRate   , arginfo_window_getMonitorRefreshRate   , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getPosition             , arginfo_window_getPosition             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getScaleDPI             , arginfo_window_getScaleDPI             , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getMonitorName          , arginfo_window_getMonitorName          , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, getClipboardText        , arginfo_window_getClipboardText        , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Window, setClipboardText        , arginfo_window_setClipboardText        , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
