@@ -291,6 +291,9 @@ static int php_raylib_image_format(struct Image *image) /* {{{ */
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, __construct)
 {
     zend_string *fileName;
@@ -348,6 +351,13 @@ PHP_METHOD(Image, __construct)
 
 // Load image from RAW file data
 // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_fromRaw, 0, 0, 5)
+    ZEND_ARG_INFO(0, fileName)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, format)
+    ZEND_ARG_INFO(0, headerSize)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, fromRaw)
 {
     zend_string *fileName;
@@ -375,6 +385,8 @@ PHP_METHOD(Image, fromRaw)
     ZVAL_OBJ(return_value, object);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_toTexture, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, toTexture)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -391,6 +403,8 @@ PHP_METHOD(Image, toTexture)
 }
 
 //Image ImageCopy(Image image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_copy, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, copy)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -407,6 +421,9 @@ PHP_METHOD(Image, copy)
 }
 
 //ImageToPOT(Image *image, Color fillColor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_toPot, 0, 0, 1)
+    ZEND_ARG_INFO(0, fillColor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, toPot)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -422,6 +439,9 @@ PHP_METHOD(Image, toPot)
 }
 
 // RLAPI void ExportImage(const char *fileName, Image image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_export, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, export)
 {
     zend_string *fileName;
@@ -436,6 +456,9 @@ PHP_METHOD(Image, export)
 }
 
 // RLAPI void ExportImageAsCode(Image image, const char *fileName);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_exportAsCode, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, exportAsCode)
 {
     zend_string *fileName;
@@ -451,6 +474,8 @@ PHP_METHOD(Image, exportAsCode)
 
 // Get pixel data from image as a Color struct array
 // RLAPI Color *GetImageData(Image image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_getData, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, getData)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -474,6 +499,12 @@ PHP_METHOD(Image, getData)
 
 // Draw a source image within a destination image (tint applied to source)
 // RLAPI void ImageDraw(Image *dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_draw, 0, 0, 4)
+    ZEND_ARG_INFO(0, src)
+    ZEND_ARG_INFO(0, srcRec)
+    ZEND_ARG_INFO(0, dstRec)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, draw)
 {
     zval *src;
@@ -506,6 +537,13 @@ PHP_METHOD(Image, draw)
 
 // Draw text (default font) within an image (destination)
 // RLAPI void ImageDrawText(Image *dst, const char *text, int posX, int posY, int fontSize, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_drawText, 0, 0, 5)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, drawText)
 {
     zend_long posX;
@@ -531,6 +569,14 @@ PHP_METHOD(Image, drawText)
 
 // Draw text (custom sprite font) within an image (destination)
 // RLAPI void ImageDrawTextEx(Image *dst, Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_drawTextEx, 0, 0, 6)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, font)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, spacing)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, drawTextEx)
 {
     zval *position;
@@ -558,6 +604,11 @@ PHP_METHOD(Image, drawTextEx)
 }
 
 // RLAPI Image ImageText(const char *text, int fontSize, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_fromDefaultFont, 0, 0, 3)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, fromDefaultFont)
 {
     zend_string *text;
@@ -584,6 +635,13 @@ PHP_METHOD(Image, fromDefaultFont)
 }
 
 // RLAPI Image ImageTextEx(Font font, const char *text, float fontSize, float spacing, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_fromFont, 0, 0, 5)
+    ZEND_ARG_INFO(0, font)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, spacing)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, fromFont)
 {
     zval *font;
@@ -615,6 +673,10 @@ PHP_METHOD(Image, fromFont)
 
 // Create an image from another image piece
 //RLAPI Image ImageFromImage(Image image, Rectangle rec);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_fromImage, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
+    ZEND_ARG_INFO(0, rec)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, fromImage)
 {
     zval *image;
@@ -641,6 +703,9 @@ PHP_METHOD(Image, fromImage)
 
 // Convert image data to desired format
 // RLAPI void ImageFormat(Image *image, int newFormat);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_format, 0, 0, 1)
+    ZEND_ARG_INFO(0, newFormat)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, format)
 {
     zend_long newFormat;
@@ -656,6 +721,10 @@ PHP_METHOD(Image, format)
 
 // Apply alpha mask to image
 // RLAPI void ImageAlphaMask(Image *image, Image alphaMask);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_alphaMask, 0, 0, 2)
+    ZEND_ARG_INFO(0, color)
+    ZEND_ARG_INFO(0, threshold)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, alphaMask)
 {
     zval *alphaMask;
@@ -672,6 +741,10 @@ PHP_METHOD(Image, alphaMask)
 
 // Clear alpha channel to desired color
 // RLAPI void ImageAlphaClear(Image *image, Color color, float threshold);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_alphaClear, 0, 0, 2)
+    ZEND_ARG_INFO(0, color)
+    ZEND_ARG_INFO(0, threshold)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, alphaClear)
 {
     zval *color;
@@ -690,6 +763,10 @@ PHP_METHOD(Image, alphaClear)
 
 // Crop image depending on alpha value
 // RLAPI void ImageAlphaCrop(Image *image, float threshold);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_alphaCrop, 0, 0, 2)
+    ZEND_ARG_INFO(0, color)
+    ZEND_ARG_INFO(0, threshold)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, alphaCrop)
 {
     zval *color;
@@ -708,6 +785,8 @@ PHP_METHOD(Image, alphaCrop)
 
 // Premultiply alpha channel
 // RLAPI void ImageAlphaPremultiply(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_alphaPremultiply, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, alphaPremultiply)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -716,6 +795,9 @@ PHP_METHOD(Image, alphaPremultiply)
 
 // Crop an image to a defined rectangle
 // RLAPI void ImageCrop(Image *image, Rectangle crop);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_crop, 0, 0, 1)
+    ZEND_ARG_INFO(0, crop)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, crop)
 {
     zval *crop;
@@ -732,6 +814,10 @@ PHP_METHOD(Image, crop)
 
 // Resize image (Bicubic scaling algorithm)
 // RLAPI void ImageResize(Image *image, int newWidth, int newHeight);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_resize, 0, 0, 2)
+    ZEND_ARG_INFO(0, newWidth)
+    ZEND_ARG_INFO(0, newHeight)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, resize)
 {
     zend_long newWidth;
@@ -749,6 +835,10 @@ PHP_METHOD(Image, resize)
 
 // Resize image (Nearest-Neighbor scaling algorithm)
 // RLAPI void ImageResizeNN(Image *image, int newWidth, int newHeight);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_resizeNearestNeighbor, 0, 0, 2)
+    ZEND_ARG_INFO(0, newWidth)
+    ZEND_ARG_INFO(0, newHeight)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, resizeNearestNeighbor)
 {
     zend_long newWidth;
@@ -766,6 +856,13 @@ PHP_METHOD(Image, resizeNearestNeighbor)
 
 // Resize canvas and fill with color
 // RLAPI void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_resizeCanvas, 0, 0, 5)
+    ZEND_ARG_INFO(0, newWidth)
+    ZEND_ARG_INFO(0, newHeight)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, offsetY)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, resizeCanvas)
 {
     zend_long newWidth;
@@ -790,6 +887,8 @@ PHP_METHOD(Image, resizeCanvas)
 
 // Generate all mipmap levels for a provided image
 // RLAPI void ImageMipmaps(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_genMipmaps, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, genMipmaps)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -798,6 +897,9 @@ PHP_METHOD(Image, genMipmaps)
 
 // Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
 // RLAPI void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_dither, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, dither)
 {
     zend_long rBpp;
@@ -819,6 +921,8 @@ PHP_METHOD(Image, dither)
 
 // Flip image vertically
 // RLAPI void ImageFlipVertical(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_flipVertical, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, flipVertical)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -827,6 +931,8 @@ PHP_METHOD(Image, flipVertical)
 
 // Flip image horizontally
 // RLAPI void ImageFlipHorizontal(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_flipHorizontal, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, flipHorizontal)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -835,6 +941,8 @@ PHP_METHOD(Image, flipHorizontal)
 
 // Rotate image clockwise 90deg
 // RLAPI void ImageRotateCW(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_rotateClockwise, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, rotateClockwise)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -843,6 +951,8 @@ PHP_METHOD(Image, rotateClockwise)
 
 // Rotate image counter-clockwise 90deg
 // RLAPI void ImageRotateCCW(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_rotateCounterClockwise, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, rotateCounterClockwise)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -851,6 +961,9 @@ PHP_METHOD(Image, rotateCounterClockwise)
 
 // Modify image color: tint
 // RLAPI void ImageColorTint(Image *image, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorTint, 0, 0, 1)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorTint)
 {
     zval *color;
@@ -867,6 +980,8 @@ PHP_METHOD(Image, colorTint)
 
 // Modify image color: invert
 // RLAPI void ImageColorInvert(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorInvert, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorInvert)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -875,6 +990,8 @@ PHP_METHOD(Image, colorInvert)
 
 // Modify image color: grayscale
 // RLAPI void ImageColorGrayscale(Image *image);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorGrayscale, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorGrayscale)
 {
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
@@ -883,6 +1000,9 @@ PHP_METHOD(Image, colorGrayscale)
 
 // Modify image color: contrast (-100 to 100)
 // RLAPI void ImageColorContrast(Image *image, float contrast);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorContrast, 0, 0, 1)
+    ZEND_ARG_INFO(0, contrast)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorContrast)
 {
     double contrast;
@@ -898,6 +1018,9 @@ PHP_METHOD(Image, colorContrast)
 
 // Modify image color: brightness (-255 to 255)
 // RLAPI void ImageColorBrightness(Image *image, int brightness);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorBrightness, 0, 0, 1)
+    ZEND_ARG_INFO(0, brightness)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorBrightness) // new ImageColorBrightness
 {
     zend_long brightness;
@@ -913,6 +1036,10 @@ PHP_METHOD(Image, colorBrightness) // new ImageColorBrightness
 
 // Modify image color: replace color
 // RLAPI void ImageColorReplace(Image *image, Color color, Color replace);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_colorReplace, 0, 0, 2)
+    ZEND_ARG_INFO(0, color)
+    ZEND_ARG_INFO(0, replace)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, colorReplace) // new ImageColorReplace
 {
     zval *color;
@@ -932,6 +1059,10 @@ PHP_METHOD(Image, colorReplace) // new ImageColorReplace
 
 // Load colors palette from image as a Color array (RGBA - 32bit)
 // RLAPI Color *LoadImagePalette(Image image, int maxPaletteSize, int *colorsCount);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_loadPalette, 0, 0, 2)
+    ZEND_ARG_INFO(0, maxPaletteSize)
+    ZEND_ARG_INFO(0, z_extractCount)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, loadPalette)
 {
     double maxPaletteSize;
@@ -963,6 +1094,9 @@ PHP_METHOD(Image, loadPalette)
 
 // Get image alpha border rectangle
 // RLAPI Rectangle GetImageAlphaBorder(Image image, float threshold);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_getAlphaBorder, 0, 0, 1)
+    ZEND_ARG_INFO(0, threshold)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, getAlphaBorder)
 {
     double threshold;
@@ -984,6 +1118,10 @@ PHP_METHOD(Image, getAlphaBorder)
 
 // Draw rectangle within an image
 // RLAPI void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_drawRectangleRec, 0, 0, 2)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Image, drawRectangleRec)
 {
     zval *rec;
@@ -1006,44 +1144,46 @@ PHP_METHOD(Image, drawRectangleRec)
 }
 
 const zend_function_entry php_raylib_image_methods[] = {
-        PHP_ME(Image, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, fromFont, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 //        PHP_ME(Image, fromColors, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Image, fromImage, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Image, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
-        PHP_ME(Image, toTexture, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, getData, NULL, ZEND_ACC_PUBLIC) // RLAPI Color *GetImageData(Image image);
-        PHP_ME(Image, copy, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, toPot, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, export, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, exportAsCode, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, draw, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawText, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawTextEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, drawRectangleRec, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, alphaMask, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, alphaClear, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, alphaCrop, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, alphaPremultiply, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, crop, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, resize, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, resizeNearestNeighbor, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, resizeCanvas, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, genMipmaps, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, dither, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, flipVertical, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, flipHorizontal, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, rotateClockwise, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, rotateCounterClockwise, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorTint, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorInvert, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorGrayscale, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorContrast, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorBrightness, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, colorReplace, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, loadPalette, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Image, getAlphaBorder, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, __construct           , arginfo_image__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, fromDefaultFont       , arginfo_image_fromDefaultFont, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Image, fromFont              , arginfo_image_fromFont, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Image, fromImage             , arginfo_image_fromImage, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Image, fromRaw               , arginfo_image_fromRaw, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
+        PHP_ME(Image, toTexture             , arginfo_image_toTexture, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, getData               , arginfo_image_getData, ZEND_ACC_PUBLIC)                 // RLAPI Color *GetImageData(Image image);
+        PHP_ME(Image, copy                  , arginfo_image_copy, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, toPot                 , arginfo_image_toPot, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, export                , arginfo_image_export, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, exportAsCode          , arginfo_image_exportAsCode, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, draw                  , arginfo_image_draw, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawText              , arginfo_image_drawText, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawTextEx            , arginfo_image_drawTextEx,ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawTextEx            , arginfo_image_drawTextEx, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, drawRectangleRec      , arginfo_image_drawRectangleRec, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaMask             , arginfo_image_alphaMask, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaClear            , arginfo_image_alphaClear, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaCrop             , arginfo_image_alphaCrop, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, alphaPremultiply      , arginfo_image_alphaPremultiply, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, crop                  , arginfo_image_crop, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resize                , arginfo_image_resize, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resizeNearestNeighbor , arginfo_image_resizeNearestNeighbor, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, resizeCanvas          , arginfo_image_resizeCanvas, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, genMipmaps            , arginfo_image_genMipmaps, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, dither                , arginfo_image_dither, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, flipVertical          , arginfo_image_flipVertical, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, flipHorizontal        , arginfo_image_flipHorizontal, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, rotateClockwise       , arginfo_image_rotateClockwise, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, rotateCounterClockwise, arginfo_image_rotateCounterClockwise, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorTint             , arginfo_image_colorTint, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorInvert           , arginfo_image_colorInvert, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorGrayscale        , arginfo_image_colorGrayscale, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorContrast         , arginfo_image_colorContrast, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorBrightness       , arginfo_image_colorBrightness, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, colorReplace          , arginfo_image_colorReplace, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, loadPalette           , arginfo_image_loadPalette, ZEND_ACC_PUBLIC)
+        PHP_ME(Image, getAlphaBorder        , arginfo_image_getAlphaBorder, ZEND_ACC_PUBLIC)
+
         PHP_FE_END
 };
 
