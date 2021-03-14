@@ -102,128 +102,88 @@ static zval *php_raylib_texture_property_reader(php_raylib_texture_object *obj, 
 }
 /* }}} */
 
-static zval *php_raylib_texture_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static zval *php_raylib_texture_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_texture_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_texture_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_TEXTURE_OBJ_P(object);
+    obj = php_raylib_texture_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd == NULL) {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
     }
 
     return retval;
 }
 /* }}} */
 
-static zval *php_raylib_texture_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) /* {{{ */
+static zval *php_raylib_texture_read_property(zend_object *object, zend_string *name, int type, void **cache_slot, zval *rv) /* {{{ */
 {
     php_raylib_texture_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_texture_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_TEXTURE_OBJ_P(object);
+    obj = php_raylib_texture_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
-    if (hnd != NULL) {
+    if (hnd) {
         retval = php_raylib_texture_property_reader(obj, hnd, rv);
-        if (retval == NULL) {
-            retval = &EG(uninitialized_zval);
-        }
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_read_property(object, name, type, cache_slot, rv);
     }
 
     return retval;
 }
 /* }}} */
 
-static int php_raylib_texture_has_property(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static int php_raylib_texture_has_property(zend_object *object, zend_string *name, int has_set_exists, void **cache_slot) /* {{{ */
 {
     php_raylib_texture_object *obj;
-    zval tmp_member;
     raylib_texture_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
-    int retval = 0;
+    int ret = 0;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_TEXTURE_OBJ_P(object);
-
-    if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
-    }
-
-    if (hnd != NULL) {
-        zval tmp, *prop;
-
-        if (type == 2) {
-            retval = 1;
-        } else if ((prop = php_raylib_texture_property_reader(obj, hnd, &tmp)) != NULL) {
-            if (type == 1) {
-                retval = zend_is_true(&tmp);
-            } else if (type == 0) {
-                retval = (Z_TYPE(tmp) != IS_NULL);
+    if ((hnd = zend_hash_find_ptr(obj->prop_handler, name)) != NULL) {
+        switch (has_set_exists) {
+            case ZEND_PROPERTY_EXISTS:
+                ret = 1;
+                break;
+            case ZEND_PROPERTY_NOT_EMPTY: {
+                zval rv;
+                zval *value = php_raylib_texture_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    convert_to_boolean(value);
+                    ret = Z_TYPE_P(value) == IS_TRUE ? 1 : 0;
+                }
+                break;
             }
+            case ZEND_PROPERTY_ISSET: {
+                zval rv;
+                zval *value = php_raylib_texture_read_property(object, name, BP_VAR_IS, cache_slot, &rv);
+                if (value != &EG(uninitialized_zval)) {
+                    ret = Z_TYPE_P(value) != IS_NULL? 1 : 0;
+                    zval_ptr_dtor(value);
+                }
+                break;
+            }
+                EMPTY_SWITCH_DEFAULT_CASE();
         }
-
-        zval_ptr_dtor(&tmp);
     } else {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->has_property(object, member, type, cache_slot);
+        ret = zend_std_has_property(object, name, has_set_exists, cache_slot);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
-    return retval;
+    return ret;
 }
 /* }}} */
 
-static HashTable *php_raylib_texture_get_gc(zval *object, zval **gc_data, int *gc_data_count) /* {{{ */
+static HashTable *php_raylib_texture_get_gc(zend_object *object, zval **gc_data, int *gc_data_count) /* {{{ */
 {
     *gc_data = NULL;
     *gc_data_count = 0;
@@ -231,14 +191,14 @@ static HashTable *php_raylib_texture_get_gc(zval *object, zval **gc_data, int *g
 }
 /* }}} */
 
-static HashTable *php_raylib_texture_get_properties(zval *object)/* {{{ */
+static HashTable *php_raylib_texture_get_properties(zend_object *object)/* {{{ */
 {
     php_raylib_texture_object *obj;
     HashTable *props;
     raylib_texture_prop_handler *hnd;
     zend_string *key;
 
-    obj = Z_TEXTURE_OBJ_P(object);
+    obj = php_raylib_texture_fetch_object(object);
     props = zend_std_get_properties(object);
 
     if (obj->prop_handler == NULL) {
@@ -246,13 +206,13 @@ static HashTable *php_raylib_texture_get_properties(zval *object)/* {{{ */
     }
 
     ZEND_HASH_FOREACH_STR_KEY_PTR(obj->prop_handler, key, hnd) {
-                zval *ret, val;
-                ret = php_raylib_texture_property_reader(obj, hnd, &val);
-                if (ret == NULL) {
-                    ret = &EG(uninitialized_zval);
-                }
-                zend_hash_update(props, key, ret);
-            } ZEND_HASH_FOREACH_END();
+        zval *ret, val;
+        ret = php_raylib_texture_property_reader(obj, hnd, &val);
+        if (ret == NULL) {
+            ret = &EG(uninitialized_zval);
+        }
+        zend_hash_update(props, key, ret);
+    } ZEND_HASH_FOREACH_END();
 
     return props;
 }
@@ -320,6 +280,9 @@ static zend_long php_raylib_texture_id(php_raylib_texture_object *obj) /* {{{ */
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, __construct)
 {
     zend_string *fileName;
@@ -332,30 +295,40 @@ PHP_METHOD(Texture, __construct)
     intern->texture = LoadTexture(fileName->val);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_width, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, width)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.width);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_height, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, height)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.height);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_format, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, format)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.format);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_id, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, id)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->texture.id);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_mipmaps, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, mipmaps)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
@@ -363,6 +336,9 @@ PHP_METHOD(Texture, mipmaps)
 }
 
 // RLAPI void SetTextureFilter(Texture2D texture, int filterMode);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_setFilter, 0, 0, 1)
+    ZEND_ARG_INFO(0, filterMode)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, setFilter)
 {
     zend_long filterMode;
@@ -376,6 +352,8 @@ PHP_METHOD(Texture, setFilter)
 }
 
 // RLAPI void GenTextureMipmaps(Texture2D *texture);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_genMipmaps, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, genMipmaps)
 {
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
@@ -383,6 +361,9 @@ PHP_METHOD(Texture, genMipmaps)
 }
 
 // RLAPI void SetTextureWrap(Texture2D texture, int wrapMode);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_setWrap, 0, 0, 1)
+    ZEND_ARG_INFO(0, wrapMode)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, setWrap)
 {
     zend_long wrapMode;
@@ -395,6 +376,11 @@ PHP_METHOD(Texture, setWrap)
     SetTextureWrap(intern->texture, (int) wrapMode);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_draw, 0, 0, 3)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, draw)
 {
     zend_long posX;
@@ -419,6 +405,10 @@ PHP_METHOD(Texture, draw)
 
 // Draw a Texture2D with position defined as Vector2
 // RLAPI void DrawTextureV(Texture2D texture, Vector2 position, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_drawV, 0, 0, 2)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, drawV)
 {
     zval *position;
@@ -438,6 +428,12 @@ PHP_METHOD(Texture, drawV)
 }
 
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_drawEx, 0, 0, 4)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, rotation)
+    ZEND_ARG_INFO(0, scale)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, drawEx)
 {
     zval *position;
@@ -461,6 +457,11 @@ PHP_METHOD(Texture, drawEx)
     DrawTextureEx(intern->texture, phpPosition->vector2, (float) rotation, (float) scale, phpTint->color);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_drawRec, 0, 0, 3)
+    ZEND_ARG_INFO(0, sourceRec)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, drawRec)
 {
     zval *sourceRec;
@@ -483,6 +484,12 @@ PHP_METHOD(Texture, drawRec)
     DrawTextureRec(intern->texture, phpSourceRec->rectangle, phpPosition->vector2, phpTint->color);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_drawQuad, 0, 0, 4)
+    ZEND_ARG_INFO(0, tiling)
+    ZEND_ARG_INFO(0, offset)
+    ZEND_ARG_INFO(0, quad)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, drawQuad)
 {
     zval *tiling;
@@ -509,6 +516,13 @@ PHP_METHOD(Texture, drawQuad)
 
 // Draw a part of a texture defined by a rectangle with 'pro' parameters
 // RLAPI void DrawTexturePro(Texture2D texture, Rectangle sourceRec, Rectangle destRec, Vector2 origin, float rotation, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture_drawPro, 0, 0, 5)
+    ZEND_ARG_INFO(0, sourceRec)
+    ZEND_ARG_INFO(0, destRec)
+    ZEND_ARG_INFO(0, origin)
+    ZEND_ARG_INFO(0, rotation)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, drawPro)
 {
     zval *sourceRec;
@@ -537,21 +551,21 @@ PHP_METHOD(Texture, drawPro)
 }
 
 const zend_function_entry php_raylib_texture_methods[] = {
-        PHP_ME(Texture, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, width, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, height, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, format, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, id, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, mipmaps, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, genMipmaps, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, setFilter, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, setWrap, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, draw, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, drawV, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, drawEx, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, drawRec, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, drawQuad, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Texture, drawPro, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, __construct, arginfo_texture__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, width      , arginfo_texture_width, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, height     , arginfo_texture_height, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, format     , arginfo_texture_format, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, id         , arginfo_texture_id, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, mipmaps    , arginfo_texture_mipmaps, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, genMipmaps , arginfo_texture_genMipmaps, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, setFilter  , arginfo_texture_setFilter, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, setWrap    , arginfo_texture_setWrap, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, draw       , arginfo_texture_draw, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, drawV      , arginfo_texture_drawV, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, drawEx     , arginfo_texture_drawEx, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, drawRec    , arginfo_texture_drawRec, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, drawQuad   , arginfo_texture_drawQuad, ZEND_ACC_PUBLIC)
+        PHP_ME(Texture, drawPro    , arginfo_texture_drawPro, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
@@ -565,16 +579,16 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
 
     //-- Object handlers
     memcpy(&php_raylib_texture_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-    php_raylib_texture_object_handlers.offset = XtOffsetOf(php_raylib_texture_object, std);
-    php_raylib_texture_object_handlers.free_obj = &php_raylib_texture_free_storage;
+    php_raylib_texture_object_handlers.offset    = XtOffsetOf(php_raylib_texture_object, std);
+    php_raylib_texture_object_handlers.free_obj  = &php_raylib_texture_free_storage;
     php_raylib_texture_object_handlers.clone_obj = NULL;
     
     // Props
     php_raylib_texture_object_handlers.get_property_ptr_ptr = php_raylib_texture_get_property_ptr_ptr;
-    php_raylib_texture_object_handlers.get_gc         = php_raylib_texture_get_gc;
-    php_raylib_texture_object_handlers.get_properties = php_raylib_texture_get_properties;
-    php_raylib_texture_object_handlers.read_property	= php_raylib_texture_read_property;
-    php_raylib_texture_object_handlers.has_property	= php_raylib_texture_has_property;
+    php_raylib_texture_object_handlers.get_gc               = php_raylib_texture_get_gc;
+    php_raylib_texture_object_handlers.get_properties       = php_raylib_texture_get_properties;
+    php_raylib_texture_object_handlers.read_property        = php_raylib_texture_read_property;
+    php_raylib_texture_object_handlers.has_property         = php_raylib_texture_has_property;
     
     INIT_NS_CLASS_ENTRY(ce, "raylib", "Texture", php_raylib_texture_methods);
     php_raylib_texture_ce = zend_register_internal_class(&ce);
