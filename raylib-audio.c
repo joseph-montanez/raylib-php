@@ -137,7 +137,6 @@ const zend_function_entry php_raylib_audio_methods[] = {
         PHP_ME(Audio, initDevice, arginfo_audio_initDevice, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Audio, closeDevice, arginfo_audio_closeDevice, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Audio, setMasterVolume, arginfo_audio_setMasterVolume, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Audio, setMasterVolume, arginfo_audio_setMasterVolume, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
