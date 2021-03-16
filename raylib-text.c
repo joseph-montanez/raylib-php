@@ -81,6 +81,8 @@ zend_object * php_raylib_text_new(zend_class_entry *ce)
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_text__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Text, __construct)
 {
     php_raylib_text_object *intern = Z_TEXT_OBJ_P(ZEND_THIS);
@@ -88,6 +90,10 @@ PHP_METHOD(Text, __construct)
 
 
 //void DrawFPS(int posX, int posY)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_text_drawFps, 0, 0, 2)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Text, drawFps)
 {
     zend_long posX;
@@ -102,6 +108,13 @@ PHP_METHOD(Text, drawFps)
 }
 
 //void DrawText(const char *text, int posX, int posY, int fontSize, Color color)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_text_draw, 0, 0, 5)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Text, draw)
 {
     zend_string *text;
@@ -124,6 +137,10 @@ PHP_METHOD(Text, draw)
 }
 
 //int MeasureText(const char *text, int fontSize)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_text_measure, 0, 0, 2)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Text, measure)
 {
     zend_string *text;
@@ -139,10 +156,10 @@ PHP_METHOD(Text, measure)
 
 
 const zend_function_entry php_raylib_text_methods[] = {
-        PHP_ME(Text, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Text, drawFps, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Text, draw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Text, measure, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Text, __construct, arginfo_text__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Text, drawFps    , arginfo_text_drawFps, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Text, draw       , arginfo_text_draw, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Text, measure    , arginfo_text_measure, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

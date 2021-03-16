@@ -78,7 +78,8 @@ zend_object * php_raylib_cursor_new(zend_class_entry *ce)
 }
 
 // PHP object handling
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, __construct)
 {
     php_raylib_cursor_object *intern = Z_CURSOR_OBJ_P(ZEND_THIS);
@@ -86,6 +87,8 @@ PHP_METHOD(Cursor, __construct)
 
 // Shows cursor
 // void ShowCursor(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_show, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, show)
 {
     ShowCursor();
@@ -93,6 +96,8 @@ PHP_METHOD(Cursor, show)
 
 // Hides cursor
 // void HideCursor(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_hide, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, hide)
 {
     HideCursor();
@@ -100,6 +105,8 @@ PHP_METHOD(Cursor, hide)
 
 // Check if cursor is not visible
 // bool IsCursorHidden(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_isHidden, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, isHidden)
 {
     RETURN_BOOL(IsWindowReady());
@@ -107,6 +114,8 @@ PHP_METHOD(Cursor, isHidden)
 
 // Enables cursor (unlock cursor)
 // void EnableCursor(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_enable, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, enable)
 {
     EnableCursor();
@@ -114,6 +123,8 @@ PHP_METHOD(Cursor, enable)
 
 // Disables cursor (lock cursor)
 //void DisableCursor(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_disable, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, disable)
 {
     DisableCursor();
@@ -121,6 +132,8 @@ PHP_METHOD(Cursor, disable)
 
 // Check if cursor is on the current screen.
 // bool IsCursorOnScreen(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_cursor_isOnScreen, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Cursor, isOnScreen)
 {
     RETURN_BOOL(IsCursorOnScreen());
@@ -128,13 +141,13 @@ PHP_METHOD(Cursor, isOnScreen)
 
 
 const zend_function_entry php_raylib_cursor_methods[] = {
-        PHP_ME(Cursor, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Cursor, show, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Cursor, hide, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Cursor, isHidden, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Cursor, enable, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Cursor, disable, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Cursor, isOnScreen, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, __construct, arginfo_cursor__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Cursor, show       , arginfo_cursor_show, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, hide       , arginfo_cursor_hide, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, isHidden   , arginfo_cursor_isHidden, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, enable     , arginfo_cursor_enable, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, disable    , arginfo_cursor_disable, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Cursor, isOnScreen , arginfo_cursor_isOnScreen, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

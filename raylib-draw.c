@@ -85,13 +85,17 @@ zend_object * php_raylib_draw_new(zend_class_entry *ce)
 }
 
 // PHP object handling
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, __construct)
 {
     php_raylib_draw_object *intern = Z_DRAW_OBJ_P(ZEND_THIS);
 }
 
 //void ClearBackground(Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_clearBackground, 0, 0, 1)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, clearBackground)
 {
     zval *color;
@@ -106,18 +110,25 @@ PHP_METHOD(Draw, clearBackground)
 }
 
 //void BeginDrawing(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_begin, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, begin)
 {
     BeginDrawing();
 }
 
 //void EndDrawing(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_end, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, end)
 {
     EndDrawing();
 }
 
 //void Begin2dMode(Camera2D camera3d);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_beginMode2d, 0, 0, 1)
+    ZEND_ARG_INFO(0, camera2d)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, beginMode2d)
 {
     zval *camera2d;
@@ -133,12 +144,17 @@ PHP_METHOD(Draw, beginMode2d)
 }
 
 //void End2dMode(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_endMode2d, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, endMode2d)
 {
     EndMode2D();
 }
 
 //void Begin3dMode(Camera camera3d);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_beginMode3d, 0, 0, 1)
+    ZEND_ARG_INFO(0, camera3d)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, beginMode3d)
 {
     zval *camera3d;
@@ -153,12 +169,20 @@ PHP_METHOD(Draw, beginMode3d)
 }
 
 //void End3dMode(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_endMode3d, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, endMode3d)
 {
     EndMode3D();
 }
 
 //void RLAPI void BeginScissorMode(int x, int y, int width, int height);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_beginScissorMode, 0, 0, 4)
+    ZEND_ARG_INFO(0, x)
+    ZEND_ARG_INFO(0, y)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, beginScissorMode)
 {
     zend_long x;
@@ -177,12 +201,19 @@ PHP_METHOD(Draw, beginScissorMode)
 }
 
 //RLAPI void EndScissorMode(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_endScissorMode, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, endScissorMode)
 {
     EndScissorMode();
 }
 
 //void DrawPixel(int posX, int posY, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_pixel, 0, 0, 3)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, pixel)
 {
     zend_long posX;
@@ -202,6 +233,10 @@ PHP_METHOD(Draw, pixel)
 }
 
 //void DrawPixelV(Vector2 position, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_pixelV, 0, 0, 2)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, pixelV)
 {
     zval *position;
@@ -219,6 +254,13 @@ PHP_METHOD(Draw, pixelV)
 }
 
 //void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_line, 0, 0, 5)
+    ZEND_ARG_INFO(0, startPosX)
+    ZEND_ARG_INFO(0, startPosY)
+    ZEND_ARG_INFO(0, endPosX)
+    ZEND_ARG_INFO(0, endPosX)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, line)
 {
     zend_long startPosX;
@@ -241,6 +283,11 @@ PHP_METHOD(Draw, line)
 }
 
 //void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_lineV, 0, 0, 3)
+    ZEND_ARG_INFO(0, startPosX)
+    ZEND_ARG_INFO(0, startPosY)
+    ZEND_ARG_INFO(0, endPosX)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, lineV)
 {
     zval *startPos;
@@ -261,6 +308,12 @@ PHP_METHOD(Draw, lineV)
 }
 
 //void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_lineEx, 0, 0, 4)
+    ZEND_ARG_INFO(0, startPos)
+    ZEND_ARG_INFO(0, endPos)
+    ZEND_ARG_INFO(0, thick)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, lineEx)
 {
     zval *startPos;
@@ -283,6 +336,12 @@ PHP_METHOD(Draw, lineEx)
 }
 
 //void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_lineBezier, 0, 0, 4)
+    ZEND_ARG_INFO(0, startPos)
+    ZEND_ARG_INFO(0, endPos)
+    ZEND_ARG_INFO(0, thick)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, lineBezier)
 {
     zval *startPos;
@@ -307,6 +366,10 @@ PHP_METHOD(Draw, lineBezier)
 
 // Draw lines sequence
 // RLAPI void DrawLineStrip(Vector2 *points, int numPoints, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_lineStrip, 0, 0, 2)
+    ZEND_ARG_INFO(0, points)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, lineStrip)
 {
     zval *points;
@@ -340,6 +403,12 @@ PHP_METHOD(Draw, lineStrip)
 }
 
 //void DrawCircle(int centerX, int centerY, float radius, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circle, 0, 0, 4)
+    ZEND_ARG_INFO(0, centerX)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circle)
 {
     zend_long centerX;
@@ -361,6 +430,14 @@ PHP_METHOD(Draw, circle)
 
 // Draw a piece of a circle
 // RLAPI void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circleSector, 0, 0, 6)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, startAngle)
+    ZEND_ARG_INFO(0, endAngle)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circleSector)
 {
     zval *center;
@@ -388,6 +465,14 @@ PHP_METHOD(Draw, circleSector)
 
 // Draw circle sector outline
 // RLAPI void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circleSectorLines, 0, 0, 6)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, startAngle)
+    ZEND_ARG_INFO(0, endAngle)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circleSectorLines)
 {
     zval *center;
@@ -413,6 +498,11 @@ PHP_METHOD(Draw, circleSectorLines)
 }
 
 //void DrawCircle(Vector2 center, float radius, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circleV, 0, 0, 3)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circleV)
 {
     zval *center;
@@ -432,6 +522,13 @@ PHP_METHOD(Draw, circleV)
 }
 
 //void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circleGradient, 0, 0, 5)
+    ZEND_ARG_INFO(0, centerX)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circleGradient)
 {
     zend_long centerX;
@@ -455,6 +552,12 @@ PHP_METHOD(Draw, circleGradient)
 }
 
 //void DrawCircleLines(int centerX, int centerY, float radius, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_circleLines, 0, 0, 4)
+    ZEND_ARG_INFO(0, centerX)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, circleLines)
 {
     zend_long centerX;
@@ -476,6 +579,13 @@ PHP_METHOD(Draw, circleLines)
 
 // Draw ellipse
 // RLAPI void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_ellipse, 0, 0, 5)
+    ZEND_ARG_INFO(0, centerX)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, radiusH)
+    ZEND_ARG_INFO(0, radiusV)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, ellipse)
 {
     zend_long centerX;
@@ -499,6 +609,13 @@ PHP_METHOD(Draw, ellipse)
 
 // Draw ellipse outline
 // RLAPI void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_ellipseLines, 0, 0, 5)
+    ZEND_ARG_INFO(0, centerX)
+    ZEND_ARG_INFO(0, centerY)
+    ZEND_ARG_INFO(0, radiusH)
+    ZEND_ARG_INFO(0, radiusV)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, ellipseLines)
 {
     zend_long centerX;
@@ -522,6 +639,15 @@ PHP_METHOD(Draw, ellipseLines)
 
 // Draw ring
 // RLAPI void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_ring, 0, 0, 7)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, innerRadius)
+    ZEND_ARG_INFO(0, outerRadius)
+    ZEND_ARG_INFO(0, startAngle)
+    ZEND_ARG_INFO(0, endAngle)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, ring)
 {
     zval *center;
@@ -550,6 +676,15 @@ PHP_METHOD(Draw, ring)
 
 // Draw ring
 // RLAPI void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_ringLines, 0, 0, 7)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, innerRadius)
+    ZEND_ARG_INFO(0, outerRadius)
+    ZEND_ARG_INFO(0, startAngle)
+    ZEND_ARG_INFO(0, endAngle)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, ringLines)
 {
     zval *center;
@@ -578,6 +713,13 @@ PHP_METHOD(Draw, ringLines)
 
 
 //void DrawRectangle(int posX, int posY, int width, int height, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangle, 0, 0, 5)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangle)
 {
     zend_long posX;
@@ -600,6 +742,11 @@ PHP_METHOD(Draw, rectangle)
 }
 
 //void DrawRectangleV(Vector2 position, Vector2 size, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleV, 0, 0, 3)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, size)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleV)
 {
     zval *position;
@@ -620,6 +767,10 @@ PHP_METHOD(Draw, rectangleV)
 }
 
 //void DrawRectangleRec(Rectangle rec, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleRec, 0, 0, 2)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleRec)
 {
     zval *rec;
@@ -637,6 +788,12 @@ PHP_METHOD(Draw, rectangleRec)
 }
 
 //void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectanglePro, 0, 0, 4)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, origin)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectanglePro)
 {
     zval *rec;
@@ -660,6 +817,14 @@ PHP_METHOD(Draw, rectanglePro)
 
 // Draw a vertical-gradient-filled rectangle
 // RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleGradientV, 0, 0, 6)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, color1)
+    ZEND_ARG_INFO(0, color2)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleGradientV)
 {
     zend_long posX;
@@ -686,6 +851,14 @@ PHP_METHOD(Draw, rectangleGradientV)
 
 // Draw a horizontal-gradient-filled rectangle
 // RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleGradientH, 0, 0, 6)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, color1)
+    ZEND_ARG_INFO(0, color2)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleGradientH)
 {
     zend_long posX;
@@ -712,6 +885,13 @@ PHP_METHOD(Draw, rectangleGradientH)
 
 // Draw a gradient-filled rectangle with custom vertex colors
 // RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleGradientEx, 0, 0, 5)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, color1)
+    ZEND_ARG_INFO(0, color2)
+    ZEND_ARG_INFO(0, color3)
+    ZEND_ARG_INFO(0, color4)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleGradientEx)
 {
     zval *rec;
@@ -738,7 +918,14 @@ PHP_METHOD(Draw, rectangleGradientEx)
 }
 
 // Draw rectangle outline
-//RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   
+//RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleLines, 0, 0, 5)
+    ZEND_ARG_INFO(0, posX)
+    ZEND_ARG_INFO(0, posY)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleLines)
 {
     zend_long posX;
@@ -762,6 +949,11 @@ PHP_METHOD(Draw, rectangleLines)
 
 // Draw rectangle outline with extended parameters
 //RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleLinesEx, 0, 0, 3)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, lineThick)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleLinesEx)
 {
     zval *rec;
@@ -782,6 +974,12 @@ PHP_METHOD(Draw, rectangleLinesEx)
 
 // Draw rectangle with rounded edges
 // RLAPI void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleRounded, 0, 0, 4)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, roundness)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleRounded)
 {
     zval *rec;
@@ -804,6 +1002,13 @@ PHP_METHOD(Draw, rectangleRounded)
 
 // Draw rectangle with rounded edges outline
 // RLAPI void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_rectangleRoundedLines, 0, 0, 5)
+    ZEND_ARG_INFO(0, rec)
+    ZEND_ARG_INFO(0, roundness)
+    ZEND_ARG_INFO(0, segments)
+    ZEND_ARG_INFO(0, lineThick)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, rectangleRoundedLines)
 {
     zval *rec;
@@ -828,6 +1033,12 @@ PHP_METHOD(Draw, rectangleRoundedLines)
 
 // Draw a color-filled triangle
 //RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_triangle, 0, 0, 4)
+    ZEND_ARG_INFO(0, v1)
+    ZEND_ARG_INFO(0, v2)
+    ZEND_ARG_INFO(0, v3)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, triangle)
 {
     zval *v1;
@@ -852,6 +1063,12 @@ PHP_METHOD(Draw, triangle)
 
 // Draw triangle outline (vertex in counter-clockwise order!)
 // RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_triangleLines, 0, 0, 4)
+    ZEND_ARG_INFO(0, v1)
+    ZEND_ARG_INFO(0, v2)
+    ZEND_ARG_INFO(0, v3)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, triangleLines)
 {
     zval *v1;
@@ -876,6 +1093,10 @@ PHP_METHOD(Draw, triangleLines)
 
 // Draw a triangle fan defined by points (first vertex is the center)
 // RLAPI void DrawTriangleFan(Vector2 *points, int numPoints, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_triangleFan, 0, 0, 2)
+    ZEND_ARG_INFO(0, points)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, triangleFan)
 {
     zval *points;
@@ -909,6 +1130,10 @@ PHP_METHOD(Draw, triangleFan)
 
 // Draw a triangle strip defined by points
 // RLAPI void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_triangleStrip, 0, 0, 2)
+    ZEND_ARG_INFO(0, points)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, triangleStrip)
 {
     zval *points;
@@ -943,6 +1168,13 @@ PHP_METHOD(Draw, triangleStrip)
 
 // Draw a regular polygon (Vector version)
 // RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_poly, 0, 0, 5)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, sides)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, rotation)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, poly)
 {
     zval *center;
@@ -967,6 +1199,13 @@ PHP_METHOD(Draw, poly)
 
 // Draw a polygon outline of n sides
 // RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_draw_polyLines, 0, 0, 5)
+    ZEND_ARG_INFO(0, center)
+    ZEND_ARG_INFO(0, sides)
+    ZEND_ARG_INFO(0, radius)
+    ZEND_ARG_INFO(0, rotation)
+    ZEND_ARG_INFO(0, color)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Draw, polyLines)
 {
     zval *center;
@@ -989,68 +1228,54 @@ PHP_METHOD(Draw, polyLines)
     DrawPolyLines(phpCenter->vector2, (int) radius, (float) radius, (float) rotation, phpColor->color);
 }
 
-/*
- *
-RLAPI void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a vertical-gradient-filled rectangle
-RLAPI void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);// Draw a horizontal-gradient-filled rectangle
-RLAPI void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);       // Draw a gradient-filled rectangle with custom vertex colors
-RLAPI void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
-RLAPI void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);                              // Draw rectangle outline with extended parameters
-RLAPI void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                                // Draw a color-filled triangle
-RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);                           // Draw triangle outline
-RLAPI void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);               // Draw a regular polygon (Vector version)
-RLAPI void DrawPolyEx(Vector2 *points, int numPoints, Color color);                                      // Draw a closed polygon defined by points
-RLAPI void DrawPolyExLines(Vector2 *points, int numPoints, Color color);                                 // Draw polygon lines
- */
-
 
 const zend_function_entry php_raylib_draw_methods[] = {
-        PHP_ME(Draw, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Draw, clearBackground, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, begin, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, end, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, beginMode2d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, endMode2d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, beginMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, endMode3d, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, beginScissorMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, endScissorMode, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, __construct     , arginfo_draw__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Draw, clearBackground , arginfo_draw_clearBackground, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, begin           , arginfo_draw_begin, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, end             , arginfo_draw_end, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginMode2d     , arginfo_draw_beginMode2d, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endMode2d       , arginfo_draw_endMode2d, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginMode3d     , arginfo_draw_beginMode3d, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endMode3d       , arginfo_draw_endMode3d, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, beginScissorMode, arginfo_draw_beginScissorMode, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, endScissorMode  , arginfo_draw_endScissorMode, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 
         // Basic shapes drawing functions
-        PHP_ME(Draw, pixel, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, pixelV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, line, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, lineV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, lineEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, lineBezier, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circleSector, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circleSectorLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circleGradient, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, circleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, ellipse, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, ellipseLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, ring, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, ringLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleRec, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectanglePro, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleGradientV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleGradientH, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleGradientEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleLinesEx, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleRounded, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, rectangleRoundedLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, lineStrip, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, triangle, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, triangleLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, triangleFan, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, triangleStrip, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, poly, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Draw, polyLines, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, pixel                , arginfo_draw_pixel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, pixelV               , arginfo_draw_pixelV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, line                 , arginfo_draw_line, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineV                , arginfo_draw_lineV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineEx               , arginfo_draw_lineEx, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineBezier           , arginfo_draw_lineBezier, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circle               , arginfo_draw_circle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleSector         , arginfo_draw_circleSector, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleSectorLines    , arginfo_draw_circleSectorLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleGradient       , arginfo_draw_circleGradient, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleV              , arginfo_draw_circleV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, circleLines          , arginfo_draw_circleLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, ellipse              , arginfo_draw_ellipse, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, ellipseLines         , arginfo_draw_ellipseLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, ring                 , arginfo_draw_ring, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, ringLines            , arginfo_draw_ringLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangle            , arginfo_draw_rectangle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleV           , arginfo_draw_rectangleV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleRec         , arginfo_draw_rectangleRec, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectanglePro         , arginfo_draw_rectanglePro, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleGradientV   , arginfo_draw_rectangleGradientV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleGradientH   , arginfo_draw_rectangleGradientH, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleGradientEx  , arginfo_draw_rectangleGradientEx, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleLines       , arginfo_draw_rectangleLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleLinesEx     , arginfo_draw_rectangleLinesEx, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleRounded     , arginfo_draw_rectangleRounded, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, rectangleRoundedLines, arginfo_draw_rectangleRoundedLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, lineStrip            , arginfo_draw_lineStrip, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangle             , arginfo_draw_triangle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangleLines        , arginfo_draw_triangleLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangleFan          , arginfo_draw_triangleFan, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, triangleStrip        , arginfo_draw_triangleStrip, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, poly                 , arginfo_draw_poly, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Draw, polyLines            , arginfo_draw_polyLines, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
