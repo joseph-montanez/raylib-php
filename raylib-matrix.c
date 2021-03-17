@@ -256,11 +256,7 @@ zend_object * php_raylib_matrix_new_ex(zend_class_entry *ce, zend_object *orig)
 
     if (orig) {
         php_raylib_matrix_object *other = php_raylib_matrix_fetch_object(orig);
-        intern->matrix = (Matrix) {
-                .x = other->matrix.x,
-                .y = other->matrix.y,
-                .z = other->matrix.z
-        };
+        intern->matrix = other->matrix;
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -1082,38 +1078,38 @@ PHP_METHOD(Matrix, setM15)
 
 const zend_function_entry php_raylib_matrix_methods[] = {
         PHP_ME(Matrix, __construct, arginfo_matrix__construct, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getX, arginfo_matrix_getM0, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setX, arginfo_matrix_setM0, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getY, arginfo_matrix_getM1, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setY, arginfo_matrix_setM1, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getZ, arginfo_matrix_getM2, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setZ, arginfo_matrix_setM2, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getW, arginfo_matrix_getM3, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setW, arginfo_matrix_setM3, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getX, arginfo_matrix_getM4, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setX, arginfo_matrix_setM4, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getY, arginfo_matrix_getM5, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setY, arginfo_matrix_setM5, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getZ, arginfo_matrix_getM6, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setZ, arginfo_matrix_setM6, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getW, arginfo_matrix_getM7, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setW, arginfo_matrix_setM7, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getX, arginfo_matrix_getM8, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setX, arginfo_matrix_setM8, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getY, arginfo_matrix_getM9, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setY, arginfo_matrix_setM9, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getZ, arginfo_matrix_getM10, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setZ, arginfo_matrix_setM10, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getW, arginfo_matrix_getM11, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setW, arginfo_matrix_setM11, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getX, arginfo_matrix_getM12, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setX, arginfo_matrix_setM12, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getY, arginfo_matrix_getM13, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setY, arginfo_matrix_setM13, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getZ, arginfo_matrix_getM14, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setZ, arginfo_matrix_setM14, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, getW, arginfo_matrix_getM15, ZEND_ACC_PUBLIC)
-        PHP_ME(Matrix, setW, arginfo_matrix_setM15, ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM0      , arginfo_matrix_getM0     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM0      , arginfo_matrix_setM0     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM1      , arginfo_matrix_getM1     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM1      , arginfo_matrix_setM1     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM2      , arginfo_matrix_getM2     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM2      , arginfo_matrix_setM2     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM3      , arginfo_matrix_getM3     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM3      , arginfo_matrix_setM3     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM4      , arginfo_matrix_getM4     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM4      , arginfo_matrix_setM4     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM5      , arginfo_matrix_getM5     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM5      , arginfo_matrix_setM5     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM6      , arginfo_matrix_getM6     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM6      , arginfo_matrix_setM6     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM7      , arginfo_matrix_getM7     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM7      , arginfo_matrix_setM7     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM8      , arginfo_matrix_getM8     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM8      , arginfo_matrix_setM8     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM9      , arginfo_matrix_getM9     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM9      , arginfo_matrix_setM9     , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM10     , arginfo_matrix_getM10    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM10     , arginfo_matrix_setM10    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM11     , arginfo_matrix_getM11    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM11     , arginfo_matrix_setM11    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM12     , arginfo_matrix_getM12    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM12     , arginfo_matrix_setM12    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM13     , arginfo_matrix_getM13    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM13     , arginfo_matrix_setM13    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM14     , arginfo_matrix_getM14    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM14     , arginfo_matrix_setM14    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, getM15     , arginfo_matrix_getM15    , ZEND_ACC_PUBLIC)
+        PHP_ME(Matrix, setM15     , arginfo_matrix_setM15    , ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
