@@ -772,7 +772,7 @@ PHP_METHOD(Matrix, getM3)
     RETURN_DOUBLE(intern->matrix.m3);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm3, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM3, 0, 0, 1)
                 ZEND_ARG_INFO(0, m3)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM3)
@@ -796,7 +796,7 @@ PHP_METHOD(Matrix, getM4)
     RETURN_DOUBLE(intern->matrix.m4);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm4, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM4, 0, 0, 1)
                 ZEND_ARG_INFO(0, m4)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM4)
@@ -820,7 +820,7 @@ PHP_METHOD(Matrix, getM5)
     RETURN_DOUBLE(intern->matrix.m5);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm5, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM5, 0, 0, 1)
                 ZEND_ARG_INFO(0, m5)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM5)
@@ -844,7 +844,7 @@ PHP_METHOD(Matrix, getM6)
     RETURN_DOUBLE(intern->matrix.m6);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm6, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM6, 0, 0, 1)
                 ZEND_ARG_INFO(0, m6)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM6)
@@ -868,7 +868,7 @@ PHP_METHOD(Matrix, getM7)
     RETURN_DOUBLE(intern->matrix.m7);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm7, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM7, 0, 0, 1)
                 ZEND_ARG_INFO(0, m7)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM7)
@@ -892,7 +892,7 @@ PHP_METHOD(Matrix, getM8)
     RETURN_DOUBLE(intern->matrix.m8);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm8, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM8, 0, 0, 1)
                 ZEND_ARG_INFO(0, m8)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM8)
@@ -916,7 +916,7 @@ PHP_METHOD(Matrix, getM9)
     RETURN_DOUBLE(intern->matrix.m9);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm9, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM9, 0, 0, 1)
                 ZEND_ARG_INFO(0, m9)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM9)
@@ -940,7 +940,7 @@ PHP_METHOD(Matrix, getM10)
     RETURN_DOUBLE(intern->matrix.m10);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm10, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM10, 0, 0, 1)
                 ZEND_ARG_INFO(0, m10)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM10)
@@ -964,7 +964,7 @@ PHP_METHOD(Matrix, getM11)
     RETURN_DOUBLE(intern->matrix.m11);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm11, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM11, 0, 0, 1)
                 ZEND_ARG_INFO(0, m11)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM11)
@@ -988,7 +988,7 @@ PHP_METHOD(Matrix, getM12)
     RETURN_DOUBLE(intern->matrix.m12);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm12, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM12, 0, 0, 1)
                 ZEND_ARG_INFO(0, m12)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM12)
@@ -1012,7 +1012,7 @@ PHP_METHOD(Matrix, getM13)
     RETURN_DOUBLE(intern->matrix.m13);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm13, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM13, 0, 0, 1)
                 ZEND_ARG_INFO(0, m13)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM13)
@@ -1036,7 +1036,7 @@ PHP_METHOD(Matrix, getM14)
     RETURN_DOUBLE(intern->matrix.m14);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm14, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM14, 0, 0, 1)
                 ZEND_ARG_INFO(0, m14)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM14)
@@ -1060,7 +1060,7 @@ PHP_METHOD(Matrix, getM15)
     RETURN_DOUBLE(intern->matrix.m15);
 }
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setm15, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix_setM15, 0, 0, 1)
                 ZEND_ARG_INFO(0, m15)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, setM15)
