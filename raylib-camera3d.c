@@ -51,6 +51,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib-vector3.h"
 #include "raylib-vector2.h"
 #include "raylib-ray.h"
+#include "raylib-matrix.h"
 #include "raylib-camera3d.h"
 #include "raylib-utils.h"
 #include "raylib-rectangle.h"
