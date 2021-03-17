@@ -82,6 +82,9 @@ zend_object * php_raylib_wave_new(zend_class_entry *ce)
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, __construct)
 {
     zend_string *fileName;
@@ -95,12 +98,17 @@ PHP_METHOD(Wave, __construct)
     intern->wave = LoadWave(fileName->val);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getSampleCount, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getSampleCount)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleCount);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setSampleCount, 0, 0, 1)
+    ZEND_ARG_INFO(0, sampleCount)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, setSampleCount)
 {
     zend_long sampleCount;
@@ -114,13 +122,17 @@ PHP_METHOD(Wave, setSampleCount)
     intern->wave.sampleCount = (unsigned int) sampleCount;
 }
 
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getSampleRate, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getSampleRate)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleRate);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setSampleRate, 0, 0, 1)
+    ZEND_ARG_INFO(0, sampleRate)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, setSampleRate)
 {
     zend_long sampleRate;
@@ -134,12 +146,17 @@ PHP_METHOD(Wave, setSampleRate)
     intern->wave.sampleRate = (unsigned int) sampleRate;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getSampleSize, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getSampleSize)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.sampleSize);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setSampleSize, 0, 0, 1)
+    ZEND_ARG_INFO(0, sampleSize)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, setSampleSize)
 {
     zend_long sampleSize;
@@ -153,12 +170,17 @@ PHP_METHOD(Wave, setSampleSize)
     intern->wave.sampleSize = (unsigned int) sampleSize;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getChannels, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getChannels)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
     RETURN_LONG(intern->wave.channels);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setChannels, 0, 0, 1)
+    ZEND_ARG_INFO(0, channels)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, setChannels)
 {
     zend_long channels;
@@ -172,6 +194,8 @@ PHP_METHOD(Wave, setChannels)
     intern->wave.channels = (unsigned int) channels;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getData, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getData)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
@@ -181,12 +205,15 @@ PHP_METHOD(Wave, getData)
     RETURN_STR(str);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_export, 0, 0, 1)
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, export)
 {
     zend_string *data;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(data)
+        Z_PARAM_STR(data)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
@@ -194,7 +221,9 @@ PHP_METHOD(Wave, export)
     ExportWave(intern->wave, data->val);
 }
 
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_exportAsCode, 0, 0, 1)
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, exportAsCode)
 {
     zend_string *data;
@@ -208,6 +237,9 @@ PHP_METHOD(Wave, exportAsCode)
     ExportWaveAsCode(intern->wave, data->val);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setData, 0, 0, 1)
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, setData)
 {
     zend_string *data;
@@ -221,6 +253,10 @@ PHP_METHOD(Wave, setData)
     intern->wave.data = data->val;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_crop, 0, 0, 2)
+    ZEND_ARG_INFO(0, initSample)
+    ZEND_ARG_INFO(0, finalSample)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, crop)
 {
     zend_long initSample;
@@ -236,6 +272,11 @@ PHP_METHOD(Wave, crop)
     WaveCrop(&intern->wave, (unsigned int) initSample, (unsigned int) finalSample);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_format, 0, 0, 3)
+    ZEND_ARG_INFO(0, sampleRate)
+    ZEND_ARG_INFO(0, sampleSize)
+    ZEND_ARG_INFO(0, channels)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, format)
 {
     zend_long sampleRate;
@@ -253,7 +294,8 @@ PHP_METHOD(Wave, format)
     WaveFormat(&intern->wave, (unsigned int) sampleRate, (unsigned int) sampleSize, (unsigned int) channels);
 }
 
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getDataArray, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getDataArray)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
@@ -276,7 +318,8 @@ PHP_METHOD(Wave, getDataArray)
 
 //    return return_value;
 }
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_copy, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, copy)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
@@ -294,23 +337,23 @@ PHP_METHOD(Wave, copy)
 
 
 const zend_function_entry php_raylib_wave_methods[] = {
-        PHP_ME(Wave, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getSampleRate, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, setSampleRate, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getSampleCount, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, setSampleCount, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getSampleSize, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, setSampleSize, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getChannels, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, setChannels, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getData, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, setData, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, export, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, exportAsCode, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, crop, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, format, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, getDataArray, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Wave, copy, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, __construct   , arginfo_wave__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getSampleRate , arginfo_wave_getSampleRate, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, setSampleRate , arginfo_wave_setSampleRate, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getSampleCount, arginfo_wave_getSampleCount, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, setSampleCount, arginfo_wave_setSampleCount, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getSampleSize , arginfo_wave_getSampleSize, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, setSampleSize , arginfo_wave_setSampleSize, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getChannels   , arginfo_wave_getChannels, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, setChannels   , arginfo_wave_setChannels, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getData       , arginfo_wave_getData, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, setData       , arginfo_wave_setData, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, export        , arginfo_wave_export, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, exportAsCode  , arginfo_wave_exportAsCode, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, crop          , arginfo_wave_crop, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, format        , arginfo_wave_format, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, getDataArray  , arginfo_wave_getDataArray, ZEND_ACC_PUBLIC)
+        PHP_ME(Wave, copy          , arginfo_wave_copy, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
