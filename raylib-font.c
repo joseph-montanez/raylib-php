@@ -189,44 +189,26 @@ static zval *php_raylib_font_property_reader(php_raylib_font_object *obj, raylib
     }
     else if (obj != NULL && hnd->read_texture_func) {
         rv = hnd->read_texture_func(obj);
-    } else {
-//        php_error_docref(NULL, E_WARNING, "Internal raylib vectro2 error returned");
     }
-
 
     return rv;
 }
 /* }}} */
-/* }}} */
 
-static zval *php_raylib_font_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot) /* {{{ */
+static zval *php_raylib_font_get_property_ptr_ptr(zend_object *object, zend_string *name, int type, void **cache_slot) /* {{{ */
 {
     php_raylib_font_object *obj;
-    zval tmp_member;
     zval *retval = NULL;
     raylib_font_prop_handler *hnd = NULL;
-    const zend_object_handlers *std_hnd;
 
-    if (Z_TYPE_P(member) != IS_STRING) {
-        ZVAL_COPY(&tmp_member, member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-        cache_slot = NULL;
-    }
-
-    obj = Z_FONT_OBJ_P(object);
+    obj = php_raylib_font_fetch_object(object);
 
     if (obj->prop_handler != NULL) {
-        hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
+        hnd = zend_hash_find_ptr(obj->prop_handler, name);
     }
 
     if (hnd == NULL) {
-        std_hnd = zend_get_std_object_handlers();
-        retval = std_hnd->get_property_ptr_ptr(object, member, type, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
+        retval = zend_std_get_property_ptr_ptr(object, name, type, cache_slot);
     }
 
     return retval;
@@ -358,7 +340,7 @@ static int php_raylib_font_has_property(zval *object, zval *member, int type, vo
 }
 /* }}} */
 
-static HashTable *php_raylib_font_get_gc(zval *object, zval **gc_data, int *gc_data_count) /* {{{ */
+static HashTable *php_raylib_font_get_gc(zend_object *object, zval **gc_data, int *gc_data_count) /* {{{ */
 {
     *gc_data = NULL;
     *gc_data_count = 0;
