@@ -275,6 +275,15 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)
         };
         intern->position = phpPosition;
         intern->direction = phpDirection;
+    } else {
+        zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+        zend_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+
+        php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+        php_raylib_vector3_object *phpDirection = php_raylib_vector3_fetch_object(direction);
+
+        intern->position = phpPosition;
+        intern->direction = phpDirection;
     }
 
     intern->std.handlers = &php_raylib_ray_object_handlers;

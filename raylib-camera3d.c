@@ -49,9 +49,12 @@ typedef struct tagMSG *LPMSG;
 
 #include "raylib.h"
 #include "raylib-vector3.h"
+#include "raylib-vector2.h"
+#include "raylib-ray.h"
 #include "raylib-camera3d.h"
 #include "raylib-utils.h"
 #include "raylib-rectangle.h"
+#include "raylib-matrix.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -699,16 +702,115 @@ PHP_METHOD(Camera3d, setType)
     intern->camera3d.type = (float) type;
 }
 
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getMouseRay, 0, 0, 1)
+    ZEND_ARG_INFO(0, mousePosition)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getMouseRay)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    zend_object *mousePosition;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_OBJ_OF_CLASS(mousePosition, php_raylib_vector2_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector2_object *phpMousePosition = php_raylib_vector2_fetch_object(mousePosition);
+
+    Ray ray = GetMouseRay(phpMousePosition->vector2, intern->camera3d);
+
+    zend_object *rayObj = php_raylib_ray_new_ex(php_raylib_ray_ce, NULL);
+    php_raylib_ray_object *phpRay = php_raylib_ray_fetch_object(rayObj);
+    phpRay->ray = ray;
+    phpRay->position->vector3 = ray.position;
+    phpRay->direction->vector3 = ray.direction;
+
+    RETURN_OBJ(&phpRay->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getMatrix, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getMatrix)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    Matrix matrix = GetCameraMatrix(intern->camera3d);
+
+    zend_object *matrixObj = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
+    php_raylib_matrix_object *phpMatrix = php_raylib_matrix_fetch_object(matrixObj);
+    phpMatrix->matrix = matrix;
+
+    RETURN_OBJ(&phpMatrix->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getWorldToScreen, 0, 0, 1)
+    ZEND_ARG_INFO(0, mousePosition)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getWorldToScreen)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    zend_object *position;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector3_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+
+    Vector2 result = GetWorldToScreen(phpPosition->vector3, intern->camera3d);
+
+    zend_object *vector2Obj = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpVector2 = php_raylib_vector2_fetch_object(vector2Obj);
+    phpVector2->vector2 = result;
+
+    RETURN_OBJ(&phpVector2->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getWorldToScreenEx, 0, 0, 3)
+    ZEND_ARG_INFO(0, mousePosition)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3d, getWorldToScreenEx)
+{
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    zend_object *position;
+    zend_long width;
+    zend_long height;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector3_ce)
+        Z_PARAM_LONG(width)
+        Z_PARAM_LONG(height)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
+
+    Vector2 result = GetWorldToScreenEx(phpPosition->vector3, intern->camera3d, (int) width, (int) height);
+
+    zend_object *vector2Obj = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpVector2 = php_raylib_vector2_fetch_object(vector2Obj);
+    phpVector2->vector2 = result;
+
+    RETURN_OBJ(&phpVector2->std);
+}
+
+
 const zend_function_entry php_raylib_camera3d_methods[] = {
-        PHP_ME(Camera3d, __construct, arginfo_camera3d__construct, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, getPosition, arginfo_camera3d_getPosition, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, setPosition, arginfo_camera3d_setPosition, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, getTarget, arginfo_camera3d_getTarget, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, setTarget, arginfo_camera3d_setTarget, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, getFovy, arginfo_camera3d_getFovy, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, setFovy, arginfo_camera3d_setFovy, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, getType, arginfo_camera3d_getType, ZEND_ACC_PUBLIC)
-        PHP_ME(Camera3d, setType, arginfo_camera3d_setType, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, __construct       , arginfo_camera3d__construct        , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getPosition       , arginfo_camera3d_getPosition       , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setPosition       , arginfo_camera3d_setPosition       , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getTarget         , arginfo_camera3d_getTarget         , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setTarget         , arginfo_camera3d_setTarget         , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getFovy           , arginfo_camera3d_getFovy           , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setFovy           , arginfo_camera3d_setFovy           , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getType           , arginfo_camera3d_getType           , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, setType           , arginfo_camera3d_setType           , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getMouseRay       , arginfo_camera3d_getMouseRay       , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getMatrix         , arginfo_camera3d_getMatrix         , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getWorldToScreen  , arginfo_camera3d_getWorldToScreen  , ZEND_ACC_PUBLIC)
+        PHP_ME(Camera3d, getWorldToScreenEx, arginfo_camera3d_getWorldToScreenEx, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

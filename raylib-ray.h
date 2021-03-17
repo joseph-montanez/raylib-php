@@ -23,4 +23,6 @@ static inline php_raylib_ray_object *php_raylib_ray_fetch_object(zend_object *ob
 
 void php_raylib_ray_startup(INIT_FUNC_ARGS);
 
+zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig);
+
 #endif //RAYLIB_RAYLIB_RAY_H

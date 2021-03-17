@@ -77,5 +77,5 @@ if test "$PHP_RAYLIB" != "no"; then
 
   PHP_SUBST(RAYLIB_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(raylib, raylib.c raylib-vector4.c raylib-vector3.c raylib-vector2.c raylib-rectangle.c raylib-image.c raylib-window.c raylib-timming.c raylib-camera3d.c raylib-camera2d.c raylib-draw.c raylib-rendertexture.c raylib-text.c raylib-cursor.c raylib-texture.c raylib-utils.c raylib-font.c raylib-key.c raylib-mouse.c raylib-collision.c raylib-color.c raylib-gamepad.c raylib-wave.c raylib-audio.c raylib-npatchinfo.c raylib-charinfo.c raylib-ray.c, $ext_shared,)
+  PHP_NEW_EXTENSION(raylib, raylib.c raylib-vector4.c raylib-vector3.c raylib-vector2.c raylib-rectangle.c raylib-image.c raylib-window.c raylib-timming.c raylib-camera3d.c raylib-camera2d.c raylib-draw.c raylib-rendertexture.c raylib-text.c raylib-cursor.c raylib-texture.c raylib-utils.c raylib-font.c raylib-key.c raylib-mouse.c raylib-collision.c raylib-color.c raylib-gamepad.c raylib-wave.c raylib-audio.c raylib-npatchinfo.c raylib-charinfo.c raylib-ray.c raylib-matrix.c, $ext_shared,)
 fi

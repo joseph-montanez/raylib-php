@@ -52,6 +52,7 @@ typedef struct tagMSG *LPMSG;
 #include "raylib-camera2d.h"
 #include "raylib-utils.h"
 #include "raylib-rectangle.h"
+#include "raylib-matrix.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -606,6 +607,69 @@ PHP_METHOD(Camera2d, setZoom)
     intern->camera2d.zoom = (float) zoom;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera2d_getMatrix, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera2d, getMatrix)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
+
+    Matrix matrix = GetCameraMatrix2D(intern->camera2d);
+
+    zend_object *matrixObj = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
+    php_raylib_matrix_object *phpMatrix = php_raylib_matrix_fetch_object(matrixObj);
+    phpMatrix->matrix = matrix;
+
+    RETURN_OBJ(&phpMatrix->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera2d_getWorldToScreen, 0, 0, 1)
+    ZEND_ARG_INFO(0, mousePosition)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera2d, getWorldToScreen)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
+
+    zend_object *position;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector2_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector2_object *phpPosition = php_raylib_vector2_fetch_object(position);
+
+    Vector2 result = GetWorldToScreen2D(phpPosition->vector2, intern->camera2d);
+
+    zend_object *vector2Obj = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpVector2 = php_raylib_vector2_fetch_object(vector2Obj);
+    phpVector2->vector2 = result;
+
+    RETURN_OBJ(&phpVector2->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera2d_getScreenToWorld, 0, 0, 1)
+    ZEND_ARG_INFO(0, mousePosition)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera2d, getScreenToWorld)
+{
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
+
+    zend_object *position;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector2_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector2_object *phpPosition = php_raylib_vector2_fetch_object(position);
+
+    Vector2 result = GetScreenToWorld2D(phpPosition->vector2, intern->camera2d);
+
+    zend_object *vector2Obj = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpVector2 = php_raylib_vector2_fetch_object(vector2Obj);
+    phpVector2->vector2 = result;
+
+    RETURN_OBJ(&phpVector2->std);
+}
+
 const zend_function_entry php_raylib_camera2d_methods[] = {
         PHP_ME(Camera2d, __construct, arginfo_camera2d__construct, ZEND_ACC_PUBLIC)
         PHP_ME(Camera2d, getOffset, arginfo_camera2d_getOffset, ZEND_ACC_PUBLIC)
@@ -616,6 +680,9 @@ const zend_function_entry php_raylib_camera2d_methods[] = {
         PHP_ME(Camera2d, setRotation, arginfo_camera2d_setRotation, ZEND_ACC_PUBLIC)
         PHP_ME(Camera2d, getZoom, arginfo_camera2d_getZoom, ZEND_ACC_PUBLIC)
         PHP_ME(Camera2d, setZoom, arginfo_camera2d_setZoom, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getMatrix, arginfo_camera2d_getMatrix, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getWorldToScreen, arginfo_camera2d_getWorldToScreen, ZEND_ACC_PUBLIC)
+        PHP_ME(Camera2d, getScreenToWorld, arginfo_camera2d_getScreenToWorld, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 
