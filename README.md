@@ -1,6 +1,6 @@
 # raylib-php
 
-PHP 7.x bindings for RayLib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
+PHP 8.x bindings for RayLib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
 
 This is currently a work-in-progress and bindings are not complete and are likely to change. Progress of binding can be tracked via
 [MAPPING.md](MAPPING.md)
