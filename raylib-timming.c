@@ -78,6 +78,8 @@ zend_object * php_raylib_timming_new(zend_class_entry *ce)
     return &intern->std;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_timming__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Timming, __construct)
 {
     zend_string *fileName;
@@ -90,6 +92,9 @@ PHP_METHOD(Timming, __construct)
 }
 
 //void SetTargetFPS(int fps);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_timming_setTargetFPS, 0, 0, 1)
+    ZEND_ARG_INFO(0, fps)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Timming, setTargetFPS)
 {
     zend_long fps;
@@ -102,29 +107,35 @@ PHP_METHOD(Timming, setTargetFPS)
 }
 
 //int GetFPS(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_timming_getFps, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Timming, getFps)
 {
     RETURN_LONG(GetFPS());
 }
 
 //float GetFrameTime(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_timming_getFrameTime, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Timming, getFrameTime)
 {
     RETURN_DOUBLE(GetFrameTime());
 }
 
 //double GetTime(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_timming_getTime, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Timming, getTime)
 {
     RETURN_DOUBLE(GetTime());
 }
 
 const zend_function_entry php_raylib_timming_methods[] = {
-        PHP_ME(Timming, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Timming, setTargetFPS, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Timming, getFps, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Timming, getFrameTime, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Timming, getTime, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Timming, __construct , arginfo_timming__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Timming, setTargetFPS, arginfo_timming_setTargetFPS, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Timming, getFps      , arginfo_timming_getFps, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Timming, getFrameTime, arginfo_timming_getFrameTime, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Timming, getTime     , arginfo_timming_getTime, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

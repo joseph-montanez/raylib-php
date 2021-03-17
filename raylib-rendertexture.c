@@ -80,6 +80,8 @@ zend_object * php_raylib_rendertexture_new(zend_class_entry *ce)
     return &intern->std;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, __construct)
 {
     zend_long width;
@@ -94,6 +96,8 @@ PHP_METHOD(RenderTexture, __construct)
     intern->rendertexture = LoadRenderTexture(zend_long_2int(width), zend_long_2int(height));
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture_texture, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, texture)
 {
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
@@ -102,6 +106,8 @@ PHP_METHOD(RenderTexture, texture)
     //RETURN_LONG(intern->rendertexture.texture);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture_depth, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, depth)
 {
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
@@ -110,6 +116,8 @@ PHP_METHOD(RenderTexture, depth)
     //RETURN_LONG(intern->rendertexture.depth);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture_id, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, id)
 {
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
@@ -118,6 +126,8 @@ PHP_METHOD(RenderTexture, id)
 }
 
 // RLAPI void BeginTextureMode(RenderTexture2D target);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture_begin, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, begin)
 {
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
@@ -125,19 +135,21 @@ PHP_METHOD(RenderTexture, begin)
     BeginTextureMode(intern->rendertexture);
 }
 
-// RLAPI void EndTextureMode(void);/
+// RLAPI void EndTextureMode(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture_end, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, end)
 {
     EndTextureMode();
 }
 
 const zend_function_entry php_raylib_rendertexture_methods[] = {
-        PHP_ME(RenderTexture, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(RenderTexture, texture, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(RenderTexture, depth, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(RenderTexture, id, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(RenderTexture, begin, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(RenderTexture, end, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, __construct, arginfo_rendertexture__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, texture    , arginfo_rendertexture_texture, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, depth      , arginfo_rendertexture_depth, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, id         , arginfo_rendertexture_id, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, begin      , arginfo_rendertexture_begin, ZEND_ACC_PUBLIC)
+        PHP_ME(RenderTexture, end        , arginfo_rendertexture_end, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

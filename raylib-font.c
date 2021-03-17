@@ -611,6 +611,9 @@ static int php_raylib_font_write_chars(php_raylib_font_object *font_object, zval
 
 // PHP object handling
 // RLAPI Font LoadFont(const char *fileName);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, __construct)
 {
     zend_string *fileName;
@@ -635,6 +638,13 @@ PHP_METHOD(Font, __construct)
 
 // Draw text using font and additional parameters
 // RLAPI void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font_draw, 0, 0, 5)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, spacing)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, draw)
 {
     zend_string *text;
@@ -660,6 +670,8 @@ PHP_METHOD(Font, draw)
 }
 
 // RLAPI Font GetFontDefault(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font_fromDefault, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, fromDefault)
 {
     zval *obj = malloc(sizeof(zval));
@@ -672,6 +684,11 @@ PHP_METHOD(Font, fromDefault)
 }
 
 // RLAPI Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font_measureText, 0, 0, 3)
+    ZEND_ARG_INFO(0, text)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, spacing)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, measureText)
 {
     zend_string *text;
@@ -696,6 +713,12 @@ PHP_METHOD(Font, measureText)
 }
 
 //RLAPI Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font_fromCustom, 0, 0, 4)
+    ZEND_ARG_INFO(0, fileName)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, fontChars)
+    ZEND_ARG_INFO(0, charsCount)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, fromCustom)
 {
     zend_string *fileName;
@@ -732,7 +755,13 @@ PHP_METHOD(Font, fromCustom)
 
     RETURN_OBJ(&result->std);
 }
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font_fromRaw, 0, 0, 5)
+    ZEND_ARG_INFO(0, baseSize)
+    ZEND_ARG_INFO(0, charsCount)
+    ZEND_ARG_INFO(0, texture)
+    ZEND_ARG_INFO(0, recs)
+    ZEND_ARG_INFO(0, chars)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Font, fromRaw)
 {
     zend_long baseSize;
@@ -829,12 +858,12 @@ PHP_METHOD(Font, fromRaw)
 //}
 
 const zend_function_entry php_raylib_font_methods[] = {
-        PHP_ME(Font, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Font, fromRaw, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Font, fromDefault, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Font, fromCustom, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Font, measureText, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Font, draw, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Font, __construct, arginfo_font__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Font, fromRaw    , arginfo_font_fromRaw, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, fromDefault, arginfo_font_fromDefault, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, fromCustom , arginfo_font_fromCustom, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Font, measureText, arginfo_font_measureText, ZEND_ACC_PUBLIC)
+        PHP_ME(Font, draw       , arginfo_font_draw, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, getBaseSize, NULL, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, setBaseSize, NULL, ZEND_ACC_PUBLIC)
 //        PHP_ME(Font, getCharsCount, NULL, ZEND_ACC_PUBLIC)

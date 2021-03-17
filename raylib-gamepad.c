@@ -87,7 +87,8 @@ zend_object * php_raylib_gamepad_new(zend_class_entry *ce)
 /* }}} */
 
 // PHP object handling
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, __construct)
 {
     php_raylib_gamepad_object *intern = Z_GAMEPAD_OBJ_P(ZEND_THIS);
@@ -95,6 +96,9 @@ PHP_METHOD(Gamepad, __construct)
 
 // Detect if a gamepad is available
 // RLAPI bool IsGamepadAvailable(int gamepad);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isAvailable, 0, 0, 1)
+    ZEND_ARG_INFO(0, gamepad)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isAvailable)
 {
     zend_long gamepad;
@@ -108,6 +112,10 @@ PHP_METHOD(Gamepad, isAvailable)
 
 // Check gamepad name (if available)
 // RLAPI bool IsGamepadName(int gamepad, const char *name);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isName, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, name)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isName)
 {
     zend_long gamepad;
@@ -123,6 +131,9 @@ PHP_METHOD(Gamepad, isName)
 
 // Return gamepad internal name id
 // RLAPI const char *GetGamepadName(int gamepad);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_getName, 0, 0, 1)
+    ZEND_ARG_INFO(0, gamepad)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, getName)
 {
     zend_long gamepad;
@@ -139,6 +150,10 @@ PHP_METHOD(Gamepad, getName)
 
 // Detect if a gamepad button has been pressed once
 // RLAPI bool IsGamepadButtonPressed(int gamepad, int button);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isButtonPressed, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isButtonPressed)
 {
     zend_long gamepad;
@@ -154,6 +169,10 @@ PHP_METHOD(Gamepad, isButtonPressed)
 
 // Detect if a gamepad button is being pressed
 // RLAPI bool IsGamepadButtonDown(int gamepad, int button);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isButtonDown, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isButtonDown)
 {
     zend_long gamepad;
@@ -169,6 +188,10 @@ PHP_METHOD(Gamepad, isButtonDown)
 
 // Detect if a gamepad button has been released once
 // RLAPI bool IsGamepadButtonReleased(int gamepad, int button);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isButtonReleased, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isButtonReleased)
 {
     zend_long gamepad;
@@ -184,6 +207,10 @@ PHP_METHOD(Gamepad, isButtonReleased)
 
 // Detect if a gamepad button is NOT being pressed
 // RLAPI bool IsGamepadButtonUp(int gamepad, int button);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isButtonUp, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, isButtonUp)
 {
     zend_long gamepad;
@@ -199,6 +226,9 @@ PHP_METHOD(Gamepad, isButtonUp)
 
 // Get the last gamepad button pressed
 // int GetGamepadButtonPressed(void)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_getButtonPressed, 0, 0, 1)
+    ZEND_ARG_INFO(0, gamepad)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, getButtonPressed)
 {
     RETURN_LONG(GetGamepadButtonPressed());
@@ -206,6 +236,9 @@ PHP_METHOD(Gamepad, getButtonPressed)
 
 // Return gamepad axis count for a gamepad
 // RLAPI int GetGamepadAxisCount(int gamepad);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_getAxisCount, 0, 0, 1)
+    ZEND_ARG_INFO(0, gamepad)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, getAxisCount)
 {
     zend_long gamepad;
@@ -219,6 +252,10 @@ PHP_METHOD(Gamepad, getAxisCount)
 
 // Return axis movement value for a gamepad axis
 // RLAPI float GetGamepadAxisMovement(int gamepad, int axis);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_getAxisMovement, 0, 0, 2)
+    ZEND_ARG_INFO(0, gamepad)
+    ZEND_ARG_INFO(0, axis)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Gamepad, getAxisMovement)
 {
     zend_long gamepad;
@@ -233,17 +270,17 @@ PHP_METHOD(Gamepad, getAxisMovement)
 }
 
 const zend_function_entry php_raylib_gamepad_methods[] = {
-        PHP_ME(Gamepad, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Gamepad, isAvailable, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, getName, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isButtonPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isButtonDown, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isButtonReleased, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isButtonUp, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, getButtonPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, getAxisCount, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, getAxisMovement, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, __construct     , arginfo_gamepad__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Gamepad, isAvailable     , arginfo_gamepad_isAvailable, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, isName          , arginfo_gamepad_isName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, getName         , arginfo_gamepad_getName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, isButtonPressed , arginfo_gamepad_isButtonPressed, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, isButtonDown    , arginfo_gamepad_isButtonDown, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, isButtonReleased, arginfo_gamepad_isButtonReleased, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, isButtonUp      , arginfo_gamepad_isButtonUp, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, getButtonPressed, arginfo_gamepad_getButtonPressed, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, getAxisCount    , arginfo_gamepad_getAxisCount, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Gamepad, getAxisMovement , arginfo_gamepad_getAxisMovement, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 

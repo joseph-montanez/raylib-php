@@ -407,6 +407,12 @@ static int php_raylib_color_write_a(php_raylib_color_object *color_object, zval 
 /* }}} */
 
 // PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color__construct, 0, 0, 4)
+    ZEND_ARG_INFO(0, r)
+    ZEND_ARG_INFO(0, b)
+    ZEND_ARG_INFO(0, g)
+    ZEND_ARG_INFO(0, a)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, __construct)
 {
     zend_long r;
@@ -433,6 +439,8 @@ PHP_METHOD(Color, __construct)
 
 // Returns hexadecimal value for a Color
 // RLAPI int ColorToInt(Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_toInt, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, toInt)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
@@ -442,6 +450,8 @@ PHP_METHOD(Color, toInt)
 
 // Returns color normalized as float [0..1]
 // RLAPI Vector4 ColorNormalize(Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_normalize, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, normalize)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
@@ -457,6 +467,9 @@ PHP_METHOD(Color, normalize)
 
 // Returns color from normalized values [0..1]
 // RLAPI Color ColorFromNormalized(Vector4 normalized);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_fromNormalized, 0, 0, 1)
+    ZEND_ARG_INFO(0, normalized)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, fromNormalized)
 {
     zval *normalized;
@@ -480,6 +493,8 @@ PHP_METHOD(Color, fromNormalized)
 
 // Returns HSV values for a Color
 // RLAPI Vector3 ColorToHSV(Color color);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_toHSV, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, toHSV)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
@@ -495,6 +510,11 @@ PHP_METHOD(Color, toHSV)
 
 // Returns a Color from HSV values
 // RLAPI Color ColorFromHSV(Vector3 hsv);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_fromHSV, 0, 0, 3)
+    ZEND_ARG_INFO(0, hue)
+    ZEND_ARG_INFO(0, saturation)
+    ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, fromHSV)
 {
     double hue;
@@ -518,10 +538,11 @@ PHP_METHOD(Color, fromHSV)
     RETURN_OBJ(&result->std);
 }
 
-
-
 // Returns a Color struct from hexadecimal value
 // RLAPI Color GetColor(int hexValue);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_fromInt, 0, 0, 1)
+    ZEND_ARG_INFO(0, hexValue)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, fromInt)
 {
     zend_long hexValue;
@@ -541,6 +562,9 @@ PHP_METHOD(Color, fromInt)
 
 // Color fade-in or fade-out, alpha goes from 0.0f to 1.0f
 // RLAPI Color Fade(Color color, float alpha);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_fade, 0, 0, 1)
+    ZEND_ARG_INFO(0, fade)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, fade)
 {
     double fade;
@@ -560,12 +584,17 @@ PHP_METHOD(Color, fade)
     RETURN_OBJ(&result->std);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_getAlpha, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, getAlpha)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.a);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_setAlpha, 0, 0, 1)
+    ZEND_ARG_INFO(0, alpha)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, setAlpha)
 {
     zend_long alpha;
@@ -579,12 +608,17 @@ PHP_METHOD(Color, setAlpha)
     intern->color.a = (unsigned char) alpha;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_getRed, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, getRed)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.r);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_setRed, 0, 0, 1)
+    ZEND_ARG_INFO(0, red)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, setRed)
 {
     zend_long red;
@@ -598,12 +632,17 @@ PHP_METHOD(Color, setRed)
     intern->color.r = (unsigned char) red;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_getGreen, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, getGreen)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.g);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_setGreen, 0, 0, 1)
+    ZEND_ARG_INFO(0, green)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, setGreen)
 {
     zend_long green;
@@ -617,12 +656,17 @@ PHP_METHOD(Color, setGreen)
     intern->color.g = (unsigned char) green;
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_getBlue, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, getBlue)
 {
     php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
     RETURN_DOUBLE(intern->color.b);
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_setBlue, 0, 0, 1)
+    ZEND_ARG_INFO(0, blue)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Color, setBlue)
 {
     zend_long blue;
@@ -646,22 +690,22 @@ PHP_METHOD(Color, setBlue)
  */
 
 const zend_function_entry php_raylib_color_methods[] = {
-        PHP_ME(Color, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, toInt, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, fromInt, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, normalize, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, fromNormalized, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, toHSV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, fromHSV, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Color, fade, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, setAlpha, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, getAlpha, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, setRed, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, getRed, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, setGreen, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, getGreen, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, setBlue, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Color, getBlue, NULL, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, __construct   , arginfo_color__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, toInt         , arginfo_color_toInt, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, fromInt       , arginfo_color_fromInt, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, normalize     , arginfo_color_normalize, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, fromNormalized, arginfo_color_fromNormalized, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, toHSV         , arginfo_color_toHSV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, fromHSV       , arginfo_color_fromHSV, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, fade          , arginfo_color_fade, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, setAlpha      , arginfo_color_setAlpha, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, getAlpha      , arginfo_color_getAlpha, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, setRed        , arginfo_color_setRed, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, getRed        , arginfo_color_getRed, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, setGreen      , arginfo_color_setGreen, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, getGreen      , arginfo_color_getGreen, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, setBlue       , arginfo_color_setBlue, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, getBlue       , arginfo_color_getBlue, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

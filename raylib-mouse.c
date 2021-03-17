@@ -88,12 +88,17 @@ zend_object * php_raylib_mouse_new(zend_class_entry *ce)
 
 // PHP object handling
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse__construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, __construct)
 {
     php_raylib_mouse_object *intern = Z_MOUSE_OBJ_P(ZEND_THIS);
 }
 
 //bool IsMouseButtonPressed(int button)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_isButtonPressed, 0, 0, 1)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, isButtonPressed)
 {
     zend_long button;
@@ -106,6 +111,9 @@ PHP_METHOD(Mouse, isButtonPressed)
 }
 
 //bool IsMouseButtonDown(int button)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_isButtonDown, 0, 0, 1)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, isButtonDown)
 {
     zend_long button;
@@ -118,6 +126,9 @@ PHP_METHOD(Mouse, isButtonDown)
 }
 
 //bool IsMouseButtonReleased(int button)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_isButtonReleased, 0, 0, 1)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, isButtonReleased)
 {
     zend_long button;
@@ -130,6 +141,9 @@ PHP_METHOD(Mouse, isButtonReleased)
 }
 
 //bool IsMouseButtonUp(int button)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_isButtonUp, 0, 0, 1)
+    ZEND_ARG_INFO(0, button)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, isButtonUp)
 {
     zend_long button;
@@ -142,18 +156,24 @@ PHP_METHOD(Mouse, isButtonUp)
 }
 
 //int GetMouseX(void)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getX, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getX)
 {
     RETURN_LONG(GetMouseX());
 }
 
 //int GetMouseY(void)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getY, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getY)
 {
     RETURN_LONG(GetMouseY());
 }
 
 //Vector2 GetMousePosition(void)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getPosition, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getPosition)
 {
     php_raylib_vector2_object *intern;
@@ -174,6 +194,10 @@ PHP_METHOD(Mouse, getPosition)
 
 // Set mouse position XY
 // void SetMousePosition(int x, int y);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_setPosition, 0, 0, 2)
+    ZEND_ARG_INFO(0, x)
+    ZEND_ARG_INFO(0, y)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, setPosition)
 {
     zend_long x;
@@ -189,6 +213,10 @@ PHP_METHOD(Mouse, setPosition)
 
 // Set mouse offset
 // void SetMouseOffset(int offsetX, int offsetY);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_setOffset, 0, 0, 2)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, offsetY)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, setOffset)
 {
     zend_long offsetX;
@@ -203,6 +231,10 @@ PHP_METHOD(Mouse, setOffset)
 }
 
 // void SetMouseScale(float scale);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_setScale, 0, 0, 2)
+    ZEND_ARG_INFO(0, scaleX)
+    ZEND_ARG_INFO(0, scaleY)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, setScale)
 {
     double scaleX;
@@ -218,6 +250,10 @@ PHP_METHOD(Mouse, setScale)
 
 // Returns mouse wheel movement Y
 // float GetMouseWheelMove(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getWheelMove, 0, 0, 0)
+    ZEND_ARG_INFO(0, scaleX)
+    ZEND_ARG_INFO(0, scaleY)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getWheelMove)
 {
     RETURN_DOUBLE((double) GetMouseWheelMove());
@@ -225,6 +261,8 @@ PHP_METHOD(Mouse, getWheelMove)
 
 // Returns mouse cursor if (MouseCursor enum)
 // int GetMouseCursor(void);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getCursor, 0, 0, 0)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getCursor)
 {
     RETURN_LONG(GetMouseCursor());
@@ -232,6 +270,9 @@ PHP_METHOD(Mouse, getCursor)
 
 // Set mouse cursor
 // void SetMouseCursor(int cursor);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_setCursor, 0, 0, 1)
+    ZEND_ARG_INFO(0, cursor)
+ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, setCursor)
 {
     zend_long cursor;
@@ -245,20 +286,20 @@ PHP_METHOD(Mouse, setCursor)
 
 
 const zend_function_entry php_raylib_mouse_methods[] = {
-        PHP_ME(Mouse, __construct, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(Mouse, isButtonPressed, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, isButtonDown, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, isButtonReleased, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, isButtonUp, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, getX, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, getY, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, getPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, setPosition, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, setOffset, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, setScale, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, getWheelMove, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, getCursor, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Mouse, setCursor, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, __construct     , arginfo_mouse__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Mouse, isButtonPressed , arginfo_mouse_isButtonPressed, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, isButtonDown    , arginfo_mouse_isButtonDown, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, isButtonReleased, arginfo_mouse_isButtonReleased, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, isButtonUp      , arginfo_mouse_isButtonUp, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getX            , arginfo_mouse_getX, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getY            , arginfo_mouse_getY, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getPosition     , arginfo_mouse_getPosition, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setPosition     , arginfo_mouse_setPosition, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setOffset       , arginfo_mouse_setOffset, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setScale        , arginfo_mouse_setScale, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getWheelMove    , arginfo_mouse_getWheelMove, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, getCursor       , arginfo_mouse_getCursor, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Mouse, setCursor       , arginfo_mouse_setCursor, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 
