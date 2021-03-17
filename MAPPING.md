@@ -2,6 +2,8 @@
 
 This is a one to one mapping of each raylib function.
 
+
+
 ##Window-related functions
 
 | C API | PHP API | Comment |
@@ -52,7 +54,7 @@ This is a one to one mapping of each raylib function.
 |-------|---------|---------|
 
 
-##Cursor-related functions
+##Cursor-related functions         
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
@@ -75,7 +77,7 @@ This is a one to one mapping of each raylib function.
 |-------|---------|---------|
 
 
-##Drawing-related functions
+##Drawing-related functions            
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
@@ -96,13 +98,13 @@ This is a one to one mapping of each raylib function.
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
-| Ray GetMouseRay(Vector2 mousePosition, Camera camera); | TODO |  |
-| Matrix GetCameraMatrix(Camera camera); | TODO |  |
-| Matrix GetCameraMatrix2D(Camera2D camera); | TODO |  |
-| Vector2 GetWorldToScreen(Vector3 position, Camera camera); | TODO |  |
-| Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height); | TODO |  |
-| Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera); | TODO |  |
-| Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera); | TODO |  |
+| Ray GetMouseRay(Vector2 mousePosition, Camera camera); | raylib\Camera3d->getMouseRay(raylib\Vector2 $mousePosition) |  |
+| Matrix GetCameraMatrix(Camera camera); | raylib\Camera3d->getMatrix() |  |
+| Matrix GetCameraMatrix2D(Camera2D camera); | raylib\Camera2d->getMatrix() |  |
+| Vector2 GetWorldToScreen(Vector3 position, Camera camera); | raylib\Camera2d→getWorldToScreen(raylib\Vector3 $position) |  |
+| Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height); | raylib\Camera2d→getWorldToScreenEx(raylib\Vector3 $position, int $width, int $height) |  |
+| Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera); | raylib\Camera2d->getWorldToScreen(raylib\Vector2 $position) |  |
+| Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera); | raylib\Camera2d->getScreenToWorld(raylib\Vector2 $position) |  |
 
 
 ##Timing-related functions
@@ -121,7 +123,7 @@ This is a one to one mapping of each raylib function.
 |-------|---------|---------|
 
 
-##Misc. functions
+##Misc. functions          
 
 | C API | PHP API | Comment |
 |-------|---------|---------|
@@ -792,6 +794,6 @@ This is a one to one mapping of each raylib function.
 
 Total: 471
 Wont Implement: 49
-Todo: 219
-Mapped: 203
-Done: 48%
+Todo: 212
+Mapped: 210
+Done: 50%

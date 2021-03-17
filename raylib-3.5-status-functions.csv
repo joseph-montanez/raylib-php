@@ -1,82 +1,82 @@
 Implemented,Has ArgInfo,Function,Mapped Method,Implementation Comment,Function Comment
 ,,Window-related functions,,,
-x,,"void InitWindow(int width, int height, const char *title);",raylib\Window::init(),,Initialize window and OpenGL context
-x,,bool WindowShouldClose(void);,raylib\Window::shouldClose() : bool,,Check if KEY_ESCAPE pressed or Close icon pressed
-x,,void CloseWindow(void);,raylib\Window::close(),,Close window and unload OpenGL context
-x,,bool IsWindowReady(void);,raylib\Window::isReady() : bool,,Check if window has been initialized successfully
-x,,bool IsWindowFullscreen(void);,raylib\Window::isWindowFullscreen(),,Check if window is currently fullscreen
-x,,bool IsWindowHidden(void);,raylib\Window::isHidden() : bool,,Check if window is currently hidden (only PLATFORM_DESKTOP)
-x,,bool IsWindowMinimized(void);,raylib\Window::isMinimized() : bool,,Check if window is currently minimized (only PLATFORM_DESKTOP)
-x,,bool IsWindowMaximized(void);,raylib\Window::isMaximized() : bool,,Check if window is currently maximized (only PLATFORM_DESKTOP)
-x,,bool IsWindowFocused(void);,raylib\Window::isFocused() : bool,,Check if window is currently focused (only PLATFORM_DESKTOP)
-x,,bool IsWindowResized(void);,raylib\Window::isResized() : bool,,Check if window has been resized last frame
-x,,bool IsWindowState(unsigned int flag);,raylib\Window::isState(int $flags) : bool,,Check if one specific window flag is enabled
-x,,void SetWindowState(unsigned int flags);,raylib\Window::setState(int $flags),,Set window configuration state using flags
-x,,void ClearWindowState(unsigned int flags);,raylib\Window::clearState(int $flags),,Clear window configuration state flags
-x,,void ToggleFullscreen(void);,raylib\Window::toggleFullscreen(),,Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
-x,,void MaximizeWindow(void);,raylib\Window::maximize(),,"Set window state: maximized, if resizable (only PLATFORM_DESKTOP)"
-x,,void MinimizeWindow(void);,raylib\Window::minimize(),,"Set window state: minimized, if resizable (only PLATFORM_DESKTOP)"
-x,,void RestoreWindow(void);,raylib\Window::restore(),,Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
-x,,void SetWindowIcon(Image image);,raylib\Window::setIcon(\raylib\Image $image),,Set icon for window (only PLATFORM_DESKTOP)
-x,,void SetWindowTitle(const char *title);,raylib\Window::setTitle(string $title),,Set title for window (only PLATFORM_DESKTOP)
-x,,"void SetWindowPosition(int x, int y);","raylib\Window::setPosition(int $x, int $y)",,Set window position on screen (only PLATFORM_DESKTOP)
-x,,void SetWindowMonitor(int monitor);,raylib\Window::setMonitor(int $monitor),,Set monitor for the current window (fullscreen mode)
-x,,"void SetWindowMinSize(int width, int height);","raylib\Window::setMinSize(int $width, int $height)",,Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
-x,,"void SetWindowSize(int width, int height);","raylib\Window::setSize(int $width, int $height)",,Set window dimensions
+x,x,"void InitWindow(int width, int height, const char *title);",raylib\Window::init(),,Initialize window and OpenGL context
+x,x,bool WindowShouldClose(void);,raylib\Window::shouldClose() : bool,,Check if KEY_ESCAPE pressed or Close icon pressed
+x,x,void CloseWindow(void);,raylib\Window::close(),,Close window and unload OpenGL context
+x,x,bool IsWindowReady(void);,raylib\Window::isReady() : bool,,Check if window has been initialized successfully
+x,x,bool IsWindowFullscreen(void);,raylib\Window::isWindowFullscreen(),,Check if window is currently fullscreen
+x,x,bool IsWindowHidden(void);,raylib\Window::isHidden() : bool,,Check if window is currently hidden (only PLATFORM_DESKTOP)
+x,x,bool IsWindowMinimized(void);,raylib\Window::isMinimized() : bool,,Check if window is currently minimized (only PLATFORM_DESKTOP)
+x,x,bool IsWindowMaximized(void);,raylib\Window::isMaximized() : bool,,Check if window is currently maximized (only PLATFORM_DESKTOP)
+x,x,bool IsWindowFocused(void);,raylib\Window::isFocused() : bool,,Check if window is currently focused (only PLATFORM_DESKTOP)
+x,x,bool IsWindowResized(void);,raylib\Window::isResized() : bool,,Check if window has been resized last frame
+x,x,bool IsWindowState(unsigned int flag);,raylib\Window::isState(int $flags) : bool,,Check if one specific window flag is enabled
+x,x,void SetWindowState(unsigned int flags);,raylib\Window::setState(int $flags),,Set window configuration state using flags
+x,x,void ClearWindowState(unsigned int flags);,raylib\Window::clearState(int $flags),,Clear window configuration state flags
+x,x,void ToggleFullscreen(void);,raylib\Window::toggleFullscreen(),,Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
+x,x,void MaximizeWindow(void);,raylib\Window::maximize(),,"Set window state: maximized, if resizable (only PLATFORM_DESKTOP)"
+x,x,void MinimizeWindow(void);,raylib\Window::minimize(),,"Set window state: minimized, if resizable (only PLATFORM_DESKTOP)"
+x,x,void RestoreWindow(void);,raylib\Window::restore(),,Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
+x,x,void SetWindowIcon(Image image);,raylib\Window::setIcon(\raylib\Image $image),,Set icon for window (only PLATFORM_DESKTOP)
+x,x,void SetWindowTitle(const char *title);,raylib\Window::setTitle(string $title),,Set title for window (only PLATFORM_DESKTOP)
+x,x,"void SetWindowPosition(int x, int y);","raylib\Window::setPosition(int $x, int $y)",,Set window position on screen (only PLATFORM_DESKTOP)
+x,x,void SetWindowMonitor(int monitor);,raylib\Window::setMonitor(int $monitor),,Set monitor for the current window (fullscreen mode)
+x,x,"void SetWindowMinSize(int width, int height);","raylib\Window::setMinSize(int $width, int $height)",,Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+x,x,"void SetWindowSize(int width, int height);","raylib\Window::setSize(int $width, int $height)",,Set window dimensions
 ,,void *GetWindowHandle(void);,--,Cannot Implement,Get native window handle
-x,,int GetScreenWidth(void);,raylib\Window::getScreenWidth() : int ,,Get current screen width
-x,,int GetScreenHeight(void);,raylib\Window::getScreenHeight() : int ,,Get current screen height
-x,,int GetMonitorCount(void);,raylib\Window::getMonitorCount() : int ,,Get number of connected monitors
-x,,Vector2 GetMonitorPosition(int monitor);,raylib\Window::getMonitorPosition(int $monitor) : \raylib\Vector2,,Get specified monitor position
-x,,int GetMonitorWidth(int monitor);,raylib\Window::getMonitorWidth(int $monitor) : int ,,Get specified monitor width
-x,,int GetMonitorHeight(int monitor);,raylib\Window::getMonitorHeight(int $monitor) : int ,,Get specified monitor height
-x,,int GetMonitorPhysicalWidth(int monitor);,raylib\Window::getMonitorPhysicalWidth(int $monitor) : int ,,Get specified monitor physical width in millimetres
-x,,int GetMonitorPhysicalHeight(int monitor);,raylib\Window::getMonitorPhysicalHeight(int $monitor) : int ,,Get specified monitor physical height in millimetres
-x,,int GetMonitorRefreshRate(int monitor);,raylib\Window::getMonitorRefreshRate(int $monitor) : int ,,Get specified monitor refresh rate
-x,,Vector2 GetWindowPosition(void);,raylib\Window::getPosition() : \raylib\Vector2,,Get window position XY on monitor
-x,,Vector2 GetWindowScaleDPI(void);,raylib\Window::getScaleDPI() : \raylib\Vector2,,Get window scale DPI factor
-x,,const char *GetMonitorName(int monitor);,raylib\Window::getMonitorName(int $monitor) : string,,"Get the human-readable, UTF-8 encoded name of the primary monitor"
-x,,void SetClipboardText(const char *text);,raylib\Window::setClipboardText(string $text),,Set clipboard text content
-x,,const char *GetClipboardText(void);,raylib\Window::getClipboardText() : string,,Get clipboard text content
+x,x,int GetScreenWidth(void);,raylib\Window::getScreenWidth() : int ,,Get current screen width
+x,x,int GetScreenHeight(void);,raylib\Window::getScreenHeight() : int ,,Get current screen height
+x,x,int GetMonitorCount(void);,raylib\Window::getMonitorCount() : int ,,Get number of connected monitors
+x,x,Vector2 GetMonitorPosition(int monitor);,raylib\Window::getMonitorPosition(int $monitor) : \raylib\Vector2,,Get specified monitor position
+x,x,int GetMonitorWidth(int monitor);,raylib\Window::getMonitorWidth(int $monitor) : int ,,Get specified monitor width
+x,x,int GetMonitorHeight(int monitor);,raylib\Window::getMonitorHeight(int $monitor) : int ,,Get specified monitor height
+x,x,int GetMonitorPhysicalWidth(int monitor);,raylib\Window::getMonitorPhysicalWidth(int $monitor) : int ,,Get specified monitor physical width in millimetres
+x,x,int GetMonitorPhysicalHeight(int monitor);,raylib\Window::getMonitorPhysicalHeight(int $monitor) : int ,,Get specified monitor physical height in millimetres
+x,x,int GetMonitorRefreshRate(int monitor);,raylib\Window::getMonitorRefreshRate(int $monitor) : int ,,Get specified monitor refresh rate
+x,x,Vector2 GetWindowPosition(void);,raylib\Window::getPosition() : \raylib\Vector2,,Get window position XY on monitor
+x,x,Vector2 GetWindowScaleDPI(void);,raylib\Window::getScaleDPI() : \raylib\Vector2,,Get window scale DPI factor
+x,x,const char *GetMonitorName(int monitor);,raylib\Window::getMonitorName(int $monitor) : string,,"Get the human-readable, UTF-8 encoded name of the primary monitor"
+x,x,void SetClipboardText(const char *text);,raylib\Window::setClipboardText(string $text),,Set clipboard text content
+x,x,const char *GetClipboardText(void);,raylib\Window::getClipboardText() : string,,Get clipboard text content
 ,,            ,,,
 ,,Cursor-related functions         ,,,
-x,,void ShowCursor(void);,raylib\Cursor::show(),,Shows cursor
-x,,void HideCursor(void);,raylib\Cursor::hide(),,Hides cursor
-x,,bool IsCursorHidden(void);,raylib\Cursor::isHidden(),,Check if cursor is not visible
-x,,void EnableCursor(void);,raylib\Cursor::enable(),,Enables cursor (unlock cursor)
-x,,void DisableCursor(void);,raylib\Cursor::disable(),,Disables cursor (lock cursor)
-x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is on the current screen.
+x,x,void ShowCursor(void);,raylib\Cursor::show(),,Shows cursor
+x,x,void HideCursor(void);,raylib\Cursor::hide(),,Hides cursor
+x,x,bool IsCursorHidden(void);,raylib\Cursor::isHidden(),,Check if cursor is not visible
+x,x,void EnableCursor(void);,raylib\Cursor::enable(),,Enables cursor (unlock cursor)
+x,x,void DisableCursor(void);,raylib\Cursor::disable(),,Disables cursor (lock cursor)
+x,x,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is on the current screen.
 ,,            ,,,
 ,,Drawing-related functions            ,,,
-,,void ClearBackground(Color color);,raylib\Draw::clearBackground(raylib\Color $color),,Set background color (framebuffer clear color)
-,,void BeginDrawing(void);,raylib\Draw::begin(),,Setup canvas (framebuffer) to start drawing
-,,void EndDrawing(void);,raylib\Draw::end(),,End canvas drawing and swap buffers (double buffering)
-,,void BeginMode2D(Camera2D camera);,raylib\Draw::beginMode2d(raylib\Camera2D $camera2d),,Initialize 2D mode with custom camera (2D)
-,,void EndMode2D(void);,raylib\Draw::endMode2d(),,Ends 2D mode with custom camera
-,,void BeginMode3D(Camera3D camera);,raylib\Draw::beginMode3d(raylib\Camera3D camera3d),,Initializes 3D mode with custom camera (3D)
-,,void EndMode3D(void);,raylib\Draw::endMode3d(),,Ends 3D mode and returns to default 2D orthographic mode
-,,void BeginTextureMode(RenderTexture2D target);,raylib\RenderTexture->begin(),,Initializes render texture for drawing
-,,void EndTextureMode(void);,raylib\RenderTexture->end(),,Ends drawing to render texture
-,,"void BeginScissorMode(int x, int y, int width, int height);",raylib\Draw::beginScissorMode(),,Begin scissor mode (define screen area for following drawing)
-,,void EndScissorMode(void);,raylib\Draw::endScissorMode(),,End scissor mode
+x,x,void ClearBackground(Color color);,raylib\Draw::clearBackground(raylib\Color $color),,Set background color (framebuffer clear color)
+x,x,void BeginDrawing(void);,raylib\Draw::begin(),,Setup canvas (framebuffer) to start drawing
+x,x,void EndDrawing(void);,raylib\Draw::end(),,End canvas drawing and swap buffers (double buffering)
+x,x,void BeginMode2D(Camera2D camera);,raylib\Draw::beginMode2d(raylib\Camera2D $camera2d),,Initialize 2D mode with custom camera (2D)
+x,x,void EndMode2D(void);,raylib\Draw::endMode2d(),,Ends 2D mode with custom camera
+x,x,void BeginMode3D(Camera3D camera);,raylib\Draw::beginMode3d(raylib\Camera3D camera3d),,Initializes 3D mode with custom camera (3D)
+x,x,void EndMode3D(void);,raylib\Draw::endMode3d(),,Ends 3D mode and returns to default 2D orthographic mode
+x,x,void BeginTextureMode(RenderTexture2D target);,raylib\RenderTexture->begin(),,Initializes render texture for drawing
+x,x,void EndTextureMode(void);,raylib\RenderTexture->end(),,Ends drawing to render texture
+x,x,"void BeginScissorMode(int x, int y, int width, int height);",raylib\Draw::beginScissorMode(),,Begin scissor mode (define screen area for following drawing)
+x,x,void EndScissorMode(void);,raylib\Draw::endScissorMode(),,End scissor mode
 ,,,,,
 ,,Screen-space-related functions,,,
-,,"Ray GetMouseRay(Vector2 mousePosition, Camera camera);",TODO,,Returns a ray trace from mouse position
-,,Matrix GetCameraMatrix(Camera camera);,TODO,,Returns camera transform matrix (view matrix)
-,,Matrix GetCameraMatrix2D(Camera2D camera);,TODO,,Returns camera 2d transform matrix
-,,"Vector2 GetWorldToScreen(Vector3 position, Camera camera);",TODO,,Returns the screen space position for a 3d world space position
-,,"Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height);",TODO,,Returns size position for a 3d world space position
-,,"Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera);",TODO,,Returns the screen space position for a 2d camera world space position
-,,"Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);",TODO,,Returns the world space position for a 2d camera screen space position
+,,"Ray GetMouseRay(Vector2 mousePosition, Camera camera);",raylib\Camera3d->getMouseRay(raylib\Vector2 $mousePosition),,Returns a ray trace from mouse position
+,,Matrix GetCameraMatrix(Camera camera);,raylib\Camera3d->getMatrix(),,Returns camera transform matrix (view matrix)
+,,Matrix GetCameraMatrix2D(Camera2D camera);,raylib\Camera2d->getMatrix(),,Returns camera 2d transform matrix
+,,"Vector2 GetWorldToScreen(Vector3 position, Camera camera);",raylib\Camera2d→getWorldToScreen(raylib\Vector3 $position),,Returns the screen space position for a 3d world space position
+,,"Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height);","raylib\Camera2d→getWorldToScreenEx(raylib\Vector3 $position, int $width, int $height)",,Returns size position for a 3d world space position
+,,"Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera);",raylib\Camera2d->getWorldToScreen(raylib\Vector2 $position),,Returns the screen space position for a 2d camera world space position
+,,"Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);",raylib\Camera2d->getScreenToWorld(raylib\Vector2 $position),,Returns the world space position for a 2d camera screen space position
 ,,,,,
 ,,Timing-related functions,,,
-,,void SetTargetFPS(int fps);,raylib\Timming::setTargetFPS(int $fps),,Set target FPS (maximum)
-,,int GetFPS(void);,raylib\Timming::getFPS() : int,,Returns current FPS
-,,float GetFrameTime(void);,raylib\Timming::getFrameTime() : float,,Returns time in seconds for last frame drawn
-,,double GetTime(void);,raylib\Timming::getTime() : float,,Returns elapsed time in seconds since InitWindow()
+x,x,void SetTargetFPS(int fps);,raylib\Timming::setTargetFPS(int $fps),,Set target FPS (maximum)
+x,x,int GetFPS(void);,raylib\Timming::getFPS() : int,,Returns current FPS
+x,x,float GetFrameTime(void);,raylib\Timming::getFrameTime() : float,,Returns time in seconds for last frame drawn
+x,x,double GetTime(void);,raylib\Timming::getTime() : float,,Returns elapsed time in seconds since InitWindow()
 ,,            ,,,
 ,,Misc. functions          ,,,
-,,void SetConfigFlags(unsigned int flags);,\raylib\SetConfigFlags(int $flags),,Setup init configuration flags (view FLAGS)
+x,x,void SetConfigFlags(unsigned int flags);,\raylib\SetConfigFlags(int $flags),,Setup init configuration flags (view FLAGS)
 ,,            ,,,
 ,,void SetTraceLogLevel(int logType);,TODO,,Set the current threshold (minimum) log level
 ,,void SetTraceLogExit(int logType);,TODO,,Set the exit threshold (minimum) log level
@@ -85,7 +85,7 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,            ,,,            
 ,,void *MemAlloc(int size);,--,unused,Internal memory allocator
 ,,void MemFree(void *ptr);,--,unused,Internal memory free
-,,void TakeScreenshot(const char *fileName);,\raylib\TakeScreenshot(string $fileName),,Takes a screenshot of current screen (saved a .png)
+x,x,void TakeScreenshot(const char *fileName);,\raylib\TakeScreenshot(string $fileName),,Takes a screenshot of current screen (saved a .png)
 ,,"int GetRandomValue(int min, int max);",--,see rand(),Returns a random value between min and max (both included)
 ,,,,,
 ,,Files management functions,,,
@@ -116,40 +116,40 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,"unsigned char *DecompressData(unsigned char *compData, int compDataLength, int *dataLength);",,http://php.net/manual/en/function.gzinflate.php,Decompress data (DEFLATE algorithm)
 ,,,,,
 ,,Input-related functions: keyboard,,,
-,,bool IsKeyPressed(int key);,raylib\Input\Key::isPressed(int $key) : bool,,Detect if a key has been pressed once
-,,bool IsKeyDown(int key);,raylib\Input\Key::isDown(int $key) : bool,,Detect if a key is being pressed
-,,bool IsKeyReleased(int key);,raylib\Input\Key::isReleased(int $key) : bool,,Detect if a key has been released once
-,,bool IsKeyUp(int key);,raylib\Input\Key::isUp(int $key) : bool,,Detect if a key is NOT being pressed
-,,void SetExitKey(int key);,raylib\Input\Key::setExit(int $key),,Set a custom key to exit program (default is ESC)
-,,int GetKeyPressed(void);,raylib\Input\Key::getPressed() : int,,"Get key pressed (keycode), call it multiple times for keys queued"
-,,int GetCharPressed(void);,raylib\Input\Key::getKeyPressed() : int,,"Get char pressed (unicode), call it multiple times for chars queued"
+x,x,bool IsKeyPressed(int key);,raylib\Input\Key::isPressed(int $key) : bool,,Detect if a key has been pressed once
+x,x,bool IsKeyDown(int key);,raylib\Input\Key::isDown(int $key) : bool,,Detect if a key is being pressed
+x,x,bool IsKeyReleased(int key);,raylib\Input\Key::isReleased(int $key) : bool,,Detect if a key has been released once
+x,x,bool IsKeyUp(int key);,raylib\Input\Key::isUp(int $key) : bool,,Detect if a key is NOT being pressed
+x,x,void SetExitKey(int key);,raylib\Input\Key::setExit(int $key),,Set a custom key to exit program (default is ESC)
+x,x,int GetKeyPressed(void);,raylib\Input\Key::getPressed() : int,,"Get key pressed (keycode), call it multiple times for keys queued"
+x,x,int GetCharPressed(void);,raylib\Input\Key::getKeyPressed() : int,,"Get char pressed (unicode), call it multiple times for chars queued"
 ,,,,,
 ,,Input-related functions: gamepads,,,
-,,bool IsGamepadAvailable(int gamepad);,raylib\Input\Gamepad::isAvailable(int $gamepad) : bool,,Detect if a gamepad is available
-,,"bool IsGamepadName(int gamepad, const char *name);",raylib\Input\Gamepad::isName(int $gamepad) : bool,,Check gamepad name (if available)
-,,const char *GetGamepadName(int gamepad);,raylib\Input\Gamepad::getName(int $gamepad) : string,,Return gamepad internal name id
-,,"bool IsGamepadButtonPressed(int gamepad, int button);","raylib\Input\Gamepad::isButtonPressed(int $gamepad, int $button) : bool",,Detect if a gamepad button has been pressed once
-,,"bool IsGamepadButtonDown(int gamepad, int button);","raylib\Input\Gamepad::isButtonDown(int $gamepad, int $button) : bool",,Detect if a gamepad button is being pressed
-,,"bool IsGamepadButtonReleased(int gamepad, int button);","raylib\Input\Gamepad::isButtonReleased(int $gamepad, int $button) : bool",,Detect if a gamepad button has been released once
-,,"bool IsGamepadButtonUp(int gamepad, int button);","raylib\Input\Gamepad::isButtonUp(int $gamepad, int $button) : bool",,Detect if a gamepad button is NOT being pressed
-,,int GetGamepadButtonPressed(void);,raylib\Input\Gamepad::getButtonPressed() : int,,Get the last gamepad button pressed
-,,int GetGamepadAxisCount(int gamepad);,raylib\Input\Gamepad::getAxisCount(int $gamepad) : int,,Return gamepad axis count for a gamepad
-,,"float GetGamepadAxisMovement(int gamepad, int axis);","raylib\Input\Gamepad::getAxisMovement(int $gamepad, int $axis) : float",,Return axis movement value for a gamepad axis
+x,x,bool IsGamepadAvailable(int gamepad);,raylib\Input\Gamepad::isAvailable(int $gamepad) : bool,,Detect if a gamepad is available
+x,x,"bool IsGamepadName(int gamepad, const char *name);",raylib\Input\Gamepad::isName(int $gamepad) : bool,,Check gamepad name (if available)
+x,x,const char *GetGamepadName(int gamepad);,raylib\Input\Gamepad::getName(int $gamepad) : string,,Return gamepad internal name id
+x,x,"bool IsGamepadButtonPressed(int gamepad, int button);","raylib\Input\Gamepad::isButtonPressed(int $gamepad, int $button) : bool",,Detect if a gamepad button has been pressed once
+x,x,"bool IsGamepadButtonDown(int gamepad, int button);","raylib\Input\Gamepad::isButtonDown(int $gamepad, int $button) : bool",,Detect if a gamepad button is being pressed
+x,x,"bool IsGamepadButtonReleased(int gamepad, int button);","raylib\Input\Gamepad::isButtonReleased(int $gamepad, int $button) : bool",,Detect if a gamepad button has been released once
+x,x,"bool IsGamepadButtonUp(int gamepad, int button);","raylib\Input\Gamepad::isButtonUp(int $gamepad, int $button) : bool",,Detect if a gamepad button is NOT being pressed
+x,x,int GetGamepadButtonPressed(void);,raylib\Input\Gamepad::getButtonPressed() : int,,Get the last gamepad button pressed
+x,x,int GetGamepadAxisCount(int gamepad);,raylib\Input\Gamepad::getAxisCount(int $gamepad) : int,,Return gamepad axis count for a gamepad
+x,x,"float GetGamepadAxisMovement(int gamepad, int axis);","raylib\Input\Gamepad::getAxisMovement(int $gamepad, int $axis) : float",,Return axis movement value for a gamepad axis
 ,,,,,
 ,,Input-related functions: mouse,,,
-,,bool IsMouseButtonPressed(int button);,raylib\Input\Mouse::isButtonPressed(int $button) : bool,,Detect if a mouse button has been pressed once
-,,bool IsMouseButtonDown(int button);,raylib\Input\Mouse::isButtonDown(int $button) : bool,,Detect if a mouse button is being pressed
-,,bool IsMouseButtonReleased(int button);,raylib\Input\Mouse::isButtonReleased(int $button) : bool,,Detect if a mouse button has been released once
-,,bool IsMouseButtonUp(int button);,raylib\Input\Mouse::isButtonUp(int $button) : bool,,Detect if a mouse button is NOT being pressed
-,,int GetMouseX(void);,raylib\Input\Mouse::getX() : int,,Returns mouse position X
-,,int GetMouseY(void);,raylib\Input\Mouse::getY() : int,,Returns mouse position Y
-,,Vector2 GetMousePosition(void);,raylib\Input\Mouse::getPosition() : Vector2,,Returns mouse position XY
-,,"void SetMousePosition(int x, int y);","raylib\Input\Mouse::setPosition(int $x, int $y)",,Set mouse position XY
-,,"void SetMouseOffset(int offsetX, int offsetY);","raylib\Input\Mouse::setOffset(int $offsetX, int $offsetY)",,Set mouse offset
-,,"void SetMouseScale(float scaleX, float scaleY);","raylib\Input\Mouse::setScale(float $scaleX, float $scaleY)",,Set mouse scaling
-,,float GetMouseWheelMove(void);,raylib\Input\Mouse::getWheelMove() : float,,Returns mouse wheel movement Y
-,,int GetMouseCursor(void);,raylib\Input\Mouse::getCursor() : int,,Returns mouse cursor if (MouseCursor enum)
-,,void SetMouseCursor(int cursor);,raylib\Input\Mouse::setCursor(int $cursor),,Set mouse cursor
+x,x,bool IsMouseButtonPressed(int button);,raylib\Input\Mouse::isButtonPressed(int $button) : bool,,Detect if a mouse button has been pressed once
+x,x,bool IsMouseButtonDown(int button);,raylib\Input\Mouse::isButtonDown(int $button) : bool,,Detect if a mouse button is being pressed
+x,x,bool IsMouseButtonReleased(int button);,raylib\Input\Mouse::isButtonReleased(int $button) : bool,,Detect if a mouse button has been released once
+x,x,bool IsMouseButtonUp(int button);,raylib\Input\Mouse::isButtonUp(int $button) : bool,,Detect if a mouse button is NOT being pressed
+x,x,int GetMouseX(void);,raylib\Input\Mouse::getX() : int,,Returns mouse position X
+x,x,int GetMouseY(void);,raylib\Input\Mouse::getY() : int,,Returns mouse position Y
+x,x,Vector2 GetMousePosition(void);,raylib\Input\Mouse::getPosition() : Vector2,,Returns mouse position XY
+x,x,"void SetMousePosition(int x, int y);","raylib\Input\Mouse::setPosition(int $x, int $y)",,Set mouse position XY
+x,x,"void SetMouseOffset(int offsetX, int offsetY);","raylib\Input\Mouse::setOffset(int $offsetX, int $offsetY)",,Set mouse offset
+x,x,"void SetMouseScale(float scaleX, float scaleY);","raylib\Input\Mouse::setScale(float $scaleX, float $scaleY)",,Set mouse scaling
+x,x,float GetMouseWheelMove(void);,raylib\Input\Mouse::getWheelMove() : float,,Returns mouse wheel movement Y
+x,x,int GetMouseCursor(void);,raylib\Input\Mouse::getCursor() : int,,Returns mouse cursor if (MouseCursor enum)
+x,x,void SetMouseCursor(int cursor);,raylib\Input\Mouse::setCursor(int $cursor),,Set mouse cursor
 ,,,,,
 ,,Input-related functions: touch,,,
 ,,int GetTouchX(void);,TODO,,Returns touch position X for touch point 0 (relative to screen size)
@@ -178,59 +178,59 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,"void SetCameraMoveControls(int keyFront, int keyBack, int keyRight, int keyLeft, int keyUp, int keyDown);",TODO,,Set camera move controls (1st person and 3rd person cameras)
 ,,,,,
 ,,Basic shapes drawing functions,,,
-,,"void DrawPixel(int posX, int posY, Color color);","raylib\Draw::pixel(int $posX, int $posY, raylib\Color $color)",,Draw a pixel
-,,"void DrawPixelV(Vector2 position, Color color);","raylib\Draw::pixelV(raylib\Vector2 $position, raylib\Color $color)",,Draw a pixel (Vector version)
-,,"void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);","raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, raylib\Color $color)",,Draw a line
-,,"void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);","raylib\Draw::lineV(raylib\Vector2 $startPos, raylib\Vector2 $endPos, raylib\Color $color)",,Draw a line (Vector version)
-,,"void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);","raylib\Draw::lineEx(raylib\Vector2 $startPos, raylib\Vector2 $endPos, float $thick, raylib\Color $color)",,Draw a line defining thickness
-,,"void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);","raylib\Draw::lineBezier(raylib\Vector2 $startPos, raylib\Vector2 $endPos, float $thick, raylib\Color $color)",,Draw a line using cubic-bezier curves in-out
+x,x,"void DrawPixel(int posX, int posY, Color color);","raylib\Draw::pixel(int $posX, int $posY, raylib\Color $color)",,Draw a pixel
+x,x,"void DrawPixelV(Vector2 position, Color color);","raylib\Draw::pixelV(raylib\Vector2 $position, raylib\Color $color)",,Draw a pixel (Vector version)
+x,x,"void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);","raylib\Draw::line(int $startPosX, int $startPosY, int $endPosX, int $endPosY, raylib\Color $color)",,Draw a line
+x,x,"void DrawLineV(Vector2 startPos, Vector2 endPos, Color color);","raylib\Draw::lineV(raylib\Vector2 $startPos, raylib\Vector2 $endPos, raylib\Color $color)",,Draw a line (Vector version)
+x,x,"void DrawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color);","raylib\Draw::lineEx(raylib\Vector2 $startPos, raylib\Vector2 $endPos, float $thick, raylib\Color $color)",,Draw a line defining thickness
+x,x,"void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);","raylib\Draw::lineBezier(raylib\Vector2 $startPos, raylib\Vector2 $endPos, float $thick, raylib\Color $color)",,Draw a line using cubic-bezier curves in-out
 ,,"void DrawLineStrip(Vector2 *points, int pointsCount, Color color);",TODO,,Draw lines sequence
-,,"void DrawCircle(int centerX, int centerY, float radius, Color color);","raylib\Draw::circle(int $centerX, int $centerY, float $radius, raylib\Color $color)",,Draw a color-filled circle
-,,"void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::circleSector(raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw a piece of a circle
-,,"void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::circleSectorLines(raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw circle sector outline
-,,"void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);","raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, raylib\Color $color1, raylib\Color $color2)",,Draw a gradient-filled circle
-,,"void DrawCircleV(Vector2 center, float radius, Color color);","raylib\Draw::circleV(raylib\Vector2 $center, float $radius, raylib\Color $color)",,Draw a color-filled circle (Vector version)
-,,"void DrawCircleLines(int centerX, int centerY, float radius, Color color);","raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, raylib\Color $color)",,Draw circle outline
-,,"void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);","raylib\Draw::ellipse(int $centerX, int $centerY, float $radiusH, float $radiusV, raylib\Color $color)",,Draw ellipse
-,,"void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);","raylib\Draw::ellipseLines(int $centerX, int $centerY, float $radiusH, float $radiusV, raylib\Color $color)",,Draw ellipse outline
-,,"void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::ring(raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw ring
-,,"void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::ringLines(raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw ring outline
-,,"void DrawRectangle(int posX, int posY, int width, int height, Color color);","raylib\Draw::rectangle(int $posX, int $posY, int $width, int $height, raylib\Color $color)",,Draw a color-filled rectangle
-,,"void DrawRectangleV(Vector2 position, Vector2 size, Color color);","raylib\Draw::rectangleV(raylib\Vector2 $position, raylib\Vector2 $size, raylib\Color $color)",,Draw a color-filled rectangle (Vector version)
-,,"void DrawRectangleRec(Rectangle rec, Color color);","raylib\Draw::rectangleRec(raylib\Rectangle $rec, raylib\Color $color)",,Draw a color-filled rectangle
-,,"void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);","raylib\Draw::rectanglePro(raylib\Rectangle $rec, raylib\Vector2 $origin, float $rotation, raylib\Color $color)",,Draw a color-filled rectangle with pro parameters
-,,"void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);","raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, raylib\Color $color1, raylib\Color $color2)",,Draw a vertical-gradient-filled rectangle
-,,"void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);","raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, raylib\Color $color1, raylib\Color $color2)",,Draw a horizontal-gradient-filled rectangle
-,,"void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);","raylib\Draw::rectangleGradientEx(raylib\Rectangle $rec, raylib\Color $col1, raylib\Color $col2, raylib\Color $col3, raylib\Color $col4)",,Draw a gradient-filled rectangle with custom vertex colors
-,,"void DrawRectangleLines(int posX, int posY, int width, int height, Color color);","raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, raylib\Color $color)",,Draw rectangle outline
-,,"void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);","raylib\Draw::rectangleLinesEx(raylib\Rectangle $rec, int $lineThick, raylib\Color color)",,Draw rectangle outline with extended parameters
-,,"void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);","raylib\Draw::rectangleRounded(raylib\Rectangle $rec, float $roundness, int $segments, raylib\Color color)",,Draw rectangle with rounded edges
-,,"void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color);","raylib\Draw::rectangleRoundedLines(raylib\Rectangle $rec, float $roundness, int $segments, int $lineThick, raylib\Color color)",,Draw rectangle with rounded edges outline
-,,"void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);","raylib\Draw::triangle(raylib\Vector2 $v1, raylib\Vector2 $v2, raylib\Vector2 $v3, raylib\Color $color)",,Draw a color-filled triangle (vertex in counter-clockwise order!)
-,,"void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);","raylib\triangleLines(raylib\Vector2 v1, raylib\Vector2 v2, raylib\Vector2 v3, raylib\Color color)",,Draw triangle outline (vertex in counter-clockwise order!)
-,,"void DrawTriangleFan(Vector2 *points, int pointsCount, Color color);","raylib\Draw::triangleFan(raylib\Vector2[] $points, raylib\Color $color)",,Draw a triangle fan defined by points (first vertex is the center)
-,,"void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);","raylib\Draw::triangleStrip(raylib\Vector2[] $points, raylib\Color $color)",,Draw a triangle strip defined by points
-,,"void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);","raylib\Draw::poly(raylib\Vector2 $center, int $sides, float $radius, float $rotation, raylib\Color $color)",,Draw a regular polygon (Vector version)
-,,"void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);","raylib\Draw::polyLines(raylib\Vector2 $center, int $sides, float $radius, float $rotation, raylib\Color $color)",,Draw a polygon outline of n sides
+x,x,"void DrawCircle(int centerX, int centerY, float radius, Color color);","raylib\Draw::circle(int $centerX, int $centerY, float $radius, raylib\Color $color)",,Draw a color-filled circle
+x,x,"void DrawCircleSector(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::circleSector(raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw a piece of a circle
+x,x,"void DrawCircleSectorLines(Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::circleSectorLines(raylib\Vector2 $center, float $radius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw circle sector outline
+x,x,"void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2);","raylib\Draw::circleGradient(int $centerX, int $centerY, float $radius, raylib\Color $color1, raylib\Color $color2)",,Draw a gradient-filled circle
+x,x,"void DrawCircleV(Vector2 center, float radius, Color color);","raylib\Draw::circleV(raylib\Vector2 $center, float $radius, raylib\Color $color)",,Draw a color-filled circle (Vector version)
+x,x,"void DrawCircleLines(int centerX, int centerY, float radius, Color color);","raylib\Draw::circleLines(int $centerX, int $centerY, float $radius, raylib\Color $color)",,Draw circle outline
+x,x,"void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);","raylib\Draw::ellipse(int $centerX, int $centerY, float $radiusH, float $radiusV, raylib\Color $color)",,Draw ellipse
+x,x,"void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);","raylib\Draw::ellipseLines(int $centerX, int $centerY, float $radiusH, float $radiusV, raylib\Color $color)",,Draw ellipse outline
+x,x,"void DrawRing(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::ring(raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw ring
+x,x,"void DrawRingLines(Vector2 center, float innerRadius, float outerRadius, int startAngle, int endAngle, int segments, Color color);","raylib\Draw::ringLines(raylib\Vector2 $center, float $innerRadius, float $outerRadius, int $startAngle, int $endAngle, int $segments, raylib\Color $color)",,Draw ring outline
+x,x,"void DrawRectangle(int posX, int posY, int width, int height, Color color);","raylib\Draw::rectangle(int $posX, int $posY, int $width, int $height, raylib\Color $color)",,Draw a color-filled rectangle
+x,x,"void DrawRectangleV(Vector2 position, Vector2 size, Color color);","raylib\Draw::rectangleV(raylib\Vector2 $position, raylib\Vector2 $size, raylib\Color $color)",,Draw a color-filled rectangle (Vector version)
+x,x,"void DrawRectangleRec(Rectangle rec, Color color);","raylib\Draw::rectangleRec(raylib\Rectangle $rec, raylib\Color $color)",,Draw a color-filled rectangle
+x,x,"void DrawRectanglePro(Rectangle rec, Vector2 origin, float rotation, Color color);","raylib\Draw::rectanglePro(raylib\Rectangle $rec, raylib\Vector2 $origin, float $rotation, raylib\Color $color)",,Draw a color-filled rectangle with pro parameters
+x,x,"void DrawRectangleGradientV(int posX, int posY, int width, int height, Color color1, Color color2);","raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, raylib\Color $color1, raylib\Color $color2)",,Draw a vertical-gradient-filled rectangle
+x,x,"void DrawRectangleGradientH(int posX, int posY, int width, int height, Color color1, Color color2);","raylib\Draw::rectangleGradientV(int $posX, int $posY, int $width, int $height, raylib\Color $color1, raylib\Color $color2)",,Draw a horizontal-gradient-filled rectangle
+x,x,"void DrawRectangleGradientEx(Rectangle rec, Color col1, Color col2, Color col3, Color col4);","raylib\Draw::rectangleGradientEx(raylib\Rectangle $rec, raylib\Color $col1, raylib\Color $col2, raylib\Color $col3, raylib\Color $col4)",,Draw a gradient-filled rectangle with custom vertex colors
+x,x,"void DrawRectangleLines(int posX, int posY, int width, int height, Color color);","raylib\Draw::rectangleLines(int $posX, int $posY, int $width, int $height, raylib\Color $color)",,Draw rectangle outline
+x,x,"void DrawRectangleLinesEx(Rectangle rec, int lineThick, Color color);","raylib\Draw::rectangleLinesEx(raylib\Rectangle $rec, int $lineThick, raylib\Color color)",,Draw rectangle outline with extended parameters
+x,x,"void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);","raylib\Draw::rectangleRounded(raylib\Rectangle $rec, float $roundness, int $segments, raylib\Color color)",,Draw rectangle with rounded edges
+x,x,"void DrawRectangleRoundedLines(Rectangle rec, float roundness, int segments, int lineThick, Color color);","raylib\Draw::rectangleRoundedLines(raylib\Rectangle $rec, float $roundness, int $segments, int $lineThick, raylib\Color color)",,Draw rectangle with rounded edges outline
+x,x,"void DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);","raylib\Draw::triangle(raylib\Vector2 $v1, raylib\Vector2 $v2, raylib\Vector2 $v3, raylib\Color $color)",,Draw a color-filled triangle (vertex in counter-clockwise order!)
+x,x,"void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);","raylib\triangleLines(raylib\Vector2 v1, raylib\Vector2 v2, raylib\Vector2 v3, raylib\Color color)",,Draw triangle outline (vertex in counter-clockwise order!)
+x,x,"void DrawTriangleFan(Vector2 *points, int pointsCount, Color color);","raylib\Draw::triangleFan(raylib\Vector2[] $points, raylib\Color $color)",,Draw a triangle fan defined by points (first vertex is the center)
+x,x,"void DrawTriangleStrip(Vector2 *points, int pointsCount, Color color);","raylib\Draw::triangleStrip(raylib\Vector2[] $points, raylib\Color $color)",,Draw a triangle strip defined by points
+x,x,"void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);","raylib\Draw::poly(raylib\Vector2 $center, int $sides, float $radius, float $rotation, raylib\Color $color)",,Draw a regular polygon (Vector version)
+x,x,"void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);","raylib\Draw::polyLines(raylib\Vector2 $center, int $sides, float $radius, float $rotation, raylib\Color $color)",,Draw a polygon outline of n sides
 ,,,,,
 ,,Basic shapes collision detection functions,,,
-,,"bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);","raylib\Collision\checkRecs(raylib\Rectangle $rec1, raylib\Rectangle $rec2)",,Check collision between two rectangles
-,,"bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);","raylib\Collision\checkCircles(raylib\Vector2 center1, float radius1, raylib\Vector2 center2, float radius2)",,Check collision between two circles
-,,"bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);","raylib\Collision\checkCircleRec(raylib\Vector2 center, float radius, raylib\Rectangle rec)",,Check collision between circle and rectangle
-,,"bool CheckCollisionPointRec(Vector2 point, Rectangle rec);","raylib\Collision\checkPointRec(raylib\Vector2 point, raylib\Rectangle rec)",,Check if point is inside rectangle
-,,"bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);","raylib\Collision\checkPointCircle(raylib\Vector2 point, raylib\Vector2 center, float radius)",,Check if point is inside circle
-,,"bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);","raylib\Collision\checkPointTriangle(raylib\Vector2 point, raylib\Vector2 p1, raylib\Vector2 p2, Vector2 p3)",,Check if point is inside a triangle
+x,x,"bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2);","raylib\Collision\checkRecs(raylib\Rectangle $rec1, raylib\Rectangle $rec2)",,Check collision between two rectangles
+x,x,"bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2);","raylib\Collision\checkCircles(raylib\Vector2 center1, float radius1, raylib\Vector2 center2, float radius2)",,Check collision between two circles
+x,x,"bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec);","raylib\Collision\checkCircleRec(raylib\Vector2 center, float radius, raylib\Rectangle rec)",,Check collision between circle and rectangle
+x,x,"bool CheckCollisionPointRec(Vector2 point, Rectangle rec);","raylib\Collision\checkPointRec(raylib\Vector2 point, raylib\Rectangle rec)",,Check if point is inside rectangle
+x,x,"bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius);","raylib\Collision\checkPointCircle(raylib\Vector2 point, raylib\Vector2 center, float radius)",,Check if point is inside circle
+x,x,"bool CheckCollisionPointTriangle(Vector2 point, Vector2 p1, Vector2 p2, Vector2 p3);","raylib\Collision\checkPointTriangle(raylib\Vector2 point, raylib\Vector2 p1, raylib\Vector2 p2, Vector2 p3)",,Check if point is inside a triangle
 ,,"bool CheckCollisionLines(Vector2 startPos1, Vector2 endPos1, Vector2 startPos2, Vector2 endPos2, Vector2 *collisionPoint);",TODO,,"Check the collision between two lines defined by two points each, returns collision point by reference"
-,,"Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);","raylib\Collision\getRec(raylib\Rectangle rec1, raylib\Rectangle rec2) : raylib\Rectangle",,Get collision rectangle for two rectangles collision
+x,x,"Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);","raylib\Collision\getRec(raylib\Rectangle rec1, raylib\Rectangle rec2) : raylib\Rectangle",,Get collision rectangle for two rectangles collision
 ,,,,,
 ,,Image loading functions,,,
-,,Image LoadImage(const char *fileName);,new raylib\Image(string $filename),,Load image from file into CPU memory (RAM)
-,,"Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);","raylib\Image::fromRaw(string $fileName, int $width, int $height, int $format, int $headerSize)",,Load image from RAW file data
+x,x,Image LoadImage(const char *fileName);,new raylib\Image(string $filename),,Load image from file into CPU memory (RAM)
+x,x,"Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);","raylib\Image::fromRaw(string $fileName, int $width, int $height, int $format, int $headerSize)",,Load image from RAW file data
 ,,"Image LoadImageAnim(const char *fileName, int *frames);",TODO,,Load image sequence from file (frames appended to image.data)
 ,,"Image LoadImageFromMemory(const char *fileType, const unsigned char *fileData, int dataSize);",TODO,,"Load image from memory buffer, fileType refers to extension: i.e. ""png"""
 ,,void UnloadImage(Image image);,--,unset($image),Unload image from CPU memory (RAM)
-,,"bool ExportImage(Image image, const char *fileName);",raylib\Image->export(string $fileName),,"Export image data to file, returns true on success"
-,,"bool ExportImageAsCode(Image image, const char *fileName);",raylib\Image->exportAsCode(string $fileName),,"Export image as code file defining an array of bytes, returns true on success"
+x,x,"bool ExportImage(Image image, const char *fileName);",raylib\Image->export(string $fileName),,"Export image data to file, returns true on success"
+x,x,"bool ExportImageAsCode(Image image, const char *fileName);",raylib\Image->exportAsCode(string $fileName),,"Export image as code file defining an array of bytes, returns true on success"
 ,,,,,
 ,,Image generation functions,,,
 ,,"Image GenImageColor(int width, int height, Color color);",TODO,,Generate image: plain color
@@ -243,37 +243,37 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,"Image GenImageCellular(int width, int height, int tileSize);",TODO,,Generate image: cellular algorithm. Bigger tileSize means bigger cells
 ,,,,,
 ,,Image manipulation functions,,,
-,,Image ImageCopy(Image image);,raylib\Image->copy() : raylib\Image,,Create an image duplicate (useful for transformations)
-,,"Image ImageFromImage(Image image, Rectangle rec);","raylib\Image->fromImage(raylib\Image $image, raylib\Rectangle $rec) : raylib\Image",,Create an image from another image piece
-,,"Image ImageText(const char *text, int fontSize, Color color);","raylib\Image->fromDefaultFont(string $text ,int $fontSize, raylib\Color $color) : raylib\Image",,Create an image from text (default font)
-,,"Image ImageTextEx(Font font, const char *text, float fontSize, float spacing, Color tint);","raylib\Image->fromFont(raylib\Font $font, string $text ,int $fontSize, float $spacing, raylib\Color $color) : raylib\Image",,Create an image from text (custom sprite font)
-,,"void ImageFormat(Image *image, int newFormat);",raylib\Image->format(int $newFormat),,Convert image data to desired format
-,,"void ImageToPOT(Image *image, Color fill);",raylib\Image->toPot(raylib\Color $fillColor),,Convert image to POT (power-of-two)
-,,"void ImageCrop(Image *image, Rectangle crop);",raylib\Image->crop(raylib\Rectangle $crop),,Crop an image to a defined rectangle
-,,"void ImageAlphaCrop(Image *image, float threshold);",raylib\Image->alphaCrop(float $threshold),,Crop image depending on alpha value
-,,"void ImageAlphaClear(Image *image, Color color, float threshold);","raylib\Imag->alphaClear(raylib\Color $color, float $threshold)",,Clear alpha channel to desired color
-,,"void ImageAlphaMask(Image *image, Image alphaMask);",raylib\Image->alphaMask(raylib\Image $alphaMask),,Apply alpha mask to image
-,,void ImageAlphaPremultiply(Image *image);,raylib\Image->alphaPremultiply(),,Premultiply alpha channel
-,,"void ImageResize(Image *image, int newWidth, int newHeight);","raylib\Image->resize(int $newWidth, int $newHeight)",,Resize image (Bicubic scaling algorithm)
-,,"void ImageResizeNN(Image *image, int newWidth,int newHeight);","raylib\Image->resizeNearestNeighbor(int $newWidth, int $newHeight)",,Resize image (Nearest-Neighbor scaling algorithm)
-,,"void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill);","raylib\Image->resizeCanvas(int $newWidth, int $newHeight, int $offsetX, int $offsetY, raylib\Color $color)",,Resize canvas and fill with color
-,,void ImageMipmaps(Image *image);,raylib\Image->genMipmaps(),,Generate all mipmap levels for a provided image
-,,"void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);","raylib\Image->dither(int $rBpp, int $gBpp, int $bBpp, int $aBpp)",,Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
-,,void ImageFlipVertical(Image *image);,raylib\Image->flipVertical(),,Flip image vertically
-,,void ImageFlipHorizontal(Image *image);,raylib\Image->flipHorizontal(),,Flip image horizontally
-,,void ImageRotateCW(Image *image);,raylib\Image->rotateClockwise(),,Rotate image clockwise 90deg
-,,void ImageRotateCCW(Image *image);,raylib\Image->rotateCounterClockwise(),,Rotate image counter-clockwise 90deg
-,,"void ImageColorTint(Image *image, Color color);",raylib\Image->colorTint(raylib\Color color),,Modify image color: tint
-,,void ImageColorInvert(Image *image);,raylib\Image->colorInvert(),,Modify image color: invert
-,,void ImageColorGrayscale(Image *image);,raylib\Image->colorGrayscale(),,Modify image color: grayscale
-,,"void ImageColorContrast(Image *image, float contrast);",raylib\Image->colorContrast(float $contrast),,Modify image color: contrast (-100 to 100)
-,,"void ImageColorBrightness(Image *image, int brightness);",raylib\Image->colorBrightness(int 4brightness),,Modify image color: brightness (-255 to 255)
-,,"void ImageColorReplace(Image *image, Color color, Color replace);","raylib\Imag->colorReplace(raylib\Color $color, raylib\Color $replace)",,Modify image color: replace color
-,,Color *LoadImageColors(Image image);,raylib\Image->getData() : \raylib\Color,,Load color data from image as a Color array (RGBA - 32bit)
-,,"Color *LoadImagePalette(Image image, int maxPaletteSize, int *colorsCount);","raylib\Image->getData(int $maxPaletteSize, int[] $colorsCount) : \raylib\Color",,Load colors palette from image as a Color array (RGBA - 32bit)
+x,x,Image ImageCopy(Image image);,raylib\Image->copy() : raylib\Image,,Create an image duplicate (useful for transformations)
+x,x,"Image ImageFromImage(Image image, Rectangle rec);","raylib\Image->fromImage(raylib\Image $image, raylib\Rectangle $rec) : raylib\Image",,Create an image from another image piece
+x,x,"Image ImageText(const char *text, int fontSize, Color color);","raylib\Image->fromDefaultFont(string $text ,int $fontSize, raylib\Color $color) : raylib\Image",,Create an image from text (default font)
+x,x,"Image ImageTextEx(Font font, const char *text, float fontSize, float spacing, Color tint);","raylib\Image->fromFont(raylib\Font $font, string $text ,int $fontSize, float $spacing, raylib\Color $color) : raylib\Image",,Create an image from text (custom sprite font)
+x,x,"void ImageFormat(Image *image, int newFormat);",raylib\Image->format(int $newFormat),,Convert image data to desired format
+x,x,"void ImageToPOT(Image *image, Color fill);",raylib\Image->toPot(raylib\Color $fillColor),,Convert image to POT (power-of-two)
+x,x,"void ImageCrop(Image *image, Rectangle crop);",raylib\Image->crop(raylib\Rectangle $crop),,Crop an image to a defined rectangle
+x,x,"void ImageAlphaCrop(Image *image, float threshold);",raylib\Image->alphaCrop(float $threshold),,Crop image depending on alpha value
+x,x,"void ImageAlphaClear(Image *image, Color color, float threshold);","raylib\Imag->alphaClear(raylib\Color $color, float $threshold)",,Clear alpha channel to desired color
+x,x,"void ImageAlphaMask(Image *image, Image alphaMask);",raylib\Image->alphaMask(raylib\Image $alphaMask),,Apply alpha mask to image
+x,x,void ImageAlphaPremultiply(Image *image);,raylib\Image->alphaPremultiply(),,Premultiply alpha channel
+x,x,"void ImageResize(Image *image, int newWidth, int newHeight);","raylib\Image->resize(int $newWidth, int $newHeight)",,Resize image (Bicubic scaling algorithm)
+x,x,"void ImageResizeNN(Image *image, int newWidth,int newHeight);","raylib\Image->resizeNearestNeighbor(int $newWidth, int $newHeight)",,Resize image (Nearest-Neighbor scaling algorithm)
+x,x,"void ImageResizeCanvas(Image *image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill);","raylib\Image->resizeCanvas(int $newWidth, int $newHeight, int $offsetX, int $offsetY, raylib\Color $color)",,Resize canvas and fill with color
+x,x,void ImageMipmaps(Image *image);,raylib\Image->genMipmaps(),,Generate all mipmap levels for a provided image
+x,x,"void ImageDither(Image *image, int rBpp, int gBpp, int bBpp, int aBpp);","raylib\Image->dither(int $rBpp, int $gBpp, int $bBpp, int $aBpp)",,Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
+x,x,void ImageFlipVertical(Image *image);,raylib\Image->flipVertical(),,Flip image vertically
+x,x,void ImageFlipHorizontal(Image *image);,raylib\Image->flipHorizontal(),,Flip image horizontally
+x,x,void ImageRotateCW(Image *image);,raylib\Image->rotateClockwise(),,Rotate image clockwise 90deg
+x,x,void ImageRotateCCW(Image *image);,raylib\Image->rotateCounterClockwise(),,Rotate image counter-clockwise 90deg
+x,x,"void ImageColorTint(Image *image, Color color);",raylib\Image->colorTint(raylib\Color color),,Modify image color: tint
+x,x,void ImageColorInvert(Image *image);,raylib\Image->colorInvert(),,Modify image color: invert
+x,x,void ImageColorGrayscale(Image *image);,raylib\Image->colorGrayscale(),,Modify image color: grayscale
+x,x,"void ImageColorContrast(Image *image, float contrast);",raylib\Image->colorContrast(float $contrast),,Modify image color: contrast (-100 to 100)
+x,x,"void ImageColorBrightness(Image *image, int brightness);",raylib\Image->colorBrightness(int 4brightness),,Modify image color: brightness (-255 to 255)
+x,x,"void ImageColorReplace(Image *image, Color color, Color replace);","raylib\Imag->colorReplace(raylib\Color $color, raylib\Color $replace)",,Modify image color: replace color
+x,x,Color *LoadImageColors(Image image);,raylib\Image->getData() : \raylib\Color,,Load color data from image as a Color array (RGBA - 32bit)
+x,x,"Color *LoadImagePalette(Image image, int maxPaletteSize, int *colorsCount);","raylib\Image->getData(int $maxPaletteSize, int[] $colorsCount) : \raylib\Color",,Load colors palette from image as a Color array (RGBA - 32bit)
 ,,void UnloadImageColors(Color *colors);,--,use unset(),Unload color data loaded with LoadImageColors()
 ,,void UnloadImagePalette(Color *colors);,--,use unset(),Unload colors palette loaded with LoadImagePalette()
-,,"Rectangle GetImageAlphaBorder(Image image, float threshold);",raylib\Imag->getAlphaBorder(float $threshold) : ralib\Rectangle,,Get image alpha border rectangle
+x,x,"Rectangle GetImageAlphaBorder(Image image, float threshold);",raylib\Imag->getAlphaBorder(float $threshold) : ralib\Rectangle,,Get image alpha border rectangle
 ,,,,,
 ,,Image drawing functions,,,
 ,,"void ImageClearBackground(Image *dst, Color color);",TODO,,Clear image background with given color
@@ -293,10 +293,10 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,,,,
 ,,,,,
 ,,Texture loading functions,,,
-,,Texture2D LoadTexture(const char *fileName);,new raylib\Texture(string $fileName),,Load texture from file into GPU memory (VRAM)
-,,Texture2D LoadTextureFromImage(Image image);,raylib\Image->toTexture() : raylib\Texture,,Load texture from image data
+x,x,Texture2D LoadTexture(const char *fileName);,new raylib\Texture(string $fileName),,Load texture from file into GPU memory (VRAM)
+x,x,Texture2D LoadTextureFromImage(Image image);,raylib\Image->toTexture() : raylib\Texture,,Load texture from image data
 ,,"TextureCubemap LoadTextureCubemap(Image image, int layoutType);",TODO,,"Load cubemap from image, multiple image cubemap layouts supported"
-,,"RenderTexture2D LoadRenderTexture(int width, int height);","new raylib\RenderTexture(int $width, int $height)",,Load texture for rendering (framebuffer)
+x,x,"RenderTexture2D LoadRenderTexture(int width, int height);","new raylib\RenderTexture(int $width, int $height)",,Load texture for rendering (framebuffer)
 ,,void UnloadTexture(Texture2D texture);,--,unset($texture),Unload texture from GPU memory (VRAM)
 ,,void UnloadRenderTexture(RenderTexture2D target);,--,unset($renderTexture),Unload render texture from GPU memory (VRAM)
 ,,"void UpdateTexture(Texture2D texture, const void *pixels);",TODO,,Update GPU texture with new data
@@ -305,56 +305,56 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,Image GetScreenData(void);,TODO,,Get pixel data from screen buffer and return an Image (screenshot)
 ,,,,,
 ,,Texture configuration functions,,,
-,,void GenTextureMipmaps(Texture2D *texture);,raylib\Texture->genMipmaps(),,Generate GPU mipmaps for a texture
-,,"void SetTextureFilter(Texture2D texture, int filterMode);",raylib\Texture->setFilter(int $filterMode),,Set texture scaling filter mode
-,,"void SetTextureWrap(Texture2D texture, int wrapMode);",raylib\Texture->setWrap(int $wrapMode),,Set texture wrapping mode
+x,x,void GenTextureMipmaps(Texture2D *texture);,raylib\Texture->genMipmaps(),,Generate GPU mipmaps for a texture
+x,x,"void SetTextureFilter(Texture2D texture, int filterMode);",raylib\Texture->setFilter(int $filterMode),,Set texture scaling filter mode
+x,x,"void SetTextureWrap(Texture2D texture, int wrapMode);",raylib\Texture->setWrap(int $wrapMode),,Set texture wrapping mode
 ,,,,,
 ,,Texture drawing functions,,,
-,,"void DrawTexture(Texture2D texture, int posX, int posY, Color tint);","raylib\Texture->draw(int $posX, int $posY, raylib\Color $tint)",,Draw a Texture2D
-,,"void DrawTextureV(Texture2D texture, Vector2 position, Color tint);","raylib\Texture->drawV(raylib\Vector $position, raylib\Color $tint)",,Draw a Texture2D with position defined as Vector2
-,,"void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);","raylib\Texture->drawEx(raylib\Vector $position, float $rotation, float scale, raylib\Color $tint)",,Draw a Texture2D with extended parameters
-,,"void DrawTextureRec(Texture2D texture, Rectangle source, Vector2 position, Color tint);","raylib\Texture->drawRec(raylib\Rectangle $rec, raylib\Vector $position, raylib\Color $tint)",,Draw a part of a texture defined by a rectangle
-,,"void DrawTextureQuad(Texture2D texture, Vector2 tiling, Vector2 offset, Rectangle quad, Color tint);","raylib\Texture->drawQuad(raylib\Vector $tiling, raylib\Vector $offset, raylib\Rectangle $quad, raylib\Color $tint)",,Draw texture quad with tiling and offset parameters
-,,"void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, float scale, Color tint);","raylib\Texture->drawTiled(raylib\Rectangle $source, raylib\Rectangle $dest, raylib\Vector $origin, float $rotation, float $scale, raylib\Color $tint)",,Draw part of a texture (defined by a rectangle) with rotation and scale tiled into dest.
-,,"void DrawTexturePro(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);","raylib\Texture->drawPro(raylib\Rectangle $source, raylib\Rectangle $dest, raylib\Vector $origin, float $rotation, raylib\Color $tint)",,Draw a part of a texture defined by a rectangle with 'pro' parameters
+x,x,"void DrawTexture(Texture2D texture, int posX, int posY, Color tint);","raylib\Texture->draw(int $posX, int $posY, raylib\Color $tint)",,Draw a Texture2D
+x,x,"void DrawTextureV(Texture2D texture, Vector2 position, Color tint);","raylib\Texture->drawV(raylib\Vector $position, raylib\Color $tint)",,Draw a Texture2D with position defined as Vector2
+x,x,"void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);","raylib\Texture->drawEx(raylib\Vector $position, float $rotation, float scale, raylib\Color $tint)",,Draw a Texture2D with extended parameters
+x,x,"void DrawTextureRec(Texture2D texture, Rectangle source, Vector2 position, Color tint);","raylib\Texture->drawRec(raylib\Rectangle $rec, raylib\Vector $position, raylib\Color $tint)",,Draw a part of a texture defined by a rectangle
+x,x,"void DrawTextureQuad(Texture2D texture, Vector2 tiling, Vector2 offset, Rectangle quad, Color tint);","raylib\Texture->drawQuad(raylib\Vector $tiling, raylib\Vector $offset, raylib\Rectangle $quad, raylib\Color $tint)",,Draw texture quad with tiling and offset parameters
+x,x,"void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, float scale, Color tint);","raylib\Texture->drawTiled(raylib\Rectangle $source, raylib\Rectangle $dest, raylib\Vector $origin, float $rotation, float $scale, raylib\Color $tint)",,Draw part of a texture (defined by a rectangle) with rotation and scale tiled into dest.
+x,x,"void DrawTexturePro(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint);","raylib\Texture->drawPro(raylib\Rectangle $source, raylib\Rectangle $dest, raylib\Vector $origin, float $rotation, raylib\Color $tint)",,Draw a part of a texture defined by a rectangle with 'pro' parameters
 ,,"void DrawTextureNPatch(Texture2D texture, NPatchInfo nPatchInfo, Rectangle dest, Vector2 origin, float rotation, Color tint);",TODO,,Draws a texture (or part of it) that stretches or shrinks nicely
 ,,,,,
 ,,Color/pixel related functions,,,
-,,"Color Fade(Color color, float alpha);",raylib\Color->fade(float $alpha),,"Returns color with alpha applied, alpha goes from 0.0f to 1.0f"
-,,int ColorToInt(Color color);,raylib\Color->toInt(),,Returns hexadecimal value for a Color
-,,Vector4 ColorNormalize(Color color);,raylib\Color->normalize(),,Returns Color normalized as float [0..1]
-,,Color ColorFromNormalized(Vector4 normalized);,raylib\Color::fromNormalized(/raylib/Vector4 $normalized) : /raylib/Color,,Returns Color from normalized values [0..1]
-,,Vector3 ColorToHSV(Color color);,raylib\Color->toHSV() : /raylib/Vector3,,Returns HSV values for a Color
-,,"Color ColorFromHSV(float hue, float saturation, float value);","raylib\Color::fromHSV(float $hue, float $saturation, float $value) : /raylib/Color",,Returns a Color from HSV values
+x,x,"Color Fade(Color color, float alpha);",raylib\Color->fade(float $alpha),,"Returns color with alpha applied, alpha goes from 0.0f to 1.0f"
+x,x,int ColorToInt(Color color);,raylib\Color->toInt(),,Returns hexadecimal value for a Color
+x,x,Vector4 ColorNormalize(Color color);,raylib\Color->normalize(),,Returns Color normalized as float [0..1]
+x,x,Color ColorFromNormalized(Vector4 normalized);,raylib\Color::fromNormalized(/raylib/Vector4 $normalized) : /raylib/Color,,Returns Color from normalized values [0..1]
+x,x,Vector3 ColorToHSV(Color color);,raylib\Color->toHSV() : /raylib/Vector3,,Returns HSV values for a Color
+x,x,"Color ColorFromHSV(float hue, float saturation, float value);","raylib\Color::fromHSV(float $hue, float $saturation, float $value) : /raylib/Color",,Returns a Color from HSV values
 ,,"Color ColorAlpha(Color color, float alpha);",TODO,,"Returns color with alpha applied, alpha goes from 0.0f to 1.0f"
 ,,"Color ColorAlphaBlend(Color dst, Color src, Color tint);",TODO,,Returns src alpha-blended into dst color with tint
-,,Color GetColor(int hexValue);,raylib\Color::fromInt(int $hexValue) : /raylib/Color,,Get Color structure from hexadecimal value
+x,x,Color GetColor(int hexValue);,raylib\Color::fromInt(int $hexValue) : /raylib/Color,,Get Color structure from hexadecimal value
 ,,"Color GetPixelColor(void *srcPtr, int format);",TODO,,Get Color from a source pixel pointer of certain format
 ,,"void SetPixelColor(void *dstPtr, Color color, int format);",TODO,,Set color formatted into destination pixel pointer
 ,,"int GetPixelDataSize(int width, int height, int format);",TODO,,Get pixel data size in bytes for certain format
 ,,,,,
 ,,Font loading/unloading functions,,,
-,,Font GetFontDefault(void);,raylib\Font::fromDefault() : /raylib/Font,,Get the default Font
-,,Font LoadFont(const char *fileName);,new raylib\Font(string $fileName),,Load font from file into GPU memory (VRAM)
-,,"Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);","raylib\Font::fromCustom(string $fileName,  int $fontSize, int $fontChars, int $charsCount)",,Load font from file with extended parameters
+x,x,Font GetFontDefault(void);,raylib\Font::fromDefault() : /raylib/Font,,Get the default Font
+x,x,Font LoadFont(const char *fileName);,new raylib\Font(string $fileName),,Load font from file into GPU memory (VRAM)
+x,x,"Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);","raylib\Font::fromCustom(string $fileName,  int $fontSize, int $fontChars, int $charsCount)",,Load font from file with extended parameters
 ,,"Font LoadFontFromImage(Image image, Color key, int firstChar);",TODO,,Load font from Image (XNA style)
 ,,"Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount);",TODO,,"Load font from memory buffer, fileType refers to extension: i.e. ""ttf"""
-,,"CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);","raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type)",,Load font data for further use
+x,x,"CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);","raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type)",,Load font data for further use
 ,,"Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod);",TODO,,Generate image font atlas using chars info
 ,,"void UnloadFontData(CharInfo *chars, int charsCount);",--,use unset(),Unload font chars info data (RAM)
 ,,void UnloadFont(Font font);,--,use unset(),Unload Font from GPU memory (VRAM)
 ,,,,,
 ,,Text drawing functions,,,
-,,"void DrawFPS(int posX, int posY);","raylib\Text::drawFps(int $posX, int $posY)",,Shows current FPS
-,,"void DrawText(const char *text, int posX, int posY, int fontSize, Color color);","raylib\Text::draw(string $text, int $posX, int $posY, int $fontSize, raylib\Color $color)",,Draw text (using default font)
-,,"void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);","raylib\Text::drawTextEx(raylib\Font $font, string $text, raylib\Vector2 $position, float $fontSize, float $spacing, raylib\Color $tint)",,Draw text using font and additional parameters
+x,x,"void DrawFPS(int posX, int posY);","raylib\Text::drawFps(int $posX, int $posY)",,Shows current FPS
+x,x,"void DrawText(const char *text, int posX, int posY, int fontSize, Color color);","raylib\Text::draw(string $text, int $posX, int $posY, int $fontSize, raylib\Color $color)",,Draw text (using default font)
+x,x,"void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);","raylib\Text::drawTextEx(raylib\Font $font, string $text, raylib\Vector2 $position, float $fontSize, float $spacing, raylib\Color $tint)",,Draw text using font and additional parameters
 ,,"void DrawTextRec(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);",TODO,,Draw text using font inside rectangle limits
 ,,"void DrawTextRecEx(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);",TODO,,Draw text using font inside rectangle limits with support for text selection
 ,,"void DrawTextCodepoint(Font font, int codepoint, Vector2 position, float fontSize, Color tint);",TODO,,Draw one character (codepoint)
 ,,,,,
 ,,Text misc. functions,,,
-,,"int MeasureText(const char *text, int fontSize);","raylib\Text::measure(string $text, float $fontSize)",,Measure string width for default font
-,,"Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);","raylib\Font->measureText(string $text, float $fontSize, float $spacing)",,Measure string size for Font
+x,x,"int MeasureText(const char *text, int fontSize);","raylib\Text::measure(string $text, float $fontSize)",,Measure string width for default font
+x,x,"Vector2 MeasureTextEx(Font font, const char *text, float fontSize, float spacing);","raylib\Font->measureText(string $text, float $fontSize, float $spacing)",,Measure string size for Font
 ,,"int GetGlyphIndex(Font font, int codepoint);",TODO,,Get index position for a unicode character on font
 ,,,,,
 ,,"Text strings management functions (no utf8 strings, only byte chars)",,,
@@ -511,21 +511,21 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,void EndVrDrawing(void);,TODO,,End VR simulator stereo rendering
 ,,,,,
 ,,Audio device management functions,,,
-,,void InitAudioDevice(void);,raylib\Audio::initDevice(),,Initialize audio device and context
-,,void CloseAudioDevice(void);,raylib\Audio::closeDevice(),,Close the audio device and context
-,,bool IsAudioDeviceReady(void);,raylib\Audio::isDeviceReady(),,Check if audio device has been initialized successfully
-,,void SetMasterVolume(float volume);,raylib\Audio::setMasterVolume(float $volume),,Set master volume (listener)
+x,x,void InitAudioDevice(void);,raylib\Audio::initDevice(),,Initialize audio device and context
+x,x,void CloseAudioDevice(void);,raylib\Audio::closeDevice(),,Close the audio device and context
+x,x,bool IsAudioDeviceReady(void);,raylib\Audio::isDeviceReady(),,Check if audio device has been initialized successfully
+x,x,void SetMasterVolume(float volume);,raylib\Audio::setMasterVolume(float $volume),,Set master volume (listener)
 ,,,,,
 ,,Wave/Sound loading/unloading functions,,,
-,,Wave LoadWave(const char *fileName);,new raylib\Wave(string $fileName),,Load wave data from file
+x,x,Wave LoadWave(const char *fileName);,new raylib\Wave(string $fileName),,Load wave data from file
 ,,"Wave LoadWaveFromMemory(const char *fileType, const unsigned char *fileData, int dataSize);",TODO,,"Load wave from memory buffer, fileType refers to extension: i.e. ""wav"""
 ,,Sound LoadSound(const char *fileName);,TODO,,Load sound from file
 ,,Sound LoadSoundFromWave(Wave wave);,TODO,,Load sound from wave data
 ,,"void UpdateSound(Sound sound, const void *data, int samplesCount);// Update sound buffer with new data",TODO,,Update sound buffer with new data
 ,,void UnloadWave(Wave wave);,--,use unset(),Unload wave data
 ,,void UnloadSound(Sound sound);,--,use unset(),Unload sound
-,,"bool ExportWave(Wave wave, const char *fileName);",raylib\Wave->export(string $fileName),,"Export wave data to file, returns true on success"
-,,"bool ExportWaveAsCode(Wave wave, const char *fileName);",raylib\Wave->exportAsCode(string $fileName),,"Export wave sample data to code (.h), returns true on success"
+x,x,"bool ExportWave(Wave wave, const char *fileName);",raylib\Wave->export(string $fileName),,"Export wave data to file, returns true on success"
+x,x,"bool ExportWaveAsCode(Wave wave, const char *fileName);",raylib\Wave->exportAsCode(string $fileName),,"Export wave sample data to code (.h), returns true on success"
 ,,,,,
 ,,Wave/Sound management functions,,,
 ,,void PlaySound(Sound sound);,TODO,,Play a sound
@@ -538,9 +538,9 @@ x,,bool IsCursorOnScreen(void),raylin\Cursor::isOnScreen(),,Check if cursor is o
 ,,bool IsSoundPlaying(Sound sound);,TODO,,Check if a sound is currently playing
 ,,"void SetSoundVolume(Sound sound, float volume);",TODO,,Set volume for a sound (1.0 is max level)
 ,,"void SetSoundPitch(Sound sound, float pitch);",TODO,,Set pitch for a sound (1.0 is base level)
-,,"void WaveFormat(Wave *wave, int sampleRate, int sampleSize, int channels);","raylib\Wave->format(int $sampleRate, int $sampleSize, int $channels)",,Convert wave data to desired format
-,,Wave WaveCopy(Wave wave);,raylib\Wave->copy() : raylib\Wave,,Copy a wave to a new wave
-,,"void WaveCrop(Wave *wave, int initSample, int finalSample);","raylib\Wave\crop(int $initSample, int $finalSample)",,Crop a wave to defined samples range
+x,x,"void WaveFormat(Wave *wave, int sampleRate, int sampleSize, int channels);","raylib\Wave->format(int $sampleRate, int $sampleSize, int $channels)",,Convert wave data to desired format
+x,x,Wave WaveCopy(Wave wave);,raylib\Wave->copy() : raylib\Wave,,Copy a wave to a new wave
+x,x,"void WaveCrop(Wave *wave, int initSample, int finalSample);","raylib\Wave\crop(int $initSample, int $finalSample)",,Crop a wave to defined samples range
 ,,float *LoadWaveSamples(Wave wave);,TODO,,Load samples data from wave as a floats array
 ,,void UnloadWaveSamples(float *samples);,--,use unset(),Unload samples data loaded with LoadWaveSamples()
 ,,,,,

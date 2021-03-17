@@ -703,7 +703,7 @@ PHP_METHOD(Camera3d, setType)
     intern->camera3d.type = (float) type;
 }
 
-
+// raylib\Camera3d->getMouseRay(raylib\Vector2 $mousePosition)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_getMouseRay, 0, 0, 1)
     ZEND_ARG_INFO(0, mousePosition)
 ZEND_END_ARG_INFO()
@@ -796,6 +796,7 @@ PHP_METHOD(Camera3d, getWorldToScreenEx)
 
     RETURN_OBJ(&phpVector2->std);
 }
+
 
 
 const zend_function_entry php_raylib_camera3d_methods[] = {
