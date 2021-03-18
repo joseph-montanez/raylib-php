@@ -701,6 +701,44 @@ PHP_METHOD(Image, fromImage)
     RETURN_OBJ(&result->std);
 }
 
+// Create an image from an animated image, currently only GIF is supported
+//RLAPI Image LoadImageAnim(const char *fileName, int *frames);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image_fromAnim, 0, 0, 2)
+    ZEND_ARG_INFO(0, fileName)
+    ZEND_ARG_INFO(1, frames)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Image, fromAnim)
+{
+    zend_string *fileName;
+    zval *frames;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_STR(fileName)
+        Z_PARAM_ZVAL(frames)
+    ZEND_PARSE_PARAMETERS_END();
+
+    int framesOut;
+
+    zend_object *phpImage = php_raylib_image_new(php_raylib_image_ce);
+
+    php_raylib_image_object *result = php_raylib_image_fetch_object(phpImage);
+
+    //-- Assign new image struct to image object
+    result->image = LoadImageAnim(fileName->val, &framesOut);
+
+    //-- Assign frames to the output variable
+    ZVAL_DEREF(frames);
+    if (Z_TYPE_P(frames) == IS_LONG) {
+        Z_LVAL_P(frames) = framesOut;
+    } else if (Z_TYPE_P(frames) == IS_DOUBLE) {
+        Z_DVAL_P(frames) = framesOut;
+    } else {
+        php_error_docref(NULL, E_WARNING, "unexpected argument type, $frames must be an int or float.");
+    }
+
+    RETURN_OBJ(&result->std);
+}
+
 // Convert image data to desired format
 // RLAPI void ImageFormat(Image *image, int newFormat);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_image_format, 0, 0, 1)
@@ -1149,6 +1187,7 @@ const zend_function_entry php_raylib_image_methods[] = {
         PHP_ME(Image, fromDefaultFont       , arginfo_image_fromDefaultFont, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromFont              , arginfo_image_fromFont, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromImage             , arginfo_image_fromImage, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Image, fromAnim              , arginfo_image_fromAnim, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Image, fromRaw               , arginfo_image_fromRaw, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC) // RLAPI Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize);
         PHP_ME(Image, toTexture             , arginfo_image_toTexture, ZEND_ACC_PUBLIC)
         PHP_ME(Image, getData               , arginfo_image_getData, ZEND_ACC_PUBLIC)                 // RLAPI Color *GetImageData(Image image);
