@@ -189,6 +189,7 @@ PHP_METHOD(Collision, checkPointRec)
 }
 
 // Get collision rectangle for two rectangles collision
+// Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_collision_getRec, 0, 0, 2)
     ZEND_ARG_INFO(0, rec1)
     ZEND_ARG_INFO(0, rec2)
@@ -275,14 +276,51 @@ PHP_METHOD(Collision, checkPointTriangle)
 }
 
 
+
+// Check the collision between two lines defined by two points each, returns collision point by reference
+// bool CheckCollisionLines(Vector2 startPos1, Vector2 endPos1, Vector2 startPos2, Vector2 endPos2, Vector2 *collisionPoint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_collision_checkLines, 0, 0, 4)
+    ZEND_ARG_INFO(0, startPos1)
+    ZEND_ARG_INFO(0, endPos1)
+    ZEND_ARG_INFO(0, startPos2)
+    ZEND_ARG_INFO(0, endPos2)
+    ZEND_ARG_INFO(0, collisionPoint)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Collision, checkLines)
+{
+    zval *startPos1;
+    zval *endPos1;
+    zval *startPos2;
+    zval *endPos2;
+    zval *collisionPoint;
+
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_ZVAL(startPos1)
+        Z_PARAM_ZVAL(endPos1)
+        Z_PARAM_ZVAL(startPos2)
+        Z_PARAM_ZVAL(endPos2)
+        Z_PARAM_ZVAL(collisionPoint)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector2_object *phpStartPos1      = Z_VECTOR2_OBJ_P(startPos1);
+    php_raylib_vector2_object *phpEndPos1        = Z_VECTOR2_OBJ_P(endPos1);
+    php_raylib_vector2_object *phpStartPos2      = Z_VECTOR2_OBJ_P(startPos2);
+    php_raylib_vector2_object *phpEndPos2        = Z_VECTOR2_OBJ_P(endPos2);
+    php_raylib_vector2_object *phpCollisionPoint = Z_VECTOR2_OBJ_P(collisionPoint);
+
+    RETURN_BOOL(CheckCollisionLines(phpStartPos1->vector2, phpEndPos1->vector2, phpStartPos2->vector2, phpEndPos2->vector2, &phpCollisionPoint->vector2));
+}
+
+
 const zend_function_entry php_raylib_collision_methods[] = {
-        PHP_ME(Collision, __construct       , arginfo_collision__construct, ZEND_ACC_PUBLIC)
-        PHP_ME(Collision, checkRecs         , arginfo_collision_checkRecs, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Collision, checkCircles      , arginfo_collision_checkCircles, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Collision, checkCircleRec    , arginfo_collision_checkCircleRec, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Collision, getRec            , arginfo_collision_getRec, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Collision, checkPointRec     , arginfo_collision_checkPointRec, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Collision, checkPointCircle  , arginfo_collision_checkPointCircle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, __construct       , arginfo_collision__construct        , ZEND_ACC_PUBLIC)
+        PHP_ME(Collision, checkRecs         , arginfo_collision_checkRecs         , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, checkCircles      , arginfo_collision_checkCircles      , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, checkCircleRec    , arginfo_collision_checkCircleRec    , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, getRec            , arginfo_collision_getRec            , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, checkPointRec     , arginfo_collision_checkPointRec     , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, checkPointCircle  , arginfo_collision_checkPointCircle  , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Collision, checkLines        , arginfo_collision_checkLines        , ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Collision, checkPointTriangle, arginfo_collision_checkPointTriangle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
