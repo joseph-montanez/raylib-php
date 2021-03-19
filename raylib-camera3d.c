@@ -515,19 +515,17 @@ PHP_METHOD(Camera3d, __construct)
     zend_object *up = NULL;
     php_raylib_vector3_object *phpUp;
 
-    double fovy;
-    bool fovy_is_null = 1;
+    double fovy = 0.0f;
 
-    zend_long type;
-    bool type_is_null = 1;
+    zend_long type = 0;
 
     ZEND_PARSE_PARAMETERS_START(0, 4)
         Z_PARAM_OPTIONAL
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(position, php_raylib_vector3_ce)
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(target, php_raylib_vector3_ce)
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(up, php_raylib_vector3_ce)
-        Z_PARAM_DOUBLE_OR_NULL(fovy, fovy_is_null)
-        Z_PARAM_LONG_OR_NULL(type, type_is_null)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_ZVAL(target)
+        Z_PARAM_ZVAL(up)
+        Z_PARAM_DOUBLE(fovy)
+        Z_PARAM_LONG(type)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
@@ -543,14 +541,6 @@ PHP_METHOD(Camera3d, __construct)
 
     if (up == NULL) {
         up = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
-    }
-
-    if (fovy_is_null) {
-        fovy = 0.0f;
-    }
-
-    if (type_is_null) {
-        type = 0;
     }
 
     phpPosition = php_raylib_vector3_fetch_object(position);
@@ -714,7 +704,7 @@ PHP_METHOD(Camera3d, getMouseRay)
     zend_object *mousePosition;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_OBJ_OF_CLASS(mousePosition, php_raylib_vector2_ce)
+        Z_PARAM_ZVAL(mousePosition)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpMousePosition = php_raylib_vector2_fetch_object(mousePosition);
@@ -755,7 +745,7 @@ PHP_METHOD(Camera3d, getWorldToScreen)
     zend_object *position;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector3_ce)
+        Z_PARAM_ZVAL(position)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
@@ -781,7 +771,7 @@ PHP_METHOD(Camera3d, getWorldToScreenEx)
     zend_long height;
 
     ZEND_PARSE_PARAMETERS_START(3, 3)
-        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector3_ce)
+        Z_PARAM_ZVAL(position)
         Z_PARAM_LONG(width)
         Z_PARAM_LONG(height)
     ZEND_PARSE_PARAMETERS_END();

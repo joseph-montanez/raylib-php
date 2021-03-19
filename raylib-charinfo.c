@@ -453,7 +453,7 @@ PHP_METHOD(CharInfo, __construct)
             Z_PARAM_LONG(offsetX)
             Z_PARAM_LONG(offsetY)
             Z_PARAM_LONG(advanceX)
-            Z_PARAM_OBJ_OF_CLASS(image, php_raylib_image_ce)
+            Z_PARAM_ZVAL(image)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);

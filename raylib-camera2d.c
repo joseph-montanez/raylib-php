@@ -454,18 +454,15 @@ PHP_METHOD(Camera2d, __construct)
     zend_object *target = NULL;
     php_raylib_vector2_object *phpTarget;
 
-    double rotation;
-    bool rotation_is_null = 1;
-
-    double zoom;
-    bool zoom_is_null = 1;
+    double rotation = 0.0f;
+    double zoom = 0.0f;
 
     ZEND_PARSE_PARAMETERS_START(0, 4)
         Z_PARAM_OPTIONAL
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(offset, php_raylib_vector2_ce)
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(target, php_raylib_vector2_ce)
-        Z_PARAM_DOUBLE_OR_NULL(rotation, rotation_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(zoom, zoom_is_null)
+        Z_PARAM_ZVAL(offset)
+        Z_PARAM_ZVAL(target)
+        Z_PARAM_DOUBLE(rotation)
+        Z_PARAM_DOUBLE(zoom)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
@@ -477,14 +474,6 @@ PHP_METHOD(Camera2d, __construct)
 
     if (target == NULL) {
         target = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
-    }
-
-    if (rotation_is_null) {
-        rotation = 0.0f;
-    }
-
-    if (zoom_is_null) {
-        zoom = 0.0f;
     }
 
     phpOffset = php_raylib_vector2_fetch_object(offset);
@@ -632,7 +621,7 @@ PHP_METHOD(Camera2d, getWorldToScreen)
     zend_object *position;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector2_ce)
+        Z_PARAM_ZVAL(position)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = php_raylib_vector2_fetch_object(position);
@@ -656,7 +645,7 @@ PHP_METHOD(Camera2d, getScreenToWorld)
     zend_object *position;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_OBJ_OF_CLASS(position, php_raylib_vector2_ce)
+        Z_PARAM_ZVAL(position)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = php_raylib_vector2_fetch_object(position);
