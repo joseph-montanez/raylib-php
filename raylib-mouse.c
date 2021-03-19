@@ -176,15 +176,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_mouse_getPosition, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Mouse, getPosition)
 {
-    php_raylib_vector2_object *intern;
-
-    //-- Allocate vector2
-    intern = (php_raylib_vector2_object*) ecalloc(1, sizeof(php_raylib_vector2_object) + zend_object_properties_size(php_raylib_vector2_ce));
-    //-- Intialize vector2
-    zend_object_std_init(&intern->std, php_raylib_vector2_ce);
-    object_properties_init(&intern->std, php_raylib_vector2_ce);
-    //-- Assigned handler
-    intern->std.handlers = &php_raylib_vector2_object_handlers;
+    zend_object *obj = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *intern = php_raylib_vector2_fetch_object(obj);
 
     //-- Assigned value to vector2
     intern->vector2 = GetMousePosition();
