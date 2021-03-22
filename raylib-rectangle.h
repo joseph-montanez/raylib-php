@@ -22,6 +22,6 @@ static inline php_raylib_rectangle_object *php_raylib_rectangle_fetch_object(zen
 void php_raylib_rectangle_startup(INIT_FUNC_ARGS);
 
 zend_object * php_raylib_rectangle_new_ex(zend_class_entry *ce, zend_object *orig);
-zend_object * php_raylib_rectangle_new(zend_class_entry *ce, zend_object *orig);
+zend_object * php_raylib_rectangle_new(zend_class_entry *ce);
 
 #endif //RAYLIB_RAYLIB_RECTANGLE_H

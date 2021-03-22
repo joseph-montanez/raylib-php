@@ -272,7 +272,7 @@ zend_object * php_raylib_rectangle_new_ex(zend_class_entry *ce, zend_object *ori
 
 zend_object * php_raylib_rectangle_new(zend_class_entry *ce)
 {
-    return php_raylib_rectangle_new_ex(class_type, NULL);
+    return php_raylib_rectangle_new_ex(ce, NULL);
 }
 /* }}} */
 
