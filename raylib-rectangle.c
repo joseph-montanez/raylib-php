@@ -243,20 +243,49 @@ void php_raylib_rectangle_free_storage(zend_object *object)
     zend_object_std_dtor(&intern->std);
 }
 
-zend_object * php_raylib_rectangle_new(zend_class_entry *ce)
+zend_object * php_raylib_rectangle_new_ex(zend_class_entry *ce, zend_object *orig)
 {
     php_raylib_rectangle_object *intern;
-    intern = (php_raylib_rectangle_object*) ecalloc(1, sizeof(php_raylib_rectangle_object) + zend_object_properties_size(ce));
+
+    intern = zend_object_alloc(sizeof(php_raylib_rectangle_object), ce);
+
     intern->prop_handler = &php_raylib_rectangle_prop_handlers;
+
+    if (orig) {
+        php_raylib_rectangle_object *other = php_raylib_rectangle_fetch_object(orig);
+        intern->rectangle = (Rectangle) {
+                .x = other->rectangle.x,
+                .y = other->rectangle.y,
+                .width = other->rectangle.width,
+                .height = other->rectangle.height
+        };
+    }
 
     zend_object_std_init(&intern->std, ce);
     object_properties_init(&intern->std, ce);
-
     intern->std.handlers = &php_raylib_rectangle_object_handlers;
 
     return &intern->std;
+    
 }
 /* }}} */
+
+zend_object * php_raylib_rectangle_new(zend_class_entry *ce)
+{
+    return php_raylib_rectangle_new_ex(class_type, NULL);
+}
+/* }}} */
+
+static zend_object *php_raylib_rectangle_clone(zend_object *old_object)
+{
+    zend_object *new_object;
+
+    new_object = php_raylib_rectangle_new_ex(old_object->ce, old_object);
+
+    zend_objects_clone_members(new_object, old_object);
+
+    return new_object;
+}
 
 
 // PHP property handling
@@ -511,7 +540,7 @@ void php_raylib_rectangle_startup(INIT_FUNC_ARGS)
     memcpy(&php_raylib_rectangle_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     php_raylib_rectangle_object_handlers.offset = XtOffsetOf(php_raylib_rectangle_object, std);
     php_raylib_rectangle_object_handlers.free_obj = &php_raylib_rectangle_free_storage;
-    php_raylib_rectangle_object_handlers.clone_obj = NULL;
+    php_raylib_rectangle_object_handlers.clone_obj = php_raylib_rectangle_clone;
 
     // Props Handlers
     php_raylib_rectangle_object_handlers.get_property_ptr_ptr = php_raylib_rectangle_get_property_ptr_ptr;
