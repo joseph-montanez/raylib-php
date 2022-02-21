@@ -41,8 +41,8 @@
             <file name="raylib-camera2d.h" role="src"/>
             <file name="raylib-camera3d.c" role="src"/>
             <file name="raylib-camera3d.h" role="src"/>
-            <file name="raylib-charinfo.c" role="src"/>
-            <file name="raylib-charinfo.h" role="src"/>
+            <file name="raylib-glyphinfo.c" role="src"/>
+            <file name="raylib-glyphinfo.h" role="src"/>
             <file name="raylib-collision.c" role="src"/>
             <file name="raylib-collision.h" role="src"/>
             <file name="raylib-color.c" role="src"/>

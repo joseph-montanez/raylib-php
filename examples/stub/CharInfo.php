@@ -3,7 +3,7 @@
 namespace raylib;
 
 /**
- * Class CharInfo
+ * Class GlyphInfo
  * @package raylib
  *
  * @property-read int           $value      Character value (Unicode)
@@ -13,10 +13,10 @@ namespace raylib;
  * @property-read int           $offsetY    Character offset Y when drawing
  * @property-read int           $advanceX   Character advance position X
  */
-class CharInfo
+class GlyphInfo
 {
     /**
-     * CharInfo constructor.
+     * GlyphInfo constructor.
      *
      * @param int           $value
      * @param int           $offsetX
@@ -36,9 +36,9 @@ class CharInfo
      * @param int[]  $fontChars
      * @param int    $type Which font type to load, \raylib\Font::FONT_DEFAULT, \raylib\Font::FONT_BITMAP or \raylib\Font::FONT_SDF
      *
-     * @return \raylib\CharInfo
+     * @return \raylib\GlyphInfo
      */
-    public static function fromFontData(string $fileName, int $fontSize, array $fontChars, int $type) : \raylib\CharInfo
+    public static function fromFontData(string $fileName, int $fontSize, array $fontChars, int $type) : \raylib\GlyphInfo
     {
     }
 

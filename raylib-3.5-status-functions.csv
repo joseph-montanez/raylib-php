@@ -339,9 +339,9 @@ x,x,Font LoadFont(const char *fileName);,new raylib\Font(string $fileName),,Load
 x,x,"Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount);","raylib\Font::fromCustom(string $fileName,  int $fontSize, int $fontChars, int $charsCount)",,Load font from file with extended parameters
 ,,"Font LoadFontFromImage(Image image, Color key, int firstChar);",TODO,,Load font from Image (XNA style)
 ,,"Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount);",TODO,,"Load font from memory buffer, fileType refers to extension: i.e. ""ttf"""
-x,x,"CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);","raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type)",,Load font data for further use
-,,"Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod);",TODO,,Generate image font atlas using chars info
-,,"void UnloadFontData(CharInfo *chars, int charsCount);",--,use unset(),Unload font chars info data (RAM)
+x,x,"GlyphInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type);","raylib\GlyphInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type)",,Load font data for further use
+,,"Image GenImageFontAtlas(const GlyphInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod);",TODO,,Generate image font atlas using chars info
+,,"void UnloadFontData(GlyphInfo *chars, int charsCount);",--,use unset(),Unload font chars info data (RAM)
 ,,void UnloadFont(Font font);,--,use unset(),Unload Font from GPU memory (VRAM)
 ,,,,,
 ,,Text drawing functions,,,

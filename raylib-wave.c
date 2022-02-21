@@ -103,7 +103,7 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Wave, getSampleCount)
 {
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
-    RETURN_LONG(intern->wave.sampleCount);
+    RETURN_LONG(intern->wave.frameCount);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_setSampleCount, 0, 0, 1)
@@ -119,7 +119,7 @@ PHP_METHOD(Wave, setSampleCount)
 
     php_raylib_wave_object *intern = Z_WAVE_OBJ_P(ZEND_THIS);
 
-    intern->wave.sampleCount = (unsigned int) sampleCount;
+    intern->wave.frameCount = (unsigned int) sampleCount;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_wave_getSampleRate, 0, 0, 0)
@@ -307,7 +307,7 @@ PHP_METHOD(Wave, getDataArray)
 //    while (*dataP++ != NULL) {
 //        dataLength++;
 //    }
-    int dataLength = intern->wave.sampleCount * intern->wave.channels;
+    int dataLength = intern->wave.frameCount * intern->wave.channels;
 
 
     array_init_size(return_value, dataLength);

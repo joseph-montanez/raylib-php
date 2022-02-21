@@ -15,7 +15,7 @@ This is currently a work-in-progress and bindings are not complete and are likel
 While mine may have been the first, its certainly taken a long time as all of code I've written is by hand. If you want 
 to try another binding, then you can try these others.
 
- - [PHP Raylib FFI](https://github.com/nawarian//raylib-ffi) - Uses PHP's built-in FFI (Foreign Function Interface) to 
+ - [PHP Raylib FFI](https://github.com/nawarian/raylib-ffi) - Uses PHP's built-in FFI (Foreign Function Interface) to 
    connect directly to the shared RayLib.dll/.so file. This will be slower than a native binding.
  - [PHP Raylib CPP](https://github.com/oraoto/raylib-phpcpp) - Uses PHP CPP to create bindings and uses automation to 
    map functions. This extension has quirks with handling sub-objects. It is will always be up to date soon than 

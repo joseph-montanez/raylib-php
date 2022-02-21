@@ -110,25 +110,6 @@ PHP_METHOD(Gamepad, isAvailable)
     RETURN_BOOL(IsGamepadAvailable(zend_long_2int(gamepad)));
 }
 
-// Check gamepad name (if available)
-// RLAPI bool IsGamepadName(int gamepad, const char *name);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_isName, 0, 0, 2)
-    ZEND_ARG_INFO(0, gamepad)
-    ZEND_ARG_INFO(0, name)
-ZEND_END_ARG_INFO()
-PHP_METHOD(Gamepad, isName)
-{
-    zend_long gamepad;
-    zend_string *name;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_LONG(gamepad)
-        Z_PARAM_STR(name)
-    ZEND_PARSE_PARAMETERS_END();
-
-    RETURN_BOOL(IsGamepadName(zend_long_2int(gamepad), name->val));
-}
-
 // Return gamepad internal name id
 // RLAPI const char *GetGamepadName(int gamepad);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_gamepad_getName, 0, 0, 1)
@@ -272,7 +253,6 @@ PHP_METHOD(Gamepad, getAxisMovement)
 const zend_function_entry php_raylib_gamepad_methods[] = {
         PHP_ME(Gamepad, __construct     , arginfo_gamepad__construct, ZEND_ACC_PUBLIC)
         PHP_ME(Gamepad, isAvailable     , arginfo_gamepad_isAvailable, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
-        PHP_ME(Gamepad, isName          , arginfo_gamepad_isName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Gamepad, getName         , arginfo_gamepad_getName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Gamepad, isButtonPressed , arginfo_gamepad_isButtonPressed, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_ME(Gamepad, isButtonDown    , arginfo_gamepad_isButtonDown, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -300,10 +280,10 @@ void php_raylib_gamepad_startup(INIT_FUNC_ARGS)
     php_raylib_gamepad_object_handlers.clone_obj = NULL;
 
     // Gamepad Number
-    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER1", GAMEPAD_PLAYER1);
-    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER2", GAMEPAD_PLAYER2);
-    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER3", GAMEPAD_PLAYER3);
-    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER4", GAMEPAD_PLAYER4);
+//    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER1", GAMEPAD_PLAYER1);
+//    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER2", GAMEPAD_PLAYER2);
+//    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER3", GAMEPAD_PLAYER3);
+//    REGISTER_RAYLIB_GAMEPAD_CLASS_CONST_LONG("PLAYER4", GAMEPAD_PLAYER4);
 
     // Gamepad Buttons
     // This is here just for error checking

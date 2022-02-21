@@ -18,7 +18,7 @@ class Font
     public array $recs;
 
     /**
-     * @var \raylib\CharInfo[]
+     * @var \raylib\GlyphInfo[]
      */
     public array $chars;
 
@@ -52,7 +52,7 @@ class Font
      * @param int                 $charsCount
      * @param \raylib\Texture     $texture
      * @param \raylib\Rectangle[] $recs
-     * @param \raylib\CharInfo[]  $chars
+     * @param \raylib\GlyphInfo[]  $chars
      *
      * @return \raylib\Font
      */

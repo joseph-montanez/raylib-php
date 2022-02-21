@@ -10,8 +10,10 @@ extern zend_class_entry *php_raylib_font_ce;
 typedef struct _php_raylib_font_object {
     Font font;
     HashTable *prop_handler;
+    php_raylib_texture_object *texture;
+    HashTable *recs;
+    HashTable *chars;
     zend_object std;
-    zval texture;
 } php_raylib_font_object;
 
 static inline php_raylib_font_object *php_raylib_font_fetch_object(zend_object *obj) {

@@ -1,9 +1,18 @@
 version: "3.3"
 services:
-  php_raylib:
-    build: .
+  php_raylib_php80:
+    build: php-docker-versions/php-8.0
     working_dir: /var/www/
     volumes:
       - ./:/var/www/
     stdin_open: true
     tty: true
+    command: pbash build.sh
+  php_raylib_php81:
+    build: php-docker-versions/php-8.1
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www/
+    stdin_open: true
+    tty: true
+    command: bash build.sh

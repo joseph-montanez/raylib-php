@@ -319,7 +319,7 @@ zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_object *orig
                         .z = phpUp->vector3.z
                 },
                 .fovy = other->camera3d.fovy,
-                .type = other->camera3d.type
+                .projection = other->camera3d.projection
         };
         intern->position = phpPosition;
         intern->target = phpTarget;
@@ -350,7 +350,7 @@ zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_object *orig
                         .z = 0
                 },
                 .fovy = 0,
-                .type = 1
+                .projection = 1
         };
         intern->position = phpPosition;
         intern->target = phpTarget;
@@ -413,7 +413,7 @@ static double php_raylib_camera3d_fovy(php_raylib_camera3d_object *obj) /* {{{ *
 
 static zend_long php_raylib_camera3d_type(php_raylib_camera3d_object *obj) /* {{{ */
 {
-    return (zend_long) obj->camera3d.type;
+    return (zend_long) obj->camera3d.projection;
 }
 /* }}} */
 
@@ -485,11 +485,11 @@ static int php_raylib_camera3d_write_type(php_raylib_camera3d_object *camera3d_o
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        camera3d_object->camera3d.type = 0;
+        camera3d_object->camera3d.projection = 0;
         return ret;
     }
 
-    camera3d_object->camera3d.type = (float) zval_get_double(newval);
+    camera3d_object->camera3d.projection = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -566,7 +566,7 @@ PHP_METHOD(Camera3d, __construct)
             .target = (Vector3) {.x = phpTarget->vector3.x, .y = phpTarget->vector3.y, .z = phpTarget->vector3.z},
             .up = (Vector3) {.x = phpUp->vector3.x,     .y = phpUp->vector3.y,     .z = phpUp->vector3.z},
             .fovy = fovy,
-            .type = type
+            .projection = type
     };
 }
 
@@ -684,7 +684,7 @@ PHP_METHOD(Camera3d, getType)
 {
     php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
 
-    RETURN_DOUBLE((double) intern->camera3d.type);
+    RETURN_DOUBLE((double) intern->camera3d.projection);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d_setType, 0, 0, 1)
@@ -700,7 +700,7 @@ PHP_METHOD(Camera3d, setType)
     Z_PARAM_DOUBLE(type)
     ZEND_PARSE_PARAMETERS_END();
 
-    intern->camera3d.type = (float) type;
+    intern->camera3d.projection = (float) type;
 }
 
 // raylib\Camera3d->getMouseRay(raylib\Vector2 $mousePosition)

@@ -6,8 +6,8 @@ $fontChars = [
     ord("D"),
 ];
 
-$charinfos = \raylib\CharInfo::fromFontData(__DIR__ . '/pixantiqua.ttf', 12, $fontChars, \raylib\Font::FONT_DEFAULT);
+$glyphInfos = \raylib\GlyphInfo::fromFontData(__DIR__ . '/pixantiqua.ttf', 12, $fontChars, \raylib\Font::FONT_DEFAULT);
 
-foreach ($charinfos as $n => $charinfo) {
-    $charinfo->image->export(__DIR__ . '/' . chr($fontChars[$n]) . '-out.png');
+foreach ($glyphInfos as $n => $glyphInfo) {
+    $glyphInfo->image->export(__DIR__ . '/' . chr($fontChars[$n]) . '-out.png');
 }

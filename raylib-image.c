@@ -49,12 +49,12 @@ typedef struct tagMSG *LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "raylib-texture.h"
 #include "raylib-image.h"
 #include "raylib-rectangle.h"
 #include "raylib-font.h"
 #include "raylib-vector2.h"
 #include "raylib-vector4.h"
-#include "raylib-texture.h"
 #include "raylib-color.h"
 #include "raylib-utils.h"
 

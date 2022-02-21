@@ -468,9 +468,9 @@ This is a one to one mapping of each raylib function.
 | Font LoadFontEx(const char *fileName, int fontSize, int *fontChars, int charsCount); | raylib\Font::fromCustom(string $fileName,  int $fontSize, int $fontChars, int $charsCount) |  |
 | Font LoadFontFromImage(Image image, Color key, int firstChar); | TODO |  |
 | Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount); | TODO |  |
-| CharInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type); | raylib\CharInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type) |  |
-| Image GenImageFontAtlas(const CharInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod); | TODO |  |
-| void UnloadFontData(CharInfo *chars, int charsCount); | -- | use unset() |
+| GlyphInfo *LoadFontData(const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, int type); | raylib\GlyphInfo::fromFontData(string $fileName, int fontSize, int[] $fontChars, int type) |  |
+| Image GenImageFontAtlas(const GlyphInfo *chars, Rectangle **recs, int charsCount, int fontSize, int padding, int packMethod); | TODO |  |
+| void UnloadFontData(GlyphInfo *chars, int charsCount); | -- | use unset() |
 | void UnloadFont(Font font); | -- | use unset() |
 
 

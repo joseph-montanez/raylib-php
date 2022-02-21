@@ -62,7 +62,7 @@ zend_class_entry *php_raylib_collision_ce;
 zend_class_entry *php_raylib_wave_ce;
 zend_class_entry *php_raylib_audio_ce;
 zend_class_entry *php_raylib_npatchinfo_ce;
-zend_class_entry *php_raylib_charinfo_ce;
+zend_class_entry *php_raylib_glyphInfo_ce;
 
 
 #ifdef PHP_WIN32

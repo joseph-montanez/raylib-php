@@ -342,7 +342,7 @@ static zend_long php_raylib_npatchinfo_bottom(php_raylib_npatchinfo_object *obj)
 
 static zend_long php_raylib_npatchinfo_type(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.type;
+    return (zend_long) obj->npatchinfo.layout;
 }
 /* }}} */
 
@@ -426,11 +426,11 @@ static int php_raylib_npatchinfo_write_type(php_raylib_npatchinfo_object *npatch
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        npatchinfo_object->npatchinfo.type = 0;
+        npatchinfo_object->npatchinfo.layout = 0;
         return ret;
     }
 
-    npatchinfo_object->npatchinfo.type = (int) zval_get_long(newval);
+    npatchinfo_object->npatchinfo.layout = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -468,7 +468,7 @@ PHP_METHOD(NPatchInfo, __construct)
             .top = (int) top,
             .right = (int) right,
             .bottom = (int) bottom,
-            .type = (int) type,
+            .layout = (int) type,
     };
 
 }
@@ -574,7 +574,7 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(NPatchInfo, getType)
 {
     php_raylib_npatchinfo_object *intern = Z_NPATCHINFO_OBJ_P(ZEND_THIS);
-    RETURN_LONG(intern->npatchinfo.type);
+    RETURN_LONG(intern->npatchinfo.layout);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_npatchinfo_setType, 0, 0, 1)
@@ -684,8 +684,9 @@ void php_raylib_npatchinfo_startup(INIT_FUNC_ARGS)
     php_raylib_npatchinfo_register_prop_handler(&php_raylib_npatchinfo_prop_handlers, "bottom", php_raylib_npatchinfo_bottom, php_raylib_npatchinfo_write_bottom);
     php_raylib_npatchinfo_register_prop_handler(&php_raylib_npatchinfo_prop_handlers, "type", php_raylib_npatchinfo_type, php_raylib_npatchinfo_write_type);
 
+
     // Types
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_9PATCH", NPT_9PATCH);
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_VERTICAL", NPT_3PATCH_VERTICAL);
-    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_HORIZONTAL", NPT_3PATCH_HORIZONTAL);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_9PATCH", NPATCH_NINE_PATCH);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_VERTICAL", NPATCH_THREE_PATCH_VERTICAL);
+    REGISTER_RAYLIB_NPATCHINFO_CLASS_CONST_LONG("NPT_3PATCH_HORIZONTAL", NPATCH_THREE_PATCH_HORIZONTAL);
 }

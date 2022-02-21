@@ -9,7 +9,7 @@ namespace raylib;
  * @property-read Texture  $texture    Font texture
  * @property-read int      $baseSize   Base size (default chars height)
  * @property-read int      $charsCount Base size (default chars height)
- * @property-read CharInfo $chars      Characters info data
+ * @property-read GlyphInfo $chars      Characters info data
  */
 class SpriteFont
 {
