@@ -1,6 +1,7 @@
 rm -f config.log
 rm -f config.h
 rm -f config.h.in
+rm -f config.h.in~
 rm -f config.nice
 rm -f config.status
 rm -f configure
@@ -17,4 +18,4 @@ rm -f *.lo
 rm -f *.loT
 rm -rf .libs
 rm -rf cmake-build-debug
-rf -rf include
+rm -rf include
