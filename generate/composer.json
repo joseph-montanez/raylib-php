@@ -1,0 +1,19 @@
+{
+  "name": "joseph_montanez/raylib_api_parser",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "joseph",
+      "email": "sutabi@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Raylib\\Parser\\": "src/"
+    }
+  },
+  "require": {
+  }
+}
