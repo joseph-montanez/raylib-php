@@ -16,6 +16,7 @@ rm -rf modules
 rm -f *.dep
 rm -f *.lo
 rm -f *.loT
+rm -f *.la
 rm -rf .libs
 rm -rf cmake-build-debug
 rm -rf include
