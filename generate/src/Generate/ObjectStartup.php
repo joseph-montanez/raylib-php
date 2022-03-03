@@ -30,7 +30,7 @@ class ObjectStartup
         $input[] = '    php_raylib_' . $struct->nameLower . '_object_handlers.has_property	     = php_raylib_' . $struct->nameLower . '_has_property;';
         $input[] = '';
         $input[] = '    // Init';
-        $input[] = '    INIT_NS_CLASS_ENTRY(ce, "raylib", "' . $struct->nameLower . '", php_raylib_' . $struct->nameLower . '_methods);';
+        $input[] = '    INIT_NS_CLASS_ENTRY(ce, "raylib", "' . $struct->name . '", php_raylib_' . $struct->nameLower . '_methods);';
         $input[] = '    php_raylib_' . $struct->nameLower . '_ce = zend_register_internal_class(&ce);';
         $input[] = '    php_raylib_' . $struct->nameLower . '_ce->create_object = php_raylib_' . $struct->nameLower . '_new;';
         $input[] = '';
