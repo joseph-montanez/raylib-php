@@ -14,6 +14,10 @@ class ArgBeginInfo
      * @var string|null Can be something like this: MAY_BE_FALSE
      */
     public ?string $type;
+    /*
+     * @var \Raylib\Parser\Generate\Zend\ArgInfo $argInfos
+     */
+    public array $argInfos;
 
     public function isTentativeReturnType($val): static
     {
@@ -59,6 +63,8 @@ class ArgBeginInfo
 
     public function build()
     {
+        $output = [];
+        
         if (
             isset($this->passByRef)
             && isset($this->name)
@@ -67,7 +73,7 @@ class ArgBeginInfo
             && $this->isVariadic
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(name, class_name, allow_null) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(%s, %s, %d)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(%s, %s, %d)",
                 $this->name, $this->className, $this->allowNull
             );
         } elseif (
@@ -78,7 +84,7 @@ class ArgBeginInfo
             && isset($this->isTentativeReturnType)
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX2(name, return_reference, required_num_args, type, is_tentative_return_type) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type, $this->isTentativeReturnType
             );
         } elseif (
@@ -88,7 +94,7 @@ class ArgBeginInfo
             && isset($this->type)
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(name, return_reference, required_num_args, type) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(%s, %d, %d, %s)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(%s, %d, %d, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type
             );
         } elseif (
@@ -99,7 +105,7 @@ class ArgBeginInfo
             && isset($this->isTentativeReturnType)
         ) {
             #define ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_MASK_EX(name, return_reference, required_num_args, type) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_MASK_EX(%s, %d, %d, %s)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_MASK_EX(%s, %d, %d, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type
             );
         } elseif (
@@ -110,7 +116,7 @@ class ArgBeginInfo
             && isset($this->type)
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(name, return_reference, required_num_args, class_name, type) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->className, $this->type
             );
         } elseif (
@@ -122,7 +128,7 @@ class ArgBeginInfo
             && isset($this->isTentativeReturnType)
         ) {
             #define ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_OBJ_TYPE_MASK_EX(name, return_reference, required_num_args, class_name, type) \
-            return sprintf("ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_OBJ_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_OBJ_TYPE_MASK_EX(%s, %d, %d, %s, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->className, $this->type
             );
         } elseif (
@@ -133,7 +139,7 @@ class ArgBeginInfo
             && isset($this->isTentativeReturnType)
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(name, return_reference, required_num_args, type, allow_null, is_tentative_return_type) \
-            return sprintf(
+            $output[] = sprintf(
                 "ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX2(%s, %d, %d, %s, %d, %s)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type, $this->allowNull, $this->isTentativeReturnType
             );
@@ -145,7 +151,7 @@ class ArgBeginInfo
             && isset($this->allowNull)
         ) {
             #define ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(name, return_reference, required_num_args, type, allow_null) \
-            return sprintf(
+            $output[] = sprintf(
                 "ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(%s, %d, %d, %s, %d)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type, $this->allowNull
             );
@@ -158,7 +164,7 @@ class ArgBeginInfo
             && isset($this->isTentativeReturnType)
         ) {
             #define ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(name, return_reference, required_num_args, type, allow_null) \
-            return sprintf(
+            $output[] = sprintf(
                 "ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(%s, %d, %d, %s, %d)",
                 $this->name, $this->returnReference, $this->requiredNumArgs, $this->type, $this->allowNull
             );
@@ -167,16 +173,30 @@ class ArgBeginInfo
             && isset($this->type)
             && isset($this->allowNull)
         ) {
-            return sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(%s, %s, %d)", $this->name, $this->type, $this->allowNull);
+            $output[] = sprintf("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(%s, %s, %d)", $this->name, $this->type, $this->allowNull);
         } elseif (
             isset($this->name)
             && isset($this->returnReference)
             && isset($this->requiredNumArgs)
         ) {
-            return sprintf("ZEND_BEGIN_ARG_INFO_EX(%s, 0, %d, %d)", $this->name, $this->returnReference, $this->requiredNumArgs);
+            $output[] = sprintf("ZEND_BEGIN_ARG_INFO_EX(%s, 0, %d, %d)", $this->name, $this->returnReference, $this->requiredNumArgs);
         } elseif (isset($this->name)) {
-            return sprintf("ZEND_BEGIN_ARG_INFO(%s, 0)", $this->name);
+            $output[] = sprintf("ZEND_BEGIN_ARG_INFO(%s, 0)", $this->name);
         }
+
+        /** @var \Raylib\Parser\Generate\Zend\ArgInfo $argInfo */
+        foreach ($this->argInfos as $argInfo) {
+            $output[] = '    ' . $argInfo->build();
+        }
+
+        $output[] = 'ZEND_END_ARG_INFO()';
+        
+        return implode(PHP_EOL, $output);
+    }
+
+    public function add(ArgInfo $argInfo)
+    {
+        $this->argInfos[] = $argInfo;
     }
 }
 

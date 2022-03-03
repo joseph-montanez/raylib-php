@@ -37,20 +37,18 @@ class CFunction
         $refCount = 0;
         foreach ($function->params as $param) {
             $refCount   += $param->isRef ? 1 : 0;
-            $argInfos[] = '    ' . (new ArgInfo())
+            $argInfos[] = (new ArgInfo())
                     ->passByRef($param->isRef)
-                    ->name($param->name)
-                    ->build();
+                    ->name($param->name);
         }
-        $input[] = (new ArgBeginInfo())
+        $argInfoBegin = (new ArgBeginInfo())
             ->name('arginfo_' . $function->name)
             ->requiredNumArgs($function->paramCount)
-            ->returnReference($refCount)
-            ->build();
+            ->returnReference($refCount);
         foreach ($argInfos as $argInfo) {
-            $input[] = $argInfo;
+            $argInfoBegin->add($argInfo);
         }
-        $input[] = 'ZEND_END_ARG_INFO()';
+        $input[] = $argInfoBegin->build();
         $input[] = sprintf("PHP_FUNCTION(%s)", $function->name);
         $input[] = '{';
         foreach ($function->params as $param) {

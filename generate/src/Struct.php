@@ -19,10 +19,11 @@ class Struct
     public int $totalFields;
     public string $alias;
     public bool $isAlias;
+    public string|null $constructorFunction;
 
     /**
      * @param array                                              $aliases
-     * @param array{name:string,description:string,fields:array} $structInfo
+     * @param array{name:string,description:string,fields:array,constructorFunction:string|null} $structInfo
      */
     public function __construct(array $aliases, array $structInfo)
     {
@@ -30,6 +31,7 @@ class Struct
         $this->nameLower = strtolower($structInfo['name']);
         $this->nameUpper = strtoupper($structInfo['name']);
         $this->description = $structInfo['description'];
+        $this->constructorFunction = $structInfo['constructorFunction'] ?? null;
 
         $this->fields = [];
         /** @var array{type:string,name:string,description:string,isArray:bool|null,arrayCountField:string|null} $fieldInfo */

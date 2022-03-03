@@ -355,6 +355,7 @@
     {
       "name": "Font",
       "description": "Font, font texture and GlyphInfo array data",
+      "constructorFunction": "LoadFont",
       "fields": [
         {
           "type": "int",

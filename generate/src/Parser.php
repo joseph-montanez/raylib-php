@@ -4,6 +4,7 @@ namespace Raylib\Parser;
 
 use Raylib\Parser\Generate\CFunction;
 use Raylib\Parser\Generate\ObjectClone;
+use Raylib\Parser\Generate\ObjectConstructor;
 use Raylib\Parser\Generate\ObjectFreePropertyHandler;
 use Raylib\Parser\Generate\ObjectFreeStorage;
 use Raylib\Parser\Generate\ObjectGetGarbageCollector;
@@ -119,7 +120,7 @@ class Parser
             $cFileName      = __DIR__ . '/../../' . $structFileName . '.c';
             $hFileName      = __DIR__ . '/../../' . $structFileName . '.h';
 
-            $generateStructC      = $this->generateStructC($structsByType, $struct, []);
+            $generateStructC      = $this->generateStructC($functions, $structsByType, $struct, []);
             $generateStructHeader = $this->generateStructHeader($structsByType, $struct, []);
 
             file_put_contents($cFileName, implode("\n", $generateStructC));
@@ -440,13 +441,14 @@ class Parser
     }
 
     /**
+     * @param \Raylib\Parser\Func[] $functions
      * @param \Raylib\Parser\Struct[] $structsByType
      * @param \Raylib\Parser\Struct   $struct
      * @param array                   $input
      *
      * @return array
      */
-    public function generateStructC(array $structsByType, Struct $struct, array $input): array
+    public function generateStructC(array $functions, array $structsByType, Struct $struct, array $input): array
     {
         //-- Window API Work Around
         $input[] = '/* If defined, the following flags inhibit definition of the indicated items.*/';
@@ -636,6 +638,9 @@ class Parser
 
         //-- Clone
         $input = (new ObjectClone())->generate($struct, $input);
+
+        //-- Object Constructor
+        $input = (new ObjectConstructor())->generate($functions, $structsByType, $struct, $input);
 
         //-- Object Getters
         $input = (new ObjectPropertyGetters())->generate($structsByType, $struct, $input);
