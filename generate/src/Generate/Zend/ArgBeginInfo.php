@@ -17,7 +17,7 @@ class ArgBeginInfo
     /*
      * @var \Raylib\Parser\Generate\Zend\ArgInfo $argInfos
      */
-    public array $argInfos;
+    public array $argInfos = [];
 
     public function isTentativeReturnType($val): static
     {
@@ -61,7 +61,7 @@ class ArgBeginInfo
         return $this;
     }
 
-    public function build()
+    public function build(): array
     {
         $output = [];
         
@@ -190,8 +190,8 @@ class ArgBeginInfo
         }
 
         $output[] = 'ZEND_END_ARG_INFO()';
-        
-        return implode(PHP_EOL, $output);
+
+        return $output;
     }
 
     public function add(ArgInfo $argInfo)
