@@ -48,7 +48,7 @@ class CFunction
         foreach ($argInfos as $argInfo) {
             $argInfoBegin->add($argInfo);
         }
-        $input[] = $argInfoBegin->build();
+        $input = array_merge($input, $argInfoBegin->build());
         $input[] = sprintf("PHP_FUNCTION(%s)", $function->name);
         $input[] = '{';
         foreach ($function->params as $param) {
