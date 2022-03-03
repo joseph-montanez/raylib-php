@@ -120,7 +120,7 @@ class Parser
             $cFileName      = __DIR__ . '/../../' . $structFileName . '.c';
             $hFileName      = __DIR__ . '/../../' . $structFileName . '.h';
 
-            $generateStructC      = $this->generateStructC($functions, $structsByType, $struct, []);
+            $generateStructC      = $this->generateStructC($functionObjs, $structsByType, $struct, []);
             $generateStructHeader = $this->generateStructHeader($structsByType, $struct, []);
 
             file_put_contents($cFileName, implode("\n", $generateStructC));
