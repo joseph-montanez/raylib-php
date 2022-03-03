@@ -348,6 +348,73 @@ static zend_object *php_raylib_camera2d_clone(zend_object *old_object) /* {{{  *
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera2d__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, offset, raylib\\Vector2, 1)
+    ZEND_ARG_OBJ_INFO(0, target, raylib\\Vector2, 1)
+    ZEND_ARG_TYPE_MASK(0, rotation, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, zoom, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera2D, __construct)
+{
+    zend_object *offset = NULL;
+    php_raylib_vector2_object *phpOffset;
+
+    zend_object *target = NULL;
+    php_raylib_vector2_object *phpTarget;
+
+    double rotation;
+    bool rotation_is_null = 1;
+
+    double zoom;
+    bool zoom_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(offset, php_raylib_vector2_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(target, php_raylib_vector2_ce)
+        Z_PARAM_DOUBLE_OR_NULL(rotation, rotation_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(zoom, zoom_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_camera2d_object *intern = Z_CAMERA2D_OBJ_P(ZEND_THIS);
+
+    if (offset == NULL) {
+        offset = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    }
+
+    if (target == NULL) {
+        target = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    }
+
+    if (rotation_is_null) {
+        rotation = 0.0f;
+    }
+
+    if (zoom_is_null) {
+        zoom = 0.0f;
+    }
+
+    phpOffset = php_raylib_vector2_fetch_object(offset);
+    phpTarget = php_raylib_vector2_fetch_object(target);
+
+    intern->offset = phpOffset;
+    intern->target = phpTarget;
+
+    intern->camera2d = (Camera2D) {
+        .offset = (Vector2) {
+            .x = phpOffset->vector2.x,
+            .y = phpOffset->vector2.y
+        },
+        .target = (Vector2) {
+            .x = phpTarget->vector2.x,
+            .y = phpTarget->vector2.y
+        },
+        .rotation = rotation,
+        .zoom = zoom
+    };
+}
+
 static zend_object * php_raylib_camera2d_get_offset(php_raylib_camera2d_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->offset->std);
@@ -439,6 +506,7 @@ static int php_raylib_camera2d_set_zoom(php_raylib_camera2d_object *obj, zval *n
 /* }}} */
 
 const zend_function_entry php_raylib_camera2d_methods[] = {
+        PHP_ME(Camera2D, __construct, arginfo_camera2d__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_camera2d_startup(INIT_FUNC_ARGS)
@@ -459,7 +527,7 @@ void php_raylib_camera2d_startup(INIT_FUNC_ARGS)
     php_raylib_camera2d_object_handlers.has_property	     = php_raylib_camera2d_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "camera2d", php_raylib_camera2d_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Camera2D", php_raylib_camera2d_methods);
     php_raylib_camera2d_ce = zend_register_internal_class(&ce);
     php_raylib_camera2d_ce->create_object = php_raylib_camera2d_new;
 

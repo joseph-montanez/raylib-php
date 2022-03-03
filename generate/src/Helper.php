@@ -65,7 +65,7 @@ class Helper
             || str_starts_with($type, 'unsigned short')
             || str_starts_with($type, 'unsigned int')
             || str_starts_with($type, 'const unsigned char')
-            || $type === 'unsigned char';
+            || str_starts_with($type, 'unsigned char');
 
     }
 

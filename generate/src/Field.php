@@ -53,4 +53,16 @@ class Field
         $this->fieldName      = str_replace([' ', '*'], ['_', ''], $this->typeName);
     }
 
+    public function getTr()
+    {
+        return [
+            '[type]'         => $this->type,
+            '[typeNonConst]' => trim(str_replace('const', '', $this->type)),
+            '[typeNoStar]'   => trim(str_replace('*', '', $this->type)),
+            '[typeLower]'    => $this->typePlainLower,
+            '[typeUpper]'    => $this->typePlainUpper,
+            '[name]'         => $this->name,
+            '[nameLower]'    => $this->nameLower,
+        ];
+    }
 }

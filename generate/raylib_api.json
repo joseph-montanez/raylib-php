@@ -204,6 +204,7 @@
     {
       "name": "Image",
       "description": "Image, pixel data stored in CPU memory (RAM)",
+      "constructorFunction": "LoadImage",
       "fields": [
         {
           "type": "void *",
@@ -5902,6 +5903,7 @@
     },
     {
       "name": "ImageCopy",
+      "rename": "rlImageCopy",
       "description": "Create an image duplicate (useful for transformations)",
       "returnType": "Image",
       "params": [
@@ -6006,6 +6008,7 @@
     },
     {
       "name": "ImageCrop",
+      "rename": "rlImageCrop",
       "description": "Crop an image to a defined rectangle",
       "returnType": "void",
       "params": [

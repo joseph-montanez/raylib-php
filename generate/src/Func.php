@@ -7,6 +7,7 @@ use JetBrains\PhpStorm\Pure;
 class Func
 {
     public string $name;
+    public null|string $rename;
     public string $nameLower;
     public string $nameUpper;
     public string $description;
@@ -24,10 +25,11 @@ class Func
 
 
     /**
-     * @param array{name:string,description:string,returnType:string,params:array} $functionInfo
+     * @param array{name:string,description:string,returnType:string,params:array,rename:string|null} $functionInfo
      */
     #[Pure] public function __construct(array $aliases, array $functionInfo)
     {
+        $this->rename     = $functionInfo['rename'] ?? null;
         $this->name       = $functionInfo['name'];
         $this->returnType = Helper::replaceAlias($aliases, $functionInfo['returnType']);
 

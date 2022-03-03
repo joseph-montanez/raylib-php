@@ -317,6 +317,73 @@ static zend_object *php_raylib_texture_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, width, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, height, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, mipmaps, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, format, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Texture, __construct)
+{
+    zend_long id;
+    bool id_is_null = 1;
+
+    zend_long width;
+    bool width_is_null = 1;
+
+    zend_long height;
+    bool height_is_null = 1;
+
+    zend_long mipmaps;
+    bool mipmaps_is_null = 1;
+
+    zend_long format;
+    bool format_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 5)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_LONG_OR_NULL(id, id_is_null)
+        Z_PARAM_LONG_OR_NULL(width, width_is_null)
+        Z_PARAM_LONG_OR_NULL(height, height_is_null)
+        Z_PARAM_LONG_OR_NULL(mipmaps, mipmaps_is_null)
+        Z_PARAM_LONG_OR_NULL(format, format_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
+
+    if (id_is_null) {
+        id = 0;
+    }
+
+    if (width_is_null) {
+        width = 0;
+    }
+
+    if (height_is_null) {
+        height = 0;
+    }
+
+    if (mipmaps_is_null) {
+        mipmaps = 0;
+    }
+
+    if (format_is_null) {
+        format = 0;
+    }
+
+
+
+    intern->texture = (Texture) {
+        .id = id,
+        .width = width,
+        .height = height,
+        .mipmaps = mipmaps,
+        .format = format
+    };
+}
+
 static zend_long php_raylib_texture_get_id(php_raylib_texture_object *obj) /* {{{ */
 {
     return (zend_long) obj->texture.id;
@@ -423,6 +490,7 @@ static int php_raylib_texture_set_format(php_raylib_texture_object *obj, zval *n
 /* }}} */
 
 const zend_function_entry php_raylib_texture_methods[] = {
+        PHP_ME(Texture, __construct, arginfo_texture__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_texture_startup(INIT_FUNC_ARGS)
@@ -443,7 +511,7 @@ void php_raylib_texture_startup(INIT_FUNC_ARGS)
     php_raylib_texture_object_handlers.has_property	     = php_raylib_texture_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "texture", php_raylib_texture_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Texture", php_raylib_texture_methods);
     php_raylib_texture_ce = zend_register_internal_class(&ce);
     php_raylib_texture_ce->create_object = php_raylib_texture_new;
 

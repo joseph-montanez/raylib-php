@@ -143,6 +143,7 @@ static zval *php_raylib_mesh_property_reader(php_raylib_mesh_object *obj, raylib
         ZVAL_ARR(rv, hnd->read_float_array_func(obj));
     }
     else if (obj != NULL && hnd->read_unsigned_char_array_func) {
+        ZVAL_ARR(rv, hnd->read_unsigned_char_array_func(obj));
     }
     else if (obj != NULL && hnd->read_unsigned_short_array_func) {
         ZVAL_ARR(rv, hnd->read_unsigned_short_array_func(obj));
@@ -391,6 +392,28 @@ static zend_object *php_raylib_mesh_clone(zend_object *old_object) /* {{{  */
     return new_object;
 }
 /* }}} */
+
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mesh__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, vertexCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, triangleCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, vertices, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, texcoords, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, texcoords2, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, normals, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, tangents, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, colors, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, indices, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, animVertices, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, animNormals, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, boneIds, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, boneWeights, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, vaoId, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, vboId, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Mesh, __construct)
+{
+}
 
 static zend_long php_raylib_mesh_get_vertexcount(php_raylib_mesh_object *obj) /* {{{ */
 {
@@ -648,6 +671,7 @@ static int php_raylib_mesh_set_vboid(php_raylib_mesh_object *obj, zval *newval) 
 /* }}} */
 
 const zend_function_entry php_raylib_mesh_methods[] = {
+        PHP_ME(Mesh, __construct, arginfo_mesh__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_mesh_startup(INIT_FUNC_ARGS)
@@ -668,7 +692,7 @@ void php_raylib_mesh_startup(INIT_FUNC_ARGS)
     php_raylib_mesh_object_handlers.has_property	     = php_raylib_mesh_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "mesh", php_raylib_mesh_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Mesh", php_raylib_mesh_methods);
     php_raylib_mesh_ce = zend_register_internal_class(&ce);
     php_raylib_mesh_ce->create_object = php_raylib_mesh_new;
 

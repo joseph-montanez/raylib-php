@@ -301,6 +301,63 @@ static zend_object *php_raylib_rectangle_clone(zend_object *old_object) /* {{{  
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, width, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, height, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Rectangle, __construct)
+{
+    double x;
+    bool x_is_null = 1;
+
+    double y;
+    bool y_is_null = 1;
+
+    double width;
+    bool width_is_null = 1;
+
+    double height;
+    bool height_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_DOUBLE_OR_NULL(x, x_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(y, y_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(width, width_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(height, height_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_rectangle_object *intern = Z_RECTANGLE_OBJ_P(ZEND_THIS);
+
+    if (x_is_null) {
+        x = 0.0f;
+    }
+
+    if (y_is_null) {
+        y = 0.0f;
+    }
+
+    if (width_is_null) {
+        width = 0.0f;
+    }
+
+    if (height_is_null) {
+        height = 0.0f;
+    }
+
+
+
+    intern->rectangle = (Rectangle) {
+        .x = x,
+        .y = y,
+        .width = width,
+        .height = height
+    };
+}
+
 static double php_raylib_rectangle_get_x(php_raylib_rectangle_object *obj) /* {{{ */
 {
     return (double) obj->rectangle.x;
@@ -386,6 +443,7 @@ static int php_raylib_rectangle_set_height(php_raylib_rectangle_object *obj, zva
 /* }}} */
 
 const zend_function_entry php_raylib_rectangle_methods[] = {
+        PHP_ME(Rectangle, __construct, arginfo_rectangle__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_rectangle_startup(INIT_FUNC_ARGS)
@@ -406,7 +464,7 @@ void php_raylib_rectangle_startup(INIT_FUNC_ARGS)
     php_raylib_rectangle_object_handlers.has_property	     = php_raylib_rectangle_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "rectangle", php_raylib_rectangle_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Rectangle", php_raylib_rectangle_methods);
     php_raylib_rectangle_ce = zend_register_internal_class(&ce);
     php_raylib_rectangle_ce->create_object = php_raylib_rectangle_new;
 

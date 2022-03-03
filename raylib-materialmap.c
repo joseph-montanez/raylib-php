@@ -372,6 +372,68 @@ static zend_object *php_raylib_materialmap_clone(zend_object *old_object) /* {{{
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_materialmap__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, texture, raylib\\Texture, 1)
+    ZEND_ARG_OBJ_INFO(0, color, raylib\\Color, 1)
+    ZEND_ARG_TYPE_MASK(0, value, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(MaterialMap, __construct)
+{
+    zend_object *texture = NULL;
+    php_raylib_texture_object *phpTexture;
+
+    zend_object *color = NULL;
+    php_raylib_color_object *phpColor;
+
+    double value;
+    bool value_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 3)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(texture, php_raylib_texture_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(color, php_raylib_color_ce)
+        Z_PARAM_DOUBLE_OR_NULL(value, value_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_materialmap_object *intern = Z_MATERIALMAP_OBJ_P(ZEND_THIS);
+
+    if (texture == NULL) {
+        texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
+    }
+
+    if (color == NULL) {
+        color = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
+    }
+
+    if (value_is_null) {
+        value = 0.0f;
+    }
+
+    phpTexture = php_raylib_texture_fetch_object(texture);
+    phpColor = php_raylib_color_fetch_object(color);
+
+    intern->texture = phpTexture;
+    intern->color = phpColor;
+
+    intern->materialmap = (MaterialMap) {
+        .texture = (Texture) {
+            .id = phpTexture->texture.id,
+            .width = phpTexture->texture.width,
+            .height = phpTexture->texture.height,
+            .mipmaps = phpTexture->texture.mipmaps,
+            .format = phpTexture->texture.format
+        },
+        .color = (Color) {
+            .r = phpColor->color.r,
+            .g = phpColor->color.g,
+            .b = phpColor->color.b,
+            .a = phpColor->color.a
+        },
+        .value = value
+    };
+}
+
 static zend_object * php_raylib_materialmap_get_texture(php_raylib_materialmap_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->texture->std);
@@ -442,6 +504,7 @@ static int php_raylib_materialmap_set_value(php_raylib_materialmap_object *obj, 
 /* }}} */
 
 const zend_function_entry php_raylib_materialmap_methods[] = {
+        PHP_ME(MaterialMap, __construct, arginfo_materialmap__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_materialmap_startup(INIT_FUNC_ARGS)
@@ -462,7 +525,7 @@ void php_raylib_materialmap_startup(INIT_FUNC_ARGS)
     php_raylib_materialmap_object_handlers.has_property	     = php_raylib_materialmap_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "materialmap", php_raylib_materialmap_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "MaterialMap", php_raylib_materialmap_methods);
     php_raylib_materialmap_ce = zend_register_internal_class(&ce);
     php_raylib_materialmap_ce->create_object = php_raylib_materialmap_new;
 

@@ -383,6 +383,91 @@ static zend_object *php_raylib_camera3d_clone(zend_object *old_object) /* {{{  *
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_camera3d__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, position, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, target, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, up, raylib\\Vector3, 1)
+    ZEND_ARG_TYPE_MASK(0, fovy, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, projection, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Camera3D, __construct)
+{
+    zend_object *position = NULL;
+    php_raylib_vector3_object *phpPosition;
+
+    zend_object *target = NULL;
+    php_raylib_vector3_object *phpTarget;
+
+    zend_object *up = NULL;
+    php_raylib_vector3_object *phpUp;
+
+    double fovy;
+    bool fovy_is_null = 1;
+
+    zend_long projection;
+    bool projection_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 5)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(position, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(target, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(up, php_raylib_vector3_ce)
+        Z_PARAM_DOUBLE_OR_NULL(fovy, fovy_is_null)
+        Z_PARAM_LONG_OR_NULL(projection, projection_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_camera3d_object *intern = Z_CAMERA3D_OBJ_P(ZEND_THIS);
+
+    if (position == NULL) {
+        position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (target == NULL) {
+        target = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (up == NULL) {
+        up = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (fovy_is_null) {
+        fovy = 0.0f;
+    }
+
+    if (projection_is_null) {
+        projection = 0;
+    }
+
+    phpPosition = php_raylib_vector3_fetch_object(position);
+    phpTarget = php_raylib_vector3_fetch_object(target);
+    phpUp = php_raylib_vector3_fetch_object(up);
+
+    intern->position = phpPosition;
+    intern->target = phpTarget;
+    intern->up = phpUp;
+
+    intern->camera3d = (Camera3D) {
+        .position = (Vector3) {
+            .x = phpPosition->vector3.x,
+            .y = phpPosition->vector3.y,
+            .z = phpPosition->vector3.z
+        },
+        .target = (Vector3) {
+            .x = phpTarget->vector3.x,
+            .y = phpTarget->vector3.y,
+            .z = phpTarget->vector3.z
+        },
+        .up = (Vector3) {
+            .x = phpUp->vector3.x,
+            .y = phpUp->vector3.y,
+            .z = phpUp->vector3.z
+        },
+        .fovy = fovy,
+        .projection = projection
+    };
+}
+
 static zend_object * php_raylib_camera3d_get_position(php_raylib_camera3d_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->position->std);
@@ -498,6 +583,7 @@ static int php_raylib_camera3d_set_projection(php_raylib_camera3d_object *obj, z
 /* }}} */
 
 const zend_function_entry php_raylib_camera3d_methods[] = {
+        PHP_ME(Camera3D, __construct, arginfo_camera3d__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_camera3d_startup(INIT_FUNC_ARGS)
@@ -518,7 +604,7 @@ void php_raylib_camera3d_startup(INIT_FUNC_ARGS)
     php_raylib_camera3d_object_handlers.has_property	     = php_raylib_camera3d_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "camera3d", php_raylib_camera3d_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Camera3D", php_raylib_camera3d_methods);
     php_raylib_camera3d_ce = zend_register_internal_class(&ce);
     php_raylib_camera3d_ce->create_object = php_raylib_camera3d_new;
 

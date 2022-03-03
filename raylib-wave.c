@@ -316,6 +316,18 @@ static zend_object *php_raylib_wave_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_wave__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, sampleRate, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, sampleSize, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, channels, IS_LONG, "0")
+    ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Wave, __construct)
+{
+}
+
 static zend_long php_raylib_wave_get_framecount(php_raylib_wave_object *obj) /* {{{ */
 {
     return (zend_long) obj->wave.frameCount;
@@ -417,6 +429,7 @@ static int php_raylib_wave_set_data(php_raylib_wave_object *obj, zval *newval) /
 /* }}} */
 
 const zend_function_entry php_raylib_wave_methods[] = {
+        PHP_ME(Wave, __construct, arginfo_wave__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_wave_startup(INIT_FUNC_ARGS)
@@ -437,7 +450,7 @@ void php_raylib_wave_startup(INIT_FUNC_ARGS)
     php_raylib_wave_object_handlers.has_property	     = php_raylib_wave_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "wave", php_raylib_wave_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Wave", php_raylib_wave_methods);
     php_raylib_wave_ce = zend_register_internal_class(&ce);
     php_raylib_wave_ce->create_object = php_raylib_wave_new;
 

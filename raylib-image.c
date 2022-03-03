@@ -316,6 +316,23 @@ static zend_object *php_raylib_image_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_image__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Image, __construct)
+{
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
+    intern->image = LoadImage(fileName->val);
+}
+
 static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{{ */
 {
     //TODO: Not yet supported
@@ -417,6 +434,7 @@ static int php_raylib_image_set_format(php_raylib_image_object *obj, zval *newva
 /* }}} */
 
 const zend_function_entry php_raylib_image_methods[] = {
+        PHP_ME(Image, __construct, arginfo_image__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_image_startup(INIT_FUNC_ARGS)
@@ -437,7 +455,7 @@ void php_raylib_image_startup(INIT_FUNC_ARGS)
     php_raylib_image_object_handlers.has_property	     = php_raylib_image_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "image", php_raylib_image_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Image", php_raylib_image_methods);
     php_raylib_image_ce = zend_register_internal_class(&ce);
     php_raylib_image_ce->create_object = php_raylib_image_new;
 

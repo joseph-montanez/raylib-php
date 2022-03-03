@@ -366,6 +366,17 @@ static zend_object *php_raylib_modelanimation_clone(zend_object *old_object) /* 
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_modelanimation__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, boneCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+    ZEND_ARG_OBJ_INFO(0, bones, raylib\\BoneInfo, 1)
+    ZEND_ARG_OBJ_INFO(0, framePoses, raylib\\Transform, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(ModelAnimation, __construct)
+{
+}
+
 static zend_long php_raylib_modelanimation_get_bonecount(php_raylib_modelanimation_object *obj) /* {{{ */
 {
     return (zend_long) obj->modelanimation.boneCount;
@@ -441,6 +452,7 @@ static int php_raylib_modelanimation_set_frameposes(php_raylib_modelanimation_ob
 /* }}} */
 
 const zend_function_entry php_raylib_modelanimation_methods[] = {
+        PHP_ME(ModelAnimation, __construct, arginfo_modelanimation__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_modelanimation_startup(INIT_FUNC_ARGS)
@@ -461,7 +473,7 @@ void php_raylib_modelanimation_startup(INIT_FUNC_ARGS)
     php_raylib_modelanimation_object_handlers.has_property	     = php_raylib_modelanimation_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "modelanimation", php_raylib_modelanimation_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "ModelAnimation", php_raylib_modelanimation_methods);
     php_raylib_modelanimation_ce = zend_register_internal_class(&ce);
     php_raylib_modelanimation_ce->create_object = php_raylib_modelanimation_new;
 

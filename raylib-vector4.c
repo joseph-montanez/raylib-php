@@ -301,6 +301,63 @@ static zend_object *php_raylib_vector4_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_vector4__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, z, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, w, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Vector4, __construct)
+{
+    double x;
+    bool x_is_null = 1;
+
+    double y;
+    bool y_is_null = 1;
+
+    double z;
+    bool z_is_null = 1;
+
+    double w;
+    bool w_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_DOUBLE_OR_NULL(x, x_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(y, y_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(z, z_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(w, w_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector4_object *intern = Z_VECTOR4_OBJ_P(ZEND_THIS);
+
+    if (x_is_null) {
+        x = 0.0f;
+    }
+
+    if (y_is_null) {
+        y = 0.0f;
+    }
+
+    if (z_is_null) {
+        z = 0.0f;
+    }
+
+    if (w_is_null) {
+        w = 0.0f;
+    }
+
+
+
+    intern->vector4 = (Vector4) {
+        .x = x,
+        .y = y,
+        .z = z,
+        .w = w
+    };
+}
+
 static double php_raylib_vector4_get_x(php_raylib_vector4_object *obj) /* {{{ */
 {
     return (double) obj->vector4.x;
@@ -386,6 +443,7 @@ static int php_raylib_vector4_set_w(php_raylib_vector4_object *obj, zval *newval
 /* }}} */
 
 const zend_function_entry php_raylib_vector4_methods[] = {
+        PHP_ME(Vector4, __construct, arginfo_vector4__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_vector4_startup(INIT_FUNC_ARGS)
@@ -406,7 +464,7 @@ void php_raylib_vector4_startup(INIT_FUNC_ARGS)
     php_raylib_vector4_object_handlers.has_property	     = php_raylib_vector4_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "vector4", php_raylib_vector4_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Vector4", php_raylib_vector4_methods);
     php_raylib_vector4_ce = zend_register_internal_class(&ce);
     php_raylib_vector4_ce->create_object = php_raylib_vector4_new;
 

@@ -299,6 +299,53 @@ static zend_object *php_raylib_vector3_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_vector3__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, z, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Vector3, __construct)
+{
+    double x;
+    bool x_is_null = 1;
+
+    double y;
+    bool y_is_null = 1;
+
+    double z;
+    bool z_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 3)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_DOUBLE_OR_NULL(x, x_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(y, y_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(z, z_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector3_object *intern = Z_VECTOR3_OBJ_P(ZEND_THIS);
+
+    if (x_is_null) {
+        x = 0.0f;
+    }
+
+    if (y_is_null) {
+        y = 0.0f;
+    }
+
+    if (z_is_null) {
+        z = 0.0f;
+    }
+
+
+
+    intern->vector3 = (Vector3) {
+        .x = x,
+        .y = y,
+        .z = z
+    };
+}
+
 static double php_raylib_vector3_get_x(php_raylib_vector3_object *obj) /* {{{ */
 {
     return (double) obj->vector3.x;
@@ -363,6 +410,7 @@ static int php_raylib_vector3_set_z(php_raylib_vector3_object *obj, zval *newval
 /* }}} */
 
 const zend_function_entry php_raylib_vector3_methods[] = {
+        PHP_ME(Vector3, __construct, arginfo_vector3__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_vector3_startup(INIT_FUNC_ARGS)
@@ -383,7 +431,7 @@ void php_raylib_vector3_startup(INIT_FUNC_ARGS)
     php_raylib_vector3_object_handlers.has_property	     = php_raylib_vector3_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "vector3", php_raylib_vector3_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Vector3", php_raylib_vector3_methods);
     php_raylib_vector3_ce = zend_register_internal_class(&ce);
     php_raylib_vector3_ce->create_object = php_raylib_vector3_new;
 

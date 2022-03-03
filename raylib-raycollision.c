@@ -365,6 +365,75 @@ static zend_object *php_raylib_raycollision_clone(zend_object *old_object) /* {{
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_raycollision__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, hit, _IS_BOOL, "1")
+    ZEND_ARG_TYPE_MASK(0, distance, IS_DOUBLE, "0")
+    ZEND_ARG_OBJ_INFO(0, point, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, normal, raylib\\Vector3, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(RayCollision, __construct)
+{
+    bool hit;
+    bool hit_is_null = 1;
+
+    double distance;
+    bool distance_is_null = 1;
+
+    zend_object *point = NULL;
+    php_raylib_vector3_object *phpPoint;
+
+    zend_object *normal = NULL;
+    php_raylib_vector3_object *phpNormal;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_BOOL_OR_NULL(hit, hit_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(distance, distance_is_null)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(point, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(normal, php_raylib_vector3_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_raycollision_object *intern = Z_RAYCOLLISION_OBJ_P(ZEND_THIS);
+
+    if (hit_is_null) {
+        hit = false;
+    }
+
+    if (distance_is_null) {
+        distance = 0.0f;
+    }
+
+    if (point == NULL) {
+        point = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (normal == NULL) {
+        normal = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    phpPoint = php_raylib_vector3_fetch_object(point);
+    phpNormal = php_raylib_vector3_fetch_object(normal);
+
+    intern->point = phpPoint;
+    intern->normal = phpNormal;
+
+    intern->raycollision = (RayCollision) {
+        .hit = hit,
+        .distance = distance,
+        .point = (Vector3) {
+            .x = phpPoint->vector3.x,
+            .y = phpPoint->vector3.y,
+            .z = phpPoint->vector3.z
+        },
+        .normal = (Vector3) {
+            .x = phpNormal->vector3.x,
+            .y = phpNormal->vector3.y,
+            .z = phpNormal->vector3.z
+        }
+    };
+}
+
 static bool php_raylib_raycollision_get_hit(php_raylib_raycollision_object *obj) /* {{{ */
 {
     return obj->raycollision.hit;
@@ -450,6 +519,7 @@ static int php_raylib_raycollision_set_normal(php_raylib_raycollision_object *ob
 /* }}} */
 
 const zend_function_entry php_raylib_raycollision_methods[] = {
+        PHP_ME(RayCollision, __construct, arginfo_raycollision__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_raycollision_startup(INIT_FUNC_ARGS)
@@ -470,7 +540,7 @@ void php_raylib_raycollision_startup(INIT_FUNC_ARGS)
     php_raylib_raycollision_object_handlers.has_property	     = php_raylib_raycollision_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "raycollision", php_raylib_raycollision_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "RayCollision", php_raylib_raycollision_methods);
     php_raylib_raycollision_ce = zend_register_internal_class(&ce);
     php_raylib_raycollision_ce->create_object = php_raylib_raycollision_new;
 

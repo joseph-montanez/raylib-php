@@ -358,6 +358,21 @@ static zend_object *php_raylib_vrstereoconfig_clone(zend_object *old_object) /* 
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_vrstereoconfig__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, projection, raylib\\Matrix, 1)
+    ZEND_ARG_OBJ_INFO(0, viewOffset, raylib\\Matrix, 1)
+    ZEND_ARG_TYPE_MASK(0, leftLensCenter, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, rightLensCenter, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, leftScreenCenter, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, rightScreenCenter, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, scale, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, scaleIn, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(VrStereoConfig, __construct)
+{
+}
+
 static HashTable * php_raylib_vrstereoconfig_get_projection(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
     //TODO: Not yet supported
@@ -487,6 +502,7 @@ static int php_raylib_vrstereoconfig_set_scalein(php_raylib_vrstereoconfig_objec
 /* }}} */
 
 const zend_function_entry php_raylib_vrstereoconfig_methods[] = {
+        PHP_ME(VrStereoConfig, __construct, arginfo_vrstereoconfig__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS)
@@ -507,7 +523,7 @@ void php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS)
     php_raylib_vrstereoconfig_object_handlers.has_property	     = php_raylib_vrstereoconfig_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "vrstereoconfig", php_raylib_vrstereoconfig_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "VrStereoConfig", php_raylib_vrstereoconfig_methods);
     php_raylib_vrstereoconfig_ce = zend_register_internal_class(&ce);
     php_raylib_vrstereoconfig_ce->create_object = php_raylib_vrstereoconfig_new;
 

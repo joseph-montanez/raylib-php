@@ -381,6 +381,18 @@ static zend_object *php_raylib_music_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_music__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, stream, raylib\\AudioStream, 1)
+    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, looping, _IS_BOOL, "1")
+    ZEND_ARG_TYPE_MASK(0, ctxType, IS_LONG, "0")
+    ZEND_ARG_INFO(0, ctxData)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Music, __construct)
+{
+}
+
 static zend_object * php_raylib_music_get_stream(php_raylib_music_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->stream->std);
@@ -479,6 +491,7 @@ static int php_raylib_music_set_ctxdata(php_raylib_music_object *obj, zval *newv
 /* }}} */
 
 const zend_function_entry php_raylib_music_methods[] = {
+        PHP_ME(Music, __construct, arginfo_music__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_music_startup(INIT_FUNC_ARGS)
@@ -499,7 +512,7 @@ void php_raylib_music_startup(INIT_FUNC_ARGS)
     php_raylib_music_object_handlers.has_property	     = php_raylib_music_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "music", php_raylib_music_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Music", php_raylib_music_methods);
     php_raylib_music_ce = zend_register_internal_class(&ce);
     php_raylib_music_ce->create_object = php_raylib_music_new;
 

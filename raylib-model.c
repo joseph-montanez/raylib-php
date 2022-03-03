@@ -507,6 +507,22 @@ static zend_object *php_raylib_model_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_model__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, transform, raylib\\Matrix, 1)
+    ZEND_ARG_TYPE_MASK(0, meshCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, materialCount, IS_LONG, "0")
+    ZEND_ARG_OBJ_INFO(0, meshes, raylib\\Mesh, 1)
+    ZEND_ARG_OBJ_INFO(0, materials, raylib\\Material, 1)
+    ZEND_ARG_TYPE_MASK(0, meshMaterial, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, boneCount, IS_LONG, "0")
+    ZEND_ARG_OBJ_INFO(0, bones, raylib\\BoneInfo, 1)
+    ZEND_ARG_OBJ_INFO(0, bindPose, raylib\\Transform, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Model, __construct)
+{
+}
+
 static zend_object * php_raylib_model_get_transform(php_raylib_model_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->transform->std);
@@ -675,6 +691,7 @@ static int php_raylib_model_set_bindpose(php_raylib_model_object *obj, zval *new
 /* }}} */
 
 const zend_function_entry php_raylib_model_methods[] = {
+        PHP_ME(Model, __construct, arginfo_model__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_model_startup(INIT_FUNC_ARGS)
@@ -695,7 +712,7 @@ void php_raylib_model_startup(INIT_FUNC_ARGS)
     php_raylib_model_object_handlers.has_property	     = php_raylib_model_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "model", php_raylib_model_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Model", php_raylib_model_methods);
     php_raylib_model_ce = zend_register_internal_class(&ce);
     php_raylib_model_ce->create_object = php_raylib_model_new;
 

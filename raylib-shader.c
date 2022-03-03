@@ -311,6 +311,15 @@ static zend_object *php_raylib_shader_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_shader__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, locs, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Shader, __construct)
+{
+}
+
 static zend_long php_raylib_shader_get_id(php_raylib_shader_object *obj) /* {{{ */
 {
     return (zend_long) obj->shader.id;
@@ -349,6 +358,7 @@ static int php_raylib_shader_set_locs(php_raylib_shader_object *obj, zval *newva
 /* }}} */
 
 const zend_function_entry php_raylib_shader_methods[] = {
+        PHP_ME(Shader, __construct, arginfo_shader__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_shader_startup(INIT_FUNC_ARGS)
@@ -369,7 +379,7 @@ void php_raylib_shader_startup(INIT_FUNC_ARGS)
     php_raylib_shader_object_handlers.has_property	     = php_raylib_shader_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "shader", php_raylib_shader_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Shader", php_raylib_shader_methods);
     php_raylib_shader_ce = zend_register_internal_class(&ce);
     php_raylib_shader_ce->create_object = php_raylib_shader_new;
 

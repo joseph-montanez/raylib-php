@@ -334,6 +334,55 @@ static zend_object *php_raylib_boundingbox_clone(zend_object *old_object) /* {{{
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_boundingbox__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, min, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, max, raylib\\Vector3, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(BoundingBox, __construct)
+{
+    zend_object *min = NULL;
+    php_raylib_vector3_object *phpMin;
+
+    zend_object *max = NULL;
+    php_raylib_vector3_object *phpMax;
+
+    ZEND_PARSE_PARAMETERS_START(0, 2)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(min, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(max, php_raylib_vector3_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_boundingbox_object *intern = Z_BOUNDINGBOX_OBJ_P(ZEND_THIS);
+
+    if (min == NULL) {
+        min = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (max == NULL) {
+        max = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    phpMin = php_raylib_vector3_fetch_object(min);
+    phpMax = php_raylib_vector3_fetch_object(max);
+
+    intern->min = phpMin;
+    intern->max = phpMax;
+
+    intern->boundingbox = (BoundingBox) {
+        .min = (Vector3) {
+            .x = phpMin->vector3.x,
+            .y = phpMin->vector3.y,
+            .z = phpMin->vector3.z
+        },
+        .max = (Vector3) {
+            .x = phpMax->vector3.x,
+            .y = phpMax->vector3.y,
+            .z = phpMax->vector3.z
+        }
+    };
+}
+
 static zend_object * php_raylib_boundingbox_get_min(php_raylib_boundingbox_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->min->std);
@@ -383,6 +432,7 @@ static int php_raylib_boundingbox_set_max(php_raylib_boundingbox_object *obj, zv
 /* }}} */
 
 const zend_function_entry php_raylib_boundingbox_methods[] = {
+        PHP_ME(BoundingBox, __construct, arginfo_boundingbox__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_boundingbox_startup(INIT_FUNC_ARGS)
@@ -403,7 +453,7 @@ void php_raylib_boundingbox_startup(INIT_FUNC_ARGS)
     php_raylib_boundingbox_object_handlers.has_property	     = php_raylib_boundingbox_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "boundingbox", php_raylib_boundingbox_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "BoundingBox", php_raylib_boundingbox_methods);
     php_raylib_boundingbox_ce = zend_register_internal_class(&ce);
     php_raylib_boundingbox_ce->create_object = php_raylib_boundingbox_new;
 

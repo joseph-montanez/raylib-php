@@ -358,6 +358,69 @@ static zend_object *php_raylib_rendertexture_clone(zend_object *old_object) /* {
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
+    ZEND_ARG_OBJ_INFO(0, texture, raylib\\Texture, 1)
+    ZEND_ARG_OBJ_INFO(0, depth, raylib\\Texture, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(RenderTexture, __construct)
+{
+    zend_long id;
+    bool id_is_null = 1;
+
+    zend_object *texture = NULL;
+    php_raylib_texture_object *phpTexture;
+
+    zend_object *depth = NULL;
+    php_raylib_texture_object *phpDepth;
+
+    ZEND_PARSE_PARAMETERS_START(0, 3)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_LONG_OR_NULL(id, id_is_null)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(texture, php_raylib_texture_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(depth, php_raylib_texture_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
+
+    if (id_is_null) {
+        id = 0;
+    }
+
+    if (texture == NULL) {
+        texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
+    }
+
+    if (depth == NULL) {
+        depth = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
+    }
+
+    phpTexture = php_raylib_texture_fetch_object(texture);
+    phpDepth = php_raylib_texture_fetch_object(depth);
+
+    intern->texture = phpTexture;
+    intern->depth = phpDepth;
+
+    intern->rendertexture = (RenderTexture) {
+        .id = id,
+        .texture = (Texture) {
+            .id = phpTexture->texture.id,
+            .width = phpTexture->texture.width,
+            .height = phpTexture->texture.height,
+            .mipmaps = phpTexture->texture.mipmaps,
+            .format = phpTexture->texture.format
+        },
+        .depth = (Texture) {
+            .id = phpDepth->texture.id,
+            .width = phpDepth->texture.width,
+            .height = phpDepth->texture.height,
+            .mipmaps = phpDepth->texture.mipmaps,
+            .format = phpDepth->texture.format
+        }
+    };
+}
+
 static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object *obj) /* {{{ */
 {
     return (zend_long) obj->rendertexture.id;
@@ -428,6 +491,7 @@ static int php_raylib_rendertexture_set_depth(php_raylib_rendertexture_object *o
 /* }}} */
 
 const zend_function_entry php_raylib_rendertexture_methods[] = {
+        PHP_ME(RenderTexture, __construct, arginfo_rendertexture__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_rendertexture_startup(INIT_FUNC_ARGS)
@@ -448,7 +512,7 @@ void php_raylib_rendertexture_startup(INIT_FUNC_ARGS)
     php_raylib_rendertexture_object_handlers.has_property	     = php_raylib_rendertexture_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "rendertexture", php_raylib_rendertexture_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "RenderTexture", php_raylib_rendertexture_methods);
     php_raylib_rendertexture_ce = zend_register_internal_class(&ce);
     php_raylib_rendertexture_ce->create_object = php_raylib_rendertexture_new;
 

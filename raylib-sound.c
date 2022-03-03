@@ -335,6 +335,50 @@ static zend_object *php_raylib_sound_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_sound__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, stream, raylib\\AudioStream, 1)
+    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Sound, __construct)
+{
+    zend_object *stream = NULL;
+    php_raylib_audiostream_object *phpStream;
+
+    zend_long frameCount;
+    bool frameCount_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 2)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(stream, php_raylib_audiostream_ce)
+        Z_PARAM_LONG_OR_NULL(frameCount, frameCount_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_sound_object *intern = Z_SOUND_OBJ_P(ZEND_THIS);
+
+    if (stream == NULL) {
+        stream = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, NULL);
+    }
+
+    if (frameCount_is_null) {
+        frameCount = 0;
+    }
+
+    phpStream = php_raylib_audiostream_fetch_object(stream);
+
+    intern->stream = phpStream;
+
+    intern->sound = (Sound) {
+        .stream = (AudioStream) {
+            .buffer = phpStream->audiostream.buffer,
+            .sampleRate = phpStream->audiostream.sampleRate,
+            .sampleSize = phpStream->audiostream.sampleSize,
+            .channels = phpStream->audiostream.channels
+        },
+        .frameCount = frameCount
+    };
+}
+
 static zend_object * php_raylib_sound_get_stream(php_raylib_sound_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->stream->std);
@@ -381,6 +425,7 @@ static int php_raylib_sound_set_framecount(php_raylib_sound_object *obj, zval *n
 /* }}} */
 
 const zend_function_entry php_raylib_sound_methods[] = {
+        PHP_ME(Sound, __construct, arginfo_sound__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_sound_startup(INIT_FUNC_ARGS)
@@ -401,7 +446,7 @@ void php_raylib_sound_startup(INIT_FUNC_ARGS)
     php_raylib_sound_object_handlers.has_property	     = php_raylib_sound_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "sound", php_raylib_sound_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Sound", php_raylib_sound_methods);
     php_raylib_sound_ce = zend_register_internal_class(&ce);
     php_raylib_sound_ce->create_object = php_raylib_sound_new;
 

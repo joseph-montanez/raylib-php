@@ -369,6 +369,72 @@ static zend_object *php_raylib_transform_clone(zend_object *old_object) /* {{{  
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_transform__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, translation, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, rotation, raylib\\Vector4, 1)
+    ZEND_ARG_OBJ_INFO(0, scale, raylib\\Vector3, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Transform, __construct)
+{
+    zend_object *translation = NULL;
+    php_raylib_vector3_object *phpTranslation;
+
+    zend_object *rotation = NULL;
+    php_raylib_vector4_object *phpRotation;
+
+    zend_object *scale = NULL;
+    php_raylib_vector3_object *phpScale;
+
+    ZEND_PARSE_PARAMETERS_START(0, 3)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(translation, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(rotation, php_raylib_vector4_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(scale, php_raylib_vector3_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_transform_object *intern = Z_TRANSFORM_OBJ_P(ZEND_THIS);
+
+    if (translation == NULL) {
+        translation = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (rotation == NULL) {
+        rotation = php_raylib_vector4_new_ex(php_raylib_vector4_ce, NULL);
+    }
+
+    if (scale == NULL) {
+        scale = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    phpTranslation = php_raylib_vector3_fetch_object(translation);
+    phpRotation = php_raylib_vector4_fetch_object(rotation);
+    phpScale = php_raylib_vector3_fetch_object(scale);
+
+    intern->translation = phpTranslation;
+    intern->rotation = phpRotation;
+    intern->scale = phpScale;
+
+    intern->transform = (Transform) {
+        .translation = (Vector3) {
+            .x = phpTranslation->vector3.x,
+            .y = phpTranslation->vector3.y,
+            .z = phpTranslation->vector3.z
+        },
+        .rotation = (Vector4) {
+            .x = phpRotation->vector4.x,
+            .y = phpRotation->vector4.y,
+            .z = phpRotation->vector4.z,
+            .w = phpRotation->vector4.w
+        },
+        .scale = (Vector3) {
+            .x = phpScale->vector3.x,
+            .y = phpScale->vector3.y,
+            .z = phpScale->vector3.z
+        }
+    };
+}
+
 static zend_object * php_raylib_transform_get_translation(php_raylib_transform_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->translation->std);
@@ -442,6 +508,7 @@ static int php_raylib_transform_set_scale(php_raylib_transform_object *obj, zval
 /* }}} */
 
 const zend_function_entry php_raylib_transform_methods[] = {
+        PHP_ME(Transform, __construct, arginfo_transform__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_transform_startup(INIT_FUNC_ARGS)
@@ -462,7 +529,7 @@ void php_raylib_transform_startup(INIT_FUNC_ARGS)
     php_raylib_transform_object_handlers.has_property	     = php_raylib_transform_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "transform", php_raylib_transform_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Transform", php_raylib_transform_methods);
     php_raylib_transform_ce = zend_register_internal_class(&ce);
     php_raylib_transform_ce->create_object = php_raylib_transform_new;
 

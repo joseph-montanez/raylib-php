@@ -343,6 +343,81 @@ static zend_object *php_raylib_glyphinfo_clone(zend_object *old_object) /* {{{  
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_glyphinfo__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, value, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, offsetX, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, offsetY, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, advanceX, IS_LONG, "0")
+    ZEND_ARG_OBJ_INFO(0, image, raylib\\Image, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(GlyphInfo, __construct)
+{
+    zend_long value;
+    bool value_is_null = 1;
+
+    zend_long offsetX;
+    bool offsetX_is_null = 1;
+
+    zend_long offsetY;
+    bool offsetY_is_null = 1;
+
+    zend_long advanceX;
+    bool advanceX_is_null = 1;
+
+    zend_object *image = NULL;
+    php_raylib_image_object *phpImage;
+
+    ZEND_PARSE_PARAMETERS_START(0, 5)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_LONG_OR_NULL(value, value_is_null)
+        Z_PARAM_LONG_OR_NULL(offsetX, offsetX_is_null)
+        Z_PARAM_LONG_OR_NULL(offsetY, offsetY_is_null)
+        Z_PARAM_LONG_OR_NULL(advanceX, advanceX_is_null)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(image, php_raylib_image_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_glyphinfo_object *intern = Z_GLYPHINFO_OBJ_P(ZEND_THIS);
+
+    if (value_is_null) {
+        value = 0;
+    }
+
+    if (offsetX_is_null) {
+        offsetX = 0;
+    }
+
+    if (offsetY_is_null) {
+        offsetY = 0;
+    }
+
+    if (advanceX_is_null) {
+        advanceX = 0;
+    }
+
+    if (image == NULL) {
+        image = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
+    }
+
+    phpImage = php_raylib_image_fetch_object(image);
+
+    intern->image = phpImage;
+
+    intern->glyphinfo = (GlyphInfo) {
+        .value = value,
+        .offsetX = offsetX,
+        .offsetY = offsetY,
+        .advanceX = advanceX,
+        .image = (Image) {
+            .data = phpImage->image.data,
+            .width = phpImage->image.width,
+            .height = phpImage->image.height,
+            .mipmaps = phpImage->image.mipmaps,
+            .format = phpImage->image.format
+        }
+    };
+}
+
 static zend_long php_raylib_glyphinfo_get_value(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
     return (zend_long) obj->glyphinfo.value;
@@ -452,6 +527,7 @@ static int php_raylib_glyphinfo_set_image(php_raylib_glyphinfo_object *obj, zval
 /* }}} */
 
 const zend_function_entry php_raylib_glyphinfo_methods[] = {
+        PHP_ME(GlyphInfo, __construct, arginfo_glyphinfo__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_glyphinfo_startup(INIT_FUNC_ARGS)
@@ -472,7 +548,7 @@ void php_raylib_glyphinfo_startup(INIT_FUNC_ARGS)
     php_raylib_glyphinfo_object_handlers.has_property	     = php_raylib_glyphinfo_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "glyphinfo", php_raylib_glyphinfo_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "GlyphInfo", php_raylib_glyphinfo_methods);
     php_raylib_glyphinfo_ce = zend_register_internal_class(&ce);
     php_raylib_glyphinfo_ce->create_object = php_raylib_glyphinfo_new;
 

@@ -304,7 +304,7 @@ class Parser
             }
             $input[] = sprintf(
                 "        ZEND_FE(%s, arginfo_%s)",
-                $function->name, $function->name
+                $function->rename ?? $function->name, $function->rename ?? $function->name
             );
         }
         $input[] = '        PHP_FE_END';

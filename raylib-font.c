@@ -405,6 +405,23 @@ static zend_object *php_raylib_font_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_font__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Font, __construct)
+{
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
+    intern->font = LoadFont(fileName->val);
+}
+
 static zend_long php_raylib_font_get_basesize(php_raylib_font_object *obj) /* {{{ */
 {
     return (zend_long) obj->font.baseSize;
@@ -525,6 +542,7 @@ static int php_raylib_font_set_glyphs(php_raylib_font_object *obj, zval *newval)
 /* }}} */
 
 const zend_function_entry php_raylib_font_methods[] = {
+        PHP_ME(Font, __construct, arginfo_font__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_font_startup(INIT_FUNC_ARGS)
@@ -545,7 +563,7 @@ void php_raylib_font_startup(INIT_FUNC_ARGS)
     php_raylib_font_object_handlers.has_property	     = php_raylib_font_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "font", php_raylib_font_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Font", php_raylib_font_methods);
     php_raylib_font_ce = zend_register_internal_class(&ce);
     php_raylib_font_ce->create_object = php_raylib_font_new;
 

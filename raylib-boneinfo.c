@@ -311,6 +311,15 @@ static zend_object *php_raylib_boneinfo_clone(zend_object *old_object) /* {{{  *
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_boneinfo__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, name, IS_STRING, "")
+    ZEND_ARG_TYPE_MASK(0, parent, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(BoneInfo, __construct)
+{
+}
+
 static zend_string * php_raylib_boneinfo_get_name(php_raylib_boneinfo_object *obj) /* {{{ */
 {
     zend_string *result_str;
@@ -353,6 +362,7 @@ static int php_raylib_boneinfo_set_parent(php_raylib_boneinfo_object *obj, zval 
 /* }}} */
 
 const zend_function_entry php_raylib_boneinfo_methods[] = {
+        PHP_ME(BoneInfo, __construct, arginfo_boneinfo__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_boneinfo_startup(INIT_FUNC_ARGS)
@@ -373,7 +383,7 @@ void php_raylib_boneinfo_startup(INIT_FUNC_ARGS)
     php_raylib_boneinfo_object_handlers.has_property	     = php_raylib_boneinfo_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "boneinfo", php_raylib_boneinfo_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "BoneInfo", php_raylib_boneinfo_methods);
     php_raylib_boneinfo_ce = zend_register_internal_class(&ce);
     php_raylib_boneinfo_ce->create_object = php_raylib_boneinfo_new;
 

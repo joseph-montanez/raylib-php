@@ -4462,10 +4462,10 @@ PHP_FUNCTION(GenImageCellular)
 
 // Create an image duplicate (useful for transformations)
 // RLAPI Image ImageCopy(Image image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageCopy, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rlImageCopy, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
-PHP_FUNCTION(ImageCopy)
+PHP_FUNCTION(rlImageCopy)
 {
     zval *image;
 
@@ -4620,11 +4620,11 @@ PHP_FUNCTION(ImageToPOT)
 
 // Crop an image to a defined rectangle
 // RLAPI void ImageCrop(Image * image, Rectangle crop);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageCrop, 0, 1, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rlImageCrop, 0, 1, 2)
     ZEND_ARG_INFO(1, image)
     ZEND_ARG_INFO(0, crop)
 ZEND_END_ARG_INFO()
-PHP_FUNCTION(ImageCrop)
+PHP_FUNCTION(rlImageCrop)
 {
     zval *image;
     zval *crop;
@@ -10611,13 +10611,13 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(GenImageChecked, arginfo_GenImageChecked)
         ZEND_FE(GenImageWhiteNoise, arginfo_GenImageWhiteNoise)
         ZEND_FE(GenImageCellular, arginfo_GenImageCellular)
-        ZEND_FE(ImageCopy, arginfo_ImageCopy)
+        ZEND_FE(rlImageCopy, arginfo_rlImageCopy)
         ZEND_FE(ImageFromImage, arginfo_ImageFromImage)
         ZEND_FE(ImageText, arginfo_ImageText)
         ZEND_FE(ImageTextEx, arginfo_ImageTextEx)
         ZEND_FE(ImageFormat, arginfo_ImageFormat)
         ZEND_FE(ImageToPOT, arginfo_ImageToPOT)
-        ZEND_FE(ImageCrop, arginfo_ImageCrop)
+        ZEND_FE(rlImageCrop, arginfo_rlImageCrop)
         ZEND_FE(ImageAlphaCrop, arginfo_ImageAlphaCrop)
         ZEND_FE(ImageAlphaClear, arginfo_ImageAlphaClear)
         ZEND_FE(ImageAlphaMask, arginfo_ImageAlphaMask)

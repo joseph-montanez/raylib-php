@@ -373,6 +373,16 @@ static zend_object *php_raylib_material_clone(zend_object *old_object) /* {{{  *
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_material__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, shader, raylib\\Shader, 1)
+    ZEND_ARG_OBJ_INFO(0, maps, raylib\\MaterialMap, 1)
+    ZEND_ARG_TYPE_MASK(0, params, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Material, __construct)
+{
+}
+
 static zend_object * php_raylib_material_get_shader(php_raylib_material_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->shader->std);
@@ -430,6 +440,7 @@ static int php_raylib_material_set_params(php_raylib_material_object *obj, zval 
 /* }}} */
 
 const zend_function_entry php_raylib_material_methods[] = {
+        PHP_ME(Material, __construct, arginfo_material__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_material_startup(INIT_FUNC_ARGS)
@@ -450,7 +461,7 @@ void php_raylib_material_startup(INIT_FUNC_ARGS)
     php_raylib_material_object_handlers.has_property	     = php_raylib_material_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "material", php_raylib_material_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Material", php_raylib_material_methods);
     php_raylib_material_ce = zend_register_internal_class(&ce);
     php_raylib_material_ce->create_object = php_raylib_material_new;
 

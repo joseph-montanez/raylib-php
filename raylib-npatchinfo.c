@@ -343,6 +343,90 @@ static zend_object *php_raylib_npatchinfo_clone(zend_object *old_object) /* {{{ 
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_npatchinfo__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, source, raylib\\Rectangle, 1)
+    ZEND_ARG_TYPE_MASK(0, left, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, top, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, right, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, bottom, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, layout, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(NPatchInfo, __construct)
+{
+    zend_object *source = NULL;
+    php_raylib_rectangle_object *phpSource;
+
+    zend_long left;
+    bool left_is_null = 1;
+
+    zend_long top;
+    bool top_is_null = 1;
+
+    zend_long right;
+    bool right_is_null = 1;
+
+    zend_long bottom;
+    bool bottom_is_null = 1;
+
+    zend_long layout;
+    bool layout_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 6)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(source, php_raylib_rectangle_ce)
+        Z_PARAM_LONG_OR_NULL(left, left_is_null)
+        Z_PARAM_LONG_OR_NULL(top, top_is_null)
+        Z_PARAM_LONG_OR_NULL(right, right_is_null)
+        Z_PARAM_LONG_OR_NULL(bottom, bottom_is_null)
+        Z_PARAM_LONG_OR_NULL(layout, layout_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_npatchinfo_object *intern = Z_NPATCHINFO_OBJ_P(ZEND_THIS);
+
+    if (source == NULL) {
+        source = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
+    }
+
+    if (left_is_null) {
+        left = 0;
+    }
+
+    if (top_is_null) {
+        top = 0;
+    }
+
+    if (right_is_null) {
+        right = 0;
+    }
+
+    if (bottom_is_null) {
+        bottom = 0;
+    }
+
+    if (layout_is_null) {
+        layout = 0;
+    }
+
+    phpSource = php_raylib_rectangle_fetch_object(source);
+
+    intern->source = phpSource;
+
+    intern->npatchinfo = (NPatchInfo) {
+        .source = (Rectangle) {
+            .x = phpSource->rectangle.x,
+            .y = phpSource->rectangle.y,
+            .width = phpSource->rectangle.width,
+            .height = phpSource->rectangle.height
+        },
+        .left = left,
+        .top = top,
+        .right = right,
+        .bottom = bottom,
+        .layout = layout
+    };
+}
+
 static zend_object * php_raylib_npatchinfo_get_source(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->source->std);
@@ -473,6 +557,7 @@ static int php_raylib_npatchinfo_set_layout(php_raylib_npatchinfo_object *obj, z
 /* }}} */
 
 const zend_function_entry php_raylib_npatchinfo_methods[] = {
+        PHP_ME(NPatchInfo, __construct, arginfo_npatchinfo__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_npatchinfo_startup(INIT_FUNC_ARGS)
@@ -493,7 +578,7 @@ void php_raylib_npatchinfo_startup(INIT_FUNC_ARGS)
     php_raylib_npatchinfo_object_handlers.has_property	     = php_raylib_npatchinfo_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "npatchinfo", php_raylib_npatchinfo_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "NPatchInfo", php_raylib_npatchinfo_methods);
     php_raylib_npatchinfo_ce = zend_register_internal_class(&ce);
     php_raylib_npatchinfo_ce->create_object = php_raylib_npatchinfo_new;
 

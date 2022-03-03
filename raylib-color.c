@@ -301,6 +301,63 @@ static zend_object *php_raylib_color_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, r, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, g, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, b, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, a, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, __construct)
+{
+    zend_long r;
+    bool r_is_null = 1;
+
+    zend_long g;
+    bool g_is_null = 1;
+
+    zend_long b;
+    bool b_is_null = 1;
+
+    zend_long a;
+    bool a_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 4)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_LONG_OR_NULL(r, r_is_null)
+        Z_PARAM_LONG_OR_NULL(g, g_is_null)
+        Z_PARAM_LONG_OR_NULL(b, b_is_null)
+        Z_PARAM_LONG_OR_NULL(a, a_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_color_object *intern = Z_COLOR_OBJ_P(ZEND_THIS);
+
+    if (r_is_null) {
+        r = 0;
+    }
+
+    if (g_is_null) {
+        g = 0;
+    }
+
+    if (b_is_null) {
+        b = 0;
+    }
+
+    if (a_is_null) {
+        a = 0;
+    }
+
+
+
+    intern->color = (Color) {
+        .r = r,
+        .g = g,
+        .b = b,
+        .a = a
+    };
+}
+
 static zend_long php_raylib_color_get_r(php_raylib_color_object *obj) /* {{{ */
 {
     return (zend_long) obj->color.r;
@@ -386,6 +443,7 @@ static int php_raylib_color_set_a(php_raylib_color_object *obj, zval *newval) /*
 /* }}} */
 
 const zend_function_entry php_raylib_color_methods[] = {
+        PHP_ME(Color, __construct, arginfo_color__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_color_startup(INIT_FUNC_ARGS)
@@ -406,7 +464,7 @@ void php_raylib_color_startup(INIT_FUNC_ARGS)
     php_raylib_color_object_handlers.has_property	     = php_raylib_color_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "color", php_raylib_color_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Color", php_raylib_color_methods);
     php_raylib_color_ce = zend_register_internal_class(&ce);
     php_raylib_color_ce->create_object = php_raylib_color_new;
 

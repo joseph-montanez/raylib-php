@@ -325,6 +325,183 @@ static zend_object *php_raylib_matrix_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, m0, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m1, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m2, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m3, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m4, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m5, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m6, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m7, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m8, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m9, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m10, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m11, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m12, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m13, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m14, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m15, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(Matrix, __construct)
+{
+    double m0;
+    bool m0_is_null = 1;
+
+    double m1;
+    bool m1_is_null = 1;
+
+    double m2;
+    bool m2_is_null = 1;
+
+    double m3;
+    bool m3_is_null = 1;
+
+    double m4;
+    bool m4_is_null = 1;
+
+    double m5;
+    bool m5_is_null = 1;
+
+    double m6;
+    bool m6_is_null = 1;
+
+    double m7;
+    bool m7_is_null = 1;
+
+    double m8;
+    bool m8_is_null = 1;
+
+    double m9;
+    bool m9_is_null = 1;
+
+    double m10;
+    bool m10_is_null = 1;
+
+    double m11;
+    bool m11_is_null = 1;
+
+    double m12;
+    bool m12_is_null = 1;
+
+    double m13;
+    bool m13_is_null = 1;
+
+    double m14;
+    bool m14_is_null = 1;
+
+    double m15;
+    bool m15_is_null = 1;
+
+    ZEND_PARSE_PARAMETERS_START(0, 16)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_DOUBLE_OR_NULL(m0, m0_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m1, m1_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m2, m2_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m3, m3_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m4, m4_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m5, m5_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m6, m6_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m7, m7_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m8, m8_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m9, m9_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m10, m10_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m11, m11_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m12, m12_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m13, m13_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m14, m14_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m15, m15_is_null)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_matrix_object *intern = Z_MATRIX_OBJ_P(ZEND_THIS);
+
+    if (m0_is_null) {
+        m0 = 0.0f;
+    }
+
+    if (m1_is_null) {
+        m1 = 0.0f;
+    }
+
+    if (m2_is_null) {
+        m2 = 0.0f;
+    }
+
+    if (m3_is_null) {
+        m3 = 0.0f;
+    }
+
+    if (m4_is_null) {
+        m4 = 0.0f;
+    }
+
+    if (m5_is_null) {
+        m5 = 0.0f;
+    }
+
+    if (m6_is_null) {
+        m6 = 0.0f;
+    }
+
+    if (m7_is_null) {
+        m7 = 0.0f;
+    }
+
+    if (m8_is_null) {
+        m8 = 0.0f;
+    }
+
+    if (m9_is_null) {
+        m9 = 0.0f;
+    }
+
+    if (m10_is_null) {
+        m10 = 0.0f;
+    }
+
+    if (m11_is_null) {
+        m11 = 0.0f;
+    }
+
+    if (m12_is_null) {
+        m12 = 0.0f;
+    }
+
+    if (m13_is_null) {
+        m13 = 0.0f;
+    }
+
+    if (m14_is_null) {
+        m14 = 0.0f;
+    }
+
+    if (m15_is_null) {
+        m15 = 0.0f;
+    }
+
+
+
+    intern->matrix = (Matrix) {
+        .m0 = m0,
+        .m1 = m1,
+        .m2 = m2,
+        .m3 = m3,
+        .m4 = m4,
+        .m5 = m5,
+        .m6 = m6,
+        .m7 = m7,
+        .m8 = m8,
+        .m9 = m9,
+        .m10 = m10,
+        .m11 = m11,
+        .m12 = m12,
+        .m13 = m13,
+        .m14 = m14,
+        .m15 = m15
+    };
+}
+
 static double php_raylib_matrix_get_m0(php_raylib_matrix_object *obj) /* {{{ */
 {
     return (double) obj->matrix.m0;
@@ -662,6 +839,7 @@ static int php_raylib_matrix_set_m15(php_raylib_matrix_object *obj, zval *newval
 /* }}} */
 
 const zend_function_entry php_raylib_matrix_methods[] = {
+        PHP_ME(Matrix, __construct, arginfo_matrix__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_matrix_startup(INIT_FUNC_ARGS)
@@ -682,7 +860,7 @@ void php_raylib_matrix_startup(INIT_FUNC_ARGS)
     php_raylib_matrix_object_handlers.has_property	     = php_raylib_matrix_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "matrix", php_raylib_matrix_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Matrix", php_raylib_matrix_methods);
     php_raylib_matrix_ce = zend_register_internal_class(&ce);
     php_raylib_matrix_ce->create_object = php_raylib_matrix_new;
 

@@ -335,6 +335,17 @@ static zend_object *php_raylib_audiostream_clone(zend_object *old_object) /* {{{
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audiostream__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, buffer, raylib\\rAudioBuffer, 1)
+    ZEND_ARG_TYPE_MASK(0, sampleRate, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, sampleSize, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, channels, IS_LONG, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(AudioStream, __construct)
+{
+}
+
 static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_object *obj) /* {{{ */
 {
     //TODO: Not yet supported
@@ -415,6 +426,7 @@ static int php_raylib_audiostream_set_channels(php_raylib_audiostream_object *ob
 /* }}} */
 
 const zend_function_entry php_raylib_audiostream_methods[] = {
+        PHP_ME(AudioStream, __construct, arginfo_audiostream__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_audiostream_startup(INIT_FUNC_ARGS)
@@ -435,7 +447,7 @@ void php_raylib_audiostream_startup(INIT_FUNC_ARGS)
     php_raylib_audiostream_object_handlers.has_property	     = php_raylib_audiostream_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "audiostream", php_raylib_audiostream_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "AudioStream", php_raylib_audiostream_methods);
     php_raylib_audiostream_ce = zend_register_internal_class(&ce);
     php_raylib_audiostream_ce->create_object = php_raylib_audiostream_new;
 

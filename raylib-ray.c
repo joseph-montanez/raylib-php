@@ -334,6 +334,55 @@ static zend_object *php_raylib_ray_clone(zend_object *old_object) /* {{{  */
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ray__construct, 0, 0, 0)
+    ZEND_ARG_OBJ_INFO(0, position, raylib\\Vector3, 1)
+    ZEND_ARG_OBJ_INFO(0, direction, raylib\\Vector3, 1)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Ray, __construct)
+{
+    zend_object *position = NULL;
+    php_raylib_vector3_object *phpPosition;
+
+    zend_object *direction = NULL;
+    php_raylib_vector3_object *phpDirection;
+
+    ZEND_PARSE_PARAMETERS_START(0, 2)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(position, php_raylib_vector3_ce)
+        Z_PARAM_OBJ_OF_CLASS_OR_NULL(direction, php_raylib_vector3_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_ray_object *intern = Z_RAY_OBJ_P(ZEND_THIS);
+
+    if (position == NULL) {
+        position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    if (direction == NULL) {
+        direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
+    }
+
+    phpPosition = php_raylib_vector3_fetch_object(position);
+    phpDirection = php_raylib_vector3_fetch_object(direction);
+
+    intern->position = phpPosition;
+    intern->direction = phpDirection;
+
+    intern->ray = (Ray) {
+        .position = (Vector3) {
+            .x = phpPosition->vector3.x,
+            .y = phpPosition->vector3.y,
+            .z = phpPosition->vector3.z
+        },
+        .direction = (Vector3) {
+            .x = phpDirection->vector3.x,
+            .y = phpDirection->vector3.y,
+            .z = phpDirection->vector3.z
+        }
+    };
+}
+
 static zend_object * php_raylib_ray_get_position(php_raylib_ray_object *obj) /* {{{ */
 {
     GC_ADDREF(&obj->position->std);
@@ -383,6 +432,7 @@ static int php_raylib_ray_set_direction(php_raylib_ray_object *obj, zval *newval
 /* }}} */
 
 const zend_function_entry php_raylib_ray_methods[] = {
+        PHP_ME(Ray, __construct, arginfo_ray__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_ray_startup(INIT_FUNC_ARGS)
@@ -403,7 +453,7 @@ void php_raylib_ray_startup(INIT_FUNC_ARGS)
     php_raylib_ray_object_handlers.has_property	     = php_raylib_ray_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "ray", php_raylib_ray_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "Ray", php_raylib_ray_methods);
     php_raylib_ray_ce = zend_register_internal_class(&ce);
     php_raylib_ray_ce->create_object = php_raylib_ray_new;
 

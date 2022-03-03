@@ -341,6 +341,23 @@ static zend_object *php_raylib_vrdeviceinfo_clone(zend_object *old_object) /* {{
 }
 /* }}} */
 
+// PHP object handling
+ZEND_BEGIN_ARG_INFO_EX(arginfo_vrdeviceinfo__construct, 0, 0, 0)
+    ZEND_ARG_TYPE_MASK(0, hResolution, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, vResolution, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, hScreenSize, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, vScreenSize, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, vScreenCenter, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, eyeToScreenDistance, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, lensSeparationDistance, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, interpupillaryDistance, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, lensDistortionValues, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, chromaAbCorrection, IS_DOUBLE, "0")
+ZEND_END_ARG_INFO()
+PHP_METHOD(VrDeviceInfo, __construct)
+{
+}
+
 static zend_long php_raylib_vrdeviceinfo_get_hresolution(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
     return (zend_long) obj->vrdeviceinfo.hResolution;
@@ -542,6 +559,7 @@ static int php_raylib_vrdeviceinfo_set_chromaabcorrection(php_raylib_vrdeviceinf
 /* }}} */
 
 const zend_function_entry php_raylib_vrdeviceinfo_methods[] = {
+        PHP_ME(VrDeviceInfo, __construct, arginfo_vrdeviceinfo__construct, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS)
@@ -562,7 +580,7 @@ void php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS)
     php_raylib_vrdeviceinfo_object_handlers.has_property	     = php_raylib_vrdeviceinfo_has_property;
 
     // Init
-    INIT_NS_CLASS_ENTRY(ce, "raylib", "vrdeviceinfo", php_raylib_vrdeviceinfo_methods);
+    INIT_NS_CLASS_ENTRY(ce, "raylib", "VrDeviceInfo", php_raylib_vrdeviceinfo_methods);
     php_raylib_vrdeviceinfo_ce = zend_register_internal_class(&ce);
     php_raylib_vrdeviceinfo_ce->create_object = php_raylib_vrdeviceinfo_new;
 
