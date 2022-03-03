@@ -1,6 +1,7 @@
 raylib
 .idea
 vendor
+raylib.la
 *.la
 *.dep
 *.lo
