@@ -221,4 +221,18 @@ class ObjectConstructor
 
         return $input;
     }
+
+    public function generateColor(array $color, mixed $input)
+    {
+        $cStr = file_get_contents(__DIR__ . '/../../manual/color.c');
+        $input[] = strtr($cStr, [
+            '[colorName]' => $color[0],
+            '[r]' => $color[1],
+            '[g]' => $color[2],
+            '[b]' => $color[3],
+            '[a]' => $color[4],
+        ]);
+
+        return $input;
+    }
 }

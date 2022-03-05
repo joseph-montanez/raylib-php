@@ -16,32 +16,41 @@ const MAX_BUILDINGS = 100;
 
 // Initialization
 //--------------------------------------------------------------------------------------
-$screenWidth = 800;
+$screenWidth  = 800;
 $screenHeight = 450;
+
+$red       = Color::RED();
+$dark_gray = Color::DARKGRAY();
+$green     = Color::GREEN();
+$sky_blue  = Color::SKYBLUE();
+$blue      = Color::BLUE();
+$black     = Color::BLACK();
+$ray_white = Color::RAYWHITE();
 
 InitWindow($screenWidth, $screenHeight, "raylib [core] example - 2d camera");
 
-$player = new Rectangle(400, 280, 40, 40);
-
-$spacing = 0;
+$player      = new Rectangle(400, 280, 40, 40);
+$spacing     = 0;
+$buildings   = [];
+$buildColors = [];
 
 for ($i = 0; $i < MAX_BUILDINGS; $i++) {
-    $buildings[$i] = new Rectangle();
-    $buildings[$i]->width = (float) rand(50, 200);
-    $buildings[$i]->height = (float) rand(100, 800);
-    $buildings[$i]->y = $screenHeight - 130.0 - $buildings[$i]->height;
-    $buildings[$i]->x = -6000.0 + $spacing;
+    $buildings[$i]         = new Rectangle();
+    $buildings[$i]->width  = (float)rand(50, 200);
+    $buildings[$i]->height = (float)rand(100, 800);
+    $buildings[$i]->y      = $screenHeight - 130.0 - $buildings[$i]->height;
+    $buildings[$i]->x      = -6000.0 + $spacing;
 
-    $spacing += (int) $buildings[$i]->width;
+    $spacing += (int)$buildings[$i]->width;
 
     $buildColors[$i] = new Color(rand(200, 240), rand(200, 240), rand(200, 250), 255);
 }
 
-$camera = new Camera2D();
-$camera->target = new Vector2($player->x + 20.0, $player->y + 20.0);
-$camera->offset = new Vector2($screenWidth / 2.0, $screenHeight / 2.0);
+$camera           = new Camera2D();
+$camera->target   = new Vector2($player->x + 20.0, $player->y + 20.0);
+$camera->offset   = new Vector2($screenWidth / 2.0, $screenHeight / 2.0);
 $camera->rotation = 0.0;
-$camera->zoom = 1.0;
+$camera->zoom     = 1.0;
 
 SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
 //--------------------------------------------------------------------------------------
@@ -68,14 +77,14 @@ while (!WindowShouldClose())        // Detect window close button or ESC key
     elseif ($camera->rotation < -40) $camera->rotation = -40;
 
     // Camera zoom controls
-    $camera->zoom += ((float) GetMouseWheelMove() * 0.05);
+    $camera->zoom += ((float)GetMouseWheelMove() * 0.05);
 
     if ($camera->zoom > 3.0) $camera->zoom = 3.0;
     elseif ($camera->zoom < 0.1) $camera->zoom = 0.1;
 
     // Camera reset (zoom and rotation)
     if (IsKeyPressed(KEY_R)) {
-        $camera->zoom = 1.0;
+        $camera->zoom     = 1.0;
         $camera->rotation = 0.0;
     }
     //----------------------------------------------------------------------------------
@@ -84,36 +93,36 @@ while (!WindowShouldClose())        // Detect window close button or ESC key
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
+    ClearBackground($ray_white);
 
     BeginMode2D($camera);
 
-    DrawRectangle(-6000, 320, 13000, 8000, DARKGRAY);
+    DrawRectangle(-6000, 320, 13000, 8000, $dark_gray);
 
     for ($i = 0; $i < MAX_BUILDINGS; $i++) DrawRectangleRec($buildings[$i], $buildColors[$i]);
 
-    DrawRectangleRec($player, RED);
+    DrawRectangleRec($player, $red);
 
-    DrawLine((int) $camera->target->x, -$screenHeight * 10, (int) $camera->target->x, $screenHeight * 10, GREEN);
-    DrawLine(-$screenWidth * 10, (int) $camera->target->y, $screenWidth * 10, (int) $camera->target->y, GREEN);
+    DrawLine((int)$camera->target->x, -$screenHeight * 10, (int)$camera->target->x, $screenHeight * 10, $green);
+    DrawLine(-$screenWidth * 10, (int)$camera->target->y, $screenWidth * 10, (int)$camera->target->y, $green);
 
     EndMode2D();
 
-    DrawText("SCREEN AREA", 640, 10, 20, RED);
+    DrawText("SCREEN AREA", 640, 10, 20, $red);
 
-    DrawRectangle(0, 0, $screenWidth, 5, RED);
-    DrawRectangle(0, 5, 5, $screenHeight - 10, RED);
-    DrawRectangle($screenWidth - 5, 5, 5, $screenHeight - 10, RED);
-    DrawRectangle(0, $screenHeight - 5, $screenWidth, 5, RED);
+    DrawRectangle(0, 0, $screenWidth, 5, $red);
+    DrawRectangle(0, 5, 5, $screenHeight - 10, $red);
+    DrawRectangle($screenWidth - 5, 5, 5, $screenHeight - 10, $red);
+    DrawRectangle(0, $screenHeight - 5, $screenWidth, 5, $red);
 
-    DrawRectangle(10, 10, 250, 113, Fade(SKYBLUE, 0.5));
-    DrawRectangleLines(10, 10, 250, 113, BLUE);
+    DrawRectangle(10, 10, 250, 113, Fade($sky_blue, 0.5));
+    DrawRectangleLines(10, 10, 250, 113, $blue);
 
-    DrawText("Free 2d camera controls:", 20, 20, 10, BLACK);
-    DrawText("- Right/Left to move Offset", 40, 40, 10, DARKGRAY);
-    DrawText("- Mouse Wheel to Zoom in-out", 40, 60, 10, DARKGRAY);
-    DrawText("- A / S to Rotate", 40, 80, 10, DARKGRAY);
-    DrawText("- R to reset Zoom and Rotation", 40, 100, 10, DARKGRAY);
+    DrawText("Free 2d camera controls:", 20, 20, 10, $black);
+    DrawText("- Right/Left to move Offset", 40, 40, 10, $dark_gray);
+    DrawText("- Mouse Wheel to Zoom in-out", 40, 60, 10, $dark_gray);
+    DrawText("- A / S to Rotate", 40, 80, 10, $dark_gray);
+    DrawText("- R to reset Zoom and Rotation", 40, 100, 10, $dark_gray);
 
     EndDrawing();
     //----------------------------------------------------------------------------------

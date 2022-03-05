@@ -441,7 +441,7 @@ class Parser
     }
 
     /**
-     * @param \Raylib\Parser\Func[] $functions
+     * @param \Raylib\Parser\Func[]   $functions
      * @param \Raylib\Parser\Struct[] $structsByType
      * @param \Raylib\Parser\Struct   $struct
      * @param array                   $input
@@ -642,6 +642,43 @@ class Parser
         //-- Object Constructor
         $input = (new ObjectConstructor())->generate($functions, $structsByType, $struct, $input);
 
+        $colors = [
+            ['LIGHTGRAY', 200, 200, 200, 255],   // Light Gray
+            ['GRAY', 130, 130, 130, 255],   // Gray
+            ['DARKGRAY', 80, 80, 80, 255],      // Dark Gray
+            ['YELLOW', 253, 249, 0, 255],     // Yellow
+            ['GOLD', 255, 203, 0, 255],     // Gold
+            ['ORANGE', 255, 161, 0, 255],     // Orange
+            ['PINK', 255, 109, 194, 255],   // Pink
+            ['RED', 230, 41, 55, 255],     // Red
+            ['MAROON', 190, 33, 55, 255],     // Maroon
+            ['GREEN', 0, 228, 48, 255],      // Green
+            ['LIME', 0, 158, 47, 255],      // Lime
+            ['DARKGREEN', 0, 117, 44, 255],      // Dark Green
+            ['SKYBLUE', 102, 191, 255, 255],   // Sky Blue
+            ['BLUE', 0, 121, 241, 255],     // Blue
+            ['DARKBLUE', 0, 82, 172, 255],      // Dark Blue
+            ['PURPLE', 200, 122, 255, 255],   // Purple
+            ['VIOLET', 135, 60, 190, 255],    // Violet
+            ['DARKPURPLE', 112, 31, 126, 255],    // Dark Purple
+            ['BEIGE', 211, 176, 131, 255],   // Beige
+            ['BROWN', 127, 106, 79, 255],    // Brown
+            ['DARKBROWN', 76, 63, 47, 255],      // Dark Brown
+            ['WHITE', 255, 255, 255, 255],   // White
+            ['BLACK', 0, 0, 0, 255],         // Black
+            ['BLANK', 0, 0, 0, 0],           // Blank (Transparent)
+            ['MAGENTA', 255, 0, 255, 255],     // Magenta
+            ['RAYWHITE', 245, 245, 245, 255],   // My own White (raylib logo)
+        ];
+
+        $colorMethods = [];
+        if ($struct->name === 'Color') {
+            foreach ($colors as $color) {
+                $input = (new ObjectConstructor())->generateColor($color, $input);
+                $colorMethods[] = 'PHP_ME(Color, ' . $color[0] . ', arginfo_color_' . $color[0] . ', ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)';
+            }
+        }
+
         //-- Object Getters
         $input = (new ObjectPropertyGetters())->generate($structsByType, $struct, $input);
 
@@ -649,7 +686,7 @@ class Parser
         $input = (new ObjectPropertySetters())->generate($structsByType, $struct, $input);
 
         //-- Object Methods
-        $input = (new ObjectMethods())->generate($struct, $input);
+        $input = (new ObjectMethods())->generate($struct, $colorMethods, $input);
 
         //-- Object Setup
         $input = (new ObjectStartup())->generate($struct, $input);

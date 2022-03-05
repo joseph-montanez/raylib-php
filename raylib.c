@@ -108,9 +108,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(WindowShouldClose)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(WindowShouldClose());
 }
 
@@ -120,9 +117,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_CloseWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(CloseWindow)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     CloseWindow();
 }
@@ -134,9 +128,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowReady)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsWindowReady());
 }
 
@@ -146,9 +137,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowFullscreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowFullscreen)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_BOOL(IsWindowFullscreen());
 }
@@ -160,9 +148,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowHidden)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsWindowHidden());
 }
 
@@ -172,9 +157,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowMinimized, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowMinimized)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_BOOL(IsWindowMinimized());
 }
@@ -186,9 +168,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowMaximized)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsWindowMaximized());
 }
 
@@ -199,9 +178,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowFocused)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsWindowFocused());
 }
 
@@ -211,9 +187,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowResized, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowResized)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_BOOL(IsWindowResized());
 }
@@ -276,9 +249,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ToggleFullscreen)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     ToggleFullscreen();
 }
 
@@ -288,9 +258,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_MaximizeWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(MaximizeWindow)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     MaximizeWindow();
 }
@@ -302,9 +269,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(MinimizeWindow)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     MinimizeWindow();
 }
 
@@ -314,9 +278,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_RestoreWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(RestoreWindow)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RestoreWindow();
 }
@@ -440,9 +401,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetScreenWidth)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetScreenWidth());
 }
 
@@ -452,9 +410,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetScreenHeight, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetScreenHeight)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_LONG(GetScreenHeight());
 }
@@ -466,9 +421,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMonitorCount)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetMonitorCount());
 }
 
@@ -478,9 +430,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetCurrentMonitor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetCurrentMonitor)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_LONG(GetCurrentMonitor());
 }
@@ -599,9 +548,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetWindowPosition)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     Vector2 originalResult = GetWindowPosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
@@ -616,9 +562,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetWindowScaleDPI, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetWindowScaleDPI)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Vector2 originalResult = GetWindowScaleDPI();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -652,9 +595,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(SwapScreenBuffer)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     SwapScreenBuffer();
 }
 
@@ -664,9 +604,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_PollInputEvents, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(PollInputEvents)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     PollInputEvents();
 }
@@ -695,9 +632,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ShowCursor)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     ShowCursor();
 }
 
@@ -707,9 +641,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_HideCursor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(HideCursor)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     HideCursor();
 }
@@ -721,9 +652,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsCursorHidden)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsCursorHidden());
 }
 
@@ -733,9 +661,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EnableCursor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EnableCursor)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     EnableCursor();
 }
@@ -747,9 +672,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(DisableCursor)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     DisableCursor();
 }
 
@@ -759,9 +681,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsCursorOnScreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsCursorOnScreen)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_BOOL(IsCursorOnScreen());
 }
@@ -791,9 +710,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(BeginDrawing)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     BeginDrawing();
 }
 
@@ -803,9 +719,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndDrawing, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndDrawing)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     EndDrawing();
 }
@@ -835,9 +748,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndMode2D)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     EndMode2D();
 }
 
@@ -865,9 +775,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndMode3D, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndMode3D)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     EndMode3D();
 }
@@ -897,9 +804,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndTextureMode)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     EndTextureMode();
 }
 
@@ -928,9 +832,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndShaderMode)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     EndShaderMode();
 }
 
@@ -957,9 +858,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndBlendMode, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndBlendMode)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     EndBlendMode();
 }
@@ -997,9 +895,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndScissorMode)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     EndScissorMode();
 }
 
@@ -1027,9 +922,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndVrStereoMode, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndVrStereoMode)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     EndVrStereoMode();
 }
@@ -1446,9 +1338,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFPS)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetFPS());
 }
 
@@ -1459,9 +1348,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFrameTime)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetFrameTime());
 }
 
 // Get elapsed time in seconds since InitWindow()
@@ -1471,9 +1358,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTime)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetTime());
 }
 
 // Get a random value between min and max (both included)
@@ -1662,9 +1547,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ClearDirectoryFiles)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     ClearDirectoryFiles();
 }
 
@@ -1692,9 +1574,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsFileDropped)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_BOOL(IsFileDropped());
 }
 
@@ -1704,9 +1583,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ClearDroppedFiles, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ClearDroppedFiles)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     ClearDroppedFiles();
 }
@@ -1874,9 +1750,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetKeyPressed)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetKeyPressed());
 }
 
@@ -1886,9 +1759,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetCharPressed, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetCharPressed)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_LONG(GetCharPressed());
 }
@@ -1997,9 +1867,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGamepadButtonPressed)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetGamepadButtonPressed());
 }
 
@@ -2037,6 +1904,7 @@ PHP_FUNCTION(GetGamepadAxisMovement)
     ZEND_PARSE_PARAMETERS_END();
 
 
+    RETURN_DOUBLE((double) GetGamepadAxisMovement((gamepad <= INT_MAX) ? (int) ((zend_long) gamepad) : -1, (axis <= INT_MAX) ? (int) ((zend_long) axis) : -1));
 }
 
 // Set internal gamepad mappings (SDL_GameControllerDB)
@@ -2131,9 +1999,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseX)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetMouseX());
 }
 
@@ -2144,9 +2009,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseY)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetMouseY());
 }
 
@@ -2156,9 +2018,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMousePosition, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMousePosition)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Vector2 originalResult = GetMousePosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2174,9 +2033,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMouseDelta, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseDelta)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Vector2 originalResult = GetMouseDelta();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2253,9 +2109,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseWheelMove)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetMouseWheelMove());
 }
 
 // Set mouse cursor
@@ -2282,9 +2136,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchX)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetTouchX());
 }
 
@@ -2294,9 +2145,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetTouchY, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchY)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_LONG(GetTouchY());
 }
@@ -2347,9 +2195,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchPointCount)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetTouchPointCount());
 }
 
@@ -2394,9 +2239,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDetected)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     RETURN_LONG(GetGestureDetected());
 }
 
@@ -2407,9 +2249,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureHoldDuration)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetGestureHoldDuration());
 }
 
 // Get gesture drag vector
@@ -2418,9 +2258,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGestureDragVector, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDragVector)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Vector2 originalResult = GetGestureDragVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2437,9 +2274,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDragAngle)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetGestureDragAngle());
 }
 
 // Get gesture pinch delta
@@ -2448,9 +2283,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGesturePinchVector, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGesturePinchVector)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Vector2 originalResult = GetGesturePinchVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2467,9 +2299,7 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGesturePinchAngle)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
+    RETURN_DOUBLE((double) GetGesturePinchAngle());
 }
 
 // Set camera mode (multiple camera modes available)
@@ -4162,9 +3992,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadImageFromScreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(LoadImageFromScreen)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Image originalResult = LoadImageFromScreen();
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -6341,9 +6168,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetFontDefault, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFontDefault)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     Font originalResult = GetFontDefault();
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
@@ -8587,9 +8411,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(LoadMaterialDefault)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     Material originalResult = LoadMaterialDefault();
     zend_object *result = php_raylib_material_new_ex(php_raylib_material_ce, NULL);
     php_raylib_material_object *phpResult = php_raylib_material_fetch_object(result);
@@ -9036,9 +8857,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(InitAudioDevice)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     InitAudioDevice();
 }
 
@@ -9049,9 +8867,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(CloseAudioDevice)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     CloseAudioDevice();
 }
 
@@ -9061,9 +8876,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsAudioDeviceReady, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsAudioDeviceReady)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_BOOL(IsAudioDeviceReady());
 }
@@ -9369,9 +9181,6 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(StopSoundMulti)
 {
 
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
     StopSoundMulti();
 }
 
@@ -9381,9 +9190,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetSoundsPlaying, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetSoundsPlaying)
 {
-
-    ZEND_PARSE_PARAMETERS_START(0, 0)
-    ZEND_PARSE_PARAMETERS_END();
 
     RETURN_LONG(GetSoundsPlaying());
 }
@@ -9779,6 +9585,7 @@ PHP_FUNCTION(GetMusicTimeLength)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
+    RETURN_DOUBLE((double) GetMusicTimeLength(phpMusic->music));
 }
 
 // Get current music time played (in seconds)
@@ -9796,6 +9603,7 @@ PHP_FUNCTION(GetMusicTimePlayed)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
+    RETURN_DOUBLE((double) GetMusicTimePlayed(phpMusic->music));
 }
 
 // Load audio stream (to stream raw audio pcm data)

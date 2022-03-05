@@ -358,6 +358,344 @@ PHP_METHOD(Color, __construct)
     };
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_LIGHTGRAY, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, LIGHTGRAY)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){200, 200, 200, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_GRAY, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, GRAY)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){130, 130, 130, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_DARKGRAY, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, DARKGRAY)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){80, 80, 80, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_YELLOW, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, YELLOW)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){253, 249, 0, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_GOLD, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, GOLD)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){255, 203, 0, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_ORANGE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, ORANGE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){255, 161, 0, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_PINK, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, PINK)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){255, 109, 194, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_RED, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, RED)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){230, 41, 55, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_MAROON, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, MAROON)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){190, 33, 55, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_GREEN, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, GREEN)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 228, 48, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_LIME, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, LIME)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 158, 47, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_DARKGREEN, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, DARKGREEN)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 117, 44, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_SKYBLUE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, SKYBLUE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){102, 191, 255, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_BLUE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, BLUE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 121, 241, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_DARKBLUE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, DARKBLUE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 82, 172, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_PURPLE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, PURPLE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){200, 122, 255, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_VIOLET, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, VIOLET)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){135, 60, 190, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_DARKPURPLE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, DARKPURPLE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){112, 31, 126, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_BEIGE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, BEIGE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){211, 176, 131, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_BROWN, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, BROWN)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){127, 106, 79, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_DARKBROWN, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, DARKBROWN)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){76, 63, 47, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_WHITE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, WHITE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){255, 255, 255, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_BLACK, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, BLACK)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 0, 0, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_BLANK, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, BLANK)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){0, 0, 0, 0};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_MAGENTA, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, MAGENTA)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){255, 0, 255, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_color_RAYWHITE, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Color, RAYWHITE)
+{
+    zval *obj = malloc(sizeof(zval));
+    object_init_ex(obj, php_raylib_color_ce);
+
+    php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
+    result->color = (Color){245, 245, 245, 255};
+
+    RETURN_OBJ(&result->std);
+}
+
 static zend_long php_raylib_color_get_r(php_raylib_color_object *obj) /* {{{ */
 {
     return (zend_long) obj->color.r;
@@ -444,6 +782,32 @@ static int php_raylib_color_set_a(php_raylib_color_object *obj, zval *newval) /*
 
 const zend_function_entry php_raylib_color_methods[] = {
         PHP_ME(Color, __construct, arginfo_color__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Color, LIGHTGRAY, arginfo_color_LIGHTGRAY, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, GRAY, arginfo_color_GRAY, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, DARKGRAY, arginfo_color_DARKGRAY, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, YELLOW, arginfo_color_YELLOW, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, GOLD, arginfo_color_GOLD, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, ORANGE, arginfo_color_ORANGE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, PINK, arginfo_color_PINK, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, RED, arginfo_color_RED, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, MAROON, arginfo_color_MAROON, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, GREEN, arginfo_color_GREEN, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, LIME, arginfo_color_LIME, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, DARKGREEN, arginfo_color_DARKGREEN, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, SKYBLUE, arginfo_color_SKYBLUE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, BLUE, arginfo_color_BLUE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, DARKBLUE, arginfo_color_DARKBLUE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, PURPLE, arginfo_color_PURPLE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, VIOLET, arginfo_color_VIOLET, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, DARKPURPLE, arginfo_color_DARKPURPLE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, BEIGE, arginfo_color_BEIGE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, BROWN, arginfo_color_BROWN, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, DARKBROWN, arginfo_color_DARKBROWN, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, WHITE, arginfo_color_WHITE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, BLACK, arginfo_color_BLACK, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, BLANK, arginfo_color_BLANK, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, MAGENTA, arginfo_color_MAGENTA, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(Color, RAYWHITE, arginfo_color_RAYWHITE, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
         PHP_FE_END
 };
 void php_raylib_color_startup(INIT_FUNC_ARGS)
