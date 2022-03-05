@@ -15,5 +15,10 @@
     }
   },
   "require": {
+  },
+  "scripts": {
+    "core_2d_camera": "php -dextension=../modules/raylib.so examples/core/core_2d_camera.php",
+    "textures_background_scrolling": "php -dextension=../modules/raylib.so examples/textures/textures_background_scrolling.php",
+    "audio_module_playing": "php -dextension=../modules/raylib.so examples/audio/audio_module_playing.php"
   }
 }
