@@ -57,14 +57,15 @@ class CFunction
             $input = array_merge($input, $zParam->buildVariables('    '));
         }
         $input[] = '';
-        $input[] = sprintf("    ZEND_PARSE_PARAMETERS_START(%d, %d)", $function->paramCount, $function->paramCount);
-        foreach ($function->params as $param) {
-            $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
-            $input = array_merge($input, $zParam->build('        '));
+        if ($function->paramCount > 0) {
+            $input[] = sprintf("    ZEND_PARSE_PARAMETERS_START(%d, %d)", $function->paramCount, $function->paramCount);
+            foreach ($function->params as $param) {
+                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
+                $input = array_merge($input, $zParam->build('        '));
+            }
+            $input[] = '    ZEND_PARSE_PARAMETERS_END();';
+            $input[] = '';
         }
-        $input[] = '    ZEND_PARSE_PARAMETERS_END();';
-        $input[] = '';
-
         $hasDef = false;
         foreach ($function->params as $param) {
             $tr = $param->getTr();
@@ -152,7 +153,7 @@ class CFunction
                 $input[] = sprintf("    RETURN_BOOL(%s(%s));", $function->name, implode(', ', $fnParams));
             } elseif (Helper::isInt($function->returnType)) {
                 $input[] = sprintf("    RETURN_LONG(%s(%s));", $function->name, implode(', ', $fnParams));
-            } elseif (Helper::isInt($function->returnType)) {
+            } elseif (Helper::isFloat($function->returnType)) {
                 $input[] = sprintf("    RETURN_DOUBLE((double) %s(%s));", $function->name, implode(', ', $fnParams));
             } elseif (!Helper::isPrimitive($function->returnType)) {
                 $input[] = sprintf("    %s originalResult = %s(%s);", $function->returnType, $function->name, implode(', ', $fnParams));
