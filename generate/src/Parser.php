@@ -116,7 +116,7 @@ class Parser
         /** @var array{name:string,description:string,fields:array} $struct */
         foreach ($structObjs as $struct) {
 
-            $structFileName = 'raylib-' . $struct->nameLower;
+            $structFileName = '' . $struct->nameLower;
             $cFileName      = __DIR__ . '/../../' . $structFileName . '.c';
             $hFileName      = __DIR__ . '/../../' . $structFileName . '.h';
 
@@ -182,7 +182,7 @@ class Parser
         $input[] = '';
         $input[] = '/* $Id$ */';
         $input[] = '';
-        $input = Helper::win32PreventCollision($input);
+        $input   = Helper::win32PreventCollision($input);
         $input[] = '#ifdef HAVE_CONFIG_H';
         $input[] = '#include "config.h"';
         $input[] = '#endif';
@@ -190,7 +190,7 @@ class Parser
         $input[] = '#include "php_raylib.h"';
 
         foreach ($structs as $struct) {
-            $input[] = '#include "raylib-' . str_replace('_array', '', $struct->nameLower) . '.h"';
+            $input[] = '#include "' . str_replace('_array', '', $struct->nameLower) . '.h"';
         }
         $input[] = '';
 
@@ -369,9 +369,9 @@ class Parser
 
             if ($structsByType[$fieldType]->isAlias) {
                 $aliasStruct = $structsByType[$structsByType[$fieldType]->alias];
-                $input[]     = '#include "raylib-' . str_replace('_array', '', $aliasStruct->nameLower) . '.h"';
+                $input[]     = '#include "' . str_replace('_array', '', $aliasStruct->nameLower) . '.h"';
             } else {
-                $input[] = '#include "raylib-' . str_replace('_array', '', $fieldTypeName) . '.h"';
+                $input[] = '#include "' . str_replace('_array', '', $fieldTypeName) . '.h"';
             }
         }
         $input[] = '';
@@ -452,7 +452,7 @@ class Parser
     public function generateStructC(array $functions, array $structsByType, Struct $struct, array $input): array
     {
         //-- Window API Work Around
-        Helper::win32PreventCollision($input);
+        $input = Helper::win32PreventCollision($input);
 
         $input[] = '#include "php.h"';
         $input[] = '#undef LOG_INFO';
@@ -477,7 +477,7 @@ class Parser
                 continue;
             }
 
-            $line = '#include "raylib-' . str_replace('_array', '', $fieldTypeName) . '.h"';
+            $line = '#include "' . str_replace('_array', '', $fieldTypeName) . '.h"';
             if (!isset($headers[$line])) {
                 $headers[$line] = 1;
                 $input[]        = $line;
@@ -487,7 +487,7 @@ class Parser
         $input[] = '';
 
         //-- Include core struct header
-        $input[] = '#include "raylib-' . $struct->nameLower . '.h"';
+        $input[] = '#include "' . $struct->nameLower . '.h"';
         $input[] = '';
 
         $input[] = '//------------------------------------------------------------------------------------------------------';
@@ -632,7 +632,7 @@ class Parser
         $colorMethods = [];
         if ($struct->name === 'Color') {
             foreach ($colors as $color) {
-                $input = (new ObjectConstructor())->generateColor($color, $input);
+                $input          = (new ObjectConstructor())->generateColor($color, $input);
                 $colorMethods[] = 'PHP_ME(Color, ' . $color[0] . ', arginfo_color_' . $color[0] . ', ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)';
             }
         }
@@ -693,7 +693,7 @@ class Parser
         $input[] = '#include "php.h"';
         $input[] = '#include "php_ini.h"';
         $input[] = '#include "ext/standard/info.h"';
-        $input[] = '#include "raylib-texture.h"';
+        $input[] = '#include "texture.h"';
         $input[] = '';
         $input[] = 'extern zend_module_entry raylib_module_entry;';
         $input[] = '#define phpext_raylib_ptr &raylib_module_entry';
@@ -848,7 +848,7 @@ class Parser
 
         $files = ['raylib.c' => 1];
         foreach ($structs as $struct) {
-            $files['raylib-' . $struct->nameLower . '.c'] = 1;
+            $files['' . $struct->nameLower . '.c'] = 1;
         }
 
         $input[] = '  PHP_NEW_EXTENSION(raylib, ' . implode(' ', array_keys($files)) . ', $ext_shared,)';
@@ -869,12 +869,14 @@ class Parser
     public function generateW32(array $enums, array $structs, array $input): array
     {
 
-        $cFiles = ['raylib.c'];
-        $hFiles = ['php_raylib.h'];
+        $cFiles = ['raylib.c' => 1];
+        $hFiles = ['php_raylib.h' => 1];
         foreach ($structs as $struct) {
-            $cFiles[] = 'raylib-' . $struct->nameLower . '.c';
-            $hFiles[] = 'raylib-' . $struct->nameLower . '.h';
+            $cFiles[$struct->nameLower . '.c'] = 1;
+            $hFiles[$struct->nameLower . '.h'] = 1;
         }
+        $cFiles = array_keys($cFiles);
+        $hFiles = array_keys($hFiles);
 
 
         $input[] = '// $Id$';

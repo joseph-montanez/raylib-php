@@ -17,6 +17,7 @@
 */
 
 /* $Id$ */
+
 /* If defined, the following flags inhibit definition of the indicated items.*/
 #define NOGDICAPMASKS     // CC_*, LC_*, PC_*, CP_*, TC_*, RC_
 #define NOVIRTUALKEYCODES // VK_*
@@ -63,49 +64,47 @@
 /* Type required before windows.h inclusion  */
 typedef struct tagMSG* LPMSG;
 
-
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "php_raylib.h"
-#include "raylib-vector2.h"
-#include "raylib-vector3.h"
-#include "raylib-vector4.h"
-#include "raylib-matrix.h"
-#include "raylib-color.h"
-#include "raylib-rectangle.h"
-#include "raylib-image.h"
-#include "raylib-texture.h"
-#include "raylib-rendertexture.h"
-#include "raylib-npatchinfo.h"
-#include "raylib-glyphinfo.h"
-#include "raylib-font.h"
-#include "raylib-camera3d.h"
-#include "raylib-camera2d.h"
-#include "raylib-mesh.h"
-#include "raylib-shader.h"
-#include "raylib-materialmap.h"
-#include "raylib-material.h"
-#include "raylib-transform.h"
-#include "raylib-boneinfo.h"
-#include "raylib-model.h"
-#include "raylib-modelanimation.h"
-#include "raylib-ray.h"
-#include "raylib-raycollision.h"
-#include "raylib-boundingbox.h"
-#include "raylib-wave.h"
-#include "raylib-audiostream.h"
-#include "raylib-sound.h"
-#include "raylib-music.h"
-#include "raylib-vrdeviceinfo.h"
-#include "raylib-vrstereoconfig.h"
-#include "raylib-texture.h"
-#include "raylib-texture.h"
-#include "raylib-rendertexture.h"
-#include "raylib-camera3d.h"
-#include "raylib-vector4.h"
+#include "vector2.h"
+#include "vector3.h"
+#include "vector4.h"
+#include "matrix.h"
+#include "color.h"
+#include "rectangle.h"
+#include "image.h"
+#include "texture.h"
+#include "rendertexture.h"
+#include "npatchinfo.h"
+#include "glyphinfo.h"
+#include "font.h"
+#include "camera3d.h"
+#include "camera2d.h"
+#include "mesh.h"
+#include "shader.h"
+#include "materialmap.h"
+#include "material.h"
+#include "transform.h"
+#include "boneinfo.h"
+#include "model.h"
+#include "modelanimation.h"
+#include "ray.h"
+#include "raycollision.h"
+#include "boundingbox.h"
+#include "wave.h"
+#include "audiostream.h"
+#include "sound.h"
+#include "music.h"
+#include "vrdeviceinfo.h"
+#include "vrstereoconfig.h"
+#include "texture.h"
+#include "texture.h"
+#include "rendertexture.h"
+#include "camera3d.h"
+#include "vector4.h"
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_confirm_raylib_compiled, 0, 0, 0)
 ZEND_END_ARG_INFO()

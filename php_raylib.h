@@ -30,7 +30,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "raylib-texture.h"
+#include "texture.h"
 
 extern zend_module_entry raylib_module_entry;
 #define phpext_raylib_ptr &raylib_module_entry
