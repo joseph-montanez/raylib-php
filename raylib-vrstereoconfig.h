@@ -34,6 +34,6 @@ static inline php_raylib_vrstereoconfig_object *php_raylib_vrstereoconfig_fetch_
 
 void php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern);
+extern void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern);
 
 #endif //PHP_RAYLIB_VRSTEREOCONFIG_H

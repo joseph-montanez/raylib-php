@@ -70,7 +70,7 @@ typedef int (*raylib_npatchinfo_write_int_t)(php_raylib_npatchinfo_object *obj, 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_npatchinfo_update_intern(php_raylib_npatchinfo_object *intern) {
+void php_raylib_npatchinfo_update_intern(php_raylib_npatchinfo_object *intern) {
     intern->npatchinfo.source = intern->source->rectangle;
 }
 typedef struct _raylib_npatchinfo_prop_handler {
@@ -468,14 +468,14 @@ static int php_raylib_npatchinfo_set_source(php_raylib_npatchinfo_object *obj, z
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(newval);
-//    obj->source = phpSource;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(newval);
+    GC_ADDREF(&phpSource->std);
+    obj->source = phpSource;
 
     return ret;
 }

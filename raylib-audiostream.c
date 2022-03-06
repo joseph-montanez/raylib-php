@@ -69,7 +69,7 @@ typedef int (*raylib_audiostream_write_unsigned_int_t)(php_raylib_audiostream_ob
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_audiostream_update_intern(php_raylib_audiostream_object *intern) {
+void php_raylib_audiostream_update_intern(php_raylib_audiostream_object *intern) {
     //TODO: Support for pointers and arrays;
     //intern->audiostream.buffer = intern->buffer->raudiobuffer;
 }

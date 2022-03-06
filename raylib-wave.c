@@ -69,7 +69,7 @@ typedef int (*raylib_wave_write_void_array_t)(php_raylib_wave_object *obj,  zval
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_wave_update_intern(php_raylib_wave_object *intern) {
+void php_raylib_wave_update_intern(php_raylib_wave_object *intern) {
 }
 typedef struct _raylib_wave_prop_handler {
     raylib_wave_read_unsigned_int_t read_unsigned_int_func;

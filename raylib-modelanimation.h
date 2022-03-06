@@ -36,6 +36,6 @@ static inline php_raylib_modelanimation_object *php_raylib_modelanimation_fetch_
 
 void php_raylib_modelanimation_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *intern);
+extern void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *intern);
 
 #endif //PHP_RAYLIB_MODELANIMATION_H

@@ -78,7 +78,7 @@ typedef int (*raylib_font_write_glyphinfo_array_t)(php_raylib_font_object *obj, 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_font_update_intern(php_raylib_font_object *intern) {
+void php_raylib_font_update_intern(php_raylib_font_object *intern) {
     intern->font.texture = intern->texture->texture;
     //TODO: Support for pointers and arrays;
     //intern->font.recs = intern->recs->rectangle;
@@ -508,14 +508,14 @@ static int php_raylib_font_set_texture(php_raylib_font_object *obj, zval *newval
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-//    obj->texture = phpTexture;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
+    GC_ADDREF(&phpTexture->std);
+    obj->texture = phpTexture;
 
     return ret;
 }

@@ -74,7 +74,7 @@ typedef int (*raylib_material_write_float_array_t)(php_raylib_material_object *o
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_material_update_intern(php_raylib_material_object *intern) {
+void php_raylib_material_update_intern(php_raylib_material_object *intern) {
     intern->material.shader = intern->shader->shader;
     intern->material.maps[0] = intern->maps[0].materialmap;
     intern->material.maps[1] = intern->maps[1].materialmap;
@@ -406,14 +406,14 @@ static int php_raylib_material_set_shader(php_raylib_material_object *obj, zval 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(newval);
-//    obj->shader = phpShader;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(newval);
+    GC_ADDREF(&phpShader->std);
+    obj->shader = phpShader;
 
     return ret;
 }

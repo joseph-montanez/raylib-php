@@ -70,7 +70,7 @@ typedef int (*raylib_camera2d_write_float_t)(php_raylib_camera2d_object *obj,  z
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
+void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
     intern->camera2d.offset = intern->offset->vector2;
     intern->camera2d.target = intern->target->vector2;
 }
@@ -445,14 +445,14 @@ static int php_raylib_camera2d_set_offset(php_raylib_camera2d_object *obj, zval 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(newval);
-//    obj->offset = phpOffset;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(newval);
+    GC_ADDREF(&phpOffset->std);
+    obj->offset = phpOffset;
 
     return ret;
 }
@@ -462,14 +462,14 @@ static int php_raylib_camera2d_set_target(php_raylib_camera2d_object *obj, zval 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(newval);
-//    obj->target = phpTarget;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(newval);
+    GC_ADDREF(&phpTarget->std);
+    obj->target = phpTarget;
 
     return ret;
 }

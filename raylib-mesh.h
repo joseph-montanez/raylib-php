@@ -28,6 +28,6 @@ static inline php_raylib_mesh_object *php_raylib_mesh_fetch_object(zend_object *
 
 void php_raylib_mesh_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern);
+extern void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern);
 
 #endif //PHP_RAYLIB_MESH_H

@@ -31,6 +31,6 @@ static inline php_raylib_glyphinfo_object *php_raylib_glyphinfo_fetch_object(zen
 
 void php_raylib_glyphinfo_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern);
+extern void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern);
 
 #endif //PHP_RAYLIB_GLYPHINFO_H

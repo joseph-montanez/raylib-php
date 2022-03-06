@@ -71,7 +71,7 @@ typedef int (*raylib_transform_write_vector4_t)(php_raylib_transform_object *obj
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_transform_update_intern(php_raylib_transform_object *intern) {
+void php_raylib_transform_update_intern(php_raylib_transform_object *intern) {
     intern->transform.translation = intern->translation->vector3;
     intern->transform.rotation = intern->rotation->vector4;
     intern->transform.scale = intern->scale->vector3;
@@ -460,14 +460,14 @@ static int php_raylib_transform_set_translation(php_raylib_transform_object *obj
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(newval);
-//    obj->translation = phpTranslation;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpTranslation->std);
+    obj->translation = phpTranslation;
 
     return ret;
 }
@@ -477,14 +477,14 @@ static int php_raylib_transform_set_rotation(php_raylib_transform_object *obj, z
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(newval);
-//    obj->rotation = phpRotation;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(newval);
+    GC_ADDREF(&phpRotation->std);
+    obj->rotation = phpRotation;
 
     return ret;
 }
@@ -494,14 +494,14 @@ static int php_raylib_transform_set_scale(php_raylib_transform_object *obj, zval
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(newval);
-//    obj->scale = phpScale;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpScale->std);
+    obj->scale = phpScale;
 
     return ret;
 }

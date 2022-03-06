@@ -70,7 +70,7 @@ typedef int (*raylib_glyphinfo_write_image_t)(php_raylib_glyphinfo_object *obj, 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern) {
+void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern) {
     intern->glyphinfo.image = intern->image->image;
 }
 typedef struct _raylib_glyphinfo_prop_handler {
@@ -513,14 +513,14 @@ static int php_raylib_glyphinfo_set_image(php_raylib_glyphinfo_object *obj, zval
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
-//    obj->image = phpImage;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
+    GC_ADDREF(&phpImage->std);
+    obj->image = phpImage;
 
     return ret;
 }

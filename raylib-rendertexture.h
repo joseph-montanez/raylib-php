@@ -33,6 +33,6 @@ static inline php_raylib_rendertexture_object *php_raylib_rendertexture_fetch_ob
 
 void php_raylib_rendertexture_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern);
+extern void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern);
 
 #endif //PHP_RAYLIB_RENDERTEXTURE_H

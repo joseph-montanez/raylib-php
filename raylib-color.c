@@ -66,7 +66,7 @@ typedef int (*raylib_color_write_unsigned_char_t)(php_raylib_color_object *obj, 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_color_update_intern(php_raylib_color_object *intern) {
+void php_raylib_color_update_intern(php_raylib_color_object *intern) {
 }
 typedef struct _raylib_color_prop_handler {
     raylib_color_read_unsigned_char_t read_unsigned_char_func;

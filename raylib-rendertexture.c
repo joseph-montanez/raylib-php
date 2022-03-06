@@ -70,7 +70,7 @@ typedef int (*raylib_rendertexture_write_texture_t)(php_raylib_rendertexture_obj
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern) {
+void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern) {
     intern->rendertexture.texture = intern->texture->texture;
     intern->rendertexture.depth = intern->depth->texture;
 }
@@ -460,14 +460,14 @@ static int php_raylib_rendertexture_set_texture(php_raylib_rendertexture_object 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-//    obj->texture = phpTexture;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
+    GC_ADDREF(&phpTexture->std);
+    obj->texture = phpTexture;
 
     return ret;
 }
@@ -477,14 +477,14 @@ static int php_raylib_rendertexture_set_depth(php_raylib_rendertexture_object *o
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(newval);
-//    obj->depth = phpDepth;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(newval);
+    GC_ADDREF(&phpDepth->std);
+    obj->depth = phpDepth;
 
     return ret;
 }

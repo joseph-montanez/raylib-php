@@ -67,7 +67,7 @@ typedef int (*raylib_ray_write_vector3_t)(php_raylib_ray_object *obj,  zval *val
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_ray_update_intern(php_raylib_ray_object *intern) {
+void php_raylib_ray_update_intern(php_raylib_ray_object *intern) {
     intern->ray.position = intern->position->vector3;
     intern->ray.direction = intern->direction->vector3;
 }
@@ -401,14 +401,14 @@ static int php_raylib_ray_set_position(php_raylib_ray_object *obj, zval *newval)
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
-//    obj->position = phpPosition;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpPosition->std);
+    obj->position = phpPosition;
 
     return ret;
 }
@@ -418,14 +418,14 @@ static int php_raylib_ray_set_direction(php_raylib_ray_object *obj, zval *newval
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(newval);
-//    obj->direction = phpDirection;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpDirection->std);
+    obj->direction = phpDirection;
 
     return ret;
 }

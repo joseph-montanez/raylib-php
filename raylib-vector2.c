@@ -66,7 +66,7 @@ typedef int (*raylib_vector2_write_float_t)(php_raylib_vector2_object *obj,  zva
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_vector2_update_intern(php_raylib_vector2_object *intern) {
+void php_raylib_vector2_update_intern(php_raylib_vector2_object *intern) {
 }
 typedef struct _raylib_vector2_prop_handler {
     raylib_vector2_read_float_t read_float_func;

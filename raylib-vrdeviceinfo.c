@@ -72,7 +72,7 @@ typedef int (*raylib_vrdeviceinfo_write_float_array_t)(php_raylib_vrdeviceinfo_o
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern) {
+void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern) {
 }
 typedef struct _raylib_vrdeviceinfo_prop_handler {
     raylib_vrdeviceinfo_read_int_t read_int_func;

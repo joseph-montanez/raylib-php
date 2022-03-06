@@ -69,7 +69,7 @@ typedef int (*raylib_texture_write_int_t)(php_raylib_texture_object *obj,  zval 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_texture_update_intern(php_raylib_texture_object *intern) {
+void php_raylib_texture_update_intern(php_raylib_texture_object *intern) {
 }
 typedef struct _raylib_texture_prop_handler {
     raylib_texture_read_unsigned_int_t read_unsigned_int_func;

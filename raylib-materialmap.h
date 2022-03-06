@@ -34,6 +34,6 @@ static inline php_raylib_materialmap_object *php_raylib_materialmap_fetch_object
 
 void php_raylib_materialmap_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern);
+extern void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern);
 
 #endif //PHP_RAYLIB_MATERIALMAP_H

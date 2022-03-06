@@ -89,7 +89,7 @@ typedef int (*raylib_model_write_transform_array_t)(php_raylib_model_object *obj
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_model_update_intern(php_raylib_model_object *intern) {
+void php_raylib_model_update_intern(php_raylib_model_object *intern) {
     intern->model.transform = intern->transform->matrix;
     //TODO: Support for pointers and arrays;
     //intern->model.meshes = intern->meshes->mesh;
@@ -582,14 +582,14 @@ static int php_raylib_model_set_transform(php_raylib_model_object *obj, zval *ne
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(newval);
-//    obj->transform = phpTransform;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(newval);
+    GC_ADDREF(&phpTransform->std);
+    obj->transform = phpTransform;
 
     return ret;
 }

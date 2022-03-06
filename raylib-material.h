@@ -35,6 +35,6 @@ static inline php_raylib_material_object *php_raylib_material_fetch_object(zend_
 
 void php_raylib_material_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_material_update_intern(php_raylib_material_object *intern);
+extern void php_raylib_material_update_intern(php_raylib_material_object *intern);
 
 #endif //PHP_RAYLIB_MATERIAL_H

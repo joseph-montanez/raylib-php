@@ -74,7 +74,7 @@ typedef int (*raylib_materialmap_write_float_t)(php_raylib_materialmap_object *o
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern) {
+void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern) {
     intern->materialmap.texture = intern->texture->texture;
     intern->materialmap.color = intern->color->color;
 }
@@ -458,14 +458,14 @@ static int php_raylib_materialmap_set_texture(php_raylib_materialmap_object *obj
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-//    obj->texture = phpTexture;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
+    GC_ADDREF(&phpTexture->std);
+    obj->texture = phpTexture;
 
     return ret;
 }
@@ -475,14 +475,14 @@ static int php_raylib_materialmap_set_color(php_raylib_materialmap_object *obj, 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(newval);
-//    obj->color = phpColor;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(newval);
+    GC_ADDREF(&phpColor->std);
+    obj->color = phpColor;
 
     return ret;
 }

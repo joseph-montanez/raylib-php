@@ -28,6 +28,6 @@ static inline php_raylib_vrdeviceinfo_object *php_raylib_vrdeviceinfo_fetch_obje
 
 void php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern);
+extern void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern);
 
 #endif //PHP_RAYLIB_VRDEVICEINFO_H

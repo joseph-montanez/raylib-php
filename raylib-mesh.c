@@ -81,7 +81,7 @@ typedef int (*raylib_mesh_write_unsigned_int_array_t)(php_raylib_mesh_object *ob
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern) {
+void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern) {
 }
 typedef struct _raylib_mesh_prop_handler {
     raylib_mesh_read_int_t read_int_func;

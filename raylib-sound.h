@@ -31,6 +31,6 @@ static inline php_raylib_sound_object *php_raylib_sound_fetch_object(zend_object
 
 void php_raylib_sound_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_sound_update_intern(php_raylib_sound_object *intern);
+extern void php_raylib_sound_update_intern(php_raylib_sound_object *intern);
 
 #endif //PHP_RAYLIB_SOUND_H

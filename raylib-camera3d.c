@@ -73,7 +73,7 @@ typedef int (*raylib_camera3d_write_int_t)(php_raylib_camera3d_object *obj,  zva
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern) {
+void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern) {
     intern->camera3d.position = intern->position->vector3;
     intern->camera3d.target = intern->target->vector3;
     intern->camera3d.up = intern->up->vector3;
@@ -505,14 +505,14 @@ static int php_raylib_camera3d_set_position(php_raylib_camera3d_object *obj, zva
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
-//    obj->position = phpPosition;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpPosition->std);
+    obj->position = phpPosition;
 
     return ret;
 }
@@ -522,14 +522,14 @@ static int php_raylib_camera3d_set_target(php_raylib_camera3d_object *obj, zval 
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpTarget = Z_VECTOR3_OBJ_P(newval);
-//    obj->target = phpTarget;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpTarget = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpTarget->std);
+    obj->target = phpTarget;
 
     return ret;
 }
@@ -539,14 +539,14 @@ static int php_raylib_camera3d_set_up(php_raylib_camera3d_object *obj, zval *new
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(newval);
-//    obj->up = phpUp;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpUp->std);
+    obj->up = phpUp;
 
     return ret;
 }

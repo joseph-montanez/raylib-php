@@ -33,6 +33,6 @@ static inline php_raylib_ray_object *php_raylib_ray_fetch_object(zend_object *ob
 
 void php_raylib_ray_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_ray_update_intern(php_raylib_ray_object *intern);
+extern void php_raylib_ray_update_intern(php_raylib_ray_object *intern);
 
 #endif //PHP_RAYLIB_RAY_H

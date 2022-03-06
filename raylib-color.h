@@ -28,6 +28,6 @@ static inline php_raylib_color_object *php_raylib_color_fetch_object(zend_object
 
 void php_raylib_color_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_color_update_intern(php_raylib_color_object *intern);
+extern void php_raylib_color_update_intern(php_raylib_color_object *intern);
 
 #endif //PHP_RAYLIB_COLOR_H

@@ -73,7 +73,7 @@ typedef int (*raylib_raycollision_write_vector3_t)(php_raylib_raycollision_objec
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_raycollision_update_intern(php_raylib_raycollision_object *intern) {
+void php_raylib_raycollision_update_intern(php_raylib_raycollision_object *intern) {
     intern->raycollision.point = intern->point->vector3;
     intern->raycollision.normal = intern->normal->vector3;
 }
@@ -488,14 +488,14 @@ static int php_raylib_raycollision_set_point(php_raylib_raycollision_object *obj
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpPoint = Z_VECTOR3_OBJ_P(newval);
-//    obj->point = phpPoint;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpPoint = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpPoint->std);
+    obj->point = phpPoint;
 
     return ret;
 }
@@ -505,14 +505,14 @@ static int php_raylib_raycollision_set_normal(php_raylib_raycollision_object *ob
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpNormal = Z_VECTOR3_OBJ_P(newval);
-//    obj->normal = phpNormal;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpNormal = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpNormal->std);
+    obj->normal = phpNormal;
 
     return ret;
 }

@@ -39,6 +39,6 @@ static inline php_raylib_font_object *php_raylib_font_fetch_object(zend_object *
 
 void php_raylib_font_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_font_update_intern(php_raylib_font_object *intern);
+extern void php_raylib_font_update_intern(php_raylib_font_object *intern);
 
 #endif //PHP_RAYLIB_FONT_H

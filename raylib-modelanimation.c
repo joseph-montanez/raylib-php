@@ -74,7 +74,7 @@ typedef int (*raylib_modelanimation_write_transform_array_t)(php_raylib_modelani
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *intern) {
+void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *intern) {
     //TODO: Support for pointers and arrays;
     //intern->modelanimation.bones = intern->bones->boneinfo;
     //TODO: Support for pointers and arrays;

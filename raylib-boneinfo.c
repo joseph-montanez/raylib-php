@@ -69,7 +69,7 @@ typedef int (*raylib_boneinfo_write_int_t)(php_raylib_boneinfo_object *obj,  zva
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_boneinfo_update_intern(php_raylib_boneinfo_object *intern) {
+void php_raylib_boneinfo_update_intern(php_raylib_boneinfo_object *intern) {
 }
 typedef struct _raylib_boneinfo_prop_handler {
     raylib_boneinfo_read_char_array_t read_char_array_func;

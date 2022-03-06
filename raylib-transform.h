@@ -36,6 +36,6 @@ static inline php_raylib_transform_object *php_raylib_transform_fetch_object(zen
 
 void php_raylib_transform_startup(INIT_FUNC_ARGS);
 
-static void php_raylib_transform_update_intern(php_raylib_transform_object *intern);
+extern void php_raylib_transform_update_intern(php_raylib_transform_object *intern);
 
 #endif //PHP_RAYLIB_TRANSFORM_H

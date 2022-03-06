@@ -70,7 +70,7 @@ typedef int (*raylib_vrstereoconfig_write_float_array_t)(php_raylib_vrstereoconf
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern) {
+void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern) {
     intern->vrstereoconfig.projection[0] = intern->projection[0].matrix;
     intern->vrstereoconfig.projection[1] = intern->projection[1].matrix;
     intern->vrstereoconfig.viewOffset[0] = intern->viewoffset[0].matrix;

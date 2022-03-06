@@ -79,7 +79,7 @@ typedef int (*raylib_music_write_void_array_t)(php_raylib_music_object *obj,  zv
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_music_update_intern(php_raylib_music_object *intern) {
+void php_raylib_music_update_intern(php_raylib_music_object *intern) {
     intern->music.stream = intern->stream->audiostream;
 }
 typedef struct _raylib_music_prop_handler {
@@ -428,14 +428,14 @@ static int php_raylib_music_set_stream(php_raylib_music_object *obj, zval *newva
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(newval);
-//    obj->stream = phpStream;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(newval);
+    GC_ADDREF(&phpStream->std);
+    obj->stream = phpStream;
 
     return ret;
 }

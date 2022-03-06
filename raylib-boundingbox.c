@@ -67,7 +67,7 @@ typedef int (*raylib_boundingbox_write_vector3_t)(php_raylib_boundingbox_object 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_boundingbox_update_intern(php_raylib_boundingbox_object *intern) {
+void php_raylib_boundingbox_update_intern(php_raylib_boundingbox_object *intern) {
     intern->boundingbox.min = intern->min->vector3;
     intern->boundingbox.max = intern->max->vector3;
 }
@@ -401,14 +401,14 @@ static int php_raylib_boundingbox_set_min(php_raylib_boundingbox_object *obj, zv
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(newval);
-//    obj->min = phpMin;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpMin->std);
+    obj->min = phpMin;
 
     return ret;
 }
@@ -418,14 +418,14 @@ static int php_raylib_boundingbox_set_max(php_raylib_boundingbox_object *obj, zv
 {
     int ret = SUCCESS;
 
-//TODO: not supported ?
-//    if (Z_TYPE_P(newval) == IS_NULL) {
-//        // Cannot set this to null...
-//        return ret;
-//    }
-//
-//    php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(newval);
-//    obj->max = phpMax;
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(newval);
+    GC_ADDREF(&phpMax->std);
+    obj->max = phpMax;
 
     return ret;
 }

@@ -66,7 +66,7 @@ typedef int (*raylib_rectangle_write_float_t)(php_raylib_rectangle_object *obj, 
  * This is used to update internal object references
  * @param intern
  */
-static void php_raylib_rectangle_update_intern(php_raylib_rectangle_object *intern) {
+void php_raylib_rectangle_update_intern(php_raylib_rectangle_object *intern) {
 }
 typedef struct _raylib_rectangle_prop_handler {
     raylib_rectangle_read_float_t read_float_func;
