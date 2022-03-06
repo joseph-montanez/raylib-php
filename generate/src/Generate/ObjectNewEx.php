@@ -58,13 +58,15 @@ class ObjectNewEx
 
         $input[] = '        intern->' . $struct->nameLower . ' = (' . $struct->name . ') {';
 
+        $hasFields = false;
         foreach ($struct->fields as $i => $field) {
             $delimiter = $i + 1 >= $struct->totalFields ? '' : ',';
 
             if (!$field->isPrimitive) {
                 if ($field->isArray || $field->isPointer) {
-                    $input[] = '            // .' . $field->name . ' is an array and not yet supported via constructor';
+//                    $input[] = '            // .' . $field->name . ' is an array and not yet supported via constructor';
                 } else {
+                    $hasFields = true;
                     $input[] = '            .' . $field->name . ' = (' . $field->type . ') {';
 
                     $subStruct = $structsByType[$field->typePlain];
@@ -79,18 +81,29 @@ class ObjectNewEx
                 }
             } else {
                 if ($field->isArray) {
-                    $input[] = '//            .' . $field->name . ' = other->' . $struct->nameLower . '.' . $field->name . $delimiter;
+                    //-- This is ignored for now as `memcpy` is used below to copy fields over
                 } else {
+                    $hasFields = true;
                     $input[] = '            .' . $field->name . ' = other->' . $struct->nameLower . '.' . $field->name . $delimiter;
                 }
             }
         }
         $input[] = '        };';
+        if (!$hasFields) {
+            array_pop($input);
+            array_pop($input);
+
+            $input[] = '        intern->' . $struct->nameLower . ' = (' . $struct->name . ') { 0 };';
+            $input[] = '';
+        }
 
 
         foreach ($struct->fields as $i => $field) {
             if ($field->isPrimitive && str_starts_with($field->type, 'char') && $field->isArray && $field->arrayCountNumber > 0) {
                 $input[] = '        strncpy(intern->' . $struct->nameLower . '.' . $field->name . ', other->' . $struct->nameLower . '.' . $field->name . ', ' . $field->arrayCountNumber . ');';
+            }
+            elseif ($field->isPrimitive && $field->isArray && $field->arrayCountNumber > 0) {
+                $input[] = '        memcpy(intern->' . $struct->nameLower . '.' . $field->name . ', other->' . $struct->nameLower . '.' . $field->name . ', sizeof intern->' . $struct->nameLower . '.' . $field->name . ');';
             }
         }
 
