@@ -4,10 +4,10 @@
 
 # Normalized and converts to
 # native line endings on checkout.
-*.c text
-*.h text
-*.php text
-*.json text
+*.c text eol=lf
+*.h text eol=lf
+*.php text eol=lf
+*.json text eol=lf
 
 # Convert to CRLF line endings on checkout.
 *.sln text eol=crlf
