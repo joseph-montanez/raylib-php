@@ -431,7 +431,7 @@ class Parser
         $input[] = 'void php_raylib_' . $struct->nameLower . '_startup(INIT_FUNC_ARGS);';
         $input[] = '';
 
-        $input[] = 'static void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern);';
+        $input[] = 'extern void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern);';
         $input[] = '';
 
         $input[] = '#endif //PHP_RAYLIB_' . $struct->nameUpper . '_H';
@@ -558,7 +558,7 @@ class Parser
         $input[] = ' * This is used to update internal object references';
         $input[] = ' * @param intern';
         $input[] = ' */';
-        $input[] = 'static void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern) {';
+        $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern) {';
         foreach ($struct->nonPrimitiveFields() as $field) {
             if ($field->isArray || $field->isPointer) {
                 if ($field->arrayCountNumber) {

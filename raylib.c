@@ -296,6 +296,7 @@ PHP_FUNCTION(SetWindowIcon)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     SetWindowIcon(phpImage->image);
 }
@@ -699,6 +700,7 @@ PHP_FUNCTION(ClearBackground)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ClearBackground(phpColor->color);
 }
@@ -737,6 +739,7 @@ PHP_FUNCTION(BeginMode2D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
+    php_raylib_camera2d_update_intern(phpCamera);
 
     BeginMode2D(phpCamera->camera2d);
 }
@@ -765,6 +768,7 @@ PHP_FUNCTION(BeginMode3D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     BeginMode3D(phpCamera->camera3d);
 }
@@ -793,6 +797,7 @@ PHP_FUNCTION(BeginTextureMode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rendertexture_object *phpTarget = Z_RENDERTEXTURE_OBJ_P(target);
+    php_raylib_rendertexture_update_intern(phpTarget);
 
     BeginTextureMode(phpTarget->rendertexture);
 }
@@ -821,6 +826,7 @@ PHP_FUNCTION(BeginShaderMode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
 
     BeginShaderMode(phpShader->shader);
 }
@@ -912,6 +918,7 @@ PHP_FUNCTION(BeginVrStereoMode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vrstereoconfig_object *phpConfig = Z_VRSTEREOCONFIG_OBJ_P(config);
+    php_raylib_vrstereoconfig_update_intern(phpConfig);
 
     BeginVrStereoMode(phpConfig->vrstereoconfig);
 }
@@ -940,6 +947,7 @@ PHP_FUNCTION(LoadVrStereoConfig)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vrdeviceinfo_object *phpDevice = Z_VRDEVICEINFO_OBJ_P(device);
+    php_raylib_vrdeviceinfo_update_intern(phpDevice);
 
     VrStereoConfig originalResult = LoadVrStereoConfig(phpDevice->vrdeviceinfo);
     zend_object *result = php_raylib_vrstereoconfig_new_ex(php_raylib_vrstereoconfig_ce, NULL);
@@ -963,6 +971,7 @@ PHP_FUNCTION(UnloadVrStereoConfig)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vrstereoconfig_object *phpConfig = Z_VRSTEREOCONFIG_OBJ_P(config);
+    php_raylib_vrstereoconfig_update_intern(phpConfig);
 
     UnloadVrStereoConfig(phpConfig->vrstereoconfig);
 }
@@ -1034,6 +1043,7 @@ PHP_FUNCTION(GetShaderLocation)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
 
     RETURN_LONG(GetShaderLocation(phpShader->shader, uniformName->val));
 }
@@ -1055,6 +1065,7 @@ PHP_FUNCTION(GetShaderLocationAttrib)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
 
     RETURN_LONG(GetShaderLocationAttrib(phpShader->shader, attribName->val));
 }
@@ -1079,7 +1090,9 @@ PHP_FUNCTION(SetShaderValueMatrix)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
     php_raylib_matrix_object *phpMat = Z_MATRIX_OBJ_P(mat);
+    php_raylib_matrix_update_intern(phpMat);
 
     SetShaderValueMatrix(phpShader->shader, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpMat->matrix);
 }
@@ -1104,7 +1117,9 @@ PHP_FUNCTION(SetShaderValueTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     SetShaderValueTexture(phpShader->shader, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpTexture->texture);
 }
@@ -1123,6 +1138,7 @@ PHP_FUNCTION(UnloadShader)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
+    php_raylib_shader_update_intern(phpShader);
 
     UnloadShader(phpShader->shader);
 }
@@ -1144,7 +1160,9 @@ PHP_FUNCTION(GetMouseRay)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpMousePosition = Z_VECTOR2_OBJ_P(mousePosition);
+    php_raylib_vector2_update_intern(phpMousePosition);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     Ray originalResult = GetMouseRay(phpMousePosition->vector2, phpCamera->camera3d);
     zend_object *result = php_raylib_ray_new_ex(php_raylib_ray_ce, NULL);
@@ -1168,6 +1186,7 @@ PHP_FUNCTION(GetCameraMatrix)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     Matrix originalResult = GetCameraMatrix(phpCamera->camera3d);
     zend_object *result = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
@@ -1191,6 +1210,7 @@ PHP_FUNCTION(GetCameraMatrix2D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
+    php_raylib_camera2d_update_intern(phpCamera);
 
     Matrix originalResult = GetCameraMatrix2D(phpCamera->camera2d);
     zend_object *result = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
@@ -1217,7 +1237,9 @@ PHP_FUNCTION(GetWorldToScreen)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     Vector2 originalResult = GetWorldToScreen(phpPosition->vector3, phpCamera->camera3d);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -1250,7 +1272,9 @@ PHP_FUNCTION(GetWorldToScreenEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     Vector2 originalResult = GetWorldToScreenEx(phpPosition->vector3, phpCamera->camera3d, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -1277,7 +1301,9 @@ PHP_FUNCTION(GetWorldToScreen2D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
+    php_raylib_camera2d_update_intern(phpCamera);
 
     Vector2 originalResult = GetWorldToScreen2D(phpPosition->vector2, phpCamera->camera2d);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -1304,7 +1330,9 @@ PHP_FUNCTION(GetScreenToWorld2D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
+    php_raylib_camera2d_update_intern(phpCamera);
 
     Vector2 originalResult = GetScreenToWorld2D(phpPosition->vector2, phpCamera->camera2d);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2319,6 +2347,7 @@ PHP_FUNCTION(SetCameraMode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     SetCameraMode(phpCamera->camera3d, (mode <= INT_MAX) ? (int) ((zend_long) mode) : -1);
 }
@@ -2337,6 +2366,7 @@ PHP_FUNCTION(UpdateCamera)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
 
     UpdateCamera(&phpCamera->camera3d);
 }
@@ -2441,7 +2471,9 @@ PHP_FUNCTION(SetShapesTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
 
     SetShapesTexture(phpTexture->texture, phpSource->rectangle);
 }
@@ -2466,6 +2498,7 @@ PHP_FUNCTION(DrawPixel)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPixel((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color);
 }
@@ -2487,7 +2520,9 @@ PHP_FUNCTION(DrawPixelV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPixelV(phpPosition->vector2, phpColor->color);
 }
@@ -2518,6 +2553,7 @@ PHP_FUNCTION(DrawLine)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLine((startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color);
 }
@@ -2542,8 +2578,11 @@ PHP_FUNCTION(DrawLineV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_update_intern(phpStartPos);
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_vector2_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineV(phpStartPos->vector2, phpEndPos->vector2, phpColor->color);
 }
@@ -2571,8 +2610,11 @@ PHP_FUNCTION(DrawLineEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_update_intern(phpStartPos);
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_vector2_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineEx(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
 }
@@ -2600,8 +2642,11 @@ PHP_FUNCTION(DrawLineBezier)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_update_intern(phpStartPos);
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_vector2_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineBezier(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
 }
@@ -2632,9 +2677,13 @@ PHP_FUNCTION(DrawLineBezierQuad)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_update_intern(phpStartPos);
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_vector2_update_intern(phpEndPos);
     php_raylib_vector2_object *phpControlPos = Z_VECTOR2_OBJ_P(controlPos);
+    php_raylib_vector2_update_intern(phpControlPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineBezierQuad(phpStartPos->vector2, phpEndPos->vector2, phpControlPos->vector2, (float) thick, phpColor->color);
 }
@@ -2668,10 +2717,15 @@ PHP_FUNCTION(DrawLineBezierCubic)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos = Z_VECTOR2_OBJ_P(startPos);
+    php_raylib_vector2_update_intern(phpStartPos);
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
+    php_raylib_vector2_update_intern(phpEndPos);
     php_raylib_vector2_object *phpStartControlPos = Z_VECTOR2_OBJ_P(startControlPos);
+    php_raylib_vector2_update_intern(phpStartControlPos);
     php_raylib_vector2_object *phpEndControlPos = Z_VECTOR2_OBJ_P(endControlPos);
+    php_raylib_vector2_update_intern(phpEndControlPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineBezierCubic(phpStartPos->vector2, phpEndPos->vector2, phpStartControlPos->vector2, phpEndControlPos->vector2, (float) thick, phpColor->color);
 }
@@ -2711,6 +2765,7 @@ PHP_FUNCTION(DrawLineStrip)
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLineStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
 }
@@ -2738,6 +2793,7 @@ PHP_FUNCTION(DrawCircle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircle((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color);
 }
@@ -2771,7 +2827,9 @@ PHP_FUNCTION(DrawCircleSector)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircleSector(phpCenter->vector2, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
 }
@@ -2805,7 +2863,9 @@ PHP_FUNCTION(DrawCircleSectorLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircleSectorLines(phpCenter->vector2, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
 }
@@ -2836,7 +2896,9 @@ PHP_FUNCTION(DrawCircleGradient)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
+    php_raylib_color_update_intern(phpColor1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
+    php_raylib_color_update_intern(phpColor2);
 
     DrawCircleGradient((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor1->color, phpColor2->color);
 }
@@ -2861,7 +2923,9 @@ PHP_FUNCTION(DrawCircleV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircleV(phpCenter->vector2, (float) radius, phpColor->color);
 }
@@ -2889,6 +2953,7 @@ PHP_FUNCTION(DrawCircleLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircleLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color);
 }
@@ -2919,6 +2984,7 @@ PHP_FUNCTION(DrawEllipse)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawEllipse((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color);
 }
@@ -2949,6 +3015,7 @@ PHP_FUNCTION(DrawEllipseLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawEllipseLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color);
 }
@@ -2985,7 +3052,9 @@ PHP_FUNCTION(DrawRing)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRing(phpCenter->vector2, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
 }
@@ -3022,7 +3091,9 @@ PHP_FUNCTION(DrawRingLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRingLines(phpCenter->vector2, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
 }
@@ -3053,6 +3124,7 @@ PHP_FUNCTION(DrawRectangle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangle((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
 }
@@ -3077,8 +3149,11 @@ PHP_FUNCTION(DrawRectangleV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_vector2_update_intern(phpSize);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleV(phpPosition->vector2, phpSize->vector2, phpColor->color);
 }
@@ -3100,7 +3175,9 @@ PHP_FUNCTION(DrawRectangleRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRec(phpRec->rectangle, phpColor->color);
 }
@@ -3128,8 +3205,11 @@ PHP_FUNCTION(DrawRectanglePro)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectanglePro(phpRec->rectangle, phpOrigin->vector2, (float) rotation, phpColor->color);
 }
@@ -3163,7 +3243,9 @@ PHP_FUNCTION(DrawRectangleGradientV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
+    php_raylib_color_update_intern(phpColor1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
+    php_raylib_color_update_intern(phpColor2);
 
     DrawRectangleGradientV((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color, phpColor2->color);
 }
@@ -3197,7 +3279,9 @@ PHP_FUNCTION(DrawRectangleGradientH)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
+    php_raylib_color_update_intern(phpColor1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
+    php_raylib_color_update_intern(phpColor2);
 
     DrawRectangleGradientH((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color, phpColor2->color);
 }
@@ -3228,10 +3312,15 @@ PHP_FUNCTION(DrawRectangleGradientEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpCol1 = Z_COLOR_OBJ_P(col1);
+    php_raylib_color_update_intern(phpCol1);
     php_raylib_color_object *phpCol2 = Z_COLOR_OBJ_P(col2);
+    php_raylib_color_update_intern(phpCol2);
     php_raylib_color_object *phpCol3 = Z_COLOR_OBJ_P(col3);
+    php_raylib_color_update_intern(phpCol3);
     php_raylib_color_object *phpCol4 = Z_COLOR_OBJ_P(col4);
+    php_raylib_color_update_intern(phpCol4);
 
     DrawRectangleGradientEx(phpRec->rectangle, phpCol1->color, phpCol2->color, phpCol3->color, phpCol4->color);
 }
@@ -3262,6 +3351,7 @@ PHP_FUNCTION(DrawRectangleLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleLines((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
 }
@@ -3286,7 +3376,9 @@ PHP_FUNCTION(DrawRectangleLinesEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleLinesEx(phpRec->rectangle, (float) lineThick, phpColor->color);
 }
@@ -3314,7 +3406,9 @@ PHP_FUNCTION(DrawRectangleRounded)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRounded(phpRec->rectangle, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
 }
@@ -3345,7 +3439,9 @@ PHP_FUNCTION(DrawRectangleRoundedLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRoundedLines(phpRec->rectangle, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, (float) lineThick, phpColor->color);
 }
@@ -3373,9 +3469,13 @@ PHP_FUNCTION(DrawTriangle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpV1 = Z_VECTOR2_OBJ_P(v1);
+    php_raylib_vector2_update_intern(phpV1);
     php_raylib_vector2_object *phpV2 = Z_VECTOR2_OBJ_P(v2);
+    php_raylib_vector2_update_intern(phpV2);
     php_raylib_vector2_object *phpV3 = Z_VECTOR2_OBJ_P(v3);
+    php_raylib_vector2_update_intern(phpV3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangle(phpV1->vector2, phpV2->vector2, phpV3->vector2, phpColor->color);
 }
@@ -3403,9 +3503,13 @@ PHP_FUNCTION(DrawTriangleLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpV1 = Z_VECTOR2_OBJ_P(v1);
+    php_raylib_vector2_update_intern(phpV1);
     php_raylib_vector2_object *phpV2 = Z_VECTOR2_OBJ_P(v2);
+    php_raylib_vector2_update_intern(phpV2);
     php_raylib_vector2_object *phpV3 = Z_VECTOR2_OBJ_P(v3);
+    php_raylib_vector2_update_intern(phpV3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangleLines(phpV1->vector2, phpV2->vector2, phpV3->vector2, phpColor->color);
 }
@@ -3445,6 +3549,7 @@ PHP_FUNCTION(DrawTriangleFan)
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangleFan(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
 }
@@ -3484,6 +3589,7 @@ PHP_FUNCTION(DrawTriangleStrip)
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangleStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
 }
@@ -3514,7 +3620,9 @@ PHP_FUNCTION(DrawPoly)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPoly(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color);
 }
@@ -3545,7 +3653,9 @@ PHP_FUNCTION(DrawPolyLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPolyLines(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color);
 }
@@ -3579,7 +3689,9 @@ PHP_FUNCTION(DrawPolyLinesEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPolyLinesEx(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, (float) lineThick, phpColor->color);
 }
@@ -3601,7 +3713,9 @@ PHP_FUNCTION(CheckCollisionRecs)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec1 = Z_RECTANGLE_OBJ_P(rec1);
+    php_raylib_rectangle_update_intern(phpRec1);
     php_raylib_rectangle_object *phpRec2 = Z_RECTANGLE_OBJ_P(rec2);
+    php_raylib_rectangle_update_intern(phpRec2);
 
     RETURN_BOOL(CheckCollisionRecs(phpRec1->rectangle, phpRec2->rectangle));
 }
@@ -3629,7 +3743,9 @@ PHP_FUNCTION(CheckCollisionCircles)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter1 = Z_VECTOR2_OBJ_P(center1);
+    php_raylib_vector2_update_intern(phpCenter1);
     php_raylib_vector2_object *phpCenter2 = Z_VECTOR2_OBJ_P(center2);
+    php_raylib_vector2_update_intern(phpCenter2);
 
     RETURN_BOOL(CheckCollisionCircles(phpCenter1->vector2, (float) radius1, phpCenter2->vector2, (float) radius2));
 }
@@ -3654,7 +3770,9 @@ PHP_FUNCTION(CheckCollisionCircleRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
 
     RETURN_BOOL(CheckCollisionCircleRec(phpCenter->vector2, (float) radius, phpRec->rectangle));
 }
@@ -3676,7 +3794,9 @@ PHP_FUNCTION(CheckCollisionPointRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
+    php_raylib_vector2_update_intern(phpPoint);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
 
     RETURN_BOOL(CheckCollisionPointRec(phpPoint->vector2, phpRec->rectangle));
 }
@@ -3701,7 +3821,9 @@ PHP_FUNCTION(CheckCollisionPointCircle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
+    php_raylib_vector2_update_intern(phpPoint);
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
 
     RETURN_BOOL(CheckCollisionPointCircle(phpPoint->vector2, phpCenter->vector2, (float) radius));
 }
@@ -3729,9 +3851,13 @@ PHP_FUNCTION(CheckCollisionPointTriangle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
+    php_raylib_vector2_update_intern(phpPoint);
     php_raylib_vector2_object *phpP1 = Z_VECTOR2_OBJ_P(p1);
+    php_raylib_vector2_update_intern(phpP1);
     php_raylib_vector2_object *phpP2 = Z_VECTOR2_OBJ_P(p2);
+    php_raylib_vector2_update_intern(phpP2);
     php_raylib_vector2_object *phpP3 = Z_VECTOR2_OBJ_P(p3);
+    php_raylib_vector2_update_intern(phpP3);
 
     RETURN_BOOL(CheckCollisionPointTriangle(phpPoint->vector2, phpP1->vector2, phpP2->vector2, phpP3->vector2));
 }
@@ -3762,10 +3888,15 @@ PHP_FUNCTION(CheckCollisionLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpStartPos1 = Z_VECTOR2_OBJ_P(startPos1);
+    php_raylib_vector2_update_intern(phpStartPos1);
     php_raylib_vector2_object *phpEndPos1 = Z_VECTOR2_OBJ_P(endPos1);
+    php_raylib_vector2_update_intern(phpEndPos1);
     php_raylib_vector2_object *phpStartPos2 = Z_VECTOR2_OBJ_P(startPos2);
+    php_raylib_vector2_update_intern(phpStartPos2);
     php_raylib_vector2_object *phpEndPos2 = Z_VECTOR2_OBJ_P(endPos2);
+    php_raylib_vector2_update_intern(phpEndPos2);
     php_raylib_vector2_object *phpCollisionPoint = Z_VECTOR2_OBJ_P(collisionPoint);
+    php_raylib_vector2_update_intern(phpCollisionPoint);
 
     RETURN_BOOL(CheckCollisionLines(phpStartPos1->vector2, phpEndPos1->vector2, phpStartPos2->vector2, phpEndPos2->vector2, &phpCollisionPoint->vector2));
 }
@@ -3793,8 +3924,11 @@ PHP_FUNCTION(CheckCollisionPointLine)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
+    php_raylib_vector2_update_intern(phpPoint);
     php_raylib_vector2_object *phpP1 = Z_VECTOR2_OBJ_P(p1);
+    php_raylib_vector2_update_intern(phpP1);
     php_raylib_vector2_object *phpP2 = Z_VECTOR2_OBJ_P(p2);
+    php_raylib_vector2_update_intern(phpP2);
 
     RETURN_BOOL(CheckCollisionPointLine(phpPoint->vector2, phpP1->vector2, phpP2->vector2, (threshold <= INT_MAX) ? (int) ((zend_long) threshold) : -1));
 }
@@ -3816,7 +3950,9 @@ PHP_FUNCTION(GetCollisionRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rectangle_object *phpRec1 = Z_RECTANGLE_OBJ_P(rec1);
+    php_raylib_rectangle_update_intern(phpRec1);
     php_raylib_rectangle_object *phpRec2 = Z_RECTANGLE_OBJ_P(rec2);
+    php_raylib_rectangle_update_intern(phpRec2);
 
     Rectangle originalResult = GetCollisionRec(phpRec1->rectangle, phpRec2->rectangle);
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
@@ -3977,6 +4113,7 @@ PHP_FUNCTION(LoadImageFromTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     Image originalResult = LoadImageFromTexture(phpTexture->texture);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4015,6 +4152,7 @@ PHP_FUNCTION(UnloadImage)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     UnloadImage(phpImage->image);
 }
@@ -4036,6 +4174,7 @@ PHP_FUNCTION(ExportImage)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     RETURN_BOOL(ExportImage(phpImage->image, fileName->val));
 }
@@ -4057,6 +4196,7 @@ PHP_FUNCTION(ExportImageAsCode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     RETURN_BOOL(ExportImageAsCode(phpImage->image, fileName->val));
 }
@@ -4081,6 +4221,7 @@ PHP_FUNCTION(GenImageColor)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Image originalResult = GenImageColor((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4113,7 +4254,9 @@ PHP_FUNCTION(GenImageGradientV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpTop = Z_COLOR_OBJ_P(top);
+    php_raylib_color_update_intern(phpTop);
     php_raylib_color_object *phpBottom = Z_COLOR_OBJ_P(bottom);
+    php_raylib_color_update_intern(phpBottom);
 
     Image originalResult = GenImageGradientV((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpTop->color, phpBottom->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4146,7 +4289,9 @@ PHP_FUNCTION(GenImageGradientH)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpLeft = Z_COLOR_OBJ_P(left);
+    php_raylib_color_update_intern(phpLeft);
     php_raylib_color_object *phpRight = Z_COLOR_OBJ_P(right);
+    php_raylib_color_update_intern(phpRight);
 
     Image originalResult = GenImageGradientH((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpLeft->color, phpRight->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4182,7 +4327,9 @@ PHP_FUNCTION(GenImageGradientRadial)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpInner = Z_COLOR_OBJ_P(inner);
+    php_raylib_color_update_intern(phpInner);
     php_raylib_color_object *phpOuter = Z_COLOR_OBJ_P(outer);
+    php_raylib_color_update_intern(phpOuter);
 
     Image originalResult = GenImageGradientRadial((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (float) density, phpInner->color, phpOuter->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4221,7 +4368,9 @@ PHP_FUNCTION(GenImageChecked)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpCol1 = Z_COLOR_OBJ_P(col1);
+    php_raylib_color_update_intern(phpCol1);
     php_raylib_color_object *phpCol2 = Z_COLOR_OBJ_P(col2);
+    php_raylib_color_update_intern(phpCol2);
 
     Image originalResult = GenImageChecked((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (checksX <= INT_MAX) ? (int) ((zend_long) checksX) : -1, (checksY <= INT_MAX) ? (int) ((zend_long) checksY) : -1, phpCol1->color, phpCol2->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4301,6 +4450,7 @@ PHP_FUNCTION(rlImageCopy)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     Image originalResult = ImageCopy(phpImage->image);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4327,7 +4477,9 @@ PHP_FUNCTION(ImageFromImage)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
 
     Image originalResult = ImageFromImage(phpImage->image, phpRec->rectangle);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4357,6 +4509,7 @@ PHP_FUNCTION(ImageText)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Image originalResult = ImageText(text->val, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4392,7 +4545,9 @@ PHP_FUNCTION(ImageTextEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     Image originalResult = ImageTextEx(phpFont->font, text->val, (float) fontSize, (float) spacing, phpTint->color);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4419,6 +4574,7 @@ PHP_FUNCTION(ImageFormat)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageFormat(&phpImage->image, (newFormat <= INT_MAX) ? (int) ((zend_long) newFormat) : -1);
 }
@@ -4440,7 +4596,9 @@ PHP_FUNCTION(ImageToPOT)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpFill = Z_COLOR_OBJ_P(fill);
+    php_raylib_color_update_intern(phpFill);
 
     ImageToPOT(&phpImage->image, phpFill->color);
 }
@@ -4462,7 +4620,9 @@ PHP_FUNCTION(rlImageCrop)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_rectangle_object *phpCrop = Z_RECTANGLE_OBJ_P(crop);
+    php_raylib_rectangle_update_intern(phpCrop);
 
     ImageCrop(&phpImage->image, phpCrop->rectangle);
 }
@@ -4484,6 +4644,7 @@ PHP_FUNCTION(ImageAlphaCrop)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageAlphaCrop(&phpImage->image, (float) threshold);
 }
@@ -4508,7 +4669,9 @@ PHP_FUNCTION(ImageAlphaClear)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageAlphaClear(&phpImage->image, phpColor->color, (float) threshold);
 }
@@ -4530,7 +4693,9 @@ PHP_FUNCTION(ImageAlphaMask)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_image_object *phpAlphaMask = Z_IMAGE_OBJ_P(alphaMask);
+    php_raylib_image_update_intern(phpAlphaMask);
 
     ImageAlphaMask(&phpImage->image, phpAlphaMask->image);
 }
@@ -4549,6 +4714,7 @@ PHP_FUNCTION(ImageAlphaPremultiply)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageAlphaPremultiply(&phpImage->image);
 }
@@ -4573,6 +4739,7 @@ PHP_FUNCTION(ImageResize)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageResize(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
 }
@@ -4597,6 +4764,7 @@ PHP_FUNCTION(ImageResizeNN)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageResizeNN(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
 }
@@ -4630,7 +4798,9 @@ PHP_FUNCTION(ImageResizeCanvas)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpFill = Z_COLOR_OBJ_P(fill);
+    php_raylib_color_update_intern(phpFill);
 
     ImageResizeCanvas(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1, (offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1, phpFill->color);
 }
@@ -4649,6 +4819,7 @@ PHP_FUNCTION(ImageMipmaps)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageMipmaps(&phpImage->image);
 }
@@ -4679,6 +4850,7 @@ PHP_FUNCTION(ImageDither)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageDither(&phpImage->image, (rBpp <= INT_MAX) ? (int) ((zend_long) rBpp) : -1, (gBpp <= INT_MAX) ? (int) ((zend_long) gBpp) : -1, (bBpp <= INT_MAX) ? (int) ((zend_long) bBpp) : -1, (aBpp <= INT_MAX) ? (int) ((zend_long) aBpp) : -1);
 }
@@ -4697,6 +4869,7 @@ PHP_FUNCTION(ImageFlipVertical)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageFlipVertical(&phpImage->image);
 }
@@ -4715,6 +4888,7 @@ PHP_FUNCTION(ImageFlipHorizontal)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageFlipHorizontal(&phpImage->image);
 }
@@ -4733,6 +4907,7 @@ PHP_FUNCTION(ImageRotateCW)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageRotateCW(&phpImage->image);
 }
@@ -4751,6 +4926,7 @@ PHP_FUNCTION(ImageRotateCCW)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageRotateCCW(&phpImage->image);
 }
@@ -4772,7 +4948,9 @@ PHP_FUNCTION(ImageColorTint)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageColorTint(&phpImage->image, phpColor->color);
 }
@@ -4791,6 +4969,7 @@ PHP_FUNCTION(ImageColorInvert)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageColorInvert(&phpImage->image);
 }
@@ -4809,6 +4988,7 @@ PHP_FUNCTION(ImageColorGrayscale)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageColorGrayscale(&phpImage->image);
 }
@@ -4830,6 +5010,7 @@ PHP_FUNCTION(ImageColorContrast)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageColorContrast(&phpImage->image, (float) contrast);
 }
@@ -4851,6 +5032,7 @@ PHP_FUNCTION(ImageColorBrightness)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     ImageColorBrightness(&phpImage->image, (brightness <= INT_MAX) ? (int) ((zend_long) brightness) : -1);
 }
@@ -4875,8 +5057,11 @@ PHP_FUNCTION(ImageColorReplace)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
     php_raylib_color_object *phpReplace = Z_COLOR_OBJ_P(replace);
+    php_raylib_color_update_intern(phpReplace);
 
     ImageColorReplace(&phpImage->image, phpColor->color, phpReplace->color);
 }
@@ -4895,6 +5080,7 @@ PHP_FUNCTION(UnloadImageColors)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColors = Z_COLOR_OBJ_P(colors);
+    php_raylib_color_update_intern(phpColors);
 
     UnloadImageColors(&phpColors->color);
 }
@@ -4913,6 +5099,7 @@ PHP_FUNCTION(UnloadImagePalette)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColors = Z_COLOR_OBJ_P(colors);
+    php_raylib_color_update_intern(phpColors);
 
     UnloadImagePalette(&phpColors->color);
 }
@@ -4934,6 +5121,7 @@ PHP_FUNCTION(GetImageAlphaBorder)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     Rectangle originalResult = GetImageAlphaBorder(phpImage->image, (float) threshold);
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
@@ -4963,6 +5151,7 @@ PHP_FUNCTION(GetImageColor)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     Color originalResult = GetImageColor(phpImage->image, (x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -4989,7 +5178,9 @@ PHP_FUNCTION(ImageClearBackground)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageClearBackground(&phpDst->image, phpColor->color);
 }
@@ -5017,7 +5208,9 @@ PHP_FUNCTION(ImageDrawPixel)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawPixel(&phpDst->image, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color);
 }
@@ -5042,8 +5235,11 @@ PHP_FUNCTION(ImageDrawPixelV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawPixelV(&phpDst->image, phpPosition->vector2, phpColor->color);
 }
@@ -5077,7 +5273,9 @@ PHP_FUNCTION(ImageDrawLine)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawLine(&phpDst->image, (startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color);
 }
@@ -5105,9 +5303,13 @@ PHP_FUNCTION(ImageDrawLineV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_vector2_object *phpStart = Z_VECTOR2_OBJ_P(start);
+    php_raylib_vector2_update_intern(phpStart);
     php_raylib_vector2_object *phpEnd = Z_VECTOR2_OBJ_P(end);
+    php_raylib_vector2_update_intern(phpEnd);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawLineV(&phpDst->image, phpStart->vector2, phpEnd->vector2, phpColor->color);
 }
@@ -5138,7 +5340,9 @@ PHP_FUNCTION(ImageDrawCircle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawCircle(&phpDst->image, (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color);
 }
@@ -5166,8 +5370,11 @@ PHP_FUNCTION(ImageDrawCircleV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawCircleV(&phpDst->image, phpCenter->vector2, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color);
 }
@@ -5201,7 +5408,9 @@ PHP_FUNCTION(ImageDrawRectangle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangle(&phpDst->image, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
 }
@@ -5229,9 +5438,13 @@ PHP_FUNCTION(ImageDrawRectangleV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_vector2_update_intern(phpSize);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleV(&phpDst->image, phpPosition->vector2, phpSize->vector2, phpColor->color);
 }
@@ -5256,8 +5469,11 @@ PHP_FUNCTION(ImageDrawRectangleRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleRec(&phpDst->image, phpRec->rectangle, phpColor->color);
 }
@@ -5285,8 +5501,11 @@ PHP_FUNCTION(ImageDrawRectangleLines)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
+    php_raylib_rectangle_update_intern(phpRec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleLines(&phpDst->image, phpRec->rectangle, (thick <= INT_MAX) ? (int) ((zend_long) thick) : -1, phpColor->color);
 }
@@ -5317,10 +5536,15 @@ PHP_FUNCTION(ImageDraw)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_image_object *phpSrc = Z_IMAGE_OBJ_P(src);
+    php_raylib_image_update_intern(phpSrc);
     php_raylib_rectangle_object *phpSrcRec = Z_RECTANGLE_OBJ_P(srcRec);
+    php_raylib_rectangle_update_intern(phpSrcRec);
     php_raylib_rectangle_object *phpDstRec = Z_RECTANGLE_OBJ_P(dstRec);
+    php_raylib_rectangle_update_intern(phpDstRec);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     ImageDraw(&phpDst->image, phpSrc->image, phpSrcRec->rectangle, phpDstRec->rectangle, phpTint->color);
 }
@@ -5354,7 +5578,9 @@ PHP_FUNCTION(ImageDrawText)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     ImageDrawText(&phpDst->image, text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color);
 }
@@ -5391,9 +5617,13 @@ PHP_FUNCTION(ImageDrawTextEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
+    php_raylib_image_update_intern(phpDst);
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     ImageDrawTextEx(&phpDst->image, phpFont->font, text->val, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
 }
@@ -5434,6 +5664,7 @@ PHP_FUNCTION(LoadTextureFromImage)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     Texture originalResult = LoadTextureFromImage(phpImage->image);
     zend_object *result = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
@@ -5460,6 +5691,7 @@ PHP_FUNCTION(LoadTextureCubemap)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
 
     Texture originalResult = LoadTextureCubemap(phpImage->image, (layout <= INT_MAX) ? (int) ((zend_long) layout) : -1);
     zend_object *result = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
@@ -5508,6 +5740,7 @@ PHP_FUNCTION(UnloadTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     UnloadTexture(phpTexture->texture);
 }
@@ -5526,6 +5759,7 @@ PHP_FUNCTION(UnloadRenderTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_rendertexture_object *phpTarget = Z_RENDERTEXTURE_OBJ_P(target);
+    php_raylib_rendertexture_update_intern(phpTarget);
 
     UnloadRenderTexture(phpTarget->rendertexture);
 }
@@ -5544,6 +5778,7 @@ PHP_FUNCTION(GenTextureMipmaps)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     GenTextureMipmaps(&phpTexture->texture);
 }
@@ -5565,6 +5800,7 @@ PHP_FUNCTION(SetTextureFilter)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     SetTextureFilter(phpTexture->texture, (filter <= INT_MAX) ? (int) ((zend_long) filter) : -1);
 }
@@ -5586,6 +5822,7 @@ PHP_FUNCTION(SetTextureWrap)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     SetTextureWrap(phpTexture->texture, (wrap <= INT_MAX) ? (int) ((zend_long) wrap) : -1);
 }
@@ -5613,7 +5850,9 @@ PHP_FUNCTION(DrawTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTexture(phpTexture->texture, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpTint->color);
 }
@@ -5638,8 +5877,11 @@ PHP_FUNCTION(DrawTextureV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureV(phpTexture->texture, phpPosition->vector2, phpTint->color);
 }
@@ -5670,8 +5912,11 @@ PHP_FUNCTION(DrawTextureEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureEx(phpTexture->texture, phpPosition->vector2, (float) rotation, (float) scale, phpTint->color);
 }
@@ -5699,9 +5944,13 @@ PHP_FUNCTION(DrawTextureRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureRec(phpTexture->texture, phpSource->rectangle, phpPosition->vector2, phpTint->color);
 }
@@ -5732,10 +5981,15 @@ PHP_FUNCTION(DrawTextureQuad)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector2_object *phpTiling = Z_VECTOR2_OBJ_P(tiling);
+    php_raylib_vector2_update_intern(phpTiling);
     php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(offset);
+    php_raylib_vector2_update_intern(phpOffset);
     php_raylib_rectangle_object *phpQuad = Z_RECTANGLE_OBJ_P(quad);
+    php_raylib_rectangle_update_intern(phpQuad);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureQuad(phpTexture->texture, phpTiling->vector2, phpOffset->vector2, phpQuad->rectangle, phpTint->color);
 }
@@ -5772,10 +6026,15 @@ PHP_FUNCTION(DrawTextureTiled)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_rectangle_object *phpDest = Z_RECTANGLE_OBJ_P(dest);
+    php_raylib_rectangle_update_intern(phpDest);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureTiled(phpTexture->texture, phpSource->rectangle, phpDest->rectangle, phpOrigin->vector2, (float) rotation, (float) scale, phpTint->color);
 }
@@ -5809,10 +6068,15 @@ PHP_FUNCTION(DrawTexturePro)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_rectangle_object *phpDest = Z_RECTANGLE_OBJ_P(dest);
+    php_raylib_rectangle_update_intern(phpDest);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTexturePro(phpTexture->texture, phpSource->rectangle, phpDest->rectangle, phpOrigin->vector2, (float) rotation, phpTint->color);
 }
@@ -5846,10 +6110,15 @@ PHP_FUNCTION(DrawTextureNPatch)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_npatchinfo_object *phpNPatchInfo = Z_NPATCHINFO_OBJ_P(nPatchInfo);
+    php_raylib_npatchinfo_update_intern(phpNPatchInfo);
     php_raylib_rectangle_object *phpDest = Z_RECTANGLE_OBJ_P(dest);
+    php_raylib_rectangle_update_intern(phpDest);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextureNPatch(phpTexture->texture, phpNPatchInfo->npatchinfo, phpDest->rectangle, phpOrigin->vector2, (float) rotation, phpTint->color);
 }
@@ -5883,7 +6152,9 @@ PHP_FUNCTION(DrawTexturePoly)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
+    php_raylib_vector2_update_intern(phpCenter);
     zval *points_element;
     int points_index;
     HashTable *points_hash = Z_ARRVAL_P(points);
@@ -5915,6 +6186,7 @@ PHP_FUNCTION(DrawTexturePoly)
         texcoords_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTexturePoly(phpTexture->texture, phpCenter->vector2, points_array, texcoords_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpTint->color);
 }
@@ -5936,6 +6208,7 @@ PHP_FUNCTION(Fade)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Color originalResult = Fade(phpColor->color, (float) alpha);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -5959,6 +6232,7 @@ PHP_FUNCTION(ColorToInt)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     RETURN_LONG(ColorToInt(phpColor->color));
 }
@@ -5977,6 +6251,7 @@ PHP_FUNCTION(ColorNormalize)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Vector4 originalResult = ColorNormalize(phpColor->color);
     zend_object *result = php_raylib_vector4_new_ex(php_raylib_vector4_ce, NULL);
@@ -6000,6 +6275,7 @@ PHP_FUNCTION(ColorFromNormalized)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector4_object *phpNormalized = Z_VECTOR4_OBJ_P(normalized);
+    php_raylib_vector4_update_intern(phpNormalized);
 
     Color originalResult = ColorFromNormalized(phpNormalized->vector4);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -6023,6 +6299,7 @@ PHP_FUNCTION(ColorToHSV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Vector3 originalResult = ColorToHSV(phpColor->color);
     zend_object *result = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -6077,6 +6354,7 @@ PHP_FUNCTION(ColorAlpha)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     Color originalResult = ColorAlpha(phpColor->color, (float) alpha);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -6106,8 +6384,11 @@ PHP_FUNCTION(ColorAlphaBlend)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpDst = Z_COLOR_OBJ_P(dst);
+    php_raylib_color_update_intern(phpDst);
     php_raylib_color_object *phpSrc = Z_COLOR_OBJ_P(src);
+    php_raylib_color_update_intern(phpSrc);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     Color originalResult = ColorAlphaBlend(phpDst->color, phpSrc->color, phpTint->color);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -6264,7 +6545,9 @@ PHP_FUNCTION(LoadFontFromImage)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
+    php_raylib_image_update_intern(phpImage);
     php_raylib_color_object *phpKey = Z_COLOR_OBJ_P(key);
+    php_raylib_color_update_intern(phpKey);
 
     Font originalResult = LoadFontFromImage(phpImage->image, phpKey->color, (firstChar <= INT_MAX) ? (int) ((zend_long) firstChar) : -1);
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
@@ -6388,6 +6671,7 @@ PHP_FUNCTION(UnloadFont)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     UnloadFont(phpFont->font);
 }
@@ -6409,6 +6693,7 @@ PHP_FUNCTION(ExportFontAsCode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     RETURN_BOOL(ExportFontAsCode(phpFont->font, fileName->val));
 }
@@ -6459,6 +6744,7 @@ PHP_FUNCTION(DrawText)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawText(text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color);
 }
@@ -6492,8 +6778,11 @@ PHP_FUNCTION(DrawTextEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextEx(phpFont->font, text->val, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
 }
@@ -6533,9 +6822,13 @@ PHP_FUNCTION(DrawTextPro)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextPro(phpFont->font, text->val, phpPosition->vector2, phpOrigin->vector2, (float) rotation, (float) fontSize, (float) spacing, phpTint->color);
 }
@@ -6566,8 +6859,11 @@ PHP_FUNCTION(DrawTextCodepoint)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawTextCodepoint(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1, phpPosition->vector2, (float) fontSize, phpTint->color);
 }
@@ -6615,6 +6911,7 @@ PHP_FUNCTION(MeasureTextEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     Vector2 originalResult = MeasureTextEx(phpFont->font, text->val, (float) fontSize, (float) spacing);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -6641,6 +6938,7 @@ PHP_FUNCTION(GetGlyphIndex)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     RETURN_LONG(GetGlyphIndex(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1));
 }
@@ -6662,6 +6960,7 @@ PHP_FUNCTION(GetGlyphInfo)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     GlyphInfo originalResult = GetGlyphInfo(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
     zend_object *result = php_raylib_glyphinfo_new_ex(php_raylib_glyphinfo_ce, NULL);
@@ -6688,6 +6987,7 @@ PHP_FUNCTION(GetGlyphAtlasRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
 
     Rectangle originalResult = GetGlyphAtlasRec(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
@@ -6930,8 +7230,11 @@ PHP_FUNCTION(DrawLine3D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpStartPos = Z_VECTOR3_OBJ_P(startPos);
+    php_raylib_vector3_update_intern(phpStartPos);
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
+    php_raylib_vector3_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawLine3D(phpStartPos->vector3, phpEndPos->vector3, phpColor->color);
 }
@@ -6953,7 +7256,9 @@ PHP_FUNCTION(DrawPoint3D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPoint3D(phpPosition->vector3, phpColor->color);
 }
@@ -6984,8 +7289,11 @@ PHP_FUNCTION(DrawCircle3D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenter = Z_VECTOR3_OBJ_P(center);
+    php_raylib_vector3_update_intern(phpCenter);
     php_raylib_vector3_object *phpRotationAxis = Z_VECTOR3_OBJ_P(rotationAxis);
+    php_raylib_vector3_update_intern(phpRotationAxis);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCircle3D(phpCenter->vector3, (float) radius, phpRotationAxis->vector3, (float) rotationAngle, phpColor->color);
 }
@@ -7013,9 +7321,13 @@ PHP_FUNCTION(DrawTriangle3D)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpV1 = Z_VECTOR3_OBJ_P(v1);
+    php_raylib_vector3_update_intern(phpV1);
     php_raylib_vector3_object *phpV2 = Z_VECTOR3_OBJ_P(v2);
+    php_raylib_vector3_update_intern(phpV2);
     php_raylib_vector3_object *phpV3 = Z_VECTOR3_OBJ_P(v3);
+    php_raylib_vector3_update_intern(phpV3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangle3D(phpV1->vector3, phpV2->vector3, phpV3->vector3, phpColor->color);
 }
@@ -7055,6 +7367,7 @@ PHP_FUNCTION(DrawTriangleStrip3D)
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawTriangleStrip3D(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
 }
@@ -7085,7 +7398,9 @@ PHP_FUNCTION(DrawCube)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCube(phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
 }
@@ -7110,8 +7425,11 @@ PHP_FUNCTION(DrawCubeV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
+    php_raylib_vector3_update_intern(phpSize);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCubeV(phpPosition->vector3, phpSize->vector3, phpColor->color);
 }
@@ -7142,7 +7460,9 @@ PHP_FUNCTION(DrawCubeWires)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCubeWires(phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
 }
@@ -7167,8 +7487,11 @@ PHP_FUNCTION(DrawCubeWiresV)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
+    php_raylib_vector3_update_intern(phpSize);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCubeWiresV(phpPosition->vector3, phpSize->vector3, phpColor->color);
 }
@@ -7202,8 +7525,11 @@ PHP_FUNCTION(DrawCubeTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCubeTexture(phpTexture->texture, phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
 }
@@ -7240,9 +7566,13 @@ PHP_FUNCTION(DrawCubeTextureRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCubeTextureRec(phpTexture->texture, phpSource->rectangle, phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
 }
@@ -7267,7 +7597,9 @@ PHP_FUNCTION(DrawSphere)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
+    php_raylib_vector3_update_intern(phpCenterPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawSphere(phpCenterPos->vector3, (float) radius, phpColor->color);
 }
@@ -7298,7 +7630,9 @@ PHP_FUNCTION(DrawSphereEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
+    php_raylib_vector3_update_intern(phpCenterPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawSphereEx(phpCenterPos->vector3, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
 }
@@ -7329,7 +7663,9 @@ PHP_FUNCTION(DrawSphereWires)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
+    php_raylib_vector3_update_intern(phpCenterPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawSphereWires(phpCenterPos->vector3, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
 }
@@ -7363,7 +7699,9 @@ PHP_FUNCTION(DrawCylinder)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCylinder(phpPosition->vector3, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
 }
@@ -7397,8 +7735,11 @@ PHP_FUNCTION(DrawCylinderEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpStartPos = Z_VECTOR3_OBJ_P(startPos);
+    php_raylib_vector3_update_intern(phpStartPos);
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
+    php_raylib_vector3_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCylinderEx(phpStartPos->vector3, phpEndPos->vector3, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color);
 }
@@ -7432,7 +7773,9 @@ PHP_FUNCTION(DrawCylinderWires)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCylinderWires(phpPosition->vector3, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
 }
@@ -7466,8 +7809,11 @@ PHP_FUNCTION(DrawCylinderWiresEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpStartPos = Z_VECTOR3_OBJ_P(startPos);
+    php_raylib_vector3_update_intern(phpStartPos);
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
+    php_raylib_vector3_update_intern(phpEndPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawCylinderWiresEx(phpStartPos->vector3, phpEndPos->vector3, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color);
 }
@@ -7492,8 +7838,11 @@ PHP_FUNCTION(DrawPlane)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
+    php_raylib_vector3_update_intern(phpCenterPos);
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_vector2_update_intern(phpSize);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawPlane(phpCenterPos->vector3, phpSize->vector2, phpColor->color);
 }
@@ -7515,7 +7864,9 @@ PHP_FUNCTION(DrawRay)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawRay(phpRay->ray, phpColor->color);
 }
@@ -7576,6 +7927,7 @@ PHP_FUNCTION(LoadModelFromMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     Model originalResult = LoadModelFromMesh(phpMesh->mesh);
     zend_object *result = php_raylib_model_new_ex(php_raylib_model_ce, NULL);
@@ -7599,6 +7951,7 @@ PHP_FUNCTION(UnloadModel)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
 
     UnloadModel(phpModel->model);
 }
@@ -7617,6 +7970,7 @@ PHP_FUNCTION(UnloadModelKeepMeshes)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
 
     UnloadModelKeepMeshes(phpModel->model);
 }
@@ -7635,6 +7989,7 @@ PHP_FUNCTION(GetModelBoundingBox)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
 
     BoundingBox originalResult = GetModelBoundingBox(phpModel->model);
     zend_object *result = php_raylib_boundingbox_new_ex(php_raylib_boundingbox_ce, NULL);
@@ -7667,8 +8022,11 @@ PHP_FUNCTION(DrawModel)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawModel(phpModel->model, phpPosition->vector3, (float) scale, phpTint->color);
 }
@@ -7702,10 +8060,15 @@ PHP_FUNCTION(DrawModelEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector3_object *phpRotationAxis = Z_VECTOR3_OBJ_P(rotationAxis);
+    php_raylib_vector3_update_intern(phpRotationAxis);
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(scale);
+    php_raylib_vector3_update_intern(phpScale);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawModelEx(phpModel->model, phpPosition->vector3, phpRotationAxis->vector3, (float) rotationAngle, phpScale->vector3, phpTint->color);
 }
@@ -7733,8 +8096,11 @@ PHP_FUNCTION(DrawModelWires)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawModelWires(phpModel->model, phpPosition->vector3, (float) scale, phpTint->color);
 }
@@ -7768,10 +8134,15 @@ PHP_FUNCTION(DrawModelWiresEx)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector3_object *phpRotationAxis = Z_VECTOR3_OBJ_P(rotationAxis);
+    php_raylib_vector3_update_intern(phpRotationAxis);
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(scale);
+    php_raylib_vector3_update_intern(phpScale);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawModelWiresEx(phpModel->model, phpPosition->vector3, phpRotationAxis->vector3, (float) rotationAngle, phpScale->vector3, phpTint->color);
 }
@@ -7793,7 +8164,9 @@ PHP_FUNCTION(DrawBoundingBox)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
+    php_raylib_boundingbox_update_intern(phpBox);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
+    php_raylib_color_update_intern(phpColor);
 
     DrawBoundingBox(phpBox->boundingbox, phpColor->color);
 }
@@ -7824,9 +8197,13 @@ PHP_FUNCTION(DrawBillboard)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawBillboard(phpCamera->camera3d, phpTexture->texture, phpPosition->vector3, (float) size, phpTint->color);
 }
@@ -7860,11 +8237,17 @@ PHP_FUNCTION(DrawBillboardRec)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_vector2_update_intern(phpSize);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawBillboardRec(phpCamera->camera3d, phpTexture->texture, phpSource->rectangle, phpPosition->vector3, phpSize->vector2, phpTint->color);
 }
@@ -7907,13 +8290,21 @@ PHP_FUNCTION(DrawBillboardPro)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+    php_raylib_camera3d_update_intern(phpCamera);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
+    php_raylib_rectangle_update_intern(phpSource);
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
+    php_raylib_vector3_update_intern(phpPosition);
     php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(up);
+    php_raylib_vector3_update_intern(phpUp);
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
+    php_raylib_vector2_update_intern(phpSize);
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
+    php_raylib_vector2_update_intern(phpOrigin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
 
     DrawBillboardPro(phpCamera->camera3d, phpTexture->texture, phpSource->rectangle, phpPosition->vector3, phpUp->vector3, phpSize->vector2, phpOrigin->vector2, (float) rotation, phpTint->color);
 }
@@ -7935,6 +8326,7 @@ PHP_FUNCTION(UploadMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     UploadMesh(&phpMesh->mesh, dynamic);
 }
@@ -7953,6 +8345,7 @@ PHP_FUNCTION(UnloadMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     UnloadMesh(phpMesh->mesh);
 }
@@ -7977,8 +8370,11 @@ PHP_FUNCTION(DrawMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
+    php_raylib_material_update_intern(phpMaterial);
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(transform);
+    php_raylib_matrix_update_intern(phpTransform);
 
     DrawMesh(phpMesh->mesh, phpMaterial->material, phpTransform->matrix);
 }
@@ -8006,8 +8402,11 @@ PHP_FUNCTION(DrawMeshInstanced)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
+    php_raylib_material_update_intern(phpMaterial);
     php_raylib_matrix_object *phpTransforms = Z_MATRIX_OBJ_P(transforms);
+    php_raylib_matrix_update_intern(phpTransforms);
 
     DrawMeshInstanced(phpMesh->mesh, phpMaterial->material, &phpTransforms->matrix, (instances <= INT_MAX) ? (int) ((zend_long) instances) : -1);
 }
@@ -8029,6 +8428,7 @@ PHP_FUNCTION(ExportMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     RETURN_BOOL(ExportMesh(phpMesh->mesh, fileName->val));
 }
@@ -8047,6 +8447,7 @@ PHP_FUNCTION(GetMeshBoundingBox)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     BoundingBox originalResult = GetMeshBoundingBox(phpMesh->mesh);
     zend_object *result = php_raylib_boundingbox_new_ex(php_raylib_boundingbox_ce, NULL);
@@ -8070,6 +8471,7 @@ PHP_FUNCTION(GenMeshTangents)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     GenMeshTangents(&phpMesh->mesh);
 }
@@ -8088,6 +8490,7 @@ PHP_FUNCTION(GenMeshBinormals)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
 
     GenMeshBinormals(&phpMesh->mesh);
 }
@@ -8367,7 +8770,9 @@ PHP_FUNCTION(GenMeshHeightmap)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpHeightmap = Z_IMAGE_OBJ_P(heightmap);
+    php_raylib_image_update_intern(phpHeightmap);
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
+    php_raylib_vector3_update_intern(phpSize);
 
     Mesh originalResult = GenMeshHeightmap(phpHeightmap->image, phpSize->vector3);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
@@ -8394,7 +8799,9 @@ PHP_FUNCTION(GenMeshCubicmap)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_image_object *phpCubicmap = Z_IMAGE_OBJ_P(cubicmap);
+    php_raylib_image_update_intern(phpCubicmap);
     php_raylib_vector3_object *phpCubeSize = Z_VECTOR3_OBJ_P(cubeSize);
+    php_raylib_vector3_update_intern(phpCubeSize);
 
     Mesh originalResult = GenMeshCubicmap(phpCubicmap->image, phpCubeSize->vector3);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
@@ -8433,6 +8840,7 @@ PHP_FUNCTION(UnloadMaterial)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
+    php_raylib_material_update_intern(phpMaterial);
 
     UnloadMaterial(phpMaterial->material);
 }
@@ -8457,7 +8865,9 @@ PHP_FUNCTION(SetMaterialTexture)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
+    php_raylib_material_update_intern(phpMaterial);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
+    php_raylib_texture_update_intern(phpTexture);
 
     SetMaterialTexture(&phpMaterial->material, (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1, phpTexture->texture);
 }
@@ -8482,6 +8892,7 @@ PHP_FUNCTION(SetModelMeshMaterial)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
 
     SetModelMeshMaterial(&phpModel->model, (meshId <= INT_MAX) ? (int) ((zend_long) meshId) : -1, (materialId <= INT_MAX) ? (int) ((zend_long) materialId) : -1);
 }
@@ -8506,7 +8917,9 @@ PHP_FUNCTION(UpdateModelAnimation)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
+    php_raylib_modelanimation_update_intern(phpAnim);
 
     UpdateModelAnimation(phpModel->model, phpAnim->modelanimation, (frame <= INT_MAX) ? (int) ((zend_long) frame) : -1);
 }
@@ -8525,6 +8938,7 @@ PHP_FUNCTION(UnloadModelAnimation)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
+    php_raylib_modelanimation_update_intern(phpAnim);
 
     UnloadModelAnimation(phpAnim->modelanimation);
 }
@@ -8581,7 +8995,9 @@ PHP_FUNCTION(IsModelAnimationValid)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
+    php_raylib_modelanimation_update_intern(phpAnim);
 
     RETURN_BOOL(IsModelAnimationValid(phpModel->model, phpAnim->modelanimation));
 }
@@ -8609,7 +9025,9 @@ PHP_FUNCTION(CheckCollisionSpheres)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_vector3_object *phpCenter1 = Z_VECTOR3_OBJ_P(center1);
+    php_raylib_vector3_update_intern(phpCenter1);
     php_raylib_vector3_object *phpCenter2 = Z_VECTOR3_OBJ_P(center2);
+    php_raylib_vector3_update_intern(phpCenter2);
 
     RETURN_BOOL(CheckCollisionSpheres(phpCenter1->vector3, (float) radius1, phpCenter2->vector3, (float) radius2));
 }
@@ -8631,7 +9049,9 @@ PHP_FUNCTION(CheckCollisionBoxes)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_boundingbox_object *phpBox1 = Z_BOUNDINGBOX_OBJ_P(box1);
+    php_raylib_boundingbox_update_intern(phpBox1);
     php_raylib_boundingbox_object *phpBox2 = Z_BOUNDINGBOX_OBJ_P(box2);
+    php_raylib_boundingbox_update_intern(phpBox2);
 
     RETURN_BOOL(CheckCollisionBoxes(phpBox1->boundingbox, phpBox2->boundingbox));
 }
@@ -8656,7 +9076,9 @@ PHP_FUNCTION(CheckCollisionBoxSphere)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
+    php_raylib_boundingbox_update_intern(phpBox);
     php_raylib_vector3_object *phpCenter = Z_VECTOR3_OBJ_P(center);
+    php_raylib_vector3_update_intern(phpCenter);
 
     RETURN_BOOL(CheckCollisionBoxSphere(phpBox->boundingbox, phpCenter->vector3, (float) radius));
 }
@@ -8681,7 +9103,9 @@ PHP_FUNCTION(GetRayCollisionSphere)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_vector3_object *phpCenter = Z_VECTOR3_OBJ_P(center);
+    php_raylib_vector3_update_intern(phpCenter);
 
     RayCollision originalResult = GetRayCollisionSphere(phpRay->ray, phpCenter->vector3, (float) radius);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8708,7 +9132,9 @@ PHP_FUNCTION(GetRayCollisionBox)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
+    php_raylib_boundingbox_update_intern(phpBox);
 
     RayCollision originalResult = GetRayCollisionBox(phpRay->ray, phpBox->boundingbox);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8735,7 +9161,9 @@ PHP_FUNCTION(GetRayCollisionModel)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
+    php_raylib_model_update_intern(phpModel);
 
     RayCollision originalResult = GetRayCollisionModel(phpRay->ray, phpModel->model);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8765,8 +9193,11 @@ PHP_FUNCTION(GetRayCollisionMesh)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
+    php_raylib_mesh_update_intern(phpMesh);
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(transform);
+    php_raylib_matrix_update_intern(phpTransform);
 
     RayCollision originalResult = GetRayCollisionMesh(phpRay->ray, phpMesh->mesh, phpTransform->matrix);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8799,9 +9230,13 @@ PHP_FUNCTION(GetRayCollisionTriangle)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_vector3_object *phpP1 = Z_VECTOR3_OBJ_P(p1);
+    php_raylib_vector3_update_intern(phpP1);
     php_raylib_vector3_object *phpP2 = Z_VECTOR3_OBJ_P(p2);
+    php_raylib_vector3_update_intern(phpP2);
     php_raylib_vector3_object *phpP3 = Z_VECTOR3_OBJ_P(p3);
+    php_raylib_vector3_update_intern(phpP3);
 
     RayCollision originalResult = GetRayCollisionTriangle(phpRay->ray, phpP1->vector3, phpP2->vector3, phpP3->vector3);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8837,10 +9272,15 @@ PHP_FUNCTION(GetRayCollisionQuad)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
+    php_raylib_ray_update_intern(phpRay);
     php_raylib_vector3_object *phpP1 = Z_VECTOR3_OBJ_P(p1);
+    php_raylib_vector3_update_intern(phpP1);
     php_raylib_vector3_object *phpP2 = Z_VECTOR3_OBJ_P(p2);
+    php_raylib_vector3_update_intern(phpP2);
     php_raylib_vector3_object *phpP3 = Z_VECTOR3_OBJ_P(p3);
+    php_raylib_vector3_update_intern(phpP3);
     php_raylib_vector3_object *phpP4 = Z_VECTOR3_OBJ_P(p4);
+    php_raylib_vector3_update_intern(phpP4);
 
     RayCollision originalResult = GetRayCollisionQuad(phpRay->ray, phpP1->vector3, phpP2->vector3, phpP3->vector3, phpP4->vector3);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
@@ -8997,6 +9437,7 @@ PHP_FUNCTION(LoadSoundFromWave)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     Sound originalResult = LoadSoundFromWave(phpWave->wave);
     zend_object *result = php_raylib_sound_new_ex(php_raylib_sound_ce, NULL);
@@ -9020,6 +9461,7 @@ PHP_FUNCTION(UnloadWave)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     UnloadWave(phpWave->wave);
 }
@@ -9038,6 +9480,7 @@ PHP_FUNCTION(UnloadSound)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     UnloadSound(phpSound->sound);
 }
@@ -9059,6 +9502,7 @@ PHP_FUNCTION(ExportWave)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     RETURN_BOOL(ExportWave(phpWave->wave, fileName->val));
 }
@@ -9080,6 +9524,7 @@ PHP_FUNCTION(ExportWaveAsCode)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     RETURN_BOOL(ExportWaveAsCode(phpWave->wave, fileName->val));
 }
@@ -9098,6 +9543,7 @@ PHP_FUNCTION(PlaySound)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     PlaySound(phpSound->sound);
 }
@@ -9116,6 +9562,7 @@ PHP_FUNCTION(StopSound)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     StopSound(phpSound->sound);
 }
@@ -9134,6 +9581,7 @@ PHP_FUNCTION(PauseSound)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     PauseSound(phpSound->sound);
 }
@@ -9152,6 +9600,7 @@ PHP_FUNCTION(ResumeSound)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     ResumeSound(phpSound->sound);
 }
@@ -9170,6 +9619,7 @@ PHP_FUNCTION(PlaySoundMulti)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     PlaySoundMulti(phpSound->sound);
 }
@@ -9208,6 +9658,7 @@ PHP_FUNCTION(IsSoundPlaying)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     RETURN_BOOL(IsSoundPlaying(phpSound->sound));
 }
@@ -9229,6 +9680,7 @@ PHP_FUNCTION(SetSoundVolume)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     SetSoundVolume(phpSound->sound, (float) volume);
 }
@@ -9250,6 +9702,7 @@ PHP_FUNCTION(SetSoundPitch)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
     SetSoundPitch(phpSound->sound, (float) pitch);
 }
@@ -9277,6 +9730,7 @@ PHP_FUNCTION(WaveFormat)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     WaveFormat(&phpWave->wave, (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
 }
@@ -9295,6 +9749,7 @@ PHP_FUNCTION(WaveCopy)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     Wave originalResult = WaveCopy(phpWave->wave);
     zend_object *result = php_raylib_wave_new_ex(php_raylib_wave_ce, NULL);
@@ -9324,6 +9779,7 @@ PHP_FUNCTION(WaveCrop)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
 
     WaveCrop(&phpWave->wave, (initSample <= INT_MAX) ? (int) ((zend_long) initSample) : -1, (finalSample <= INT_MAX) ? (int) ((zend_long) finalSample) : -1);
 }
@@ -9395,6 +9851,7 @@ PHP_FUNCTION(UnloadMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     UnloadMusicStream(phpMusic->music);
 }
@@ -9413,6 +9870,7 @@ PHP_FUNCTION(PlayMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     PlayMusicStream(phpMusic->music);
 }
@@ -9431,6 +9889,7 @@ PHP_FUNCTION(IsMusicStreamPlaying)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     RETURN_BOOL(IsMusicStreamPlaying(phpMusic->music));
 }
@@ -9449,6 +9908,7 @@ PHP_FUNCTION(UpdateMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     UpdateMusicStream(phpMusic->music);
 }
@@ -9467,6 +9927,7 @@ PHP_FUNCTION(StopMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     StopMusicStream(phpMusic->music);
 }
@@ -9485,6 +9946,7 @@ PHP_FUNCTION(PauseMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     PauseMusicStream(phpMusic->music);
 }
@@ -9503,6 +9965,7 @@ PHP_FUNCTION(ResumeMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     ResumeMusicStream(phpMusic->music);
 }
@@ -9524,6 +9987,7 @@ PHP_FUNCTION(SeekMusicStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     SeekMusicStream(phpMusic->music, (float) position);
 }
@@ -9545,6 +10009,7 @@ PHP_FUNCTION(SetMusicVolume)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     SetMusicVolume(phpMusic->music, (float) volume);
 }
@@ -9566,6 +10031,7 @@ PHP_FUNCTION(SetMusicPitch)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     SetMusicPitch(phpMusic->music, (float) pitch);
 }
@@ -9584,6 +10050,7 @@ PHP_FUNCTION(GetMusicTimeLength)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     RETURN_DOUBLE((double) GetMusicTimeLength(phpMusic->music));
 }
@@ -9602,6 +10069,7 @@ PHP_FUNCTION(GetMusicTimePlayed)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
 
     RETURN_DOUBLE((double) GetMusicTimePlayed(phpMusic->music));
 }
@@ -9648,6 +10116,7 @@ PHP_FUNCTION(UnloadAudioStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     UnloadAudioStream(phpStream->audiostream);
 }
@@ -9666,6 +10135,7 @@ PHP_FUNCTION(IsAudioStreamProcessed)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     RETURN_BOOL(IsAudioStreamProcessed(phpStream->audiostream));
 }
@@ -9684,6 +10154,7 @@ PHP_FUNCTION(PlayAudioStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     PlayAudioStream(phpStream->audiostream);
 }
@@ -9702,6 +10173,7 @@ PHP_FUNCTION(PauseAudioStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     PauseAudioStream(phpStream->audiostream);
 }
@@ -9720,6 +10192,7 @@ PHP_FUNCTION(ResumeAudioStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     ResumeAudioStream(phpStream->audiostream);
 }
@@ -9738,6 +10211,7 @@ PHP_FUNCTION(IsAudioStreamPlaying)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     RETURN_BOOL(IsAudioStreamPlaying(phpStream->audiostream));
 }
@@ -9756,6 +10230,7 @@ PHP_FUNCTION(StopAudioStream)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     StopAudioStream(phpStream->audiostream);
 }
@@ -9777,6 +10252,7 @@ PHP_FUNCTION(SetAudioStreamVolume)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     SetAudioStreamVolume(phpStream->audiostream, (float) volume);
 }
@@ -9798,6 +10274,7 @@ PHP_FUNCTION(SetAudioStreamPitch)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
 
     SetAudioStreamPitch(phpStream->audiostream, (float) pitch);
 }

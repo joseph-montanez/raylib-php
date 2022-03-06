@@ -90,6 +90,11 @@ class CFunction
                     $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
                 } else {
                     $input[] = sprintf("    php_raylib_%s_object *php%s = Z_%s_OBJ_P(%s);", $param->typeLower, $param->nameUpperFirst, $param->typeUpper, $param->name);
+                    //-- Update the camera property internal props
+                    // This is not optimal, but will do for now...
+//                    if (in_array($param->typeLower, ['camera2d', 'camera3d'])) {
+                        $input[] = strtr('    php_raylib_[typeLower]_update_intern(php[nameUpperFirst]);', $tr);
+//                    }
                 }
             } elseif (in_array($param->type, [
                 'const char *',

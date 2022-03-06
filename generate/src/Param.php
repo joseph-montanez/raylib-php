@@ -24,17 +24,17 @@ class Param
      */
     public function __construct(array $paramInfo)
     {
-        $this->name           = $paramInfo['name'];
-        $this->type           = $paramInfo['type'];
-        $this->isRef          = $paramInfo['isRef'] ?? false;
-        $this->typeLower      = trim(str_replace('*', '', strtolower($paramInfo['type'])));
-        $this->typeUpper      = trim(str_replace('*', '', strtoupper($paramInfo['type'])));
+        $this->name = $paramInfo['name'];
+        $this->type = $paramInfo['type'];
+        $this->isRef = $paramInfo['isRef'] ?? false;
+        $this->typeLower = trim(str_replace('*', '', strtolower($paramInfo['type'])));
+        $this->typeUpper = trim(str_replace('*', '', strtoupper($paramInfo['type'])));
         $this->typeUpperFirst = ucfirst($paramInfo['type']);
         $this->nameUpperFirst = ucfirst($paramInfo['name']);
-        $this->nameLower      = strtolower($paramInfo['name']);
-        $this->nameUpper      = strtoupper($paramInfo['name']);
-        $this->isArray        = Helper::isArray($this->type);
-        $this->isPrimitive    = Helper::isPrimitive($this->type);
+        $this->nameLower = strtolower($paramInfo['name']);
+        $this->nameUpper = strtoupper($paramInfo['name']);
+        $this->isArray = Helper::isArray($this->type);
+        $this->isPrimitive = Helper::isPrimitive($this->type);
 
         if ($paramInfo['isArray'] ?? false) {
             $this->isArray = $paramInfo['isArray'];
@@ -54,13 +54,14 @@ class Param
     public function getTr()
     {
         return [
-            '[type]'         => $this->type,
-            '[typeNonConst]' => trim(str_replace('const', '', $this->type)),
-            '[typeNoStar]'   => trim(str_replace('*', '', $this->type)),
-            '[typeLower]'    => $this->typeLower,
-            '[typeUpper]'    => $this->typeUpper,
-            '[name]'         => $this->name,
-            '[nameLower]'    => $this->nameLower,
+            '[type]'           => $this->type,
+            '[typeNonConst]'   => trim(str_replace('const', '', $this->type)),
+            '[typeNoStar]'     => trim(str_replace('*', '', $this->type)),
+            '[typeLower]'      => $this->typeLower,
+            '[typeUpper]'      => $this->typeUpper,
+            '[name]'           => $this->name,
+            '[nameLower]'      => $this->nameLower,
+            '[nameUpperFirst]' => $this->nameUpperFirst,
         ];
     }
 }

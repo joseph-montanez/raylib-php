@@ -27,14 +27,15 @@ class ObjectPropertySetters
 
             switch ($phpReturnType) {
                 case 'zend_object *';
-                    $input[] = '//TODO: not supported ?';
-                    $input[] = '//    if (Z_TYPE_P(newval) == IS_NULL) {';
-                    $input[] = '//        // Cannot set this to null...';
-                    $input[] = '//        return ret;';
-                    $input[] = '//    }';
-                    $input[] = '//';
-                    $input[] = '//    php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(newval);';
-                    $input[] = '//    obj->' . $field->nameLower . ' = php' . ucfirst($field->name) . ';';
+                    $input[] = '    if (Z_TYPE_P(newval) == IS_NULL) {';
+                    $input[] = '        // Cannot set this to null...';
+                    $input[] = '        return ret;';
+                    $input[] = '    }';
+                    $input[] = '';
+                    $input[] = '    php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(newval);';
+                    $input[] = '    GC_ADDREF(&php' . ucfirst($field->name) . '->std);'; // Add ref to new variable
+                    $input[] = '    GC_DELREF(&obj->' . $field->nameLower . '->std);'; // Release old variable
+                    $input[] = '    obj->' . $field->nameLower . ' = php' . ucfirst($field->name) . ';';
                     break;
                 case 'double';
                     $input[] = '    if (Z_TYPE_P(newval) == IS_NULL) {';
