@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -435,6 +437,7 @@ static int php_raylib_music_set_stream(php_raylib_music_object *obj, zval *newva
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(newval);
     GC_ADDREF(&phpStream->std);
+    GC_DELREF(&obj->stream->std);
     obj->stream = phpStream;
 
     return ret;

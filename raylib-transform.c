@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -467,6 +469,7 @@ static int php_raylib_transform_set_translation(php_raylib_transform_object *obj
 
     php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(newval);
     GC_ADDREF(&phpTranslation->std);
+    GC_DELREF(&obj->translation->std);
     obj->translation = phpTranslation;
 
     return ret;
@@ -484,6 +487,7 @@ static int php_raylib_transform_set_rotation(php_raylib_transform_object *obj, z
 
     php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(newval);
     GC_ADDREF(&phpRotation->std);
+    GC_DELREF(&obj->rotation->std);
     obj->rotation = phpRotation;
 
     return ret;
@@ -501,6 +505,7 @@ static int php_raylib_transform_set_scale(php_raylib_transform_object *obj, zval
 
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(newval);
     GC_ADDREF(&phpScale->std);
+    GC_DELREF(&obj->scale->std);
     obj->scale = phpScale;
 
     return ret;

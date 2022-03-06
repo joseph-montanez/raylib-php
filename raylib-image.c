@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO

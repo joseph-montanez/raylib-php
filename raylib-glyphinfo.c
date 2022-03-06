@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -520,6 +522,7 @@ static int php_raylib_glyphinfo_set_image(php_raylib_glyphinfo_object *obj, zval
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
     GC_ADDREF(&phpImage->std);
+    GC_DELREF(&obj->image->std);
     obj->image = phpImage;
 
     return ret;

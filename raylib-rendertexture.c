@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -467,6 +469,7 @@ static int php_raylib_rendertexture_set_texture(php_raylib_rendertexture_object 
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
     GC_ADDREF(&phpTexture->std);
+    GC_DELREF(&obj->texture->std);
     obj->texture = phpTexture;
 
     return ret;
@@ -484,6 +487,7 @@ static int php_raylib_rendertexture_set_depth(php_raylib_rendertexture_object *o
 
     php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(newval);
     GC_ADDREF(&phpDepth->std);
+    GC_DELREF(&obj->depth->std);
     obj->depth = phpDepth;
 
     return ret;

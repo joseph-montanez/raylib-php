@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -408,6 +410,7 @@ static int php_raylib_boundingbox_set_min(php_raylib_boundingbox_object *obj, zv
 
     php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(newval);
     GC_ADDREF(&phpMin->std);
+    GC_DELREF(&obj->min->std);
     obj->min = phpMin;
 
     return ret;
@@ -425,6 +428,7 @@ static int php_raylib_boundingbox_set_max(php_raylib_boundingbox_object *obj, zv
 
     php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(newval);
     GC_ADDREF(&phpMax->std);
+    GC_DELREF(&obj->max->std);
     obj->max = phpMax;
 
     return ret;

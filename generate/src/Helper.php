@@ -100,7 +100,8 @@ class Helper
         return str_starts_with($type, 'bool');
     }
 
-    public static function replaceAlias(array $aliases, string $type): string {
+    public static function replaceAlias(array $aliases, string $type): string
+    {
 
         $typePlain = trim(str_replace(['*'], '', $type));
         $parts     = explode('[', $typePlain);
@@ -121,5 +122,65 @@ class Helper
         }
 
         return $type;
+    }
+
+    /**
+     * Windows Platform work around. Raylib functions collides with Windows's own functions and all the defines are
+     * needed to bypass errors.
+     *
+     * @param $input
+     *
+     * @return array
+     */
+    public static function win32PreventCollision($input): array
+    {
+        $input[] = '/* If defined, the following flags inhibit definition of the indicated items.*/';
+        $input[] = '#define NOGDICAPMASKS     // CC_*, LC_*, PC_*, CP_*, TC_*, RC_';
+        $input[] = '#define NOVIRTUALKEYCODES // VK_*';
+        $input[] = '#define NOWINMESSAGES     // WM_*, EM_*, LB_*, CB_*';
+        $input[] = '#define NOWINSTYLES       // WS_*, CS_*, ES_*, LBS_*, SBS_*, CBS_*';
+        $input[] = '#define NOSYSMETRICS      // SM_*';
+        $input[] = '#define NOMENUS           // MF_*';
+        $input[] = '#define NOICONS           // IDI_*';
+        $input[] = '#define NOKEYSTATES       // MK_*';
+        $input[] = '#define NOSYSCOMMANDS     // SC_*';
+        $input[] = '#define NORASTEROPS       // Binary and Tertiary raster ops';
+        $input[] = '#define NOSHOWWINDOW      // SW_*';
+        $input[] = '#define OEMRESOURCE       // OEM Resource values';
+        $input[] = '#define NOATOM            // Atom Manager routines';
+        $input[] = '#define NOCLIPBOARD       // Clipboard routines';
+        $input[] = '#define NOCOLOR           // Screen colors';
+        $input[] = '#define NOCTLMGR          // Control and Dialog routines';
+        $input[] = '#define NODRAWTEXT        // DrawText() and DT_*';
+        $input[] = '#define NOGDI             // All GDI defines and routines';
+        $input[] = '#define NOKERNEL          // All KERNEL defines and routines';
+        $input[] = '#define NOUSER            // All USER defines and routines';
+        $input[] = '/*#define NONLS           // All NLS defines and routines*/';
+        $input[] = '#define NOMB              // MB_* and MessageBox()';
+        $input[] = '#define NOMEMMGR          // GMEM_*, LMEM_*, GHND, LHND, associated routines';
+        $input[] = '#define NOMETAFILE        // typedef METAFILEPICT';
+        $input[] = '#define NOMINMAX          // Macros min(a,b) and max(a,b)';
+        $input[] = '#define NOMSG             // typedef MSG and associated routines';
+        $input[] = '#define NOOPENFILE        // OpenFile(), OemToAnsi, AnsiToOem, and OF_*';
+        $input[] = '#define NOSCROLL          // SB_* and scrolling routines';
+        $input[] = '#define NOSERVICE         // All Service Controller routines, SERVICE_ equates, etc.';
+        $input[] = '#define NOSOUND           // Sound driver routines';
+        $input[] = '#define NOTEXTMETRIC      // typedef TEXTMETRIC and associated routines';
+        $input[] = '#define NOWH              // SetWindowsHook and WH_*';
+        $input[] = '#define NOWINOFFSETS      // GWL_*, GCL_*, associated routines';
+        $input[] = '#define NOCOMM            // COMM driver routines';
+        $input[] = '#define NOKANJI           // Kanji support stuff.';
+        $input[] = '#define NOHELP            // Help engine interface.';
+        $input[] = '#define NOPROFILER        // Profiler interface.';
+        $input[] = '#define NODEFERWINDOWPOS  // DeferWindowPos routines';
+        $input[] = '#define NOMCX             // Modem Configuration Extensions';
+        $input[] = '#define VC_EXTRALEAN      // Maybe fix?';
+        $input[] = '#define WIN32_LEAN_AND_MEAN // Maybe fix?';
+        $input[] = '';
+        $input[] = '/* Type required before windows.h inclusion  */';
+        $input[] = 'typedef struct tagMSG* LPMSG;';
+        $input[] = '';
+
+        return $input;
     }
 }

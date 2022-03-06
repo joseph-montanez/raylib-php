@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -475,6 +477,7 @@ static int php_raylib_npatchinfo_set_source(php_raylib_npatchinfo_object *obj, z
 
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(newval);
     GC_ADDREF(&phpSource->std);
+    GC_DELREF(&obj->source->std);
     obj->source = phpSource;
 
     return ret;

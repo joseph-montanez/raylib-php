@@ -38,9 +38,11 @@
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+#define VC_EXTRALEAN      // Maybe fix?
+#define WIN32_LEAN_AND_MEAN // Maybe fix?
 
-        /* Type required before windows.h inclusion  */
-        typedef struct tagMSG *LPMSG;
+/* Type required before windows.h inclusion  */
+typedef struct tagMSG *LPMSG;
 
 #include "php.h"
 #undef LOG_INFO
@@ -452,6 +454,7 @@ static int php_raylib_camera2d_set_offset(php_raylib_camera2d_object *obj, zval 
 
     php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(newval);
     GC_ADDREF(&phpOffset->std);
+    GC_DELREF(&obj->offset->std);
     obj->offset = phpOffset;
 
     return ret;
@@ -469,6 +472,7 @@ static int php_raylib_camera2d_set_target(php_raylib_camera2d_object *obj, zval 
 
     php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(newval);
     GC_ADDREF(&phpTarget->std);
+    GC_DELREF(&obj->target->std);
     obj->target = phpTarget;
 
     return ret;
