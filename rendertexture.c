@@ -361,66 +361,23 @@ static zend_object *php_raylib_rendertexture_clone(zend_object *old_object) /* {
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
-    ZEND_ARG_OBJ_INFO(0, texture, raylib\\Texture, 1)
-    ZEND_ARG_OBJ_INFO(0, depth, raylib\\Texture, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rendertexture__construct, 0, 0, 2)
+    ZEND_ARG_INFO(0, width)
+    ZEND_ARG_INFO(0, height)
 ZEND_END_ARG_INFO()
 PHP_METHOD(RenderTexture, __construct)
 {
-    zend_long id;
-    bool id_is_null = 1;
+    zend_long width;
+    zend_long height;
 
-    zend_object *texture = NULL;
-    php_raylib_texture_object *phpTexture;
-
-    zend_object *depth = NULL;
-    php_raylib_texture_object *phpDepth;
-
-    ZEND_PARSE_PARAMETERS_START(0, 3)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_LONG_OR_NULL(id, id_is_null)
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(texture, php_raylib_texture_ce)
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(depth, php_raylib_texture_ce)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_LONG(width)
+        Z_PARAM_LONG(height)
     ZEND_PARSE_PARAMETERS_END();
 
+
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
-
-    if (id_is_null) {
-        id = 0;
-    }
-
-    if (texture == NULL) {
-        texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
-    }
-
-    if (depth == NULL) {
-        depth = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
-    }
-
-    phpTexture = php_raylib_texture_fetch_object(texture);
-    phpDepth = php_raylib_texture_fetch_object(depth);
-
-    intern->texture = phpTexture;
-    intern->depth = phpDepth;
-
-    intern->rendertexture = (RenderTexture) {
-        .id = id,
-        .texture = (Texture) {
-            .id = phpTexture->texture.id,
-            .width = phpTexture->texture.width,
-            .height = phpTexture->texture.height,
-            .mipmaps = phpTexture->texture.mipmaps,
-            .format = phpTexture->texture.format
-        },
-        .depth = (Texture) {
-            .id = phpDepth->texture.id,
-            .width = phpDepth->texture.width,
-            .height = phpDepth->texture.height,
-            .mipmaps = phpDepth->texture.mipmaps,
-            .format = phpDepth->texture.format
-        }
-    };
+    intern->rendertexture = LoadRenderTexture(fileName->val);
 }
 
 static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object *obj) /* {{{ */

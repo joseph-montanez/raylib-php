@@ -113,7 +113,7 @@ class ObjectNewEx
         }
         foreach ($struct->nonPrimitiveFields() as $field) {
             if ($field->isArray || $field->isPointer) {
-                $input[] = '        //TODO: support array and pointers';
+                $input[] = '        //123TODO: support array and pointers';
                 $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
             } else {
                 $input[] = '        intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';

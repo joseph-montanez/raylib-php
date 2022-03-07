@@ -341,9 +341,9 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
         };
 
         intern->texture = phpTexture;
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->recs = phpRecs;
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->glyphs = phpGlyphs;
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);

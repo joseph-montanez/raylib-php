@@ -237,6 +237,7 @@
     {
       "name": "Texture",
       "description": "Texture, tex data stored in GPU memory (VRAM)",
+      "constructorFunction": "LoadTexture",
       "fields": [
         {
           "type": "unsigned int",
@@ -268,6 +269,7 @@
     {
       "name": "RenderTexture",
       "description": "RenderTexture, fbo for texture rendering",
+      "constructorFunction": "LoadRenderTexture",
       "fields": [
         {
           "type": "unsigned int",
@@ -843,6 +845,7 @@
     {
       "name": "AudioStream",
       "description": "AudioStream, custom audio stream",
+      "constructorFunction": "LoadAudioStream",
       "fields": [
         {
           "type": "rAudioBuffer *",
@@ -870,6 +873,7 @@
     {
       "name": "Sound",
       "description": "Sound",
+      "constructorFunction": "LoadSound",
       "fields": [
         {
           "type": "AudioStream",
@@ -886,6 +890,7 @@
     {
       "name": "Music",
       "description": "Music, audio stream, anything longer than ~10 seconds should be streamed",
+      "constructorFunction": "LoadMusicStream",
       "fields": [
         {
           "type": "AudioStream",
@@ -978,6 +983,7 @@
     {
       "name": "VrStereoConfig",
       "description": "VrStereoConfig, VR stereo rendering configuration for simulator",
+      "constructorFunction": "LoadVrStereoConfig",
       "fields": [
         {
           "type": "Matrix",

@@ -320,70 +320,20 @@ static zend_object *php_raylib_texture_clone(zend_object *old_object) /* {{{  */
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_texture__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, width, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, height, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, mipmaps, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, format, IS_LONG, "0")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_texture__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Texture, __construct)
 {
-    zend_long id;
-    bool id_is_null = 1;
+    zend_string *fileName;
 
-    zend_long width;
-    bool width_is_null = 1;
-
-    zend_long height;
-    bool height_is_null = 1;
-
-    zend_long mipmaps;
-    bool mipmaps_is_null = 1;
-
-    zend_long format;
-    bool format_is_null = 1;
-
-    ZEND_PARSE_PARAMETERS_START(0, 5)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_LONG_OR_NULL(id, id_is_null)
-        Z_PARAM_LONG_OR_NULL(width, width_is_null)
-        Z_PARAM_LONG_OR_NULL(height, height_is_null)
-        Z_PARAM_LONG_OR_NULL(mipmaps, mipmaps_is_null)
-        Z_PARAM_LONG_OR_NULL(format, format_is_null)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
+
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
-
-    if (id_is_null) {
-        id = 0;
-    }
-
-    if (width_is_null) {
-        width = 0;
-    }
-
-    if (height_is_null) {
-        height = 0;
-    }
-
-    if (mipmaps_is_null) {
-        mipmaps = 0;
-    }
-
-    if (format_is_null) {
-        format = 0;
-    }
-
-
-
-    intern->texture = (Texture) {
-        .id = id,
-        .width = width,
-        .height = height,
-        .mipmaps = mipmaps,
-        .format = format
-    };
+    intern->texture = LoadTexture(fileName->val);
 }
 
 static zend_long php_raylib_texture_get_id(php_raylib_texture_object *obj) /* {{{ */

@@ -301,9 +301,9 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
         memcpy(intern->vrstereoconfig.scale, other->vrstereoconfig.scale, sizeof intern->vrstereoconfig.scale);
         memcpy(intern->vrstereoconfig.scaleIn, other->vrstereoconfig.scaleIn, sizeof intern->vrstereoconfig.scaleIn);
 
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->projection = phpProjection;
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->viewOffset = phpViewOffset;
     } else {
         // projection array not yet supported needs to generate a hash table!
@@ -359,15 +359,8 @@ static zend_object *php_raylib_vrstereoconfig_clone(zend_object *old_object) /* 
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_vrstereoconfig__construct, 0, 0, 0)
-    ZEND_ARG_OBJ_INFO(0, projection, raylib\\Matrix, 1)
-    ZEND_ARG_OBJ_INFO(0, viewOffset, raylib\\Matrix, 1)
-    ZEND_ARG_TYPE_MASK(0, leftLensCenter, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, rightLensCenter, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, leftScreenCenter, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, rightScreenCenter, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, scale, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, scaleIn, IS_DOUBLE, "0")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_vrstereoconfig__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, device)
 ZEND_END_ARG_INFO()
 PHP_METHOD(VrStereoConfig, __construct)
 {

@@ -324,7 +324,7 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         memcpy(intern->material.params, other->material.params, sizeof intern->material.params);
 
         intern->shader = phpShader;
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->maps = phpMaps;
     } else {
         zend_object *shader = php_raylib_shader_new_ex(php_raylib_shader_ce, NULL);

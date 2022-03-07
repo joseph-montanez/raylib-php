@@ -338,47 +338,20 @@ static zend_object *php_raylib_sound_clone(zend_object *old_object) /* {{{  */
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_sound__construct, 0, 0, 0)
-    ZEND_ARG_OBJ_INFO(0, stream, raylib\\AudioStream, 1)
-    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_sound__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Sound, __construct)
 {
-    zend_object *stream = NULL;
-    php_raylib_audiostream_object *phpStream;
+    zend_string *fileName;
 
-    zend_long frameCount;
-    bool frameCount_is_null = 1;
-
-    ZEND_PARSE_PARAMETERS_START(0, 2)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_OBJ_OF_CLASS_OR_NULL(stream, php_raylib_audiostream_ce)
-        Z_PARAM_LONG_OR_NULL(frameCount, frameCount_is_null)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
+
     php_raylib_sound_object *intern = Z_SOUND_OBJ_P(ZEND_THIS);
-
-    if (stream == NULL) {
-        stream = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, NULL);
-    }
-
-    if (frameCount_is_null) {
-        frameCount = 0;
-    }
-
-    phpStream = php_raylib_audiostream_fetch_object(stream);
-
-    intern->stream = phpStream;
-
-    intern->sound = (Sound) {
-        .stream = (AudioStream) {
-            .buffer = phpStream->audiostream.buffer,
-            .sampleRate = phpStream->audiostream.sampleRate,
-            .sampleSize = phpStream->audiostream.sampleSize,
-            .channels = phpStream->audiostream.channels
-        },
-        .frameCount = frameCount
-    };
+    intern->sound = LoadSound(fileName->val);
 }
 
 static zend_object * php_raylib_sound_get_stream(php_raylib_sound_object *obj) /* {{{ */

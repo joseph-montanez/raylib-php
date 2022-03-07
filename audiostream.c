@@ -291,7 +291,7 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
             .channels = other->audiostream.channels
         };
 
-        //TODO: support array and pointers
+        //123TODO: support array and pointers
         //intern->buffer = phpBuffer;
     } else {
         // buffer array not yet supported needs to generate a hash table!
@@ -337,11 +337,10 @@ static zend_object *php_raylib_audiostream_clone(zend_object *old_object) /* {{{
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_audiostream__construct, 0, 0, 0)
-    ZEND_ARG_OBJ_INFO(0, buffer, raylib\\rAudioBuffer, 1)
-    ZEND_ARG_TYPE_MASK(0, sampleRate, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, sampleSize, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, channels, IS_LONG, "0")
+ZEND_BEGIN_ARG_INFO_EX(arginfo_audiostream__construct, 0, 0, 3)
+    ZEND_ARG_INFO(0, sampleRate)
+    ZEND_ARG_INFO(0, sampleSize)
+    ZEND_ARG_INFO(0, channels)
 ZEND_END_ARG_INFO()
 PHP_METHOD(AudioStream, __construct)
 {

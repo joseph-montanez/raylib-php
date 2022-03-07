@@ -4,8 +4,8 @@
 ARG_WITH("raylib", "for raylib support", "yes,shared");
 
 if (PHP_RAYLIB != "no") {
-	raylib_lib_paths = PHP_PHP_BUILD + "\\lib;.\\lib";
-	raylib_include_paths = PHP_PHP_BUILD + "\\include;" + PHP_PHP_BUILD + "\\include\\GLFW;.\\include\\GLFW;.\\include";
+	raylib_lib_paths = PHP_PHP_BUILD + "\lib;.\lib";
+	raylib_include_paths = PHP_PHP_BUILD + "\include;" + PHP_PHP_BUILD + "\include\GLFW;.\include\GLFW;.\include";
 
     raylib_check_lib = CHECK_LIB("raylib_static.lib", "raylib", raylib_lib_paths);
     raylib_check_header = CHECK_HEADER_ADD_INCLUDE("raylib.h", "CFLAGS_RAYLIB", raylib_include_paths);
@@ -16,7 +16,7 @@ if (PHP_RAYLIB != "no") {
 	if (
 		//-- Raylib
 		raylib_check_lib &&
-        (raylib_check_header) &&
+        raylib_check_header &&
 		//-- GLFW
 		glfw_check_lib &&
         glfw_check_header &&

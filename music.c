@@ -383,12 +383,8 @@ static zend_object *php_raylib_music_clone(zend_object *old_object) /* {{{  */
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_music__construct, 0, 0, 0)
-    ZEND_ARG_OBJ_INFO(0, stream, raylib\\AudioStream, 1)
-    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, looping, _IS_BOOL, "1")
-    ZEND_ARG_TYPE_MASK(0, ctxType, IS_LONG, "0")
-    ZEND_ARG_INFO(0, ctxData)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_music__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Music, __construct)
 {
