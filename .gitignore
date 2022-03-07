@@ -5,6 +5,7 @@ raylib.la
 *.la
 *.dep
 *.lo
+run-tests.php
 /build/ax_check_compile_flag.m4
 /build/ax_gcc_func_attribute.m4
 /build/config.guess
@@ -46,3 +47,4 @@ raylib.la
 /build/shtool
 /autom4te.cache/traces.0
 /autom4te.cache/traces.1
+/x64
