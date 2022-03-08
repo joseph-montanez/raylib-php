@@ -377,7 +377,7 @@ PHP_METHOD(RenderTexture, __construct)
 
 
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
-    intern->rendertexture = LoadRenderTexture(fileName->val);
+    intern->rendertexture = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1,(height <= INT_MAX) ? (int) ((zend_long) height) : -1);
 }
 
 static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object *obj) /* {{{ */
