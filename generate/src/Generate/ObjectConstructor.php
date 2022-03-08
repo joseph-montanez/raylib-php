@@ -100,7 +100,7 @@ class ObjectConstructor
             $input[] = '';
             $input[] = '';
             $input[] = '    php_raylib_' . $struct->nameLower . '_object *intern = Z_' . $struct->nameUpper . '_OBJ_P(ZEND_THIS);';
-            $input[] = '    intern->' . $struct->nameLower . ' = ' . $constructorFn->name . '(fileName->val);';
+            $input[] = '    intern->' . $struct->nameLower . ' = ' . $constructorFn->name . '(' . implode(',', (new CFunction())->buildParams($constructorFn)) . ');';
         } else {
             foreach ($struct->fields as $field) {
                 if ($field->isPrimitive) {

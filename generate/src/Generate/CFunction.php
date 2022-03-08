@@ -146,10 +146,6 @@ class CFunction
                     $fnParams[] = sprintf("%sphp%s->%s", $param->isRef ? '&' : '', $param->nameUpperFirst, $param->typeLower);
                 }
             } else {
-//                var_dump([
-//                    'name' => $param->name,
-//                    'type' => $param->type,
-//                ]);
             }
         }
 
@@ -178,4 +174,32 @@ class CFunction
         return $input;
     }
 
+    public function buildParams(Func $function): array {
+        $fnParams = [];
+        foreach ($function->params as $param) {
+            $tr = $param->getTr();
+
+            if (Helper::isString($param->type)) {
+                $fnParams[] = sprintf("%s->val", $param->name);
+            } elseif (Helper::isInt($param->type)) {
+                if ($param->isArray) {
+                    $fnParams[] = strtr("[nameLower]_array", $tr);
+                } else {
+                    $fnParams[] = sprintf("(%s <= INT_MAX) ? (int) ((zend_long) %s) : -1", $param->name, $param->name);
+                }
+            } elseif (Helper::isFloat($param->type)) {
+                $fnParams[] = strtr("([type]) [name]", $tr);
+            } elseif (Helper::isBool($param->type)) {
+                $fnParams[] = strtr("[name]", $tr);
+            } elseif (!Helper::isPrimitive($param->type)) {
+                if ($param->isArray) {
+                    $fnParams[] = strtr("[nameLower]_array", $tr);
+                } else {
+                    $fnParams[] = sprintf("%sphp%s->%s", $param->isRef ? '&' : '', $param->nameUpperFirst, $param->typeLower);
+                }
+            }
+        }
+
+        return $fnParams;
+    }
 }
