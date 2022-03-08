@@ -71,11 +71,11 @@ zend_class_entry *php_raylib_vrstereoconfig_ce;
 
 
 #ifdef PHP_WIN32
-#	define PHP_RAYLIB_API __declspec(dllexport)
+#    define PHP_RAYLIB_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_RAYLIB_API __attribute__ ((visibility("default")))
+#    define PHP_RAYLIB_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_RAYLIB_API
+#    define PHP_RAYLIB_API
 #endif
 
 #ifdef ZTS
@@ -83,12 +83,12 @@ zend_class_entry *php_raylib_vrstereoconfig_ce;
 #endif
 
 /*
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:
+      Declare any global variables you may need between the BEGIN
+    and END macros here:
 
 ZEND_BEGIN_MODULE_GLOBALS(raylib)
-	zend_long  global_value;
-	char *global_string;
+    zend_long  global_value;
+    char *global_string;
 ZEND_END_MODULE_GLOBALS(raylib)
 */
 
@@ -102,7 +102,7 @@ ZEND_END_MODULE_GLOBALS(raylib)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
 
-#endif	/* PHP_RAYLIB_H */
+#endif    /* PHP_RAYLIB_H */
 
 
 /*

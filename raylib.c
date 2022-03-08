@@ -110,18 +110,18 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_confirm_raylib_compiled, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(confirm_raylib_compiled)
 {
-	char *arg = NULL;
+    char *arg = NULL;
     size_t arg_len;
 //    size_t arg_len, len;
-	zend_string *strg;
+    zend_string *strg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
+        return;
+    }
 
-	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "raylib", arg);
+    strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "raylib", arg);
 
-	RETURN_STR(strg);
+    RETURN_STR(strg);
 }
 
 // Initialize window and OpenGL context
@@ -10683,10 +10683,10 @@ PHP_MINIT_FUNCTION(raylib)
  */
 PHP_MSHUTDOWN_FUNCTION(raylib)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
-	return SUCCESS;
+    /* uncomment this line if you have INI entries
+    UNREGISTER_INI_ENTRIES();
+    */
+    return SUCCESS;
 }
 /* }}} */
 
@@ -10696,9 +10696,9 @@ PHP_MSHUTDOWN_FUNCTION(raylib)
 PHP_RINIT_FUNCTION(raylib)
 {
 #if defined(COMPILE_DL_RAYLIB) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
+    ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -10707,7 +10707,7 @@ PHP_RINIT_FUNCTION(raylib)
  */
 PHP_RSHUTDOWN_FUNCTION(raylib)
 {
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -10715,13 +10715,13 @@ PHP_RSHUTDOWN_FUNCTION(raylib)
  */
 PHP_MINFO_FUNCTION(raylib)
 {
-	php_info_print_table_start();
-	php_info_print_table_header(2, "raylib support", "enabled");
-	php_info_print_table_end();
+    php_info_print_table_start();
+    php_info_print_table_header(2, "raylib support", "enabled");
+    php_info_print_table_end();
 
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
+    /* Remove comments if you have entries in php.ini
+    DISPLAY_INI_ENTRIES();
+    */
 }
 /* }}} */
 /* {{{ raylib_functions[]
@@ -10729,7 +10729,7 @@ PHP_MINFO_FUNCTION(raylib)
  * Every user visible function must have an entry in raylib_functions[].
  */
 const zend_function_entry raylib_functions[] = {
-		ZEND_NS_FE("raylib", confirm_raylib_compiled, arginfo_confirm_raylib_compiled)
+        ZEND_NS_FE("raylib", confirm_raylib_compiled, arginfo_confirm_raylib_compiled)
         // Misc. functions
         ZEND_FE(InitWindow, arginfo_InitWindow)
         ZEND_FE(WindowShouldClose, arginfo_WindowShouldClose)
@@ -11167,16 +11167,16 @@ const zend_function_entry raylib_functions[] = {
 /* {{{ raylib_module_entry
  */
 zend_module_entry raylib_module_entry = {
-	STANDARD_MODULE_HEADER,
-	"raylib",
-	raylib_functions,
-	PHP_MINIT(raylib),
-	PHP_MSHUTDOWN(raylib),
-	PHP_RINIT(raylib),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(raylib),	/* Replace with NULL if there's nothing to do at request end */
-	PHP_MINFO(raylib),
-	PHP_RAYLIB_VERSION,
-	STANDARD_MODULE_PROPERTIES
+    STANDARD_MODULE_HEADER,
+    "raylib",
+    raylib_functions,
+    PHP_MINIT(raylib),
+    PHP_MSHUTDOWN(raylib),
+    PHP_RINIT(raylib),        /* Replace with NULL if there's nothing to do at request start */
+    PHP_RSHUTDOWN(raylib),    /* Replace with NULL if there's nothing to do at request end */
+    PHP_MINFO(raylib),
+    PHP_RAYLIB_VERSION,
+    STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 

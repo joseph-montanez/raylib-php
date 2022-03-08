@@ -4,8 +4,8 @@
 ARG_WITH("raylib", "for raylib support", "yes,shared");
 
 if (PHP_RAYLIB != "no") {
-	raylib_lib_paths = PHP_PHP_BUILD + "\lib;.\lib";
-	raylib_include_paths = PHP_PHP_BUILD + "\include;" + PHP_PHP_BUILD + "\include\GLFW;.\include\GLFW;.\include";
+    raylib_lib_paths = PHP_PHP_BUILD + "\\lib;.\\lib";
+    raylib_include_paths = PHP_PHP_BUILD + "\\include;" + PHP_PHP_BUILD + "\\include\\GLFW;.\\include\\GLFW;.\\include";
 
     raylib_check_lib = CHECK_LIB("raylib_static.lib", "raylib", raylib_lib_paths);
     raylib_check_header = CHECK_HEADER_ADD_INCLUDE("raylib.h", "CFLAGS_RAYLIB", raylib_include_paths);
@@ -13,41 +13,41 @@ if (PHP_RAYLIB != "no") {
     glfw_check_header = CHECK_HEADER_ADD_INCLUDE("glfw3.h", "CFLAGS_RAYLIB", raylib_include_paths);
     glfw_check_header2 = CHECK_HEADER_ADD_INCLUDE("glfw3native.h", "CFLAGS_RAYLIB", raylib_include_paths);
     glfw_check_header3 = CHECK_HEADER_ADD_INCLUDE("glfw_config.h", "CFLAGS_RAYLIB", raylib_include_paths);
-	if (
-		//-- Raylib
-		raylib_check_lib &&
+    if (
+        //-- Raylib
+        raylib_check_lib &&
         raylib_check_header &&
-		//-- GLFW
-		glfw_check_lib &&
+        //-- GLFW
+        glfw_check_lib &&
         glfw_check_header &&
         glfw_check_header2 &&
         glfw_check_header3
-		) {
+        ) {
 
-		ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");
+        ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");
 
         ADD_FLAG("LIBS_RAYLIB", "kernel32.lib user32.lib gdi32.lib winmm.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib")
 
 
-		var raylib_sources = "raylib.c vector2.c vector3.c vector4.c matrix.c color.c rectangle.c image.c texture.c rendertexture.c npatchinfo.c glyphinfo.c font.c camera3d.c camera2d.c mesh.c shader.c materialmap.c material.c transform.c boneinfo.c model.c modelanimation.c ray.c raycollision.c boundingbox.c wave.c audiostream.c sound.c music.c vrdeviceinfo.c vrstereoconfig.c";
-		PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h vector2.h vector3.h vector4.h matrix.h color.h rectangle.h image.h texture.h rendertexture.h npatchinfo.h glyphinfo.h font.h camera3d.h camera2d.h mesh.h shader.h materialmap.h material.h transform.h boneinfo.h model.h modelanimation.h ray.h raycollision.h boundingbox.h wave.h audiostream.h sound.h music.h vrdeviceinfo.h vrstereoconfig.h");
-		EXTENSION("raylib", raylib_sources, true, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1", "php_raylib.dll");
+        var raylib_sources = "raylib.c vector2.c vector3.c vector4.c matrix.c color.c rectangle.c image.c texture.c rendertexture.c npatchinfo.c glyphinfo.c font.c camera3d.c camera2d.c mesh.c shader.c materialmap.c material.c transform.c boneinfo.c model.c modelanimation.c ray.c raycollision.c boundingbox.c wave.c audiostream.c sound.c music.c vrdeviceinfo.c vrstereoconfig.c";
+        PHP_INSTALL_HEADERS("ext/raylib", "php_raylib.h vector2.h vector3.h vector4.h matrix.h color.h rectangle.h image.h texture.h rendertexture.h npatchinfo.h glyphinfo.h font.h camera3d.h camera2d.h mesh.h shader.h materialmap.h material.h transform.h boneinfo.h model.h modelanimation.h ray.h raycollision.h boundingbox.h wave.h audiostream.h sound.h music.h vrdeviceinfo.h vrstereoconfig.h");
+        EXTENSION("raylib", raylib_sources, true, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1", "php_raylib.dll");
 
-	} else {
-        	WARNING("raylib not enabled; libraries not found");
-        	if (!raylib_check_lib) {
-        	    WARNING("raylib lib missing" + PHP_PHP_BUILD);
-        	}
-        	if (!raylib_check_header) {
-        	    WARNING("raylib header missing");
-        	}
-        	if (!glfw_check_lib) {
-        	    WARNING("glfw lib missing");
-        	}
-        	if (!glfw_check_header) {
-        	    WARNING("glfw header missing");
-        	}
-	}
+    } else {
+            WARNING("raylib not enabled; libraries not found");
+            if (!raylib_check_lib) {
+                WARNING("raylib lib missing" + PHP_PHP_BUILD);
+            }
+            if (!raylib_check_header) {
+                WARNING("raylib header missing");
+            }
+            if (!glfw_check_lib) {
+                WARNING("glfw lib missing");
+            }
+            if (!glfw_check_header) {
+                WARNING("glfw header missing");
+            }
+    }
 } else {
     WARNING("raylib not enabled; not set with");
 }
