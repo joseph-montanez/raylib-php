@@ -36,5 +36,6 @@ static inline php_raylib_camera3d_object *php_raylib_camera3d_fetch_object(zend_
 void php_raylib_camera3d_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern);
+extern void php_raylib_camera3d_update_intern_reverse(php_raylib_camera3d_object *intern);
 
 #endif //PHP_RAYLIB_CAMERA3D_H

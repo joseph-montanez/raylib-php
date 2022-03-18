@@ -19,8 +19,6 @@ use raylib\Vector3;
 use const raylib\CameraMode\CAMERA_FIRST_PERSON;
 use const raylib\CameraProjection\CAMERA_PERSPECTIVE;
 
-//sleep(30);
-
 const MAX_COLUMNS = 20;
 
 // Initialization
@@ -40,12 +38,12 @@ $maroon = Color::MAROON();
 InitWindow($screenWidth, $screenHeight, "raylib [core] example - 3d camera first person");
 
 // Define the camera to look into our 3d world (position, target, up vector)
-$camera = new Camera3D();
-$camera->position = new Vector3(4.0, 2.0, 4.0);
-$camera->target = new Vector3(0.0, 1.8, 0.0);
-$camera->up = new Vector3(0.0, 1.0, 0.0);
-$camera->fovy = 60.0;
-$camera->projection = CAMERA_PERSPECTIVE;
+$position = new Vector3(4.0, 2.0, 4.0);
+$target = new Vector3(0.0, 1.8, 0.0);
+$up = new Vector3(0.0, 1.0, 0.0);
+$fovy = 60.0;
+$projection = CAMERA_PERSPECTIVE;
+$camera = new Camera3D($position, $target, $up, $fovy, $projection);
 
 // Generates some random columns
 /** @var float[] $heights */
@@ -59,7 +57,9 @@ for ($i = 0; $i < MAX_COLUMNS; $i++)
 {
     $heights[$i] = (float)GetRandomValue(1, 12);
     $positions[$i] = new Vector3 ((float)GetRandomValue(-15, 15), $heights[$i]/2.0, (float)GetRandomValue(-15, 15));
+    printf("0: \$positions[\$i] %f, %f, %f\n", $positions[$i]->x, $positions[$i]->y, $positions[$i]->z);
     $colors[$i] = new Color(GetRandomValue(20, 255), GetRandomValue(10, 55), 30, 255);
+
 }
 
 SetCameraMode($camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
@@ -84,14 +84,14 @@ while (!WindowShouldClose())                // Detect window close button or ESC
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
-    ClearBackground($ray_white);
+        ClearBackground($ray_white);
 
-    BeginMode3D($camera);
+        BeginMode3D($camera);
 
-    DrawPlane($centerPos, $size, $light_gray);                                  // Draw ground
-    DrawCube($position, 1.0, 5.0, 32.0, $blue);                                 // Draw a blue wall
-    DrawCube($position1, 1.0, 5.0, 32.0, $lime);                                // Draw a green wall
-    DrawCube($position2, 32.0, 5.0, 1.0, $gold);                                // Draw a yellow wall
+            DrawPlane($centerPos, $size, $light_gray);                                  // Draw ground
+            DrawCube($position, 1.0, 5.0, 32.0, $blue);                                 // Draw a blue wall
+            DrawCube($position1, 1.0, 5.0, 32.0, $lime);                                // Draw a green wall
+            DrawCube($position2, 32.0, 5.0, 1.0, $gold);                                // Draw a yellow wall
 
             // Draw some cubes around
             for ($i = 0; $i < MAX_COLUMNS; $i++)
@@ -107,7 +107,7 @@ while (!WindowShouldClose())                // Detect window close button or ESC
 
         DrawText("First person camera default controls:", 20, 20, 10,  $black);
         DrawText("- Move with keys: W, A, S, D", 40, 40, 10, $dark_gray);
-        DrawText("- Mouse move to look around", 40, 60, 10,  $dark_gray);
+        DrawText(time(), 40, 60, 10,  $dark_gray);
 
     EndDrawing();
     //----------------------------------------------------------------------------------

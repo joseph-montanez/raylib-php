@@ -37,9 +37,10 @@ class CFunction
         $argInfos = [];
         $refCount = 0;
         foreach ($function->params as $param) {
-            $refCount   += $param->isRef ? 1 : 0;
+            $ref =  Helper::isPrimitive($param->type) && $param->isRef;
+            $refCount   += $ref ? 1 : 0;
             $argInfos[] = (new ArgInfo())
-                    ->passByRef($param->isRef)
+                    ->passByRef($ref)
                     ->name($param->name);
         }
         $argInfoBegin = (new ArgBeginInfo())
@@ -64,6 +65,9 @@ class CFunction
                 $input = array_merge($input, $zParam->build('        '));
             }
             $input[] = '    ZEND_PARSE_PARAMETERS_END();';
+            $input[] = '';
+        } else {
+            $input[] = '    ZEND_PARSE_PARAMETERS_NONE();';
             $input[] = '';
         }
         $hasDef = false;

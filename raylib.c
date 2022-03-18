@@ -154,6 +154,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(WindowShouldClose)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(WindowShouldClose());
 }
 
@@ -163,6 +165,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_CloseWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(CloseWindow)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     CloseWindow();
 }
@@ -174,6 +178,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowReady)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsWindowReady());
 }
 
@@ -183,6 +189,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowFullscreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowFullscreen)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsWindowFullscreen());
 }
@@ -194,6 +202,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowHidden)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsWindowHidden());
 }
 
@@ -203,6 +213,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowMinimized, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowMinimized)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsWindowMinimized());
 }
@@ -214,6 +226,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowMaximized)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsWindowMaximized());
 }
 
@@ -224,6 +238,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowFocused)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsWindowFocused());
 }
 
@@ -233,6 +249,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsWindowResized, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsWindowResized)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsWindowResized());
 }
@@ -295,6 +313,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ToggleFullscreen)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     ToggleFullscreen();
 }
 
@@ -304,6 +324,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_MaximizeWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(MaximizeWindow)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     MaximizeWindow();
 }
@@ -315,6 +337,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(MinimizeWindow)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     MinimizeWindow();
 }
 
@@ -324,6 +348,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_RestoreWindow, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(RestoreWindow)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RestoreWindow();
 }
@@ -448,6 +474,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetScreenWidth)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetScreenWidth());
 }
 
@@ -457,6 +485,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetScreenHeight, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetScreenHeight)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetScreenHeight());
 }
@@ -468,6 +498,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMonitorCount)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetMonitorCount());
 }
 
@@ -477,6 +509,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetCurrentMonitor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetCurrentMonitor)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetCurrentMonitor());
 }
@@ -595,6 +629,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetWindowPosition)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     Vector2 originalResult = GetWindowPosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
@@ -609,6 +645,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetWindowScaleDPI, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetWindowScaleDPI)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Vector2 originalResult = GetWindowScaleDPI();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -642,6 +680,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(SwapScreenBuffer)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     SwapScreenBuffer();
 }
 
@@ -651,6 +691,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_PollInputEvents, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(PollInputEvents)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     PollInputEvents();
 }
@@ -679,6 +721,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ShowCursor)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     ShowCursor();
 }
 
@@ -688,6 +732,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_HideCursor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(HideCursor)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     HideCursor();
 }
@@ -699,6 +745,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsCursorHidden)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsCursorHidden());
 }
 
@@ -708,6 +756,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EnableCursor, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EnableCursor)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     EnableCursor();
 }
@@ -719,6 +769,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(DisableCursor)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     DisableCursor();
 }
 
@@ -728,6 +780,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsCursorOnScreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsCursorOnScreen)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsCursorOnScreen());
 }
@@ -758,6 +812,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(BeginDrawing)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     BeginDrawing();
 }
 
@@ -767,6 +823,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndDrawing, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndDrawing)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     EndDrawing();
 }
@@ -797,6 +855,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndMode2D)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     EndMode2D();
 }
 
@@ -825,6 +885,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndMode3D, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndMode3D)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     EndMode3D();
 }
@@ -855,6 +917,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndTextureMode)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     EndTextureMode();
 }
 
@@ -884,6 +948,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndShaderMode)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     EndShaderMode();
 }
 
@@ -910,6 +976,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndBlendMode, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndBlendMode)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     EndBlendMode();
 }
@@ -947,6 +1015,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndScissorMode)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     EndScissorMode();
 }
 
@@ -975,6 +1045,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_EndVrStereoMode, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(EndVrStereoMode)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     EndVrStereoMode();
 }
@@ -1412,6 +1484,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFPS)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetFPS());
 }
 
@@ -1422,6 +1496,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFrameTime)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_DOUBLE((double) GetFrameTime());
 }
 
@@ -1431,6 +1507,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetTime, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTime)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_DOUBLE((double) GetTime());
 }
@@ -1621,6 +1699,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(ClearDirectoryFiles)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     ClearDirectoryFiles();
 }
 
@@ -1648,6 +1728,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsFileDropped)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_BOOL(IsFileDropped());
 }
 
@@ -1657,6 +1739,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ClearDroppedFiles, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ClearDroppedFiles)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     ClearDroppedFiles();
 }
@@ -1824,6 +1908,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetKeyPressed)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetKeyPressed());
 }
 
@@ -1833,6 +1919,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetCharPressed, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetCharPressed)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetCharPressed());
 }
@@ -1940,6 +2028,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGamepadButtonPressed, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGamepadButtonPressed)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetGamepadButtonPressed());
 }
@@ -2073,6 +2163,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseX)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetMouseX());
 }
 
@@ -2083,6 +2175,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseY)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetMouseY());
 }
 
@@ -2092,6 +2186,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMousePosition, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMousePosition)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Vector2 originalResult = GetMousePosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2107,6 +2203,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMouseDelta, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseDelta)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Vector2 originalResult = GetMouseDelta();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2183,6 +2281,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetMouseWheelMove)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_DOUBLE((double) GetMouseWheelMove());
 }
 
@@ -2210,6 +2310,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchX)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetTouchX());
 }
 
@@ -2219,6 +2321,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetTouchY, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchY)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetTouchY());
 }
@@ -2269,6 +2373,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetTouchPointCount)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetTouchPointCount());
 }
 
@@ -2313,6 +2419,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDetected)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_LONG(GetGestureDetected());
 }
 
@@ -2323,6 +2431,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureHoldDuration)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_DOUBLE((double) GetGestureHoldDuration());
 }
 
@@ -2332,6 +2442,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGestureDragVector, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDragVector)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Vector2 originalResult = GetGestureDragVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2348,6 +2460,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGestureDragAngle)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     RETURN_DOUBLE((double) GetGestureDragAngle());
 }
 
@@ -2357,6 +2471,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGesturePinchVector, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGesturePinchVector)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Vector2 originalResult = GetGesturePinchVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -2372,6 +2488,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetGesturePinchAngle, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetGesturePinchAngle)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_DOUBLE((double) GetGesturePinchAngle());
 }
@@ -2400,8 +2518,8 @@ PHP_FUNCTION(SetCameraMode)
 
 // Update camera position for selected mode
 // RLAPI void UpdateCamera(Camera3D * camera);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_UpdateCamera, 0, 1, 1)
-    ZEND_ARG_INFO(1, camera)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UpdateCamera, 0, 0, 1)
+    ZEND_ARG_INFO(0, camera)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(UpdateCamera)
 {
@@ -2412,9 +2530,12 @@ PHP_FUNCTION(UpdateCamera)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
+
     php_raylib_camera3d_update_intern(phpCamera);
 
     UpdateCamera(&phpCamera->camera3d);
+
+    php_raylib_camera3d_update_intern_reverse(phpCamera);
 }
 
 // Set camera pan key to combine with mouse movement (free camera)
@@ -3910,12 +4031,12 @@ PHP_FUNCTION(CheckCollisionPointTriangle)
 
 // Check the collision between two lines defined by two points each, returns collision point by reference
 // RLAPI bool CheckCollisionLines(Vector2 startPos1, Vector2 endPos1, Vector2 startPos2, Vector2 endPos2, Vector2 * collisionPoint);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_CheckCollisionLines, 0, 1, 5)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_CheckCollisionLines, 0, 0, 5)
     ZEND_ARG_INFO(0, startPos1)
     ZEND_ARG_INFO(0, endPos1)
     ZEND_ARG_INFO(0, startPos2)
     ZEND_ARG_INFO(0, endPos2)
-    ZEND_ARG_INFO(1, collisionPoint)
+    ZEND_ARG_INFO(0, collisionPoint)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(CheckCollisionLines)
 {
@@ -4175,6 +4296,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadImageFromScreen, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(LoadImageFromScreen)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Image originalResult = LoadImageFromScreen();
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
@@ -4605,8 +4728,8 @@ PHP_FUNCTION(ImageTextEx)
 
 // Convert image data to desired format
 // RLAPI void ImageFormat(Image * image, int newFormat);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFormat, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFormat, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newFormat)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageFormat)
@@ -4627,8 +4750,8 @@ PHP_FUNCTION(ImageFormat)
 
 // Convert image to POT (power-of-two)
 // RLAPI void ImageToPOT(Image * image, Color fill);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageToPOT, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageToPOT, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, fill)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageToPOT)
@@ -4651,8 +4774,8 @@ PHP_FUNCTION(ImageToPOT)
 
 // Crop an image to a defined rectangle
 // RLAPI void ImageCrop(Image * image, Rectangle crop);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_rlImageCrop, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_rlImageCrop, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, crop)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(rlImageCrop)
@@ -4675,8 +4798,8 @@ PHP_FUNCTION(rlImageCrop)
 
 // Crop image depending on alpha value
 // RLAPI void ImageAlphaCrop(Image * image, float threshold);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaCrop, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaCrop, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, threshold)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageAlphaCrop)
@@ -4697,8 +4820,8 @@ PHP_FUNCTION(ImageAlphaCrop)
 
 // Clear alpha channel to desired color
 // RLAPI void ImageAlphaClear(Image * image, Color color, float threshold);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaClear, 0, 1, 3)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaClear, 0, 0, 3)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
     ZEND_ARG_INFO(0, threshold)
 ZEND_END_ARG_INFO()
@@ -4724,8 +4847,8 @@ PHP_FUNCTION(ImageAlphaClear)
 
 // Apply alpha mask to image
 // RLAPI void ImageAlphaMask(Image * image, Image alphaMask);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaMask, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaMask, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, alphaMask)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageAlphaMask)
@@ -4748,8 +4871,8 @@ PHP_FUNCTION(ImageAlphaMask)
 
 // Premultiply alpha channel
 // RLAPI void ImageAlphaPremultiply(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaPremultiply, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaPremultiply, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageAlphaPremultiply)
 {
@@ -4767,8 +4890,8 @@ PHP_FUNCTION(ImageAlphaPremultiply)
 
 // Resize image (Bicubic scaling algorithm)
 // RLAPI void ImageResize(Image * image, int newWidth, int newHeight);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResize, 0, 1, 3)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResize, 0, 0, 3)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
     ZEND_ARG_INFO(0, newHeight)
 ZEND_END_ARG_INFO()
@@ -4792,8 +4915,8 @@ PHP_FUNCTION(ImageResize)
 
 // Resize image (Nearest-Neighbor scaling algorithm)
 // RLAPI void ImageResizeNN(Image * image, int newWidth, int newHeight);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeNN, 0, 1, 3)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeNN, 0, 0, 3)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
     ZEND_ARG_INFO(0, newHeight)
 ZEND_END_ARG_INFO()
@@ -4817,8 +4940,8 @@ PHP_FUNCTION(ImageResizeNN)
 
 // Resize canvas and fill with color
 // RLAPI void ImageResizeCanvas(Image * image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeCanvas, 0, 1, 6)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeCanvas, 0, 0, 6)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
     ZEND_ARG_INFO(0, newHeight)
     ZEND_ARG_INFO(0, offsetX)
@@ -4853,8 +4976,8 @@ PHP_FUNCTION(ImageResizeCanvas)
 
 // Compute all mipmap levels for a provided image
 // RLAPI void ImageMipmaps(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageMipmaps, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageMipmaps, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageMipmaps)
 {
@@ -4872,8 +4995,8 @@ PHP_FUNCTION(ImageMipmaps)
 
 // Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
 // RLAPI void ImageDither(Image * image, int rBpp, int gBpp, int bBpp, int aBpp);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDither, 0, 1, 5)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDither, 0, 0, 5)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, rBpp)
     ZEND_ARG_INFO(0, gBpp)
     ZEND_ARG_INFO(0, bBpp)
@@ -4903,8 +5026,8 @@ PHP_FUNCTION(ImageDither)
 
 // Flip image vertically
 // RLAPI void ImageFlipVertical(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipVertical, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipVertical, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageFlipVertical)
 {
@@ -4922,8 +5045,8 @@ PHP_FUNCTION(ImageFlipVertical)
 
 // Flip image horizontally
 // RLAPI void ImageFlipHorizontal(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipHorizontal, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipHorizontal, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageFlipHorizontal)
 {
@@ -4941,8 +5064,8 @@ PHP_FUNCTION(ImageFlipHorizontal)
 
 // Rotate image clockwise 90deg
 // RLAPI void ImageRotateCW(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCW, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCW, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageRotateCW)
 {
@@ -4960,8 +5083,8 @@ PHP_FUNCTION(ImageRotateCW)
 
 // Rotate image counter-clockwise 90deg
 // RLAPI void ImageRotateCCW(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCCW, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCCW, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageRotateCCW)
 {
@@ -4979,8 +5102,8 @@ PHP_FUNCTION(ImageRotateCCW)
 
 // Modify image color: tint
 // RLAPI void ImageColorTint(Image * image, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorTint, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorTint, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageColorTint)
@@ -5003,8 +5126,8 @@ PHP_FUNCTION(ImageColorTint)
 
 // Modify image color: invert
 // RLAPI void ImageColorInvert(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorInvert, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorInvert, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageColorInvert)
 {
@@ -5022,8 +5145,8 @@ PHP_FUNCTION(ImageColorInvert)
 
 // Modify image color: grayscale
 // RLAPI void ImageColorGrayscale(Image * image);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorGrayscale, 0, 1, 1)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorGrayscale, 0, 0, 1)
+    ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageColorGrayscale)
 {
@@ -5041,8 +5164,8 @@ PHP_FUNCTION(ImageColorGrayscale)
 
 // Modify image color: contrast (-100 to 100)
 // RLAPI void ImageColorContrast(Image * image, float contrast);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorContrast, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorContrast, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, contrast)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageColorContrast)
@@ -5063,8 +5186,8 @@ PHP_FUNCTION(ImageColorContrast)
 
 // Modify image color: brightness (-255 to 255)
 // RLAPI void ImageColorBrightness(Image * image, int brightness);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorBrightness, 0, 1, 2)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorBrightness, 0, 0, 2)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, brightness)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageColorBrightness)
@@ -5085,8 +5208,8 @@ PHP_FUNCTION(ImageColorBrightness)
 
 // Modify image color: replace color
 // RLAPI void ImageColorReplace(Image * image, Color color, Color replace);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorReplace, 0, 1, 3)
-    ZEND_ARG_INFO(1, image)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorReplace, 0, 0, 3)
+    ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
     ZEND_ARG_INFO(0, replace)
 ZEND_END_ARG_INFO()
@@ -5114,8 +5237,8 @@ PHP_FUNCTION(ImageColorReplace)
 
 // Unload color data loaded with LoadImageColors()
 // RLAPI void UnloadImageColors(Color * colors);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImageColors, 0, 1, 1)
-    ZEND_ARG_INFO(1, colors)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImageColors, 0, 0, 1)
+    ZEND_ARG_INFO(0, colors)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(UnloadImageColors)
 {
@@ -5133,8 +5256,8 @@ PHP_FUNCTION(UnloadImageColors)
 
 // Unload colors palette loaded with LoadImagePalette()
 // RLAPI void UnloadImagePalette(Color * colors);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImagePalette, 0, 1, 1)
-    ZEND_ARG_INFO(1, colors)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImagePalette, 0, 0, 1)
+    ZEND_ARG_INFO(0, colors)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(UnloadImagePalette)
 {
@@ -5209,8 +5332,8 @@ PHP_FUNCTION(GetImageColor)
 
 // Clear image background with given color
 // RLAPI void ImageClearBackground(Image * dst, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageClearBackground, 0, 1, 2)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageClearBackground, 0, 0, 2)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(ImageClearBackground)
@@ -5233,8 +5356,8 @@ PHP_FUNCTION(ImageClearBackground)
 
 // Draw pixel within an image
 // RLAPI void ImageDrawPixel(Image * dst, int posX, int posY, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixel, 0, 1, 4)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixel, 0, 0, 4)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, posX)
     ZEND_ARG_INFO(0, posY)
     ZEND_ARG_INFO(0, color)
@@ -5263,8 +5386,8 @@ PHP_FUNCTION(ImageDrawPixel)
 
 // Draw pixel within an image (Vector version)
 // RLAPI void ImageDrawPixelV(Image * dst, Vector2 position, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixelV, 0, 1, 3)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixelV, 0, 0, 3)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, position)
     ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
@@ -5292,8 +5415,8 @@ PHP_FUNCTION(ImageDrawPixelV)
 
 // Draw line within an image
 // RLAPI void ImageDrawLine(Image * dst, int startPosX, int startPosY, int endPosX, int endPosY, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLine, 0, 1, 6)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLine, 0, 0, 6)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, startPosX)
     ZEND_ARG_INFO(0, startPosY)
     ZEND_ARG_INFO(0, endPosX)
@@ -5328,8 +5451,8 @@ PHP_FUNCTION(ImageDrawLine)
 
 // Draw line within an image (Vector version)
 // RLAPI void ImageDrawLineV(Image * dst, Vector2 start, Vector2 end, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLineV, 0, 1, 4)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLineV, 0, 0, 4)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, start)
     ZEND_ARG_INFO(0, end)
     ZEND_ARG_INFO(0, color)
@@ -5362,8 +5485,8 @@ PHP_FUNCTION(ImageDrawLineV)
 
 // Draw circle within an image
 // RLAPI void ImageDrawCircle(Image * dst, int centerX, int centerY, int radius, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircle, 0, 1, 5)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircle, 0, 0, 5)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, centerX)
     ZEND_ARG_INFO(0, centerY)
     ZEND_ARG_INFO(0, radius)
@@ -5395,8 +5518,8 @@ PHP_FUNCTION(ImageDrawCircle)
 
 // Draw circle within an image (Vector version)
 // RLAPI void ImageDrawCircleV(Image * dst, Vector2 center, int radius, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircleV, 0, 1, 4)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircleV, 0, 0, 4)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, center)
     ZEND_ARG_INFO(0, radius)
     ZEND_ARG_INFO(0, color)
@@ -5427,8 +5550,8 @@ PHP_FUNCTION(ImageDrawCircleV)
 
 // Draw rectangle within an image
 // RLAPI void ImageDrawRectangle(Image * dst, int posX, int posY, int width, int height, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangle, 0, 1, 6)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangle, 0, 0, 6)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, posX)
     ZEND_ARG_INFO(0, posY)
     ZEND_ARG_INFO(0, width)
@@ -5463,8 +5586,8 @@ PHP_FUNCTION(ImageDrawRectangle)
 
 // Draw rectangle within an image (Vector version)
 // RLAPI void ImageDrawRectangleV(Image * dst, Vector2 position, Vector2 size, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleV, 0, 1, 4)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleV, 0, 0, 4)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, position)
     ZEND_ARG_INFO(0, size)
     ZEND_ARG_INFO(0, color)
@@ -5497,8 +5620,8 @@ PHP_FUNCTION(ImageDrawRectangleV)
 
 // Draw rectangle within an image
 // RLAPI void ImageDrawRectangleRec(Image * dst, Rectangle rec, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleRec, 0, 1, 3)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleRec, 0, 0, 3)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, rec)
     ZEND_ARG_INFO(0, color)
 ZEND_END_ARG_INFO()
@@ -5526,8 +5649,8 @@ PHP_FUNCTION(ImageDrawRectangleRec)
 
 // Draw rectangle lines within an image
 // RLAPI void ImageDrawRectangleLines(Image * dst, Rectangle rec, int thick, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleLines, 0, 1, 4)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleLines, 0, 0, 4)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, rec)
     ZEND_ARG_INFO(0, thick)
     ZEND_ARG_INFO(0, color)
@@ -5558,8 +5681,8 @@ PHP_FUNCTION(ImageDrawRectangleLines)
 
 // Draw a source image within a destination image (tint applied to source)
 // RLAPI void ImageDraw(Image * dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDraw, 0, 1, 5)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDraw, 0, 0, 5)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, src)
     ZEND_ARG_INFO(0, srcRec)
     ZEND_ARG_INFO(0, dstRec)
@@ -5597,8 +5720,8 @@ PHP_FUNCTION(ImageDraw)
 
 // Draw text (using default font) within an image (destination)
 // RLAPI void ImageDrawText(Image * dst, const char * text, int posX, int posY, int fontSize, Color color);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawText, 0, 1, 6)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawText, 0, 0, 6)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, text)
     ZEND_ARG_INFO(0, posX)
     ZEND_ARG_INFO(0, posY)
@@ -5633,8 +5756,8 @@ PHP_FUNCTION(ImageDrawText)
 
 // Draw text (custom sprite font) within an image (destination)
 // RLAPI void ImageDrawTextEx(Image * dst, Font font, const char * text, Vector2 position, float fontSize, float spacing, Color tint);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawTextEx, 0, 1, 7)
-    ZEND_ARG_INFO(1, dst)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawTextEx, 0, 0, 7)
+    ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, font)
     ZEND_ARG_INFO(0, text)
     ZEND_ARG_INFO(0, position)
@@ -5812,8 +5935,8 @@ PHP_FUNCTION(UnloadRenderTexture)
 
 // Generate GPU mipmaps for a texture
 // RLAPI void GenTextureMipmaps(Texture * texture);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GenTextureMipmaps, 0, 1, 1)
-    ZEND_ARG_INFO(1, texture)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GenTextureMipmaps, 0, 0, 1)
+    ZEND_ARG_INFO(0, texture)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GenTextureMipmaps)
 {
@@ -6495,6 +6618,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetFontDefault, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetFontDefault)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     Font originalResult = GetFontDefault();
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
@@ -8357,8 +8482,8 @@ PHP_FUNCTION(DrawBillboardPro)
 
 // Upload mesh vertex data in GPU and provide VAO/VBO ids
 // RLAPI void UploadMesh(Mesh * mesh, bool dynamic);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_UploadMesh, 0, 1, 2)
-    ZEND_ARG_INFO(1, mesh)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UploadMesh, 0, 0, 2)
+    ZEND_ARG_INFO(0, mesh)
     ZEND_ARG_INFO(0, dynamic)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(UploadMesh)
@@ -8427,10 +8552,10 @@ PHP_FUNCTION(DrawMesh)
 
 // Draw multiple mesh instances with material and different transforms
 // RLAPI void DrawMeshInstanced(Mesh mesh, Material material, Matrix * transforms, int instances);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawMeshInstanced, 0, 1, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawMeshInstanced, 0, 0, 4)
     ZEND_ARG_INFO(0, mesh)
     ZEND_ARG_INFO(0, material)
-    ZEND_ARG_INFO(1, transforms)
+    ZEND_ARG_INFO(0, transforms)
     ZEND_ARG_INFO(0, instances)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(DrawMeshInstanced)
@@ -8505,8 +8630,8 @@ PHP_FUNCTION(GetMeshBoundingBox)
 
 // Compute mesh tangents
 // RLAPI void GenMeshTangents(Mesh * mesh);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshTangents, 0, 1, 1)
-    ZEND_ARG_INFO(1, mesh)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshTangents, 0, 0, 1)
+    ZEND_ARG_INFO(0, mesh)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GenMeshTangents)
 {
@@ -8524,8 +8649,8 @@ PHP_FUNCTION(GenMeshTangents)
 
 // Compute mesh binormals
 // RLAPI void GenMeshBinormals(Mesh * mesh);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshBinormals, 0, 1, 1)
-    ZEND_ARG_INFO(1, mesh)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshBinormals, 0, 0, 1)
+    ZEND_ARG_INFO(0, mesh)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GenMeshBinormals)
 {
@@ -8864,6 +8989,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(LoadMaterialDefault)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     Material originalResult = LoadMaterialDefault();
     zend_object *result = php_raylib_material_new_ex(php_raylib_material_ce, NULL);
     php_raylib_material_object *phpResult = php_raylib_material_fetch_object(result);
@@ -8893,8 +9020,8 @@ PHP_FUNCTION(UnloadMaterial)
 
 // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
 // RLAPI void SetMaterialTexture(Material * material, int mapType, Texture texture);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_SetMaterialTexture, 0, 1, 3)
-    ZEND_ARG_INFO(1, material)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetMaterialTexture, 0, 0, 3)
+    ZEND_ARG_INFO(0, material)
     ZEND_ARG_INFO(0, mapType)
     ZEND_ARG_INFO(0, texture)
 ZEND_END_ARG_INFO()
@@ -8920,8 +9047,8 @@ PHP_FUNCTION(SetMaterialTexture)
 
 // Set material for a mesh
 // RLAPI void SetModelMeshMaterial(Model * model, int meshId, int materialId);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_SetModelMeshMaterial, 0, 1, 3)
-    ZEND_ARG_INFO(1, model)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetModelMeshMaterial, 0, 0, 3)
+    ZEND_ARG_INFO(0, model)
     ZEND_ARG_INFO(0, meshId)
     ZEND_ARG_INFO(0, materialId)
 ZEND_END_ARG_INFO()
@@ -9343,6 +9470,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(InitAudioDevice)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     InitAudioDevice();
 }
 
@@ -9353,6 +9482,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(CloseAudioDevice)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     CloseAudioDevice();
 }
 
@@ -9362,6 +9493,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_IsAudioDeviceReady, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(IsAudioDeviceReady)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsAudioDeviceReady());
 }
@@ -9677,6 +9810,8 @@ ZEND_END_ARG_INFO()
 PHP_FUNCTION(StopSoundMulti)
 {
 
+    ZEND_PARSE_PARAMETERS_NONE();
+
     StopSoundMulti();
 }
 
@@ -9686,6 +9821,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_GetSoundsPlaying, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(GetSoundsPlaying)
 {
+
+    ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_LONG(GetSoundsPlaying());
 }
@@ -9755,8 +9892,8 @@ PHP_FUNCTION(SetSoundPitch)
 
 // Convert wave data to desired format
 // RLAPI void WaveFormat(Wave * wave, int sampleRate, int sampleSize, int channels);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveFormat, 0, 1, 4)
-    ZEND_ARG_INFO(1, wave)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveFormat, 0, 0, 4)
+    ZEND_ARG_INFO(0, wave)
     ZEND_ARG_INFO(0, sampleRate)
     ZEND_ARG_INFO(0, sampleSize)
     ZEND_ARG_INFO(0, channels)
@@ -9807,8 +9944,8 @@ PHP_FUNCTION(WaveCopy)
 
 // Crop a wave to defined samples range
 // RLAPI void WaveCrop(Wave * wave, int initSample, int finalSample);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveCrop, 0, 1, 3)
-    ZEND_ARG_INFO(1, wave)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveCrop, 0, 0, 3)
+    ZEND_ARG_INFO(0, wave)
     ZEND_ARG_INFO(0, initSample)
     ZEND_ARG_INFO(0, finalSample)
 ZEND_END_ARG_INFO()
