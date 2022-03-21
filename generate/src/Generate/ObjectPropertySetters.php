@@ -32,10 +32,7 @@ class ObjectPropertySetters
                     $input[] = '        return ret;';
                     $input[] = '    }';
                     $input[] = '';
-                    $input[] = '    php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(newval);';
-                    $input[] = '    GC_ADDREF(&php' . ucfirst($field->name) . '->std);'; // Add ref to new variable
-                    $input[] = '    GC_DELREF(&obj->' . $field->nameLower . '->std);'; // Release old variable
-                    $input[] = '    obj->' . $field->nameLower . ' = php' . ucfirst($field->name) . ';';
+                    $input[] = '    obj->' . $field->nameLower . ' = *newval;';
                     break;
                 case 'double';
                     $input[] = '    if (Z_TYPE_P(newval) == IS_NULL) {';

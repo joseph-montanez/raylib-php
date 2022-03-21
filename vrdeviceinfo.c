@@ -76,6 +76,9 @@ typedef int (*raylib_vrdeviceinfo_write_float_array_t)(php_raylib_vrdeviceinfo_o
  */
 void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern) {
 }
+
+void php_raylib_vrdeviceinfo_update_intern_reverse(php_raylib_vrdeviceinfo_object *intern) {
+}
 typedef struct _raylib_vrdeviceinfo_prop_handler {
     raylib_vrdeviceinfo_read_int_t read_int_func;
     raylib_vrdeviceinfo_write_int_t write_int_func;

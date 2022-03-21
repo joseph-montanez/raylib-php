@@ -21,8 +21,8 @@ extern zend_object_handlers php_raylib_materialmap_object_handlers;
 typedef struct _php_raylib_materialmap_object {
     MaterialMap materialmap;
     HashTable *prop_handler;
-    php_raylib_texture_object *texture;
-    php_raylib_color_object *color;
+    zval texture;
+    zval color;
     zend_object std;
 } php_raylib_materialmap_object;
 
@@ -35,5 +35,6 @@ static inline php_raylib_materialmap_object *php_raylib_materialmap_fetch_object
 void php_raylib_materialmap_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern);
+extern void php_raylib_materialmap_update_intern_reverse(php_raylib_materialmap_object *intern);
 
 #endif //PHP_RAYLIB_MATERIALMAP_H

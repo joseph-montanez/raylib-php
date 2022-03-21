@@ -21,9 +21,9 @@ extern zend_object_handlers php_raylib_camera3d_object_handlers;
 typedef struct _php_raylib_camera3d_object {
     Camera3D camera3d;
     HashTable *prop_handler;
-    php_raylib_vector3_object *position;
-    php_raylib_vector3_object *target;
-    php_raylib_vector3_object *up;
+    zval position;
+    zval target;
+    zval up;
     zend_object std;
 } php_raylib_camera3d_object;
 

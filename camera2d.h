@@ -20,8 +20,8 @@ extern zend_object_handlers php_raylib_camera2d_object_handlers;
 typedef struct _php_raylib_camera2d_object {
     Camera2D camera2d;
     HashTable *prop_handler;
-    php_raylib_vector2_object *offset;
-    php_raylib_vector2_object *target;
+    zval offset;
+    zval target;
     zend_object std;
 } php_raylib_camera2d_object;
 
@@ -34,5 +34,6 @@ static inline php_raylib_camera2d_object *php_raylib_camera2d_fetch_object(zend_
 void php_raylib_camera2d_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern);
+extern void php_raylib_camera2d_update_intern_reverse(php_raylib_camera2d_object *intern);
 
 #endif //PHP_RAYLIB_CAMERA2D_H

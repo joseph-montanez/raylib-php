@@ -92,7 +92,9 @@ typedef int (*raylib_model_write_transform_array_t)(php_raylib_model_object *obj
  * @param intern
  */
 void php_raylib_model_update_intern(php_raylib_model_object *intern) {
-    intern->model.transform = intern->transform->matrix;
+    php_raylib_matrix_object *transformObject = Z_MATRIX_OBJ_P(&intern->transform);
+    intern->model.transform = transformObject->matrix;
+
     //TODO: Support for pointers and arrays;
     //intern->model.meshes = intern->meshes->mesh;
     //TODO: Support for pointers and arrays;
@@ -101,6 +103,9 @@ void php_raylib_model_update_intern(php_raylib_model_object *intern) {
     //intern->model.bones = intern->bones->boneinfo;
     //TODO: Support for pointers and arrays;
     //intern->model.bindPose = intern->bindpose->transform;
+}
+
+void php_raylib_model_update_intern_reverse(php_raylib_model_object *intern) {
 }
 typedef struct _raylib_model_prop_handler {
     raylib_model_read_matrix_t read_matrix_func;
@@ -365,7 +370,7 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
     if (orig) {
         php_raylib_model_object *other = php_raylib_model_fetch_object(orig);
 
-        zend_object *transform = php_raylib_matrix_new_ex(php_raylib_matrix_ce, &other->transform->std);
+        php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(&other->transform);
         // meshes array not yet supported needs to generate a hash table!
         //zend_object *meshes = php_raylib_mesh_new_ex(php_raylib_mesh_ce, &other->meshes->std);
         // materials array not yet supported needs to generate a hash table!
@@ -375,7 +380,6 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
         // bindPose array not yet supported needs to generate a hash table!
         //zend_object *bindPose = php_raylib_transform_new_ex(php_raylib_transform_ce, &other->bindPose->std);
 
-        php_raylib_matrix_object *phpTransform = php_raylib_matrix_fetch_object(transform);
         // meshes array not yet supported needs to generate a hash table!
         //php_raylib_mesh_object *phpMeshes = php_raylib_mesh_fetch_object(meshes);
         // materials array not yet supported needs to generate a hash table!
@@ -409,7 +413,7 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
             .boneCount = other->model.boneCount,
         };
 
-        intern->transform = phpTransform;
+        ZVAL_OBJ_COPY(&intern->transform, &phpTransform->std);
         //123TODO: support array and pointers
         //intern->meshes = phpMeshes;
         //123TODO: support array and pointers
@@ -467,7 +471,7 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
             // .bones is an array and not yet supported via constructor
             // .bindPose is an array and not yet supported via constructor
         };
-        intern->transform = phpTransform;
+        ZVAL_OBJ_COPY(&intern->transform, &phpTransform->std);
         // meshes array not yet supported needs to generate a hash table!
         //intern->meshes = phpMeshes;
         // materials array not yet supported needs to generate a hash table!
@@ -522,8 +526,10 @@ PHP_METHOD(Model, __construct)
 
 static zend_object * php_raylib_model_get_transform(php_raylib_model_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->transform->std);
-    return &obj->transform->std;
+    php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(&obj->transform);
+
+    GC_ADDREF(&phpTransform->std);
+    return &phpTransform->std;
 }
 /* }}} */
 
@@ -584,10 +590,7 @@ static int php_raylib_model_set_transform(php_raylib_model_object *obj, zval *ne
         return ret;
     }
 
-    php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(newval);
-    GC_ADDREF(&phpTransform->std);
-    GC_DELREF(&obj->transform->std);
-    obj->transform = phpTransform;
+    obj->transform = *newval;
 
     return ret;
 }

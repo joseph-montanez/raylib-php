@@ -36,7 +36,7 @@ class ObjectNewEx
                 $input[] = '        // ' . $field->name . ' array not yet supported needs to generate a hash table!';
                 $input[] = '        //zend_object *' . $field->name . ' = php_raylib_' . $field->typePlainLower . '_new_ex(php_raylib_' . $field->typePlainLower . '_ce, &other->' . $field->name . '->std);';
             } else {
-                $input[] = '        zend_object *' . $field->name . ' = php_raylib_' . $field->typePlainLower . '_new_ex(php_raylib_' . $field->typePlainLower . '_ce, &other->' . $field->name . '->std);';
+                $input[] = '        php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(&other->' . $field->name . ');';
             }
         }
         if (count($struct->nonPrimitiveFields()) > 0) {
@@ -48,7 +48,7 @@ class ObjectNewEx
                 $input[] = '        // ' . $field->name . ' array not yet supported needs to generate a hash table!';
                 $input[] = '        //php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . ');';
             } else {
-                $input[] = '        php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . ');';
+//                $input[] = '        php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . ');';
             }
         }
         if (count($struct->nonPrimitiveFields()) > 0) {
@@ -116,7 +116,7 @@ class ObjectNewEx
                 $input[] = '        //123TODO: support array and pointers';
                 $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
             } else {
-                $input[] = '        intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
+                $input[] = '        ZVAL_OBJ_COPY(&intern->' . $field->name . ', &php' . ucfirst($field->name) . '->std);';
             }
 
         }
@@ -177,7 +177,7 @@ class ObjectNewEx
                 $input[] = '        // ' . $field->name . ' array not yet supported needs to generate a hash table!';
                 $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
             } else {
-                $input[] = '        intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
+                $input[] = '        ZVAL_OBJ_COPY(&intern->' . $field->name . ', &php' . ucfirst($field->name) . '->std);';
             }
 
         }

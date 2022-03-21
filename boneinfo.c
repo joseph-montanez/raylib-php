@@ -73,6 +73,9 @@ typedef int (*raylib_boneinfo_write_int_t)(php_raylib_boneinfo_object *obj,  zva
  */
 void php_raylib_boneinfo_update_intern(php_raylib_boneinfo_object *intern) {
 }
+
+void php_raylib_boneinfo_update_intern_reverse(php_raylib_boneinfo_object *intern) {
+}
 typedef struct _raylib_boneinfo_prop_handler {
     raylib_boneinfo_read_char_array_t read_char_array_func;
     raylib_boneinfo_write_char_array_t write_char_array_func;

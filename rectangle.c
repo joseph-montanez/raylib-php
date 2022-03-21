@@ -70,6 +70,9 @@ typedef int (*raylib_rectangle_write_float_t)(php_raylib_rectangle_object *obj, 
  */
 void php_raylib_rectangle_update_intern(php_raylib_rectangle_object *intern) {
 }
+
+void php_raylib_rectangle_update_intern_reverse(php_raylib_rectangle_object *intern) {
+}
 typedef struct _raylib_rectangle_prop_handler {
     raylib_rectangle_read_float_t read_float_func;
     raylib_rectangle_write_float_t write_float_func;

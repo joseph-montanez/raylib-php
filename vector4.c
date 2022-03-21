@@ -70,6 +70,9 @@ typedef int (*raylib_vector4_write_float_t)(php_raylib_vector4_object *obj,  zva
  */
 void php_raylib_vector4_update_intern(php_raylib_vector4_object *intern) {
 }
+
+void php_raylib_vector4_update_intern_reverse(php_raylib_vector4_object *intern) {
+}
 typedef struct _raylib_vector4_prop_handler {
     raylib_vector4_read_float_t read_float_func;
     raylib_vector4_write_float_t write_float_func;

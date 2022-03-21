@@ -73,7 +73,12 @@ typedef int (*raylib_sound_write_unsigned_int_t)(php_raylib_sound_object *obj,  
  * @param intern
  */
 void php_raylib_sound_update_intern(php_raylib_sound_object *intern) {
-    intern->sound.stream = intern->stream->audiostream;
+    php_raylib_audiostream_object *streamObject = Z_AUDIOSTREAM_OBJ_P(&intern->stream);
+    intern->sound.stream = streamObject->audiostream;
+
+}
+
+void php_raylib_sound_update_intern_reverse(php_raylib_sound_object *intern) {
 }
 typedef struct _raylib_sound_prop_handler {
     raylib_sound_read_audiostream_t read_audiostream_func;
@@ -279,9 +284,8 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
     if (orig) {
         php_raylib_sound_object *other = php_raylib_sound_fetch_object(orig);
 
-        zend_object *stream = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, &other->stream->std);
+        php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&other->stream);
 
-        php_raylib_audiostream_object *phpStream = php_raylib_audiostream_fetch_object(stream);
 
         intern->sound = (Sound) {
             .stream = (AudioStream) {
@@ -293,7 +297,7 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
             .frameCount = other->sound.frameCount
         };
 
-        intern->stream = phpStream;
+        ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
     } else {
         zend_object *stream = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, NULL);
 
@@ -308,7 +312,7 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
             },
             .frameCount = 0
         };
-        intern->stream = phpStream;
+        ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -356,8 +360,10 @@ PHP_METHOD(Sound, __construct)
 
 static zend_object * php_raylib_sound_get_stream(php_raylib_sound_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->stream->std);
-    return &obj->stream->std;
+    php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&obj->stream);
+
+    GC_ADDREF(&phpStream->std);
+    return &phpStream->std;
 }
 /* }}} */
 
@@ -376,10 +382,7 @@ static int php_raylib_sound_set_stream(php_raylib_sound_object *obj, zval *newva
         return ret;
     }
 
-    php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(newval);
-    GC_ADDREF(&phpStream->std);
-    GC_DELREF(&obj->stream->std);
-    obj->stream = phpStream;
+    obj->stream = *newval;
 
     return ret;
 }

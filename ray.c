@@ -70,8 +70,15 @@ typedef int (*raylib_ray_write_vector3_t)(php_raylib_ray_object *obj,  zval *val
  * @param intern
  */
 void php_raylib_ray_update_intern(php_raylib_ray_object *intern) {
-    intern->ray.position = intern->position->vector3;
-    intern->ray.direction = intern->direction->vector3;
+    php_raylib_vector3_object *positionObject = Z_VECTOR3_OBJ_P(&intern->position);
+    intern->ray.position = positionObject->vector3;
+
+    php_raylib_vector3_object *directionObject = Z_VECTOR3_OBJ_P(&intern->direction);
+    intern->ray.direction = directionObject->vector3;
+
+}
+
+void php_raylib_ray_update_intern_reverse(php_raylib_ray_object *intern) {
 }
 typedef struct _raylib_ray_prop_handler {
     raylib_ray_read_vector3_t read_vector3_func;
@@ -266,11 +273,9 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
     if (orig) {
         php_raylib_ray_object *other = php_raylib_ray_fetch_object(orig);
 
-        zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->position->std);
-        zend_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->direction->std);
+        php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(&other->position);
+        php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(&other->direction);
 
-        php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
-        php_raylib_vector3_object *phpDirection = php_raylib_vector3_fetch_object(direction);
 
         intern->ray = (Ray) {
             .position = (Vector3) {
@@ -285,8 +290,8 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
             }
         };
 
-        intern->position = phpPosition;
-        intern->direction = phpDirection;
+        ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
+        ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
     } else {
         zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -306,8 +311,8 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
                 .z = 0
             }
         };
-        intern->position = phpPosition;
-        intern->direction = phpDirection;
+        ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
+        ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -368,8 +373,8 @@ PHP_METHOD(Ray, __construct)
     phpPosition = php_raylib_vector3_fetch_object(position);
     phpDirection = php_raylib_vector3_fetch_object(direction);
 
-    intern->position = phpPosition;
-    intern->direction = phpDirection;
+    ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
+    ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
 
     intern->ray = (Ray) {
         .position = (Vector3) {
@@ -387,15 +392,19 @@ PHP_METHOD(Ray, __construct)
 
 static zend_object * php_raylib_ray_get_position(php_raylib_ray_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->position->std);
-    return &obj->position->std;
+    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(&obj->position);
+
+    GC_ADDREF(&phpPosition->std);
+    return &phpPosition->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_ray_get_direction(php_raylib_ray_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->direction->std);
-    return &obj->direction->std;
+    php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(&obj->direction);
+
+    GC_ADDREF(&phpDirection->std);
+    return &phpDirection->std;
 }
 /* }}} */
 
@@ -408,10 +417,7 @@ static int php_raylib_ray_set_position(php_raylib_ray_object *obj, zval *newval)
         return ret;
     }
 
-    php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpPosition->std);
-    GC_DELREF(&obj->position->std);
-    obj->position = phpPosition;
+    obj->position = *newval;
 
     return ret;
 }
@@ -426,10 +432,7 @@ static int php_raylib_ray_set_direction(php_raylib_ray_object *obj, zval *newval
         return ret;
     }
 
-    php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpDirection->std);
-    GC_DELREF(&obj->direction->std);
-    obj->direction = phpDirection;
+    obj->direction = *newval;
 
     return ret;
 }

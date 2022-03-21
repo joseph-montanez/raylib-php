@@ -81,11 +81,16 @@ typedef int (*raylib_font_write_glyphinfo_array_t)(php_raylib_font_object *obj, 
  * @param intern
  */
 void php_raylib_font_update_intern(php_raylib_font_object *intern) {
-    intern->font.texture = intern->texture->texture;
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    intern->font.texture = textureObject->texture;
+
     //TODO: Support for pointers and arrays;
     //intern->font.recs = intern->recs->rectangle;
     //TODO: Support for pointers and arrays;
     //intern->font.glyphs = intern->glyphs->glyphinfo;
+}
+
+void php_raylib_font_update_intern_reverse(php_raylib_font_object *intern) {
 }
 typedef struct _raylib_font_prop_handler {
     raylib_font_read_int_t read_int_func;
@@ -315,13 +320,12 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
     if (orig) {
         php_raylib_font_object *other = php_raylib_font_fetch_object(orig);
 
-        zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, &other->texture->std);
+        php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&other->texture);
         // recs array not yet supported needs to generate a hash table!
         //zend_object *recs = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, &other->recs->std);
         // glyphs array not yet supported needs to generate a hash table!
         //zend_object *glyphs = php_raylib_glyphinfo_new_ex(php_raylib_glyphinfo_ce, &other->glyphs->std);
 
-        php_raylib_texture_object *phpTexture = php_raylib_texture_fetch_object(texture);
         // recs array not yet supported needs to generate a hash table!
         //php_raylib_rectangle_object *phpRecs = php_raylib_rectangle_fetch_object(recs);
         // glyphs array not yet supported needs to generate a hash table!
@@ -340,7 +344,7 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
             },
         };
 
-        intern->texture = phpTexture;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
         //123TODO: support array and pointers
         //intern->recs = phpRecs;
         //123TODO: support array and pointers
@@ -372,7 +376,7 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
             // .recs is an array and not yet supported via constructor
             // .glyphs is an array and not yet supported via constructor
         };
-        intern->texture = phpTexture;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
         // recs array not yet supported needs to generate a hash table!
         //intern->recs = phpRecs;
         // glyphs array not yet supported needs to generate a hash table!
@@ -442,8 +446,10 @@ static zend_long php_raylib_font_get_glyphpadding(php_raylib_font_object *obj) /
 
 static zend_object * php_raylib_font_get_texture(php_raylib_font_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->texture->std);
-    return &obj->texture->std;
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&obj->texture);
+
+    GC_ADDREF(&phpTexture->std);
+    return &phpTexture->std;
 }
 /* }}} */
 
@@ -513,10 +519,7 @@ static int php_raylib_font_set_texture(php_raylib_font_object *obj, zval *newval
         return ret;
     }
 
-    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-    GC_ADDREF(&phpTexture->std);
-    GC_DELREF(&obj->texture->std);
-    obj->texture = phpTexture;
+    obj->texture = *newval;
 
     return ret;
 }

@@ -29,5 +29,6 @@ static inline php_raylib_vector4_object *php_raylib_vector4_fetch_object(zend_ob
 void php_raylib_vector4_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_vector4_update_intern(php_raylib_vector4_object *intern);
+extern void php_raylib_vector4_update_intern_reverse(php_raylib_vector4_object *intern);
 
 #endif //PHP_RAYLIB_VECTOR4_H

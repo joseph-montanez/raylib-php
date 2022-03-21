@@ -73,8 +73,15 @@ typedef int (*raylib_camera2d_write_float_t)(php_raylib_camera2d_object *obj,  z
  * @param intern
  */
 void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
-    intern->camera2d.offset = intern->offset->vector2;
-    intern->camera2d.target = intern->target->vector2;
+    php_raylib_vector2_object *offsetObject = Z_VECTOR2_OBJ_P(&intern->offset);
+    intern->camera2d.offset = offsetObject->vector2;
+
+    php_raylib_vector2_object *targetObject = Z_VECTOR2_OBJ_P(&intern->target);
+    intern->camera2d.target = targetObject->vector2;
+
+}
+
+void php_raylib_camera2d_update_intern_reverse(php_raylib_camera2d_object *intern) {
 }
 typedef struct _raylib_camera2d_prop_handler {
     raylib_camera2d_read_vector2_t read_vector2_func;
@@ -280,11 +287,9 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
     if (orig) {
         php_raylib_camera2d_object *other = php_raylib_camera2d_fetch_object(orig);
 
-        zend_object *offset = php_raylib_vector2_new_ex(php_raylib_vector2_ce, &other->offset->std);
-        zend_object *target = php_raylib_vector2_new_ex(php_raylib_vector2_ce, &other->target->std);
+        php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(&other->offset);
+        php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(&other->target);
 
-        php_raylib_vector2_object *phpOffset = php_raylib_vector2_fetch_object(offset);
-        php_raylib_vector2_object *phpTarget = php_raylib_vector2_fetch_object(target);
 
         intern->camera2d = (Camera2D) {
             .offset = (Vector2) {
@@ -299,8 +304,8 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
             .zoom = other->camera2d.zoom
         };
 
-        intern->offset = phpOffset;
-        intern->target = phpTarget;
+        ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
+        ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
     } else {
         zend_object *offset = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
         zend_object *target = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -320,8 +325,8 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
             .rotation = 0,
             .zoom = 0
         };
-        intern->offset = phpOffset;
-        intern->target = phpTarget;
+        ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
+        ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -400,8 +405,8 @@ PHP_METHOD(Camera2D, __construct)
     phpOffset = php_raylib_vector2_fetch_object(offset);
     phpTarget = php_raylib_vector2_fetch_object(target);
 
-    intern->offset = phpOffset;
-    intern->target = phpTarget;
+    ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
+    ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
 
     intern->camera2d = (Camera2D) {
         .offset = (Vector2) {
@@ -419,15 +424,19 @@ PHP_METHOD(Camera2D, __construct)
 
 static zend_object * php_raylib_camera2d_get_offset(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->offset->std);
-    return &obj->offset->std;
+    php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(&obj->offset);
+
+    GC_ADDREF(&phpOffset->std);
+    return &phpOffset->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_camera2d_get_target(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->target->std);
-    return &obj->target->std;
+    php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(&obj->target);
+
+    GC_ADDREF(&phpTarget->std);
+    return &phpTarget->std;
 }
 /* }}} */
 
@@ -452,10 +461,7 @@ static int php_raylib_camera2d_set_offset(php_raylib_camera2d_object *obj, zval 
         return ret;
     }
 
-    php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(newval);
-    GC_ADDREF(&phpOffset->std);
-    GC_DELREF(&obj->offset->std);
-    obj->offset = phpOffset;
+    obj->offset = *newval;
 
     return ret;
 }
@@ -470,10 +476,7 @@ static int php_raylib_camera2d_set_target(php_raylib_camera2d_object *obj, zval 
         return ret;
     }
 
-    php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(newval);
-    GC_ADDREF(&phpTarget->std);
-    GC_DELREF(&obj->target->std);
-    obj->target = phpTarget;
+    obj->target = *newval;
 
     return ret;
 }

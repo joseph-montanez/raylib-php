@@ -73,7 +73,12 @@ typedef int (*raylib_glyphinfo_write_image_t)(php_raylib_glyphinfo_object *obj, 
  * @param intern
  */
 void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern) {
-    intern->glyphinfo.image = intern->image->image;
+    php_raylib_image_object *imageObject = Z_IMAGE_OBJ_P(&intern->image);
+    intern->glyphinfo.image = imageObject->image;
+
+}
+
+void php_raylib_glyphinfo_update_intern_reverse(php_raylib_glyphinfo_object *intern) {
 }
 typedef struct _raylib_glyphinfo_prop_handler {
     raylib_glyphinfo_read_int_t read_int_func;
@@ -279,9 +284,8 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
     if (orig) {
         php_raylib_glyphinfo_object *other = php_raylib_glyphinfo_fetch_object(orig);
 
-        zend_object *image = php_raylib_image_new_ex(php_raylib_image_ce, &other->image->std);
+        php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(&other->image);
 
-        php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
 
         intern->glyphinfo = (GlyphInfo) {
             .value = other->glyphinfo.value,
@@ -297,7 +301,7 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
             }
         };
 
-        intern->image = phpImage;
+        ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
     } else {
         zend_object *image = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
 
@@ -316,7 +320,7 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
                 .format = 0
             }
         };
-        intern->image = phpImage;
+        ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -403,7 +407,7 @@ PHP_METHOD(GlyphInfo, __construct)
 
     phpImage = php_raylib_image_fetch_object(image);
 
-    intern->image = phpImage;
+    ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
 
     intern->glyphinfo = (GlyphInfo) {
         .value = value,
@@ -446,8 +450,10 @@ static zend_long php_raylib_glyphinfo_get_advancex(php_raylib_glyphinfo_object *
 
 static zend_object * php_raylib_glyphinfo_get_image(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->image->std);
-    return &obj->image->std;
+    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(&obj->image);
+
+    GC_ADDREF(&phpImage->std);
+    return &phpImage->std;
 }
 /* }}} */
 
@@ -520,10 +526,7 @@ static int php_raylib_glyphinfo_set_image(php_raylib_glyphinfo_object *obj, zval
         return ret;
     }
 
-    php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(newval);
-    GC_ADDREF(&phpImage->std);
-    GC_DELREF(&obj->image->std);
-    obj->image = phpImage;
+    obj->image = *newval;
 
     return ret;
 }

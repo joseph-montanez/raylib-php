@@ -70,6 +70,9 @@ typedef int (*raylib_matrix_write_float_t)(php_raylib_matrix_object *obj,  zval 
  */
 void php_raylib_matrix_update_intern(php_raylib_matrix_object *intern) {
 }
+
+void php_raylib_matrix_update_intern_reverse(php_raylib_matrix_object *intern) {
+}
 typedef struct _raylib_matrix_prop_handler {
     raylib_matrix_read_float_t read_float_func;
     raylib_matrix_write_float_t write_float_func;

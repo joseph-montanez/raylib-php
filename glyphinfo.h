@@ -19,7 +19,7 @@ extern zend_object_handlers php_raylib_glyphinfo_object_handlers;
 typedef struct _php_raylib_glyphinfo_object {
     GlyphInfo glyphinfo;
     HashTable *prop_handler;
-    php_raylib_image_object *image;
+    zval image;
     zend_object std;
 } php_raylib_glyphinfo_object;
 
@@ -32,5 +32,6 @@ static inline php_raylib_glyphinfo_object *php_raylib_glyphinfo_fetch_object(zen
 void php_raylib_glyphinfo_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern);
+extern void php_raylib_glyphinfo_update_intern_reverse(php_raylib_glyphinfo_object *intern);
 
 #endif //PHP_RAYLIB_GLYPHINFO_H

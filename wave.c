@@ -73,6 +73,9 @@ typedef int (*raylib_wave_write_void_array_t)(php_raylib_wave_object *obj,  zval
  */
 void php_raylib_wave_update_intern(php_raylib_wave_object *intern) {
 }
+
+void php_raylib_wave_update_intern_reverse(php_raylib_wave_object *intern) {
+}
 typedef struct _raylib_wave_prop_handler {
     raylib_wave_read_unsigned_int_t read_unsigned_int_func;
     raylib_wave_write_unsigned_int_t write_unsigned_int_func;

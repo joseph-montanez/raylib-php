@@ -29,5 +29,6 @@ static inline php_raylib_rectangle_object *php_raylib_rectangle_fetch_object(zen
 void php_raylib_rectangle_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_rectangle_update_intern(php_raylib_rectangle_object *intern);
+extern void php_raylib_rectangle_update_intern_reverse(php_raylib_rectangle_object *intern);
 
 #endif //PHP_RAYLIB_RECTANGLE_H

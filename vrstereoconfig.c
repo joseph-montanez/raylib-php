@@ -73,10 +73,21 @@ typedef int (*raylib_vrstereoconfig_write_float_array_t)(php_raylib_vrstereoconf
  * @param intern
  */
 void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern) {
-    intern->vrstereoconfig.projection[0] = intern->projection[0].matrix;
-    intern->vrstereoconfig.projection[1] = intern->projection[1].matrix;
-    intern->vrstereoconfig.viewOffset[0] = intern->viewoffset[0].matrix;
-    intern->vrstereoconfig.viewOffset[1] = intern->viewoffset[1].matrix;
+    php_raylib_matrix_object *projection_0 = Z_MATRIX_OBJ_P(&intern->projection[0]);
+    intern->vrstereoconfig.projection[0] = projection_0->matrix;
+
+    php_raylib_matrix_object *projection_1 = Z_MATRIX_OBJ_P(&intern->projection[1]);
+    intern->vrstereoconfig.projection[1] = projection_1->matrix;
+
+    php_raylib_matrix_object *viewOffset_0 = Z_MATRIX_OBJ_P(&intern->viewoffset[0]);
+    intern->vrstereoconfig.viewOffset[0] = viewOffset_0->matrix;
+
+    php_raylib_matrix_object *viewOffset_1 = Z_MATRIX_OBJ_P(&intern->viewoffset[1]);
+    intern->vrstereoconfig.viewOffset[1] = viewOffset_1->matrix;
+
+}
+
+void php_raylib_vrstereoconfig_update_intern_reverse(php_raylib_vrstereoconfig_object *intern) {
 }
 typedef struct _raylib_vrstereoconfig_prop_handler {
     raylib_vrstereoconfig_read_matrix_array_t read_matrix_array_func;

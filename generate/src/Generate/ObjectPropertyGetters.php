@@ -29,8 +29,10 @@ class ObjectPropertyGetters
                         $input[] = '    //GC_ADDREF(&obj->' . $field->nameLower . '->std);';
                         $input[] = '    //return &obj->' . $field->nameLower . '->std;';
                     } else {
-                        $input[] = '    GC_ADDREF(&obj->' . $field->nameLower . '->std);';
-                        $input[] = '    return &obj->' . $field->nameLower . '->std;';
+                        $input[] = '    php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(&obj->' . $field->nameLower . ');';
+                        $input[] = '';
+                        $input[] = '    GC_ADDREF(&php' . ucfirst($field->name) . '->std);';
+                        $input[] = '    return &php' . ucfirst($field->name) . '->std;';
                     }
                     break;
                 case 'double';

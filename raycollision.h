@@ -20,8 +20,8 @@ extern zend_object_handlers php_raylib_raycollision_object_handlers;
 typedef struct _php_raylib_raycollision_object {
     RayCollision raycollision;
     HashTable *prop_handler;
-    php_raylib_vector3_object *point;
-    php_raylib_vector3_object *normal;
+    zval point;
+    zval normal;
     zend_object std;
 } php_raylib_raycollision_object;
 
@@ -34,5 +34,6 @@ static inline php_raylib_raycollision_object *php_raylib_raycollision_fetch_obje
 void php_raylib_raycollision_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_raycollision_update_intern(php_raylib_raycollision_object *intern);
+extern void php_raylib_raycollision_update_intern_reverse(php_raylib_raycollision_object *intern);
 
 #endif //PHP_RAYLIB_RAYCOLLISION_H

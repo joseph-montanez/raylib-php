@@ -85,6 +85,9 @@ typedef int (*raylib_mesh_write_unsigned_int_array_t)(php_raylib_mesh_object *ob
  */
 void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern) {
 }
+
+void php_raylib_mesh_update_intern_reverse(php_raylib_mesh_object *intern) {
+}
 typedef struct _raylib_mesh_prop_handler {
     raylib_mesh_read_int_t read_int_func;
     raylib_mesh_write_int_t write_int_func;

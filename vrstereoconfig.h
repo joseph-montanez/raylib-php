@@ -21,8 +21,8 @@ extern zend_object_handlers php_raylib_vrstereoconfig_object_handlers;
 typedef struct _php_raylib_vrstereoconfig_object {
     VrStereoConfig vrstereoconfig;
     HashTable *prop_handler;
-php_raylib_matrix_object *projection;
-php_raylib_matrix_object *viewoffset;
+    zval projection[2];
+    zval viewoffset[2];
     zend_object std;
 } php_raylib_vrstereoconfig_object;
 
@@ -35,5 +35,6 @@ static inline php_raylib_vrstereoconfig_object *php_raylib_vrstereoconfig_fetch_
 void php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern);
+extern void php_raylib_vrstereoconfig_update_intern_reverse(php_raylib_vrstereoconfig_object *intern);
 
 #endif //PHP_RAYLIB_VRSTEREOCONFIG_H

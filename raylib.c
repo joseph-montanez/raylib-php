@@ -2530,12 +2530,9 @@ PHP_FUNCTION(UpdateCamera)
     ZEND_PARSE_PARAMETERS_END();
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
-
     php_raylib_camera3d_update_intern(phpCamera);
 
     UpdateCamera(&phpCamera->camera3d);
-
-    php_raylib_camera3d_update_intern_reverse(phpCamera);
 }
 
 // Set camera pan key to combine with mouse movement (free camera)

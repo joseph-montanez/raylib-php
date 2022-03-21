@@ -22,9 +22,9 @@ extern zend_object_handlers php_raylib_transform_object_handlers;
 typedef struct _php_raylib_transform_object {
     Transform transform;
     HashTable *prop_handler;
-    php_raylib_vector3_object *translation;
-    php_raylib_vector4_object *rotation;
-    php_raylib_vector3_object *scale;
+    zval translation;
+    zval rotation;
+    zval scale;
     zend_object std;
 } php_raylib_transform_object;
 
@@ -37,5 +37,6 @@ static inline php_raylib_transform_object *php_raylib_transform_fetch_object(zen
 void php_raylib_transform_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_transform_update_intern(php_raylib_transform_object *intern);
+extern void php_raylib_transform_update_intern_reverse(php_raylib_transform_object *intern);
 
 #endif //PHP_RAYLIB_TRANSFORM_H

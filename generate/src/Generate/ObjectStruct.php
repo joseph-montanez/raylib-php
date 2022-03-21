@@ -23,13 +23,15 @@ class ObjectStruct
                     $input[] = '// NO idea what to do with rAudioBuffer';
                     $input[] = '//php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . ';';
                 } else {
-                    $input[] = 'php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . ';';
+                    if ($field->arrayCountNumber > 0) {
+                        $input[] = '    zval ' . $field->nameLower . '[' . $field->arrayCountNumber . '];';
+                    } else {
+                        $input[] = '    // TODO: support for dynamic arrays';
+                        $input[] = '    // zval *' . $field->nameLower . ';';
+                    }
                 }
-            } elseif ($structsByType[$field->typePlain]->isAlias) {
-                $aliasStruct = $structsByType[$structsByType[$field->type]->alias];
-                $input[]     = '    php_raylib_' . $aliasStruct->nameLower . '_object *' . $field->nameLower . ';';
             } else {
-                $input[] = '    php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . ';';
+                $input[] = '    zval ' . $field->nameLower . ';';
             }
         }
         //-- zend_object MUST be at the end of the struct to work correctly

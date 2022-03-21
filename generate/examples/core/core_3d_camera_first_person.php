@@ -19,6 +19,7 @@ use raylib\Vector3;
 use const raylib\CameraMode\CAMERA_FIRST_PERSON;
 use const raylib\CameraProjection\CAMERA_PERSPECTIVE;
 
+
 const MAX_COLUMNS = 20;
 
 // Initialization
@@ -57,7 +58,6 @@ for ($i = 0; $i < MAX_COLUMNS; $i++)
 {
     $heights[$i] = (float)GetRandomValue(1, 12);
     $positions[$i] = new Vector3 ((float)GetRandomValue(-15, 15), $heights[$i]/2.0, (float)GetRandomValue(-15, 15));
-    printf("0: \$positions[\$i] %f, %f, %f\n", $positions[$i]->x, $positions[$i]->y, $positions[$i]->z);
     $colors[$i] = new Color(GetRandomValue(20, 255), GetRandomValue(10, 55), 30, 255);
 
 }

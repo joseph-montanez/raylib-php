@@ -70,8 +70,15 @@ typedef int (*raylib_boundingbox_write_vector3_t)(php_raylib_boundingbox_object 
  * @param intern
  */
 void php_raylib_boundingbox_update_intern(php_raylib_boundingbox_object *intern) {
-    intern->boundingbox.min = intern->min->vector3;
-    intern->boundingbox.max = intern->max->vector3;
+    php_raylib_vector3_object *minObject = Z_VECTOR3_OBJ_P(&intern->min);
+    intern->boundingbox.min = minObject->vector3;
+
+    php_raylib_vector3_object *maxObject = Z_VECTOR3_OBJ_P(&intern->max);
+    intern->boundingbox.max = maxObject->vector3;
+
+}
+
+void php_raylib_boundingbox_update_intern_reverse(php_raylib_boundingbox_object *intern) {
 }
 typedef struct _raylib_boundingbox_prop_handler {
     raylib_boundingbox_read_vector3_t read_vector3_func;
@@ -266,11 +273,9 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
     if (orig) {
         php_raylib_boundingbox_object *other = php_raylib_boundingbox_fetch_object(orig);
 
-        zend_object *min = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->min->std);
-        zend_object *max = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->max->std);
+        php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(&other->min);
+        php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(&other->max);
 
-        php_raylib_vector3_object *phpMin = php_raylib_vector3_fetch_object(min);
-        php_raylib_vector3_object *phpMax = php_raylib_vector3_fetch_object(max);
 
         intern->boundingbox = (BoundingBox) {
             .min = (Vector3) {
@@ -285,8 +290,8 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
             }
         };
 
-        intern->min = phpMin;
-        intern->max = phpMax;
+        ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
+        ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
     } else {
         zend_object *min = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *max = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -306,8 +311,8 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
                 .z = 0
             }
         };
-        intern->min = phpMin;
-        intern->max = phpMax;
+        ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
+        ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -368,8 +373,8 @@ PHP_METHOD(BoundingBox, __construct)
     phpMin = php_raylib_vector3_fetch_object(min);
     phpMax = php_raylib_vector3_fetch_object(max);
 
-    intern->min = phpMin;
-    intern->max = phpMax;
+    ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
+    ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
 
     intern->boundingbox = (BoundingBox) {
         .min = (Vector3) {
@@ -387,15 +392,19 @@ PHP_METHOD(BoundingBox, __construct)
 
 static zend_object * php_raylib_boundingbox_get_min(php_raylib_boundingbox_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->min->std);
-    return &obj->min->std;
+    php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(&obj->min);
+
+    GC_ADDREF(&phpMin->std);
+    return &phpMin->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_boundingbox_get_max(php_raylib_boundingbox_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->max->std);
-    return &obj->max->std;
+    php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(&obj->max);
+
+    GC_ADDREF(&phpMax->std);
+    return &phpMax->std;
 }
 /* }}} */
 
@@ -408,10 +417,7 @@ static int php_raylib_boundingbox_set_min(php_raylib_boundingbox_object *obj, zv
         return ret;
     }
 
-    php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpMin->std);
-    GC_DELREF(&obj->min->std);
-    obj->min = phpMin;
+    obj->min = *newval;
 
     return ret;
 }
@@ -426,10 +432,7 @@ static int php_raylib_boundingbox_set_max(php_raylib_boundingbox_object *obj, zv
         return ret;
     }
 
-    php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpMax->std);
-    GC_DELREF(&obj->max->std);
-    obj->max = phpMax;
+    obj->max = *newval;
 
     return ret;
 }

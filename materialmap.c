@@ -77,8 +77,15 @@ typedef int (*raylib_materialmap_write_float_t)(php_raylib_materialmap_object *o
  * @param intern
  */
 void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern) {
-    intern->materialmap.texture = intern->texture->texture;
-    intern->materialmap.color = intern->color->color;
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    intern->materialmap.texture = textureObject->texture;
+
+    php_raylib_color_object *colorObject = Z_COLOR_OBJ_P(&intern->color);
+    intern->materialmap.color = colorObject->color;
+
+}
+
+void php_raylib_materialmap_update_intern_reverse(php_raylib_materialmap_object *intern) {
 }
 typedef struct _raylib_materialmap_prop_handler {
     raylib_materialmap_read_texture_t read_texture_func;
@@ -296,11 +303,9 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
     if (orig) {
         php_raylib_materialmap_object *other = php_raylib_materialmap_fetch_object(orig);
 
-        zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, &other->texture->std);
-        zend_object *color = php_raylib_color_new_ex(php_raylib_color_ce, &other->color->std);
+        php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&other->texture);
+        php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(&other->color);
 
-        php_raylib_texture_object *phpTexture = php_raylib_texture_fetch_object(texture);
-        php_raylib_color_object *phpColor = php_raylib_color_fetch_object(color);
 
         intern->materialmap = (MaterialMap) {
             .texture = (Texture) {
@@ -319,8 +324,8 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
             .value = other->materialmap.value
         };
 
-        intern->texture = phpTexture;
-        intern->color = phpColor;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+        ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
         zend_object *color = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -344,8 +349,8 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
             },
             .value = 0
         };
-        intern->texture = phpTexture;
-        intern->color = phpColor;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+        ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -415,8 +420,8 @@ PHP_METHOD(MaterialMap, __construct)
     phpTexture = php_raylib_texture_fetch_object(texture);
     phpColor = php_raylib_color_fetch_object(color);
 
-    intern->texture = phpTexture;
-    intern->color = phpColor;
+    ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+    ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
 
     intern->materialmap = (MaterialMap) {
         .texture = (Texture) {
@@ -438,15 +443,19 @@ PHP_METHOD(MaterialMap, __construct)
 
 static zend_object * php_raylib_materialmap_get_texture(php_raylib_materialmap_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->texture->std);
-    return &obj->texture->std;
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&obj->texture);
+
+    GC_ADDREF(&phpTexture->std);
+    return &phpTexture->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_materialmap_get_color(php_raylib_materialmap_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->color->std);
-    return &obj->color->std;
+    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(&obj->color);
+
+    GC_ADDREF(&phpColor->std);
+    return &phpColor->std;
 }
 /* }}} */
 
@@ -465,10 +474,7 @@ static int php_raylib_materialmap_set_texture(php_raylib_materialmap_object *obj
         return ret;
     }
 
-    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-    GC_ADDREF(&phpTexture->std);
-    GC_DELREF(&obj->texture->std);
-    obj->texture = phpTexture;
+    obj->texture = *newval;
 
     return ret;
 }
@@ -483,10 +489,7 @@ static int php_raylib_materialmap_set_color(php_raylib_materialmap_object *obj, 
         return ret;
     }
 
-    php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(newval);
-    GC_ADDREF(&phpColor->std);
-    GC_DELREF(&obj->color->std);
-    obj->color = phpColor;
+    obj->color = *newval;
 
     return ret;
 }

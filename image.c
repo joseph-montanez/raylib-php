@@ -73,6 +73,9 @@ typedef int (*raylib_image_write_int_t)(php_raylib_image_object *obj,  zval *val
  */
 void php_raylib_image_update_intern(php_raylib_image_object *intern) {
 }
+
+void php_raylib_image_update_intern_reverse(php_raylib_image_object *intern) {
+}
 typedef struct _raylib_image_prop_handler {
     raylib_image_read_void_array_t read_void_array_func;
     raylib_image_write_void_array_t write_void_array_func;

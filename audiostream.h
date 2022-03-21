@@ -33,5 +33,6 @@ static inline php_raylib_audiostream_object *php_raylib_audiostream_fetch_object
 void php_raylib_audiostream_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_audiostream_update_intern(php_raylib_audiostream_object *intern);
+extern void php_raylib_audiostream_update_intern_reverse(php_raylib_audiostream_object *intern);
 
 #endif //PHP_RAYLIB_AUDIOSTREAM_H

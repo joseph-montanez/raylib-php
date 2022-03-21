@@ -77,19 +77,48 @@ typedef int (*raylib_material_write_float_array_t)(php_raylib_material_object *o
  * @param intern
  */
 void php_raylib_material_update_intern(php_raylib_material_object *intern) {
-    intern->material.shader = intern->shader->shader;
-    intern->material.maps[0] = intern->maps[0].materialmap;
-    intern->material.maps[1] = intern->maps[1].materialmap;
-    intern->material.maps[2] = intern->maps[2].materialmap;
-    intern->material.maps[3] = intern->maps[3].materialmap;
-    intern->material.maps[4] = intern->maps[4].materialmap;
-    intern->material.maps[5] = intern->maps[5].materialmap;
-    intern->material.maps[6] = intern->maps[6].materialmap;
-    intern->material.maps[7] = intern->maps[7].materialmap;
-    intern->material.maps[8] = intern->maps[8].materialmap;
-    intern->material.maps[9] = intern->maps[9].materialmap;
-    intern->material.maps[10] = intern->maps[10].materialmap;
-    intern->material.maps[11] = intern->maps[11].materialmap;
+    php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
+    intern->material.shader = shaderObject->shader;
+
+    php_raylib_materialmap_object *maps_0 = Z_MATERIALMAP_OBJ_P(&intern->maps[0]);
+    intern->material.maps[0] = maps_0->materialmap;
+
+    php_raylib_materialmap_object *maps_1 = Z_MATERIALMAP_OBJ_P(&intern->maps[1]);
+    intern->material.maps[1] = maps_1->materialmap;
+
+    php_raylib_materialmap_object *maps_2 = Z_MATERIALMAP_OBJ_P(&intern->maps[2]);
+    intern->material.maps[2] = maps_2->materialmap;
+
+    php_raylib_materialmap_object *maps_3 = Z_MATERIALMAP_OBJ_P(&intern->maps[3]);
+    intern->material.maps[3] = maps_3->materialmap;
+
+    php_raylib_materialmap_object *maps_4 = Z_MATERIALMAP_OBJ_P(&intern->maps[4]);
+    intern->material.maps[4] = maps_4->materialmap;
+
+    php_raylib_materialmap_object *maps_5 = Z_MATERIALMAP_OBJ_P(&intern->maps[5]);
+    intern->material.maps[5] = maps_5->materialmap;
+
+    php_raylib_materialmap_object *maps_6 = Z_MATERIALMAP_OBJ_P(&intern->maps[6]);
+    intern->material.maps[6] = maps_6->materialmap;
+
+    php_raylib_materialmap_object *maps_7 = Z_MATERIALMAP_OBJ_P(&intern->maps[7]);
+    intern->material.maps[7] = maps_7->materialmap;
+
+    php_raylib_materialmap_object *maps_8 = Z_MATERIALMAP_OBJ_P(&intern->maps[8]);
+    intern->material.maps[8] = maps_8->materialmap;
+
+    php_raylib_materialmap_object *maps_9 = Z_MATERIALMAP_OBJ_P(&intern->maps[9]);
+    intern->material.maps[9] = maps_9->materialmap;
+
+    php_raylib_materialmap_object *maps_10 = Z_MATERIALMAP_OBJ_P(&intern->maps[10]);
+    intern->material.maps[10] = maps_10->materialmap;
+
+    php_raylib_materialmap_object *maps_11 = Z_MATERIALMAP_OBJ_P(&intern->maps[11]);
+    intern->material.maps[11] = maps_11->materialmap;
+
+}
+
+void php_raylib_material_update_intern_reverse(php_raylib_material_object *intern) {
 }
 typedef struct _raylib_material_prop_handler {
     raylib_material_read_shader_t read_shader_func;
@@ -307,11 +336,10 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
     if (orig) {
         php_raylib_material_object *other = php_raylib_material_fetch_object(orig);
 
-        zend_object *shader = php_raylib_shader_new_ex(php_raylib_shader_ce, &other->shader->std);
+        php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(&other->shader);
         // maps array not yet supported needs to generate a hash table!
         //zend_object *maps = php_raylib_materialmap_new_ex(php_raylib_materialmap_ce, &other->maps->std);
 
-        php_raylib_shader_object *phpShader = php_raylib_shader_fetch_object(shader);
         // maps array not yet supported needs to generate a hash table!
         //php_raylib_materialmap_object *phpMaps = php_raylib_materialmap_fetch_object(maps);
 
@@ -323,7 +351,7 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         };
         memcpy(intern->material.params, other->material.params, sizeof intern->material.params);
 
-        intern->shader = phpShader;
+        ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
         //123TODO: support array and pointers
         //intern->maps = phpMaps;
     } else {
@@ -343,7 +371,7 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
             // .maps is an array and not yet supported via constructor
             .params = 0
         };
-        intern->shader = phpShader;
+        ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
         // maps array not yet supported needs to generate a hash table!
         //intern->maps = phpMaps;
     }
@@ -386,8 +414,10 @@ PHP_METHOD(Material, __construct)
 
 static zend_object * php_raylib_material_get_shader(php_raylib_material_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->shader->std);
-    return &obj->shader->std;
+    php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(&obj->shader);
+
+    GC_ADDREF(&phpShader->std);
+    return &phpShader->std;
 }
 /* }}} */
 
@@ -412,10 +442,7 @@ static int php_raylib_material_set_shader(php_raylib_material_object *obj, zval 
         return ret;
     }
 
-    php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(newval);
-    GC_ADDREF(&phpShader->std);
-    GC_DELREF(&obj->shader->std);
-    obj->shader = phpShader;
+    obj->shader = *newval;
 
     return ret;
 }

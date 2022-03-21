@@ -19,7 +19,7 @@ extern zend_object_handlers php_raylib_sound_object_handlers;
 typedef struct _php_raylib_sound_object {
     Sound sound;
     HashTable *prop_handler;
-    php_raylib_audiostream_object *stream;
+    zval stream;
     zend_object std;
 } php_raylib_sound_object;
 
@@ -32,5 +32,6 @@ static inline php_raylib_sound_object *php_raylib_sound_fetch_object(zend_object
 void php_raylib_sound_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_sound_update_intern(php_raylib_sound_object *intern);
+extern void php_raylib_sound_update_intern_reverse(php_raylib_sound_object *intern);
 
 #endif //PHP_RAYLIB_SOUND_H

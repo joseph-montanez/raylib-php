@@ -185,7 +185,7 @@ class ObjectConstructor
             $input[] = '';
 
             foreach ($struct->nonPrimitiveFields() as $field) {
-                $input[] = '    intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
+                $input[] = '    ZVAL_OBJ_COPY(&intern->' . $field->name . ', &php' . ucfirst($field->name) . '->std);';
             }
             $input[] = '';
 

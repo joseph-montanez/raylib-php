@@ -73,6 +73,9 @@ typedef int (*raylib_shader_write_int_array_t)(php_raylib_shader_object *obj,  z
  */
 void php_raylib_shader_update_intern(php_raylib_shader_object *intern) {
 }
+
+void php_raylib_shader_update_intern_reverse(php_raylib_shader_object *intern) {
+}
 typedef struct _raylib_shader_prop_handler {
     raylib_shader_read_unsigned_int_t read_unsigned_int_func;
     raylib_shader_write_unsigned_int_t write_unsigned_int_func;

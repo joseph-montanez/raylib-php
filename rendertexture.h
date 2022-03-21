@@ -20,8 +20,8 @@ extern zend_object_handlers php_raylib_rendertexture_object_handlers;
 typedef struct _php_raylib_rendertexture_object {
     RenderTexture rendertexture;
     HashTable *prop_handler;
-    php_raylib_texture_object *texture;
-    php_raylib_texture_object *depth;
+    zval texture;
+    zval depth;
     zend_object std;
 } php_raylib_rendertexture_object;
 
@@ -34,5 +34,6 @@ static inline php_raylib_rendertexture_object *php_raylib_rendertexture_fetch_ob
 void php_raylib_rendertexture_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern);
+extern void php_raylib_rendertexture_update_intern_reverse(php_raylib_rendertexture_object *intern);
 
 #endif //PHP_RAYLIB_RENDERTEXTURE_H

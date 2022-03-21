@@ -75,6 +75,9 @@ void php_raylib_audiostream_update_intern(php_raylib_audiostream_object *intern)
     //TODO: Support for pointers and arrays;
     //intern->audiostream.buffer = intern->buffer->raudiobuffer;
 }
+
+void php_raylib_audiostream_update_intern_reverse(php_raylib_audiostream_object *intern) {
+}
 typedef struct _raylib_audiostream_prop_handler {
     raylib_audiostream_read_raudiobuffer_array_t read_raudiobuffer_array_func;
     raylib_audiostream_write_raudiobuffer_array_t write_raudiobuffer_array_func;

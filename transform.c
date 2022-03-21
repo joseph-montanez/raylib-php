@@ -74,9 +74,18 @@ typedef int (*raylib_transform_write_vector4_t)(php_raylib_transform_object *obj
  * @param intern
  */
 void php_raylib_transform_update_intern(php_raylib_transform_object *intern) {
-    intern->transform.translation = intern->translation->vector3;
-    intern->transform.rotation = intern->rotation->vector4;
-    intern->transform.scale = intern->scale->vector3;
+    php_raylib_vector3_object *translationObject = Z_VECTOR3_OBJ_P(&intern->translation);
+    intern->transform.translation = translationObject->vector3;
+
+    php_raylib_vector4_object *rotationObject = Z_VECTOR4_OBJ_P(&intern->rotation);
+    intern->transform.rotation = rotationObject->vector4;
+
+    php_raylib_vector3_object *scaleObject = Z_VECTOR3_OBJ_P(&intern->scale);
+    intern->transform.scale = scaleObject->vector3;
+
+}
+
+void php_raylib_transform_update_intern_reverse(php_raylib_transform_object *intern) {
 }
 typedef struct _raylib_transform_prop_handler {
     raylib_transform_read_vector3_t read_vector3_func;
@@ -283,13 +292,10 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
     if (orig) {
         php_raylib_transform_object *other = php_raylib_transform_fetch_object(orig);
 
-        zend_object *translation = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->translation->std);
-        zend_object *rotation = php_raylib_vector4_new_ex(php_raylib_vector4_ce, &other->rotation->std);
-        zend_object *scale = php_raylib_vector3_new_ex(php_raylib_vector3_ce, &other->scale->std);
+        php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(&other->translation);
+        php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(&other->rotation);
+        php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(&other->scale);
 
-        php_raylib_vector3_object *phpTranslation = php_raylib_vector3_fetch_object(translation);
-        php_raylib_vector4_object *phpRotation = php_raylib_vector4_fetch_object(rotation);
-        php_raylib_vector3_object *phpScale = php_raylib_vector3_fetch_object(scale);
 
         intern->transform = (Transform) {
             .translation = (Vector3) {
@@ -310,9 +316,9 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
             }
         };
 
-        intern->translation = phpTranslation;
-        intern->rotation = phpRotation;
-        intern->scale = phpScale;
+        ZVAL_OBJ_COPY(&intern->translation, &phpTranslation->std);
+        ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
+        ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
     } else {
         zend_object *translation = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *rotation = php_raylib_vector4_new_ex(php_raylib_vector4_ce, NULL);
@@ -340,9 +346,9 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
                 .z = 0
             }
         };
-        intern->translation = phpTranslation;
-        intern->rotation = phpRotation;
-        intern->scale = phpScale;
+        ZVAL_OBJ_COPY(&intern->translation, &phpTranslation->std);
+        ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
+        ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -413,9 +419,9 @@ PHP_METHOD(Transform, __construct)
     phpRotation = php_raylib_vector4_fetch_object(rotation);
     phpScale = php_raylib_vector3_fetch_object(scale);
 
-    intern->translation = phpTranslation;
-    intern->rotation = phpRotation;
-    intern->scale = phpScale;
+    ZVAL_OBJ_COPY(&intern->translation, &phpTranslation->std);
+    ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
+    ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
 
     intern->transform = (Transform) {
         .translation = (Vector3) {
@@ -439,22 +445,28 @@ PHP_METHOD(Transform, __construct)
 
 static zend_object * php_raylib_transform_get_translation(php_raylib_transform_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->translation->std);
-    return &obj->translation->std;
+    php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(&obj->translation);
+
+    GC_ADDREF(&phpTranslation->std);
+    return &phpTranslation->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_transform_get_rotation(php_raylib_transform_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->rotation->std);
-    return &obj->rotation->std;
+    php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(&obj->rotation);
+
+    GC_ADDREF(&phpRotation->std);
+    return &phpRotation->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_transform_get_scale(php_raylib_transform_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->scale->std);
-    return &obj->scale->std;
+    php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(&obj->scale);
+
+    GC_ADDREF(&phpScale->std);
+    return &phpScale->std;
 }
 /* }}} */
 
@@ -467,10 +479,7 @@ static int php_raylib_transform_set_translation(php_raylib_transform_object *obj
         return ret;
     }
 
-    php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpTranslation->std);
-    GC_DELREF(&obj->translation->std);
-    obj->translation = phpTranslation;
+    obj->translation = *newval;
 
     return ret;
 }
@@ -485,10 +494,7 @@ static int php_raylib_transform_set_rotation(php_raylib_transform_object *obj, z
         return ret;
     }
 
-    php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(newval);
-    GC_ADDREF(&phpRotation->std);
-    GC_DELREF(&obj->rotation->std);
-    obj->rotation = phpRotation;
+    obj->rotation = *newval;
 
     return ret;
 }
@@ -503,10 +509,7 @@ static int php_raylib_transform_set_scale(php_raylib_transform_object *obj, zval
         return ret;
     }
 
-    php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(newval);
-    GC_ADDREF(&phpScale->std);
-    GC_DELREF(&obj->scale->std);
-    obj->scale = phpScale;
+    obj->scale = *newval;
 
     return ret;
 }

@@ -29,5 +29,6 @@ static inline php_raylib_image_object *php_raylib_image_fetch_object(zend_object
 void php_raylib_image_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_image_update_intern(php_raylib_image_object *intern);
+extern void php_raylib_image_update_intern_reverse(php_raylib_image_object *intern);
 
 #endif //PHP_RAYLIB_IMAGE_H

@@ -73,7 +73,12 @@ typedef int (*raylib_npatchinfo_write_int_t)(php_raylib_npatchinfo_object *obj, 
  * @param intern
  */
 void php_raylib_npatchinfo_update_intern(php_raylib_npatchinfo_object *intern) {
-    intern->npatchinfo.source = intern->source->rectangle;
+    php_raylib_rectangle_object *sourceObject = Z_RECTANGLE_OBJ_P(&intern->source);
+    intern->npatchinfo.source = sourceObject->rectangle;
+
+}
+
+void php_raylib_npatchinfo_update_intern_reverse(php_raylib_npatchinfo_object *intern) {
 }
 typedef struct _raylib_npatchinfo_prop_handler {
     raylib_npatchinfo_read_rectangle_t read_rectangle_func;
@@ -279,9 +284,8 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
     if (orig) {
         php_raylib_npatchinfo_object *other = php_raylib_npatchinfo_fetch_object(orig);
 
-        zend_object *source = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, &other->source->std);
+        php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(&other->source);
 
-        php_raylib_rectangle_object *phpSource = php_raylib_rectangle_fetch_object(source);
 
         intern->npatchinfo = (NPatchInfo) {
             .source = (Rectangle) {
@@ -297,7 +301,7 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
             .layout = other->npatchinfo.layout
         };
 
-        intern->source = phpSource;
+        ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
     } else {
         zend_object *source = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
 
@@ -316,7 +320,7 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
             .bottom = 0,
             .layout = 0
         };
-        intern->source = phpSource;
+        ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -412,7 +416,7 @@ PHP_METHOD(NPatchInfo, __construct)
 
     phpSource = php_raylib_rectangle_fetch_object(source);
 
-    intern->source = phpSource;
+    ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
 
     intern->npatchinfo = (NPatchInfo) {
         .source = (Rectangle) {
@@ -431,8 +435,10 @@ PHP_METHOD(NPatchInfo, __construct)
 
 static zend_object * php_raylib_npatchinfo_get_source(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->source->std);
-    return &obj->source->std;
+    php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(&obj->source);
+
+    GC_ADDREF(&phpSource->std);
+    return &phpSource->std;
 }
 /* }}} */
 
@@ -475,10 +481,7 @@ static int php_raylib_npatchinfo_set_source(php_raylib_npatchinfo_object *obj, z
         return ret;
     }
 
-    php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(newval);
-    GC_ADDREF(&phpSource->std);
-    GC_DELREF(&obj->source->std);
-    obj->source = phpSource;
+    obj->source = *newval;
 
     return ret;
 }

@@ -31,11 +31,15 @@ extern zend_object_handlers php_raylib_model_object_handlers;
 typedef struct _php_raylib_model_object {
     Model model;
     HashTable *prop_handler;
-    php_raylib_matrix_object *transform;
-php_raylib_mesh_object *meshes;
-php_raylib_material_object *materials;
-php_raylib_boneinfo_object *bones;
-php_raylib_transform_object *bindpose;
+    zval transform;
+    // TODO: support for dynamic arrays
+    // zval *meshes;
+    // TODO: support for dynamic arrays
+    // zval *materials;
+    // TODO: support for dynamic arrays
+    // zval *bones;
+    // TODO: support for dynamic arrays
+    // zval *bindpose;
     zend_object std;
 } php_raylib_model_object;
 
@@ -48,5 +52,6 @@ static inline php_raylib_model_object *php_raylib_model_fetch_object(zend_object
 void php_raylib_model_startup(INIT_FUNC_ARGS);
 
 extern void php_raylib_model_update_intern(php_raylib_model_object *intern);
+extern void php_raylib_model_update_intern_reverse(php_raylib_model_object *intern);
 
 #endif //PHP_RAYLIB_MODEL_H

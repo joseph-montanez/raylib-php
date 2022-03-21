@@ -73,8 +73,15 @@ typedef int (*raylib_rendertexture_write_texture_t)(php_raylib_rendertexture_obj
  * @param intern
  */
 void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern) {
-    intern->rendertexture.texture = intern->texture->texture;
-    intern->rendertexture.depth = intern->depth->texture;
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    intern->rendertexture.texture = textureObject->texture;
+
+    php_raylib_texture_object *depthObject = Z_TEXTURE_OBJ_P(&intern->depth);
+    intern->rendertexture.depth = depthObject->texture;
+
+}
+
+void php_raylib_rendertexture_update_intern_reverse(php_raylib_rendertexture_object *intern) {
 }
 typedef struct _raylib_rendertexture_prop_handler {
     raylib_rendertexture_read_unsigned_int_t read_unsigned_int_func;
@@ -280,11 +287,9 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
     if (orig) {
         php_raylib_rendertexture_object *other = php_raylib_rendertexture_fetch_object(orig);
 
-        zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, &other->texture->std);
-        zend_object *depth = php_raylib_texture_new_ex(php_raylib_texture_ce, &other->depth->std);
+        php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&other->texture);
+        php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(&other->depth);
 
-        php_raylib_texture_object *phpTexture = php_raylib_texture_fetch_object(texture);
-        php_raylib_texture_object *phpDepth = php_raylib_texture_fetch_object(depth);
 
         intern->rendertexture = (RenderTexture) {
             .id = other->rendertexture.id,
@@ -304,8 +309,8 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
             }
         };
 
-        intern->texture = phpTexture;
-        intern->depth = phpDepth;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+        ZVAL_OBJ_COPY(&intern->depth, &phpDepth->std);
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
         zend_object *depth = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
@@ -330,8 +335,8 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
                 .format = 0
             }
         };
-        intern->texture = phpTexture;
-        intern->depth = phpDepth;
+        ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+        ZVAL_OBJ_COPY(&intern->depth, &phpDepth->std);
     }
 
     zend_object_std_init(&intern->std, ce);
@@ -388,15 +393,19 @@ static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object
 
 static zend_object * php_raylib_rendertexture_get_texture(php_raylib_rendertexture_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->texture->std);
-    return &obj->texture->std;
+    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&obj->texture);
+
+    GC_ADDREF(&phpTexture->std);
+    return &phpTexture->std;
 }
 /* }}} */
 
 static zend_object * php_raylib_rendertexture_get_depth(php_raylib_rendertexture_object *obj) /* {{{ */
 {
-    GC_ADDREF(&obj->depth->std);
-    return &obj->depth->std;
+    php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(&obj->depth);
+
+    GC_ADDREF(&phpDepth->std);
+    return &phpDepth->std;
 }
 /* }}} */
 
@@ -424,10 +433,7 @@ static int php_raylib_rendertexture_set_texture(php_raylib_rendertexture_object 
         return ret;
     }
 
-    php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(newval);
-    GC_ADDREF(&phpTexture->std);
-    GC_DELREF(&obj->texture->std);
-    obj->texture = phpTexture;
+    obj->texture = *newval;
 
     return ret;
 }
@@ -442,10 +448,7 @@ static int php_raylib_rendertexture_set_depth(php_raylib_rendertexture_object *o
         return ret;
     }
 
-    php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(newval);
-    GC_ADDREF(&phpDepth->std);
-    GC_DELREF(&obj->depth->std);
-    obj->depth = phpDepth;
+    obj->depth = *newval;
 
     return ret;
 }
