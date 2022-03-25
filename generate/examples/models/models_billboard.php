@@ -14,13 +14,15 @@ $screenHeight = 450;
 InitWindow($screenWidth, $screenHeight, "raylib [models] example - drawing billboards");
 
 // Define the camera to look into our 3d world
+$ray_white = Color::RAYWHITE();
+$white = Color::WHITE();
 
 $position = new Vector3(5.0, 4.0, 5.0);
 $target = new Vector3(0.0, 2.0, 0.0);
 $up = new Vector3(0.0, 1.0, 0.0);
 $fovy = 45.0;
 $projection = CAMERA_PERSPECTIVE;
-$camera = new Camera3D();
+$camera = new Camera3D($position, $target, $up, $fovy, $projection);
 
 $bill = LoadTexture(__DIR__ . '/resources/billboard.png');     // Our texture billboard
 $billPosition = new Vector3(0.0, 2.0, 0.0);                    // Position where draw billboard
@@ -42,13 +44,13 @@ while (!WindowShouldClose())            // Detect window close button or ESC key
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
-        ClearBackground(Color::RAYWHITE());
+    ClearBackground($ray_white);
 
         BeginMode3D($camera);
 
             DrawGrid(10, 1.0);        // Draw a grid
 
-            DrawBillboard($camera, $bill, $billPosition, 2.0, Color::WHITE());
+            DrawBillboard($camera, $bill, $billPosition, 2.0, $white);
 
         EndMode3D();
 
