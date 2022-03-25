@@ -88,6 +88,9 @@ void php_raylib_music_update_intern(php_raylib_music_object *intern) {
 }
 
 void php_raylib_music_update_intern_reverse(php_raylib_music_object *intern) {
+    php_raylib_audiostream_object *streamObject = Z_AUDIOSTREAM_OBJ_P(&intern->stream);
+    streamObject->audiostream = intern->music.stream;
+
 }
 typedef struct _raylib_music_prop_handler {
     raylib_music_read_audiostream_t read_audiostream_func;

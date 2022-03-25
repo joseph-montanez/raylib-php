@@ -86,6 +86,15 @@ void php_raylib_transform_update_intern(php_raylib_transform_object *intern) {
 }
 
 void php_raylib_transform_update_intern_reverse(php_raylib_transform_object *intern) {
+    php_raylib_vector3_object *translationObject = Z_VECTOR3_OBJ_P(&intern->translation);
+    translationObject->vector3 = intern->transform.translation;
+
+    php_raylib_vector4_object *rotationObject = Z_VECTOR4_OBJ_P(&intern->rotation);
+    rotationObject->vector4 = intern->transform.rotation;
+
+    php_raylib_vector3_object *scaleObject = Z_VECTOR3_OBJ_P(&intern->scale);
+    scaleObject->vector3 = intern->transform.scale;
+
 }
 typedef struct _raylib_transform_prop_handler {
     raylib_transform_read_vector3_t read_vector3_func;

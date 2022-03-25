@@ -79,6 +79,12 @@ void php_raylib_boundingbox_update_intern(php_raylib_boundingbox_object *intern)
 }
 
 void php_raylib_boundingbox_update_intern_reverse(php_raylib_boundingbox_object *intern) {
+    php_raylib_vector3_object *minObject = Z_VECTOR3_OBJ_P(&intern->min);
+    minObject->vector3 = intern->boundingbox.min;
+
+    php_raylib_vector3_object *maxObject = Z_VECTOR3_OBJ_P(&intern->max);
+    maxObject->vector3 = intern->boundingbox.max;
+
 }
 typedef struct _raylib_boundingbox_prop_handler {
     raylib_boundingbox_read_vector3_t read_vector3_func;

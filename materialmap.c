@@ -86,6 +86,12 @@ void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern)
 }
 
 void php_raylib_materialmap_update_intern_reverse(php_raylib_materialmap_object *intern) {
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    textureObject->texture = intern->materialmap.texture;
+
+    php_raylib_color_object *colorObject = Z_COLOR_OBJ_P(&intern->color);
+    colorObject->color = intern->materialmap.color;
+
 }
 typedef struct _raylib_materialmap_prop_handler {
     raylib_materialmap_read_texture_t read_texture_func;

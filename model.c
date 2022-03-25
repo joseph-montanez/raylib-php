@@ -106,6 +106,17 @@ void php_raylib_model_update_intern(php_raylib_model_object *intern) {
 }
 
 void php_raylib_model_update_intern_reverse(php_raylib_model_object *intern) {
+    php_raylib_matrix_object *transformObject = Z_MATRIX_OBJ_P(&intern->transform);
+    transformObject->matrix = intern->model.transform;
+
+    //TODO: Support for pointers and arrays;
+    //intern->model.meshes = intern->meshes->mesh;
+    //TODO: Support for pointers and arrays;
+    //intern->model.materials = intern->materials->material;
+    //TODO: Support for pointers and arrays;
+    //intern->model.bones = intern->bones->boneinfo;
+    //TODO: Support for pointers and arrays;
+    //intern->model.bindPose = intern->bindpose->transform;
 }
 typedef struct _raylib_model_prop_handler {
     raylib_model_read_matrix_t read_matrix_func;

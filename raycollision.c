@@ -85,6 +85,12 @@ void php_raylib_raycollision_update_intern(php_raylib_raycollision_object *inter
 }
 
 void php_raylib_raycollision_update_intern_reverse(php_raylib_raycollision_object *intern) {
+    php_raylib_vector3_object *pointObject = Z_VECTOR3_OBJ_P(&intern->point);
+    pointObject->vector3 = intern->raycollision.point;
+
+    php_raylib_vector3_object *normalObject = Z_VECTOR3_OBJ_P(&intern->normal);
+    normalObject->vector3 = intern->raycollision.normal;
+
 }
 typedef struct _raylib_raycollision_prop_handler {
     raylib_raycollision_read_bool_t read_bool_func;

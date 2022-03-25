@@ -119,6 +119,45 @@ void php_raylib_material_update_intern(php_raylib_material_object *intern) {
 }
 
 void php_raylib_material_update_intern_reverse(php_raylib_material_object *intern) {
+    php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
+    shaderObject->shader = intern->material.shader;
+
+    php_raylib_materialmap_object *maps_0 = Z_MATERIALMAP_OBJ_P(&intern->maps[0]);
+    maps_0->materialmap = intern->material.maps[0];
+
+    php_raylib_materialmap_object *maps_1 = Z_MATERIALMAP_OBJ_P(&intern->maps[1]);
+    maps_1->materialmap = intern->material.maps[1];
+
+    php_raylib_materialmap_object *maps_2 = Z_MATERIALMAP_OBJ_P(&intern->maps[2]);
+    maps_2->materialmap = intern->material.maps[2];
+
+    php_raylib_materialmap_object *maps_3 = Z_MATERIALMAP_OBJ_P(&intern->maps[3]);
+    maps_3->materialmap = intern->material.maps[3];
+
+    php_raylib_materialmap_object *maps_4 = Z_MATERIALMAP_OBJ_P(&intern->maps[4]);
+    maps_4->materialmap = intern->material.maps[4];
+
+    php_raylib_materialmap_object *maps_5 = Z_MATERIALMAP_OBJ_P(&intern->maps[5]);
+    maps_5->materialmap = intern->material.maps[5];
+
+    php_raylib_materialmap_object *maps_6 = Z_MATERIALMAP_OBJ_P(&intern->maps[6]);
+    maps_6->materialmap = intern->material.maps[6];
+
+    php_raylib_materialmap_object *maps_7 = Z_MATERIALMAP_OBJ_P(&intern->maps[7]);
+    maps_7->materialmap = intern->material.maps[7];
+
+    php_raylib_materialmap_object *maps_8 = Z_MATERIALMAP_OBJ_P(&intern->maps[8]);
+    maps_8->materialmap = intern->material.maps[8];
+
+    php_raylib_materialmap_object *maps_9 = Z_MATERIALMAP_OBJ_P(&intern->maps[9]);
+    maps_9->materialmap = intern->material.maps[9];
+
+    php_raylib_materialmap_object *maps_10 = Z_MATERIALMAP_OBJ_P(&intern->maps[10]);
+    maps_10->materialmap = intern->material.maps[10];
+
+    php_raylib_materialmap_object *maps_11 = Z_MATERIALMAP_OBJ_P(&intern->maps[11]);
+    maps_11->materialmap = intern->material.maps[11];
+
 }
 typedef struct _raylib_material_prop_handler {
     raylib_material_read_shader_t read_shader_func;

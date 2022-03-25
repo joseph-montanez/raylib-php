@@ -84,6 +84,10 @@ void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *i
 }
 
 void php_raylib_modelanimation_update_intern_reverse(php_raylib_modelanimation_object *intern) {
+    //TODO: Support for pointers and arrays;
+    //intern->modelanimation.bones = intern->bones->boneinfo;
+    //TODO: Support for pointers and arrays;
+    //intern->modelanimation.framePoses = intern->frameposes->transform;
 }
 typedef struct _raylib_modelanimation_prop_handler {
     raylib_modelanimation_read_int_t read_int_func;

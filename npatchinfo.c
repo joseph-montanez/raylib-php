@@ -79,6 +79,9 @@ void php_raylib_npatchinfo_update_intern(php_raylib_npatchinfo_object *intern) {
 }
 
 void php_raylib_npatchinfo_update_intern_reverse(php_raylib_npatchinfo_object *intern) {
+    php_raylib_rectangle_object *sourceObject = Z_RECTANGLE_OBJ_P(&intern->source);
+    sourceObject->rectangle = intern->npatchinfo.source;
+
 }
 typedef struct _raylib_npatchinfo_prop_handler {
     raylib_npatchinfo_read_rectangle_t read_rectangle_func;

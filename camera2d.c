@@ -82,6 +82,12 @@ void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
 }
 
 void php_raylib_camera2d_update_intern_reverse(php_raylib_camera2d_object *intern) {
+    php_raylib_vector2_object *offsetObject = Z_VECTOR2_OBJ_P(&intern->offset);
+    offsetObject->vector2 = intern->camera2d.offset;
+
+    php_raylib_vector2_object *targetObject = Z_VECTOR2_OBJ_P(&intern->target);
+    targetObject->vector2 = intern->camera2d.target;
+
 }
 typedef struct _raylib_camera2d_prop_handler {
     raylib_camera2d_read_vector2_t read_vector2_func;

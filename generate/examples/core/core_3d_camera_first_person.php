@@ -107,7 +107,7 @@ while (!WindowShouldClose())                // Detect window close button or ESC
 
         DrawText("First person camera default controls:", 20, 20, 10,  $black);
         DrawText("- Move with keys: W, A, S, D", 40, 40, 10, $dark_gray);
-        DrawText(time(), 40, 60, 10,  $dark_gray);
+        DrawText("- Mouse move to look around", 40, 60, 10, $dark_gray);
 
     EndDrawing();
     //----------------------------------------------------------------------------------

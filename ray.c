@@ -79,6 +79,12 @@ void php_raylib_ray_update_intern(php_raylib_ray_object *intern) {
 }
 
 void php_raylib_ray_update_intern_reverse(php_raylib_ray_object *intern) {
+    php_raylib_vector3_object *positionObject = Z_VECTOR3_OBJ_P(&intern->position);
+    positionObject->vector3 = intern->ray.position;
+
+    php_raylib_vector3_object *directionObject = Z_VECTOR3_OBJ_P(&intern->direction);
+    directionObject->vector3 = intern->ray.direction;
+
 }
 typedef struct _raylib_ray_prop_handler {
     raylib_ray_read_vector3_t read_vector3_func;

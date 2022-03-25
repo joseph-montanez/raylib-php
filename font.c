@@ -91,6 +91,13 @@ void php_raylib_font_update_intern(php_raylib_font_object *intern) {
 }
 
 void php_raylib_font_update_intern_reverse(php_raylib_font_object *intern) {
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    textureObject->texture = intern->font.texture;
+
+    //TODO: Support for pointers and arrays;
+    //intern->font.recs = intern->recs->rectangle;
+    //TODO: Support for pointers and arrays;
+    //intern->font.glyphs = intern->glyphs->glyphinfo;
 }
 typedef struct _raylib_font_prop_handler {
     raylib_font_read_int_t read_int_func;

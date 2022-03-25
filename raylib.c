@@ -145,6 +145,7 @@ PHP_FUNCTION(InitWindow)
 
 
     InitWindow((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, title->val);
+
 }
 
 // Check if KEY_ESCAPE pressed or Close icon pressed
@@ -169,6 +170,7 @@ PHP_FUNCTION(CloseWindow)
     ZEND_PARSE_PARAMETERS_NONE();
 
     CloseWindow();
+
 }
 
 // Check if window has been initialized successfully
@@ -287,6 +289,7 @@ PHP_FUNCTION(SetWindowState)
 
 
     SetWindowState((flags <= INT_MAX) ? (int) ((zend_long) flags) : -1);
+
 }
 
 // Clear window configuration state flags
@@ -304,6 +307,7 @@ PHP_FUNCTION(ClearWindowState)
 
 
     ClearWindowState((flags <= INT_MAX) ? (int) ((zend_long) flags) : -1);
+
 }
 
 // Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
@@ -316,6 +320,7 @@ PHP_FUNCTION(ToggleFullscreen)
     ZEND_PARSE_PARAMETERS_NONE();
 
     ToggleFullscreen();
+
 }
 
 // Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
@@ -328,6 +333,7 @@ PHP_FUNCTION(MaximizeWindow)
     ZEND_PARSE_PARAMETERS_NONE();
 
     MaximizeWindow();
+
 }
 
 // Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
@@ -340,6 +346,7 @@ PHP_FUNCTION(MinimizeWindow)
     ZEND_PARSE_PARAMETERS_NONE();
 
     MinimizeWindow();
+
 }
 
 // Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
@@ -352,6 +359,7 @@ PHP_FUNCTION(RestoreWindow)
     ZEND_PARSE_PARAMETERS_NONE();
 
     RestoreWindow();
+
 }
 
 // Set icon for window (only PLATFORM_DESKTOP)
@@ -371,6 +379,7 @@ PHP_FUNCTION(SetWindowIcon)
     php_raylib_image_update_intern(phpImage);
 
     SetWindowIcon(phpImage->image);
+
 }
 
 // Set title for window (only PLATFORM_DESKTOP)
@@ -388,6 +397,7 @@ PHP_FUNCTION(SetWindowTitle)
 
 
     SetWindowTitle(title->val);
+
 }
 
 // Set window position on screen (only PLATFORM_DESKTOP)
@@ -408,6 +418,7 @@ PHP_FUNCTION(SetWindowPosition)
 
 
     SetWindowPosition((x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1);
+
 }
 
 // Set monitor for the current window (fullscreen mode)
@@ -425,6 +436,7 @@ PHP_FUNCTION(SetWindowMonitor)
 
 
     SetWindowMonitor((monitor <= INT_MAX) ? (int) ((zend_long) monitor) : -1);
+
 }
 
 // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
@@ -445,6 +457,7 @@ PHP_FUNCTION(SetWindowMinSize)
 
 
     SetWindowMinSize((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+
 }
 
 // Set window dimensions
@@ -465,6 +478,7 @@ PHP_FUNCTION(SetWindowSize)
 
 
     SetWindowSize((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+
 }
 
 // Get current screen width
@@ -671,6 +685,7 @@ PHP_FUNCTION(SetClipboardText)
 
 
     SetClipboardText(text->val);
+
 }
 
 // Swap back buffer with front buffer (screen drawing)
@@ -683,6 +698,7 @@ PHP_FUNCTION(SwapScreenBuffer)
     ZEND_PARSE_PARAMETERS_NONE();
 
     SwapScreenBuffer();
+
 }
 
 // Register all input events
@@ -695,6 +711,7 @@ PHP_FUNCTION(PollInputEvents)
     ZEND_PARSE_PARAMETERS_NONE();
 
     PollInputEvents();
+
 }
 
 // Wait for some milliseconds (halt program execution)
@@ -712,6 +729,7 @@ PHP_FUNCTION(WaitTime)
 
 
     WaitTime((float) ms);
+
 }
 
 // Shows cursor
@@ -724,6 +742,7 @@ PHP_FUNCTION(ShowCursor)
     ZEND_PARSE_PARAMETERS_NONE();
 
     ShowCursor();
+
 }
 
 // Hides cursor
@@ -736,6 +755,7 @@ PHP_FUNCTION(HideCursor)
     ZEND_PARSE_PARAMETERS_NONE();
 
     HideCursor();
+
 }
 
 // Check if cursor is not visible
@@ -760,6 +780,7 @@ PHP_FUNCTION(EnableCursor)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EnableCursor();
+
 }
 
 // Disables cursor (lock cursor)
@@ -772,6 +793,7 @@ PHP_FUNCTION(DisableCursor)
     ZEND_PARSE_PARAMETERS_NONE();
 
     DisableCursor();
+
 }
 
 // Check if cursor is on the screen
@@ -803,6 +825,7 @@ PHP_FUNCTION(ClearBackground)
     php_raylib_color_update_intern(phpColor);
 
     ClearBackground(phpColor->color);
+
 }
 
 // Setup canvas (framebuffer) to start drawing
@@ -815,6 +838,7 @@ PHP_FUNCTION(BeginDrawing)
     ZEND_PARSE_PARAMETERS_NONE();
 
     BeginDrawing();
+
 }
 
 // End canvas drawing and swap buffers (double buffering)
@@ -827,6 +851,7 @@ PHP_FUNCTION(EndDrawing)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndDrawing();
+
 }
 
 // Begin 2D mode with custom camera (2D)
@@ -846,6 +871,7 @@ PHP_FUNCTION(BeginMode2D)
     php_raylib_camera2d_update_intern(phpCamera);
 
     BeginMode2D(phpCamera->camera2d);
+
 }
 
 // Ends 2D mode with custom camera
@@ -858,6 +884,7 @@ PHP_FUNCTION(EndMode2D)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndMode2D();
+
 }
 
 // Begin 3D mode with custom camera (3D)
@@ -877,6 +904,7 @@ PHP_FUNCTION(BeginMode3D)
     php_raylib_camera3d_update_intern(phpCamera);
 
     BeginMode3D(phpCamera->camera3d);
+
 }
 
 // Ends 3D mode and returns to default 2D orthographic mode
@@ -889,6 +917,7 @@ PHP_FUNCTION(EndMode3D)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndMode3D();
+
 }
 
 // Begin drawing to render texture
@@ -908,6 +937,7 @@ PHP_FUNCTION(BeginTextureMode)
     php_raylib_rendertexture_update_intern(phpTarget);
 
     BeginTextureMode(phpTarget->rendertexture);
+
 }
 
 // Ends drawing to render texture
@@ -920,6 +950,7 @@ PHP_FUNCTION(EndTextureMode)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndTextureMode();
+
 }
 
 // Begin custom shader drawing
@@ -939,6 +970,7 @@ PHP_FUNCTION(BeginShaderMode)
     php_raylib_shader_update_intern(phpShader);
 
     BeginShaderMode(phpShader->shader);
+
 }
 
 // End custom shader drawing (use default shader)
@@ -951,6 +983,7 @@ PHP_FUNCTION(EndShaderMode)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndShaderMode();
+
 }
 
 // Begin blending mode (alpha, additive, multiplied, subtract, custom)
@@ -968,6 +1001,7 @@ PHP_FUNCTION(BeginBlendMode)
 
 
     BeginBlendMode((mode <= INT_MAX) ? (int) ((zend_long) mode) : -1);
+
 }
 
 // End blending mode (reset to default: alpha blending)
@@ -980,6 +1014,7 @@ PHP_FUNCTION(EndBlendMode)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndBlendMode();
+
 }
 
 // Begin scissor mode (define screen area for following drawing)
@@ -1006,6 +1041,7 @@ PHP_FUNCTION(BeginScissorMode)
 
 
     BeginScissorMode((x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+
 }
 
 // End scissor mode
@@ -1018,6 +1054,7 @@ PHP_FUNCTION(EndScissorMode)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndScissorMode();
+
 }
 
 // Begin stereo rendering (requires VR simulator)
@@ -1037,6 +1074,7 @@ PHP_FUNCTION(BeginVrStereoMode)
     php_raylib_vrstereoconfig_update_intern(phpConfig);
 
     BeginVrStereoMode(phpConfig->vrstereoconfig);
+
 }
 
 // End stereo rendering (requires VR simulator)
@@ -1049,6 +1087,7 @@ PHP_FUNCTION(EndVrStereoMode)
     ZEND_PARSE_PARAMETERS_NONE();
 
     EndVrStereoMode();
+
 }
 
 // Load VR stereo config for VR simulator device parameters
@@ -1092,6 +1131,7 @@ PHP_FUNCTION(UnloadVrStereoConfig)
     php_raylib_vrstereoconfig_update_intern(phpConfig);
 
     UnloadVrStereoConfig(phpConfig->vrstereoconfig);
+
 }
 
 // Load shader from files and bind default locations
@@ -1213,6 +1253,7 @@ PHP_FUNCTION(SetShaderValueMatrix)
     php_raylib_matrix_update_intern(phpMat);
 
     SetShaderValueMatrix(phpShader->shader, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpMat->matrix);
+
 }
 
 // Set shader uniform value for texture (sampler2d)
@@ -1240,6 +1281,7 @@ PHP_FUNCTION(SetShaderValueTexture)
     php_raylib_texture_update_intern(phpTexture);
 
     SetShaderValueTexture(phpShader->shader, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpTexture->texture);
+
 }
 
 // Unload shader from GPU memory (VRAM)
@@ -1259,6 +1301,7 @@ PHP_FUNCTION(UnloadShader)
     php_raylib_shader_update_intern(phpShader);
 
     UnloadShader(phpShader->shader);
+
 }
 
 // Get a ray trace from mouse position
@@ -1475,6 +1518,7 @@ PHP_FUNCTION(SetTargetFPS)
 
 
     SetTargetFPS((fps <= INT_MAX) ? (int) ((zend_long) fps) : -1);
+
 }
 
 // Get current FPS
@@ -1548,6 +1592,7 @@ PHP_FUNCTION(SetRandomSeed)
 
 
     SetRandomSeed((seed <= INT_MAX) ? (int) ((zend_long) seed) : -1);
+
 }
 
 // Takes a screenshot of current screen (filename extension defines format)
@@ -1565,6 +1610,7 @@ PHP_FUNCTION(TakeScreenshot)
 
 
     TakeScreenshot(fileName->val);
+
 }
 
 // Setup init configuration flags (view FLAGS)
@@ -1582,6 +1628,7 @@ PHP_FUNCTION(SetConfigFlags)
 
 
     SetConfigFlags((flags <= INT_MAX) ? (int) ((zend_long) flags) : -1);
+
 }
 
 // Set the current threshold (minimum) log level
@@ -1599,6 +1646,7 @@ PHP_FUNCTION(SetTraceLogLevel)
 
 
     SetTraceLogLevel((logLevel <= INT_MAX) ? (int) ((zend_long) logLevel) : -1);
+
 }
 
 // Unload file text data allocated by LoadFileText()
@@ -1616,6 +1664,7 @@ PHP_FUNCTION(UnloadFileText)
 
 
     UnloadFileText(text->val);
+
 }
 
 // Save text data to file (write), string must be '\0' terminated, returns true on success
@@ -1702,6 +1751,7 @@ PHP_FUNCTION(ClearDirectoryFiles)
     ZEND_PARSE_PARAMETERS_NONE();
 
     ClearDirectoryFiles();
+
 }
 
 // Change working directory, return true on success
@@ -1743,6 +1793,7 @@ PHP_FUNCTION(ClearDroppedFiles)
     ZEND_PARSE_PARAMETERS_NONE();
 
     ClearDroppedFiles();
+
 }
 
 // Get file modification time (last write time)
@@ -1814,6 +1865,7 @@ PHP_FUNCTION(OpenURL)
 
 
     OpenURL(url->val);
+
 }
 
 // Check if a key has been pressed once
@@ -1899,6 +1951,7 @@ PHP_FUNCTION(SetExitKey)
 
 
     SetExitKey((key <= INT_MAX) ? (int) ((zend_long) key) : -1);
+
 }
 
 // Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
@@ -2232,6 +2285,7 @@ PHP_FUNCTION(SetMousePosition)
 
 
     SetMousePosition((x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1);
+
 }
 
 // Set mouse offset
@@ -2252,6 +2306,7 @@ PHP_FUNCTION(SetMouseOffset)
 
 
     SetMouseOffset((offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1);
+
 }
 
 // Set mouse scaling
@@ -2272,6 +2327,7 @@ PHP_FUNCTION(SetMouseScale)
 
 
     SetMouseScale((float) scaleX, (float) scaleY);
+
 }
 
 // Get mouse wheel movement Y
@@ -2301,6 +2357,7 @@ PHP_FUNCTION(SetMouseCursor)
 
 
     SetMouseCursor((cursor <= INT_MAX) ? (int) ((zend_long) cursor) : -1);
+
 }
 
 // Get touch position X for touch point 0 (relative to screen size)
@@ -2393,6 +2450,7 @@ PHP_FUNCTION(SetGesturesEnabled)
 
 
     SetGesturesEnabled((flags <= INT_MAX) ? (int) ((zend_long) flags) : -1);
+
 }
 
 // Check if a gesture have been detected
@@ -2514,6 +2572,7 @@ PHP_FUNCTION(SetCameraMode)
     php_raylib_camera3d_update_intern(phpCamera);
 
     SetCameraMode(phpCamera->camera3d, (mode <= INT_MAX) ? (int) ((zend_long) mode) : -1);
+
 }
 
 // Update camera position for selected mode
@@ -2533,6 +2592,8 @@ PHP_FUNCTION(UpdateCamera)
     php_raylib_camera3d_update_intern(phpCamera);
 
     UpdateCamera(&phpCamera->camera3d);
+
+    php_raylib_camera3d_update_intern_reverse(phpCamera);
 }
 
 // Set camera pan key to combine with mouse movement (free camera)
@@ -2550,6 +2611,7 @@ PHP_FUNCTION(SetCameraPanControl)
 
 
     SetCameraPanControl((keyPan <= INT_MAX) ? (int) ((zend_long) keyPan) : -1);
+
 }
 
 // Set camera alt key to combine with mouse movement (free camera)
@@ -2567,6 +2629,7 @@ PHP_FUNCTION(SetCameraAltControl)
 
 
     SetCameraAltControl((keyAlt <= INT_MAX) ? (int) ((zend_long) keyAlt) : -1);
+
 }
 
 // Set camera smooth zoom key to combine with mouse (free camera)
@@ -2584,6 +2647,7 @@ PHP_FUNCTION(SetCameraSmoothZoomControl)
 
 
     SetCameraSmoothZoomControl((keySmoothZoom <= INT_MAX) ? (int) ((zend_long) keySmoothZoom) : -1);
+
 }
 
 // Set camera move controls (1st person and 3rd person cameras)
@@ -2616,6 +2680,7 @@ PHP_FUNCTION(SetCameraMoveControls)
 
 
     SetCameraMoveControls((keyFront <= INT_MAX) ? (int) ((zend_long) keyFront) : -1, (keyBack <= INT_MAX) ? (int) ((zend_long) keyBack) : -1, (keyRight <= INT_MAX) ? (int) ((zend_long) keyRight) : -1, (keyLeft <= INT_MAX) ? (int) ((zend_long) keyLeft) : -1, (keyUp <= INT_MAX) ? (int) ((zend_long) keyUp) : -1, (keyDown <= INT_MAX) ? (int) ((zend_long) keyDown) : -1);
+
 }
 
 // Set texture and rectangle to be used on shapes drawing
@@ -2640,6 +2705,7 @@ PHP_FUNCTION(SetShapesTexture)
     php_raylib_rectangle_update_intern(phpSource);
 
     SetShapesTexture(phpTexture->texture, phpSource->rectangle);
+
 }
 
 // Draw a pixel
@@ -2665,6 +2731,7 @@ PHP_FUNCTION(DrawPixel)
     php_raylib_color_update_intern(phpColor);
 
     DrawPixel((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color);
+
 }
 
 // Draw a pixel (Vector version)
@@ -2689,6 +2756,7 @@ PHP_FUNCTION(DrawPixelV)
     php_raylib_color_update_intern(phpColor);
 
     DrawPixelV(phpPosition->vector2, phpColor->color);
+
 }
 
 // Draw a line
@@ -2720,6 +2788,7 @@ PHP_FUNCTION(DrawLine)
     php_raylib_color_update_intern(phpColor);
 
     DrawLine((startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color);
+
 }
 
 // Draw a line (Vector version)
@@ -2749,6 +2818,7 @@ PHP_FUNCTION(DrawLineV)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineV(phpStartPos->vector2, phpEndPos->vector2, phpColor->color);
+
 }
 
 // Draw a line defining thickness
@@ -2781,6 +2851,7 @@ PHP_FUNCTION(DrawLineEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineEx(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
+
 }
 
 // Draw a line using cubic-bezier curves in-out
@@ -2813,6 +2884,7 @@ PHP_FUNCTION(DrawLineBezier)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineBezier(phpStartPos->vector2, phpEndPos->vector2, (float) thick, phpColor->color);
+
 }
 
 // Draw line using quadratic bezier curves with a control point
@@ -2850,6 +2922,7 @@ PHP_FUNCTION(DrawLineBezierQuad)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineBezierQuad(phpStartPos->vector2, phpEndPos->vector2, phpControlPos->vector2, (float) thick, phpColor->color);
+
 }
 
 // Draw line using cubic bezier curves with 2 control points
@@ -2892,6 +2965,7 @@ PHP_FUNCTION(DrawLineBezierCubic)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineBezierCubic(phpStartPos->vector2, phpEndPos->vector2, phpStartControlPos->vector2, phpEndControlPos->vector2, (float) thick, phpColor->color);
+
 }
 
 // Draw lines sequence
@@ -2932,6 +3006,7 @@ PHP_FUNCTION(DrawLineStrip)
     php_raylib_color_update_intern(phpColor);
 
     DrawLineStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
+
 }
 
 // Draw a color-filled circle
@@ -2960,6 +3035,7 @@ PHP_FUNCTION(DrawCircle)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircle((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color);
+
 }
 
 // Draw a piece of a circle
@@ -2996,6 +3072,7 @@ PHP_FUNCTION(DrawCircleSector)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircleSector(phpCenter->vector2, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
+
 }
 
 // Draw circle sector outline
@@ -3032,6 +3109,7 @@ PHP_FUNCTION(DrawCircleSectorLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircleSectorLines(phpCenter->vector2, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
+
 }
 
 // Draw a gradient-filled circle
@@ -3065,6 +3143,7 @@ PHP_FUNCTION(DrawCircleGradient)
     php_raylib_color_update_intern(phpColor2);
 
     DrawCircleGradient((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor1->color, phpColor2->color);
+
 }
 
 // Draw a color-filled circle (Vector version)
@@ -3092,6 +3171,7 @@ PHP_FUNCTION(DrawCircleV)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircleV(phpCenter->vector2, (float) radius, phpColor->color);
+
 }
 
 // Draw circle outline
@@ -3120,6 +3200,7 @@ PHP_FUNCTION(DrawCircleLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircleLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color);
+
 }
 
 // Draw ellipse
@@ -3151,6 +3232,7 @@ PHP_FUNCTION(DrawEllipse)
     php_raylib_color_update_intern(phpColor);
 
     DrawEllipse((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color);
+
 }
 
 // Draw ellipse outline
@@ -3182,6 +3264,7 @@ PHP_FUNCTION(DrawEllipseLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawEllipseLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color);
+
 }
 
 // Draw ring
@@ -3221,6 +3304,7 @@ PHP_FUNCTION(DrawRing)
     php_raylib_color_update_intern(phpColor);
 
     DrawRing(phpCenter->vector2, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
+
 }
 
 // Draw ring outline
@@ -3260,6 +3344,7 @@ PHP_FUNCTION(DrawRingLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawRingLines(phpCenter->vector2, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
+
 }
 
 // Draw a color-filled rectangle
@@ -3291,6 +3376,7 @@ PHP_FUNCTION(DrawRectangle)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangle((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
+
 }
 
 // Draw a color-filled rectangle (Vector version)
@@ -3320,6 +3406,7 @@ PHP_FUNCTION(DrawRectangleV)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleV(phpPosition->vector2, phpSize->vector2, phpColor->color);
+
 }
 
 // Draw a color-filled rectangle
@@ -3344,6 +3431,7 @@ PHP_FUNCTION(DrawRectangleRec)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRec(phpRec->rectangle, phpColor->color);
+
 }
 
 // Draw a color-filled rectangle with pro parameters
@@ -3376,6 +3464,7 @@ PHP_FUNCTION(DrawRectanglePro)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectanglePro(phpRec->rectangle, phpOrigin->vector2, (float) rotation, phpColor->color);
+
 }
 
 // Draw a vertical-gradient-filled rectangle
@@ -3412,6 +3501,7 @@ PHP_FUNCTION(DrawRectangleGradientV)
     php_raylib_color_update_intern(phpColor2);
 
     DrawRectangleGradientV((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color, phpColor2->color);
+
 }
 
 // Draw a horizontal-gradient-filled rectangle
@@ -3448,6 +3538,7 @@ PHP_FUNCTION(DrawRectangleGradientH)
     php_raylib_color_update_intern(phpColor2);
 
     DrawRectangleGradientH((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color, phpColor2->color);
+
 }
 
 // Draw a gradient-filled rectangle with custom vertex colors
@@ -3487,6 +3578,7 @@ PHP_FUNCTION(DrawRectangleGradientEx)
     php_raylib_color_update_intern(phpCol4);
 
     DrawRectangleGradientEx(phpRec->rectangle, phpCol1->color, phpCol2->color, phpCol3->color, phpCol4->color);
+
 }
 
 // Draw rectangle outline
@@ -3518,6 +3610,7 @@ PHP_FUNCTION(DrawRectangleLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleLines((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
+
 }
 
 // Draw rectangle outline with extended parameters
@@ -3545,6 +3638,7 @@ PHP_FUNCTION(DrawRectangleLinesEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleLinesEx(phpRec->rectangle, (float) lineThick, phpColor->color);
+
 }
 
 // Draw rectangle with rounded edges
@@ -3575,6 +3669,7 @@ PHP_FUNCTION(DrawRectangleRounded)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRounded(phpRec->rectangle, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color);
+
 }
 
 // Draw rectangle with rounded edges outline
@@ -3608,6 +3703,7 @@ PHP_FUNCTION(DrawRectangleRoundedLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawRectangleRoundedLines(phpRec->rectangle, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, (float) lineThick, phpColor->color);
+
 }
 
 // Draw a color-filled triangle (vertex in counter-clockwise order!)
@@ -3642,6 +3738,7 @@ PHP_FUNCTION(DrawTriangle)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangle(phpV1->vector2, phpV2->vector2, phpV3->vector2, phpColor->color);
+
 }
 
 // Draw triangle outline (vertex in counter-clockwise order!)
@@ -3676,6 +3773,7 @@ PHP_FUNCTION(DrawTriangleLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangleLines(phpV1->vector2, phpV2->vector2, phpV3->vector2, phpColor->color);
+
 }
 
 // Draw a triangle fan defined by points (first vertex is the center)
@@ -3716,6 +3814,7 @@ PHP_FUNCTION(DrawTriangleFan)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangleFan(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
+
 }
 
 // Draw a triangle strip defined by points
@@ -3756,6 +3855,7 @@ PHP_FUNCTION(DrawTriangleStrip)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangleStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
+
 }
 
 // Draw a regular polygon (Vector version)
@@ -3789,6 +3889,7 @@ PHP_FUNCTION(DrawPoly)
     php_raylib_color_update_intern(phpColor);
 
     DrawPoly(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color);
+
 }
 
 // Draw a polygon outline of n sides
@@ -3822,6 +3923,7 @@ PHP_FUNCTION(DrawPolyLines)
     php_raylib_color_update_intern(phpColor);
 
     DrawPolyLines(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color);
+
 }
 
 // Draw a polygon outline of n sides with extended parameters
@@ -3858,6 +3960,7 @@ PHP_FUNCTION(DrawPolyLinesEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawPolyLinesEx(phpCenter->vector2, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, (float) lineThick, phpColor->color);
+
 }
 
 // Check collision between two rectangles
@@ -4321,6 +4424,7 @@ PHP_FUNCTION(UnloadImage)
     php_raylib_image_update_intern(phpImage);
 
     UnloadImage(phpImage->image);
+
 }
 
 // Export image data to file, returns true on success
@@ -4743,6 +4847,8 @@ PHP_FUNCTION(ImageFormat)
     php_raylib_image_update_intern(phpImage);
 
     ImageFormat(&phpImage->image, (newFormat <= INT_MAX) ? (int) ((zend_long) newFormat) : -1);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Convert image to POT (power-of-two)
@@ -4767,6 +4873,8 @@ PHP_FUNCTION(ImageToPOT)
     php_raylib_color_update_intern(phpFill);
 
     ImageToPOT(&phpImage->image, phpFill->color);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Crop an image to a defined rectangle
@@ -4791,6 +4899,8 @@ PHP_FUNCTION(rlImageCrop)
     php_raylib_rectangle_update_intern(phpCrop);
 
     ImageCrop(&phpImage->image, phpCrop->rectangle);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Crop image depending on alpha value
@@ -4813,6 +4923,8 @@ PHP_FUNCTION(ImageAlphaCrop)
     php_raylib_image_update_intern(phpImage);
 
     ImageAlphaCrop(&phpImage->image, (float) threshold);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Clear alpha channel to desired color
@@ -4840,6 +4952,8 @@ PHP_FUNCTION(ImageAlphaClear)
     php_raylib_color_update_intern(phpColor);
 
     ImageAlphaClear(&phpImage->image, phpColor->color, (float) threshold);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Apply alpha mask to image
@@ -4864,6 +4978,8 @@ PHP_FUNCTION(ImageAlphaMask)
     php_raylib_image_update_intern(phpAlphaMask);
 
     ImageAlphaMask(&phpImage->image, phpAlphaMask->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Premultiply alpha channel
@@ -4883,6 +4999,8 @@ PHP_FUNCTION(ImageAlphaPremultiply)
     php_raylib_image_update_intern(phpImage);
 
     ImageAlphaPremultiply(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Resize image (Bicubic scaling algorithm)
@@ -4908,6 +5026,8 @@ PHP_FUNCTION(ImageResize)
     php_raylib_image_update_intern(phpImage);
 
     ImageResize(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Resize image (Nearest-Neighbor scaling algorithm)
@@ -4933,6 +5053,8 @@ PHP_FUNCTION(ImageResizeNN)
     php_raylib_image_update_intern(phpImage);
 
     ImageResizeNN(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Resize canvas and fill with color
@@ -4969,6 +5091,8 @@ PHP_FUNCTION(ImageResizeCanvas)
     php_raylib_color_update_intern(phpFill);
 
     ImageResizeCanvas(&phpImage->image, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1, (offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1, phpFill->color);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Compute all mipmap levels for a provided image
@@ -4988,6 +5112,8 @@ PHP_FUNCTION(ImageMipmaps)
     php_raylib_image_update_intern(phpImage);
 
     ImageMipmaps(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
@@ -5019,6 +5145,8 @@ PHP_FUNCTION(ImageDither)
     php_raylib_image_update_intern(phpImage);
 
     ImageDither(&phpImage->image, (rBpp <= INT_MAX) ? (int) ((zend_long) rBpp) : -1, (gBpp <= INT_MAX) ? (int) ((zend_long) gBpp) : -1, (bBpp <= INT_MAX) ? (int) ((zend_long) bBpp) : -1, (aBpp <= INT_MAX) ? (int) ((zend_long) aBpp) : -1);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Flip image vertically
@@ -5038,6 +5166,8 @@ PHP_FUNCTION(ImageFlipVertical)
     php_raylib_image_update_intern(phpImage);
 
     ImageFlipVertical(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Flip image horizontally
@@ -5057,6 +5187,8 @@ PHP_FUNCTION(ImageFlipHorizontal)
     php_raylib_image_update_intern(phpImage);
 
     ImageFlipHorizontal(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Rotate image clockwise 90deg
@@ -5076,6 +5208,8 @@ PHP_FUNCTION(ImageRotateCW)
     php_raylib_image_update_intern(phpImage);
 
     ImageRotateCW(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Rotate image counter-clockwise 90deg
@@ -5095,6 +5229,8 @@ PHP_FUNCTION(ImageRotateCCW)
     php_raylib_image_update_intern(phpImage);
 
     ImageRotateCCW(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: tint
@@ -5119,6 +5255,8 @@ PHP_FUNCTION(ImageColorTint)
     php_raylib_color_update_intern(phpColor);
 
     ImageColorTint(&phpImage->image, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: invert
@@ -5138,6 +5276,8 @@ PHP_FUNCTION(ImageColorInvert)
     php_raylib_image_update_intern(phpImage);
 
     ImageColorInvert(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: grayscale
@@ -5157,6 +5297,8 @@ PHP_FUNCTION(ImageColorGrayscale)
     php_raylib_image_update_intern(phpImage);
 
     ImageColorGrayscale(&phpImage->image);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: contrast (-100 to 100)
@@ -5179,6 +5321,8 @@ PHP_FUNCTION(ImageColorContrast)
     php_raylib_image_update_intern(phpImage);
 
     ImageColorContrast(&phpImage->image, (float) contrast);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: brightness (-255 to 255)
@@ -5201,6 +5345,8 @@ PHP_FUNCTION(ImageColorBrightness)
     php_raylib_image_update_intern(phpImage);
 
     ImageColorBrightness(&phpImage->image, (brightness <= INT_MAX) ? (int) ((zend_long) brightness) : -1);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Modify image color: replace color
@@ -5230,6 +5376,8 @@ PHP_FUNCTION(ImageColorReplace)
     php_raylib_color_update_intern(phpReplace);
 
     ImageColorReplace(&phpImage->image, phpColor->color, phpReplace->color);
+
+    php_raylib_image_update_intern_reverse(phpImage);
 }
 
 // Unload color data loaded with LoadImageColors()
@@ -5249,6 +5397,8 @@ PHP_FUNCTION(UnloadImageColors)
     php_raylib_color_update_intern(phpColors);
 
     UnloadImageColors(&phpColors->color);
+
+    php_raylib_color_update_intern_reverse(phpColors);
 }
 
 // Unload colors palette loaded with LoadImagePalette()
@@ -5268,6 +5418,8 @@ PHP_FUNCTION(UnloadImagePalette)
     php_raylib_color_update_intern(phpColors);
 
     UnloadImagePalette(&phpColors->color);
+
+    php_raylib_color_update_intern_reverse(phpColors);
 }
 
 // Get image alpha border rectangle
@@ -5349,6 +5501,8 @@ PHP_FUNCTION(ImageClearBackground)
     php_raylib_color_update_intern(phpColor);
 
     ImageClearBackground(&phpDst->image, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw pixel within an image
@@ -5379,6 +5533,8 @@ PHP_FUNCTION(ImageDrawPixel)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawPixel(&phpDst->image, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw pixel within an image (Vector version)
@@ -5408,6 +5564,8 @@ PHP_FUNCTION(ImageDrawPixelV)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawPixelV(&phpDst->image, phpPosition->vector2, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw line within an image
@@ -5444,6 +5602,8 @@ PHP_FUNCTION(ImageDrawLine)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawLine(&phpDst->image, (startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw line within an image (Vector version)
@@ -5478,6 +5638,8 @@ PHP_FUNCTION(ImageDrawLineV)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawLineV(&phpDst->image, phpStart->vector2, phpEnd->vector2, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw circle within an image
@@ -5511,6 +5673,8 @@ PHP_FUNCTION(ImageDrawCircle)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawCircle(&phpDst->image, (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw circle within an image (Vector version)
@@ -5543,6 +5707,8 @@ PHP_FUNCTION(ImageDrawCircleV)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawCircleV(&phpDst->image, phpCenter->vector2, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw rectangle within an image
@@ -5579,6 +5745,8 @@ PHP_FUNCTION(ImageDrawRectangle)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangle(&phpDst->image, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw rectangle within an image (Vector version)
@@ -5613,6 +5781,8 @@ PHP_FUNCTION(ImageDrawRectangleV)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleV(&phpDst->image, phpPosition->vector2, phpSize->vector2, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw rectangle within an image
@@ -5642,6 +5812,8 @@ PHP_FUNCTION(ImageDrawRectangleRec)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleRec(&phpDst->image, phpRec->rectangle, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw rectangle lines within an image
@@ -5674,6 +5846,8 @@ PHP_FUNCTION(ImageDrawRectangleLines)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawRectangleLines(&phpDst->image, phpRec->rectangle, (thick <= INT_MAX) ? (int) ((zend_long) thick) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw a source image within a destination image (tint applied to source)
@@ -5713,6 +5887,8 @@ PHP_FUNCTION(ImageDraw)
     php_raylib_color_update_intern(phpTint);
 
     ImageDraw(&phpDst->image, phpSrc->image, phpSrcRec->rectangle, phpDstRec->rectangle, phpTint->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw text (using default font) within an image (destination)
@@ -5749,6 +5925,8 @@ PHP_FUNCTION(ImageDrawText)
     php_raylib_color_update_intern(phpColor);
 
     ImageDrawText(&phpDst->image, text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Draw text (custom sprite font) within an image (destination)
@@ -5792,6 +5970,8 @@ PHP_FUNCTION(ImageDrawTextEx)
     php_raylib_color_update_intern(phpTint);
 
     ImageDrawTextEx(&phpDst->image, phpFont->font, text->val, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
+
+    php_raylib_image_update_intern_reverse(phpDst);
 }
 
 // Load texture from file into GPU memory (VRAM)
@@ -5909,6 +6089,7 @@ PHP_FUNCTION(UnloadTexture)
     php_raylib_texture_update_intern(phpTexture);
 
     UnloadTexture(phpTexture->texture);
+
 }
 
 // Unload render texture from GPU memory (VRAM)
@@ -5928,6 +6109,7 @@ PHP_FUNCTION(UnloadRenderTexture)
     php_raylib_rendertexture_update_intern(phpTarget);
 
     UnloadRenderTexture(phpTarget->rendertexture);
+
 }
 
 // Generate GPU mipmaps for a texture
@@ -5947,6 +6129,8 @@ PHP_FUNCTION(GenTextureMipmaps)
     php_raylib_texture_update_intern(phpTexture);
 
     GenTextureMipmaps(&phpTexture->texture);
+
+    php_raylib_texture_update_intern_reverse(phpTexture);
 }
 
 // Set texture scaling filter mode
@@ -5969,6 +6153,7 @@ PHP_FUNCTION(SetTextureFilter)
     php_raylib_texture_update_intern(phpTexture);
 
     SetTextureFilter(phpTexture->texture, (filter <= INT_MAX) ? (int) ((zend_long) filter) : -1);
+
 }
 
 // Set texture wrapping mode
@@ -5991,6 +6176,7 @@ PHP_FUNCTION(SetTextureWrap)
     php_raylib_texture_update_intern(phpTexture);
 
     SetTextureWrap(phpTexture->texture, (wrap <= INT_MAX) ? (int) ((zend_long) wrap) : -1);
+
 }
 
 // Draw a Texture2D
@@ -6021,6 +6207,7 @@ PHP_FUNCTION(DrawTexture)
     php_raylib_color_update_intern(phpTint);
 
     DrawTexture(phpTexture->texture, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpTint->color);
+
 }
 
 // Draw a Texture2D with position defined as Vector2
@@ -6050,6 +6237,7 @@ PHP_FUNCTION(DrawTextureV)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureV(phpTexture->texture, phpPosition->vector2, phpTint->color);
+
 }
 
 // Draw a Texture2D with extended parameters
@@ -6085,6 +6273,7 @@ PHP_FUNCTION(DrawTextureEx)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureEx(phpTexture->texture, phpPosition->vector2, (float) rotation, (float) scale, phpTint->color);
+
 }
 
 // Draw a part of a texture defined by a rectangle
@@ -6119,6 +6308,7 @@ PHP_FUNCTION(DrawTextureRec)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureRec(phpTexture->texture, phpSource->rectangle, phpPosition->vector2, phpTint->color);
+
 }
 
 // Draw texture quad with tiling and offset parameters
@@ -6158,6 +6348,7 @@ PHP_FUNCTION(DrawTextureQuad)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureQuad(phpTexture->texture, phpTiling->vector2, phpOffset->vector2, phpQuad->rectangle, phpTint->color);
+
 }
 
 // Draw part of a texture (defined by a rectangle) with rotation and scale tiled into dest.
@@ -6203,6 +6394,7 @@ PHP_FUNCTION(DrawTextureTiled)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureTiled(phpTexture->texture, phpSource->rectangle, phpDest->rectangle, phpOrigin->vector2, (float) rotation, (float) scale, phpTint->color);
+
 }
 
 // Draw a part of a texture defined by a rectangle with 'pro' parameters
@@ -6245,6 +6437,7 @@ PHP_FUNCTION(DrawTexturePro)
     php_raylib_color_update_intern(phpTint);
 
     DrawTexturePro(phpTexture->texture, phpSource->rectangle, phpDest->rectangle, phpOrigin->vector2, (float) rotation, phpTint->color);
+
 }
 
 // Draws a texture (or part of it) that stretches or shrinks nicely
@@ -6287,6 +6480,7 @@ PHP_FUNCTION(DrawTextureNPatch)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextureNPatch(phpTexture->texture, phpNPatchInfo->npatchinfo, phpDest->rectangle, phpOrigin->vector2, (float) rotation, phpTint->color);
+
 }
 
 // Draw a textured polygon
@@ -6355,6 +6549,7 @@ PHP_FUNCTION(DrawTexturePoly)
     php_raylib_color_update_intern(phpTint);
 
     DrawTexturePoly(phpTexture->texture, phpCenter->vector2, points_array, texcoords_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpTint->color);
+
 }
 
 // Get color with alpha applied, alpha goes from 0.0f to 1.0f
@@ -6823,6 +7018,7 @@ PHP_FUNCTION(UnloadFontData)
     } ZEND_HASH_FOREACH_END();
 
     UnloadFontData(chars_array, (glyphCount <= INT_MAX) ? (int) ((zend_long) glyphCount) : -1);
+
 }
 
 // Unload font from GPU memory (VRAM)
@@ -6842,6 +7038,7 @@ PHP_FUNCTION(UnloadFont)
     php_raylib_font_update_intern(phpFont);
 
     UnloadFont(phpFont->font);
+
 }
 
 // Export font as code file, returns true on success
@@ -6884,6 +7081,7 @@ PHP_FUNCTION(DrawFPS)
 
 
     DrawFPS((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1);
+
 }
 
 // Draw text (using default font)
@@ -6915,6 +7113,7 @@ PHP_FUNCTION(DrawText)
     php_raylib_color_update_intern(phpColor);
 
     DrawText(text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color);
+
 }
 
 // Draw text using font and additional parameters
@@ -6953,6 +7152,7 @@ PHP_FUNCTION(DrawTextEx)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextEx(phpFont->font, text->val, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
+
 }
 
 // Draw text using Font and pro parameters (rotation)
@@ -6999,6 +7199,7 @@ PHP_FUNCTION(DrawTextPro)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextPro(phpFont->font, text->val, phpPosition->vector2, phpOrigin->vector2, (float) rotation, (float) fontSize, (float) spacing, phpTint->color);
+
 }
 
 // Draw one character (codepoint)
@@ -7034,6 +7235,7 @@ PHP_FUNCTION(DrawTextCodepoint)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextCodepoint(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1, phpPosition->vector2, (float) fontSize, phpTint->color);
+
 }
 
 // Measure string width for default font
@@ -7194,6 +7396,7 @@ PHP_FUNCTION(UnloadCodepoints)
     } ZEND_HASH_FOREACH_END();
 
     UnloadCodepoints(codepoints_array);
+
 }
 
 // Get total number of codepoints in a UTF-8 encoded string
@@ -7339,6 +7542,7 @@ PHP_FUNCTION(TextAppend)
     } ZEND_HASH_FOREACH_END();
 
     TextAppend(text->val, append->val, position_array);
+
 }
 
 // Find first text occurrence within a string
@@ -7405,6 +7609,7 @@ PHP_FUNCTION(DrawLine3D)
     php_raylib_color_update_intern(phpColor);
 
     DrawLine3D(phpStartPos->vector3, phpEndPos->vector3, phpColor->color);
+
 }
 
 // Draw a point in 3D space, actually a small line
@@ -7429,6 +7634,7 @@ PHP_FUNCTION(DrawPoint3D)
     php_raylib_color_update_intern(phpColor);
 
     DrawPoint3D(phpPosition->vector3, phpColor->color);
+
 }
 
 // Draw a circle in 3D world space
@@ -7464,6 +7670,7 @@ PHP_FUNCTION(DrawCircle3D)
     php_raylib_color_update_intern(phpColor);
 
     DrawCircle3D(phpCenter->vector3, (float) radius, phpRotationAxis->vector3, (float) rotationAngle, phpColor->color);
+
 }
 
 // Draw a color-filled triangle (vertex in counter-clockwise order!)
@@ -7498,6 +7705,7 @@ PHP_FUNCTION(DrawTriangle3D)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangle3D(phpV1->vector3, phpV2->vector3, phpV3->vector3, phpColor->color);
+
 }
 
 // Draw a triangle strip defined by points
@@ -7538,6 +7746,7 @@ PHP_FUNCTION(DrawTriangleStrip3D)
     php_raylib_color_update_intern(phpColor);
 
     DrawTriangleStrip3D(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color);
+
 }
 
 // Draw cube
@@ -7571,6 +7780,7 @@ PHP_FUNCTION(DrawCube)
     php_raylib_color_update_intern(phpColor);
 
     DrawCube(phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
+
 }
 
 // Draw cube (Vector version)
@@ -7600,6 +7810,7 @@ PHP_FUNCTION(DrawCubeV)
     php_raylib_color_update_intern(phpColor);
 
     DrawCubeV(phpPosition->vector3, phpSize->vector3, phpColor->color);
+
 }
 
 // Draw cube wires
@@ -7633,6 +7844,7 @@ PHP_FUNCTION(DrawCubeWires)
     php_raylib_color_update_intern(phpColor);
 
     DrawCubeWires(phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
+
 }
 
 // Draw cube wires (Vector version)
@@ -7662,6 +7874,7 @@ PHP_FUNCTION(DrawCubeWiresV)
     php_raylib_color_update_intern(phpColor);
 
     DrawCubeWiresV(phpPosition->vector3, phpSize->vector3, phpColor->color);
+
 }
 
 // Draw cube textured
@@ -7700,6 +7913,7 @@ PHP_FUNCTION(DrawCubeTexture)
     php_raylib_color_update_intern(phpColor);
 
     DrawCubeTexture(phpTexture->texture, phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
+
 }
 
 // Draw cube with a region of a texture
@@ -7743,6 +7957,7 @@ PHP_FUNCTION(DrawCubeTextureRec)
     php_raylib_color_update_intern(phpColor);
 
     DrawCubeTextureRec(phpTexture->texture, phpSource->rectangle, phpPosition->vector3, (float) width, (float) height, (float) length, phpColor->color);
+
 }
 
 // Draw sphere
@@ -7770,6 +7985,7 @@ PHP_FUNCTION(DrawSphere)
     php_raylib_color_update_intern(phpColor);
 
     DrawSphere(phpCenterPos->vector3, (float) radius, phpColor->color);
+
 }
 
 // Draw sphere with extended parameters
@@ -7803,6 +8019,7 @@ PHP_FUNCTION(DrawSphereEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawSphereEx(phpCenterPos->vector3, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
+
 }
 
 // Draw sphere wires
@@ -7836,6 +8053,7 @@ PHP_FUNCTION(DrawSphereWires)
     php_raylib_color_update_intern(phpColor);
 
     DrawSphereWires(phpCenterPos->vector3, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
+
 }
 
 // Draw a cylinder/cone
@@ -7872,6 +8090,7 @@ PHP_FUNCTION(DrawCylinder)
     php_raylib_color_update_intern(phpColor);
 
     DrawCylinder(phpPosition->vector3, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
+
 }
 
 // Draw a cylinder with base at startPos and top at endPos
@@ -7910,6 +8129,7 @@ PHP_FUNCTION(DrawCylinderEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawCylinderEx(phpStartPos->vector3, phpEndPos->vector3, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color);
+
 }
 
 // Draw a cylinder/cone wires
@@ -7946,6 +8166,7 @@ PHP_FUNCTION(DrawCylinderWires)
     php_raylib_color_update_intern(phpColor);
 
     DrawCylinderWires(phpPosition->vector3, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color);
+
 }
 
 // Draw a cylinder wires with base at startPos and top at endPos
@@ -7984,6 +8205,7 @@ PHP_FUNCTION(DrawCylinderWiresEx)
     php_raylib_color_update_intern(phpColor);
 
     DrawCylinderWiresEx(phpStartPos->vector3, phpEndPos->vector3, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color);
+
 }
 
 // Draw a plane XZ
@@ -8013,6 +8235,7 @@ PHP_FUNCTION(DrawPlane)
     php_raylib_color_update_intern(phpColor);
 
     DrawPlane(phpCenterPos->vector3, phpSize->vector2, phpColor->color);
+
 }
 
 // Draw a ray line
@@ -8037,6 +8260,7 @@ PHP_FUNCTION(DrawRay)
     php_raylib_color_update_intern(phpColor);
 
     DrawRay(phpRay->ray, phpColor->color);
+
 }
 
 // Draw a grid (centered at (0, 0, 0))
@@ -8057,6 +8281,7 @@ PHP_FUNCTION(DrawGrid)
 
 
     DrawGrid((slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, (float) spacing);
+
 }
 
 // Load model from files (meshes and materials)
@@ -8122,6 +8347,7 @@ PHP_FUNCTION(UnloadModel)
     php_raylib_model_update_intern(phpModel);
 
     UnloadModel(phpModel->model);
+
 }
 
 // Unload model (but not meshes) from memory (RAM and/or VRAM)
@@ -8141,6 +8367,7 @@ PHP_FUNCTION(UnloadModelKeepMeshes)
     php_raylib_model_update_intern(phpModel);
 
     UnloadModelKeepMeshes(phpModel->model);
+
 }
 
 // Compute model bounding box limits (considers all meshes)
@@ -8197,6 +8424,7 @@ PHP_FUNCTION(DrawModel)
     php_raylib_color_update_intern(phpTint);
 
     DrawModel(phpModel->model, phpPosition->vector3, (float) scale, phpTint->color);
+
 }
 
 // Draw a model with extended parameters
@@ -8239,6 +8467,7 @@ PHP_FUNCTION(DrawModelEx)
     php_raylib_color_update_intern(phpTint);
 
     DrawModelEx(phpModel->model, phpPosition->vector3, phpRotationAxis->vector3, (float) rotationAngle, phpScale->vector3, phpTint->color);
+
 }
 
 // Draw a model wires (with texture if set)
@@ -8271,6 +8500,7 @@ PHP_FUNCTION(DrawModelWires)
     php_raylib_color_update_intern(phpTint);
 
     DrawModelWires(phpModel->model, phpPosition->vector3, (float) scale, phpTint->color);
+
 }
 
 // Draw a model wires (with texture if set) with extended parameters
@@ -8313,6 +8543,7 @@ PHP_FUNCTION(DrawModelWiresEx)
     php_raylib_color_update_intern(phpTint);
 
     DrawModelWiresEx(phpModel->model, phpPosition->vector3, phpRotationAxis->vector3, (float) rotationAngle, phpScale->vector3, phpTint->color);
+
 }
 
 // Draw bounding box (wires)
@@ -8337,6 +8568,7 @@ PHP_FUNCTION(DrawBoundingBox)
     php_raylib_color_update_intern(phpColor);
 
     DrawBoundingBox(phpBox->boundingbox, phpColor->color);
+
 }
 
 // Draw a billboard texture
@@ -8374,6 +8606,7 @@ PHP_FUNCTION(DrawBillboard)
     php_raylib_color_update_intern(phpTint);
 
     DrawBillboard(phpCamera->camera3d, phpTexture->texture, phpPosition->vector3, (float) size, phpTint->color);
+
 }
 
 // Draw a billboard texture defined by source
@@ -8418,6 +8651,7 @@ PHP_FUNCTION(DrawBillboardRec)
     php_raylib_color_update_intern(phpTint);
 
     DrawBillboardRec(phpCamera->camera3d, phpTexture->texture, phpSource->rectangle, phpPosition->vector3, phpSize->vector2, phpTint->color);
+
 }
 
 // Draw a billboard texture defined by source and rotation
@@ -8475,6 +8709,7 @@ PHP_FUNCTION(DrawBillboardPro)
     php_raylib_color_update_intern(phpTint);
 
     DrawBillboardPro(phpCamera->camera3d, phpTexture->texture, phpSource->rectangle, phpPosition->vector3, phpUp->vector3, phpSize->vector2, phpOrigin->vector2, (float) rotation, phpTint->color);
+
 }
 
 // Upload mesh vertex data in GPU and provide VAO/VBO ids
@@ -8497,6 +8732,8 @@ PHP_FUNCTION(UploadMesh)
     php_raylib_mesh_update_intern(phpMesh);
 
     UploadMesh(&phpMesh->mesh, dynamic);
+
+    php_raylib_mesh_update_intern_reverse(phpMesh);
 }
 
 // Unload mesh data from CPU and GPU
@@ -8516,6 +8753,7 @@ PHP_FUNCTION(UnloadMesh)
     php_raylib_mesh_update_intern(phpMesh);
 
     UnloadMesh(phpMesh->mesh);
+
 }
 
 // Draw a 3d mesh with material and transform
@@ -8545,6 +8783,7 @@ PHP_FUNCTION(DrawMesh)
     php_raylib_matrix_update_intern(phpTransform);
 
     DrawMesh(phpMesh->mesh, phpMaterial->material, phpTransform->matrix);
+
 }
 
 // Draw multiple mesh instances with material and different transforms
@@ -8577,6 +8816,8 @@ PHP_FUNCTION(DrawMeshInstanced)
     php_raylib_matrix_update_intern(phpTransforms);
 
     DrawMeshInstanced(phpMesh->mesh, phpMaterial->material, &phpTransforms->matrix, (instances <= INT_MAX) ? (int) ((zend_long) instances) : -1);
+
+    php_raylib_matrix_update_intern_reverse(phpTransforms);
 }
 
 // Export mesh data to file, returns true on success
@@ -8642,6 +8883,8 @@ PHP_FUNCTION(GenMeshTangents)
     php_raylib_mesh_update_intern(phpMesh);
 
     GenMeshTangents(&phpMesh->mesh);
+
+    php_raylib_mesh_update_intern_reverse(phpMesh);
 }
 
 // Compute mesh binormals
@@ -8661,6 +8904,8 @@ PHP_FUNCTION(GenMeshBinormals)
     php_raylib_mesh_update_intern(phpMesh);
 
     GenMeshBinormals(&phpMesh->mesh);
+
+    php_raylib_mesh_update_intern_reverse(phpMesh);
 }
 
 // Generate polygonal mesh
@@ -9013,6 +9258,7 @@ PHP_FUNCTION(UnloadMaterial)
     php_raylib_material_update_intern(phpMaterial);
 
     UnloadMaterial(phpMaterial->material);
+
 }
 
 // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
@@ -9040,6 +9286,8 @@ PHP_FUNCTION(SetMaterialTexture)
     php_raylib_texture_update_intern(phpTexture);
 
     SetMaterialTexture(&phpMaterial->material, (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1, phpTexture->texture);
+
+    php_raylib_material_update_intern_reverse(phpMaterial);
 }
 
 // Set material for a mesh
@@ -9065,6 +9313,8 @@ PHP_FUNCTION(SetModelMeshMaterial)
     php_raylib_model_update_intern(phpModel);
 
     SetModelMeshMaterial(&phpModel->model, (meshId <= INT_MAX) ? (int) ((zend_long) meshId) : -1, (materialId <= INT_MAX) ? (int) ((zend_long) materialId) : -1);
+
+    php_raylib_model_update_intern_reverse(phpModel);
 }
 
 // Update model animation pose
@@ -9092,6 +9342,7 @@ PHP_FUNCTION(UpdateModelAnimation)
     php_raylib_modelanimation_update_intern(phpAnim);
 
     UpdateModelAnimation(phpModel->model, phpAnim->modelanimation, (frame <= INT_MAX) ? (int) ((zend_long) frame) : -1);
+
 }
 
 // Unload animation data
@@ -9111,6 +9362,7 @@ PHP_FUNCTION(UnloadModelAnimation)
     php_raylib_modelanimation_update_intern(phpAnim);
 
     UnloadModelAnimation(phpAnim->modelanimation);
+
 }
 
 // Unload animation array data
@@ -9146,6 +9398,7 @@ PHP_FUNCTION(UnloadModelAnimations)
     } ZEND_HASH_FOREACH_END();
 
     UnloadModelAnimations(animations_array, (count <= INT_MAX) ? (int) ((zend_long) count) : -1);
+
 }
 
 // Check model animation skeleton match
@@ -9470,6 +9723,7 @@ PHP_FUNCTION(InitAudioDevice)
     ZEND_PARSE_PARAMETERS_NONE();
 
     InitAudioDevice();
+
 }
 
 // Close the audio device and context
@@ -9482,6 +9736,7 @@ PHP_FUNCTION(CloseAudioDevice)
     ZEND_PARSE_PARAMETERS_NONE();
 
     CloseAudioDevice();
+
 }
 
 // Check if audio device has been initialized successfully
@@ -9511,6 +9766,7 @@ PHP_FUNCTION(SetMasterVolume)
 
 
     SetMasterVolume((float) volume);
+
 }
 
 // Load wave data from file
@@ -9640,6 +9896,7 @@ PHP_FUNCTION(UnloadWave)
     php_raylib_wave_update_intern(phpWave);
 
     UnloadWave(phpWave->wave);
+
 }
 
 // Unload sound
@@ -9659,6 +9916,7 @@ PHP_FUNCTION(UnloadSound)
     php_raylib_sound_update_intern(phpSound);
 
     UnloadSound(phpSound->sound);
+
 }
 
 // Export wave data to file, returns true on success
@@ -9722,6 +9980,7 @@ PHP_FUNCTION(PlaySound)
     php_raylib_sound_update_intern(phpSound);
 
     PlaySound(phpSound->sound);
+
 }
 
 // Stop playing a sound
@@ -9741,6 +10000,7 @@ PHP_FUNCTION(StopSound)
     php_raylib_sound_update_intern(phpSound);
 
     StopSound(phpSound->sound);
+
 }
 
 // Pause a sound
@@ -9760,6 +10020,7 @@ PHP_FUNCTION(PauseSound)
     php_raylib_sound_update_intern(phpSound);
 
     PauseSound(phpSound->sound);
+
 }
 
 // Resume a paused sound
@@ -9779,6 +10040,7 @@ PHP_FUNCTION(ResumeSound)
     php_raylib_sound_update_intern(phpSound);
 
     ResumeSound(phpSound->sound);
+
 }
 
 // Play a sound (using multichannel buffer pool)
@@ -9798,6 +10060,7 @@ PHP_FUNCTION(PlaySoundMulti)
     php_raylib_sound_update_intern(phpSound);
 
     PlaySoundMulti(phpSound->sound);
+
 }
 
 // Stop any sound playing (using multichannel buffer pool)
@@ -9810,6 +10073,7 @@ PHP_FUNCTION(StopSoundMulti)
     ZEND_PARSE_PARAMETERS_NONE();
 
     StopSoundMulti();
+
 }
 
 // Get number of sounds playing in the multichannel
@@ -9863,6 +10127,7 @@ PHP_FUNCTION(SetSoundVolume)
     php_raylib_sound_update_intern(phpSound);
 
     SetSoundVolume(phpSound->sound, (float) volume);
+
 }
 
 // Set pitch for a sound (1.0 is base level)
@@ -9885,6 +10150,7 @@ PHP_FUNCTION(SetSoundPitch)
     php_raylib_sound_update_intern(phpSound);
 
     SetSoundPitch(phpSound->sound, (float) pitch);
+
 }
 
 // Convert wave data to desired format
@@ -9913,6 +10179,8 @@ PHP_FUNCTION(WaveFormat)
     php_raylib_wave_update_intern(phpWave);
 
     WaveFormat(&phpWave->wave, (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
+
+    php_raylib_wave_update_intern_reverse(phpWave);
 }
 
 // Copy a wave to a new wave
@@ -9962,6 +10230,8 @@ PHP_FUNCTION(WaveCrop)
     php_raylib_wave_update_intern(phpWave);
 
     WaveCrop(&phpWave->wave, (initSample <= INT_MAX) ? (int) ((zend_long) initSample) : -1, (finalSample <= INT_MAX) ? (int) ((zend_long) finalSample) : -1);
+
+    php_raylib_wave_update_intern_reverse(phpWave);
 }
 
 // Unload samples data loaded with LoadWaveSamples()
@@ -9993,6 +10263,7 @@ PHP_FUNCTION(UnloadWaveSamples)
     } ZEND_HASH_FOREACH_END();
 
     UnloadWaveSamples((float *) samples);
+
 }
 
 // Load music stream from file
@@ -10034,6 +10305,7 @@ PHP_FUNCTION(UnloadMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     UnloadMusicStream(phpMusic->music);
+
 }
 
 // Start music playing
@@ -10053,6 +10325,7 @@ PHP_FUNCTION(PlayMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     PlayMusicStream(phpMusic->music);
+
 }
 
 // Check if music is playing
@@ -10091,6 +10364,7 @@ PHP_FUNCTION(UpdateMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     UpdateMusicStream(phpMusic->music);
+
 }
 
 // Stop music playing
@@ -10110,6 +10384,7 @@ PHP_FUNCTION(StopMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     StopMusicStream(phpMusic->music);
+
 }
 
 // Pause music playing
@@ -10129,6 +10404,7 @@ PHP_FUNCTION(PauseMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     PauseMusicStream(phpMusic->music);
+
 }
 
 // Resume playing paused music
@@ -10148,6 +10424,7 @@ PHP_FUNCTION(ResumeMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     ResumeMusicStream(phpMusic->music);
+
 }
 
 // Seek music to a position (in seconds)
@@ -10170,6 +10447,7 @@ PHP_FUNCTION(SeekMusicStream)
     php_raylib_music_update_intern(phpMusic);
 
     SeekMusicStream(phpMusic->music, (float) position);
+
 }
 
 // Set volume for music (1.0 is max level)
@@ -10192,6 +10470,7 @@ PHP_FUNCTION(SetMusicVolume)
     php_raylib_music_update_intern(phpMusic);
 
     SetMusicVolume(phpMusic->music, (float) volume);
+
 }
 
 // Set pitch for a music (1.0 is base level)
@@ -10214,6 +10493,7 @@ PHP_FUNCTION(SetMusicPitch)
     php_raylib_music_update_intern(phpMusic);
 
     SetMusicPitch(phpMusic->music, (float) pitch);
+
 }
 
 // Get music time length (in seconds)
@@ -10299,6 +10579,7 @@ PHP_FUNCTION(UnloadAudioStream)
     php_raylib_audiostream_update_intern(phpStream);
 
     UnloadAudioStream(phpStream->audiostream);
+
 }
 
 // Check if any audio stream buffers requires refill
@@ -10337,6 +10618,7 @@ PHP_FUNCTION(PlayAudioStream)
     php_raylib_audiostream_update_intern(phpStream);
 
     PlayAudioStream(phpStream->audiostream);
+
 }
 
 // Pause audio stream
@@ -10356,6 +10638,7 @@ PHP_FUNCTION(PauseAudioStream)
     php_raylib_audiostream_update_intern(phpStream);
 
     PauseAudioStream(phpStream->audiostream);
+
 }
 
 // Resume audio stream
@@ -10375,6 +10658,7 @@ PHP_FUNCTION(ResumeAudioStream)
     php_raylib_audiostream_update_intern(phpStream);
 
     ResumeAudioStream(phpStream->audiostream);
+
 }
 
 // Check if audio stream is playing
@@ -10413,6 +10697,7 @@ PHP_FUNCTION(StopAudioStream)
     php_raylib_audiostream_update_intern(phpStream);
 
     StopAudioStream(phpStream->audiostream);
+
 }
 
 // Set volume for audio stream (1.0 is max level)
@@ -10435,6 +10720,7 @@ PHP_FUNCTION(SetAudioStreamVolume)
     php_raylib_audiostream_update_intern(phpStream);
 
     SetAudioStreamVolume(phpStream->audiostream, (float) volume);
+
 }
 
 // Set pitch for audio stream (1.0 is base level)
@@ -10457,6 +10743,7 @@ PHP_FUNCTION(SetAudioStreamPitch)
     php_raylib_audiostream_update_intern(phpStream);
 
     SetAudioStreamPitch(phpStream->audiostream, (float) pitch);
+
 }
 
 // Default size for new audio streams
@@ -10474,6 +10761,7 @@ PHP_FUNCTION(SetAudioStreamBufferSizeDefault)
 
 
     SetAudioStreamBufferSizeDefault((size <= INT_MAX) ? (int) ((zend_long) size) : -1);
+
 }
 
 /* {{{ PHP_MINIT_FUNCTION

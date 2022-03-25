@@ -79,6 +79,9 @@ void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern) {
 }
 
 void php_raylib_glyphinfo_update_intern_reverse(php_raylib_glyphinfo_object *intern) {
+    php_raylib_image_object *imageObject = Z_IMAGE_OBJ_P(&intern->image);
+    imageObject->image = intern->glyphinfo.image;
+
 }
 typedef struct _raylib_glyphinfo_prop_handler {
     raylib_glyphinfo_read_int_t read_int_func;

@@ -88,6 +88,15 @@ void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern) {
 }
 
 void php_raylib_camera3d_update_intern_reverse(php_raylib_camera3d_object *intern) {
+    php_raylib_vector3_object *positionObject = Z_VECTOR3_OBJ_P(&intern->position);
+    positionObject->vector3 = intern->camera3d.position;
+
+    php_raylib_vector3_object *targetObject = Z_VECTOR3_OBJ_P(&intern->target);
+    targetObject->vector3 = intern->camera3d.target;
+
+    php_raylib_vector3_object *upObject = Z_VECTOR3_OBJ_P(&intern->up);
+    upObject->vector3 = intern->camera3d.up;
+
 }
 typedef struct _raylib_camera3d_prop_handler {
     raylib_camera3d_read_vector3_t read_vector3_func;

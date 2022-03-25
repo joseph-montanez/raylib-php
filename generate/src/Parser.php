@@ -548,28 +548,32 @@ class Parser
         $input[] = '';
 
         $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern_reverse(php_raylib_' . $struct->nameLower . '_object *intern) {';
-        //-- TODO: add in reverse code!
-        /*
         foreach ($struct->nonPrimitiveFields() as $field) {
             if ($field->isArray || $field->isPointer) {
                 if ($field->arrayCountNumber) {
                     for ($i = 0; $i < $field->arrayCountNumber; $i++) {
                         $input[] = sprintf(
-                            "    intern->%s.%s[%d] = intern->%s[%d].%s;",
-                            $struct->nameLower, $field->name, $i,
-                            $field->nameLower, $i, $field->typePlainLower
+                            '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
+                            $field->typePlainLower, $field->name, $i,
+                            $field->typePlainUpper, $field->nameLower, $i
                         );
+                        $input[] = sprintf(
+                            '    %s_%s->%s = intern->%s.%s[%d];',
+                            $field->name, $i, $field->typePlainLower,
+                            $struct->nameLower, $field->name, $i
+                        );
+                        $input[] = '';
                     }
                 } else {
                     $input[] = '    //TODO: Support for pointers and arrays;';
                     $input[] = '    //intern->' . $struct->nameLower . '.' . $field->name . ' = intern->' . $field->nameLower . '->' . $field->typePlainLower . ';';
                 }
             } else {
-                $input[] = '    php_raylib_' . $field->nameLower . '_object *' . $field->nameLower . 'Object = Z_' . $field->typePlainUpper . '_OBJ_P(&intern->' . $field->name . ');';
-                $input[] = '    intern->' . $struct->nameLower . '.' . $field->name . ' = ' . $field->nameLower . 'Object->' . $field->typePlainLower . ';';
+                $input[] = '    php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . 'Object = Z_' . $field->typePlainUpper . '_OBJ_P(&intern->' . $field->name . ');';
+                $input[] = '    ' . $field->nameLower . 'Object->' . $field->typePlainLower . ' = intern->' . $struct->nameLower . '.' . $field->name . ';';
+                $input[] = '';
             }
         }
-        */
         $input[] = '}';
 
         //--------------------------------------------------------------------------------------------------------------

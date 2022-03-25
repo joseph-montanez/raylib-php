@@ -82,6 +82,12 @@ void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *int
 }
 
 void php_raylib_rendertexture_update_intern_reverse(php_raylib_rendertexture_object *intern) {
+    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
+    textureObject->texture = intern->rendertexture.texture;
+
+    php_raylib_texture_object *depthObject = Z_TEXTURE_OBJ_P(&intern->depth);
+    depthObject->texture = intern->rendertexture.depth;
+
 }
 typedef struct _raylib_rendertexture_prop_handler {
     raylib_rendertexture_read_unsigned_int_t read_unsigned_int_func;

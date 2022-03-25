@@ -96,9 +96,7 @@ class CFunction
                     $input[] = sprintf("    php_raylib_%s_object *php%s = Z_%s_OBJ_P(%s);", $param->typeLower, $param->nameUpperFirst, $param->typeUpper, $param->name);
                     //-- Update the camera property internal props
                     // This is not optimal, but will do for now...
-//                    if (in_array($param->typeLower, ['camera2d', 'camera3d'])) {
-                        $input[] = strtr('    php_raylib_[typeLower]_update_intern(php[nameUpperFirst]);', $tr);
-//                    }
+                    $input[] = strtr('    php_raylib_[typeLower]_update_intern(php[nameUpperFirst]);', $tr);
                 }
             } elseif (in_array($param->type, [
                 'const char *',
@@ -170,6 +168,15 @@ class CFunction
             }
         } else {
             $input[] = '    ' . $function->name . '(' . implode(', ', $fnParams) . ');';
+            $input[] = '';
+
+            // Check for references to write back to php object.
+            foreach ($function->params as $param) {
+                $tr = $param->getTr();
+                if ($param->isRef && !$param->isPrimitive) {
+                    $input[] = strtr('    php_raylib_[typeLower]_update_intern_reverse(php[nameUpperFirst]);', $tr);
+                }
+            }
         }
 
         $input[] = '}';
