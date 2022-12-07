@@ -112,11 +112,17 @@ class ObjectNewEx
             $input[] = '';
         }
         foreach ($struct->nonPrimitiveFields() as $field) {
+            if ($struct->name === 'AudioStream' && $field->name === 'buffer') { continue; }
             if ($field->isArray || $field->isPointer) {
-                $input[] = '        //123TODO: support array and pointers';
-                $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
+                $input[] = '        HashTable *' . $field->name . '_hash;';
+                $input[] = '        ALLOC_HASHTABLE(' . $field->name . '_hash);';
+                $input[] = '        zend_hash_init(' . $field->name . '_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->' . $field->nameLower . ')), NULL, NULL, 0);';
+                $input[] = '        zend_hash_copy(' . $field->name . '_hash, Z_ARRVAL_P(&other->' . $field->nameLower . '), (copy_ctor_func_t) zval_add_ref);';
+                $input[] = '        ZVAL_ARR(&intern->' . $field->nameLower . ', ' . $field->name . '_hash);';
+                $input[] = '';
             } else {
                 $input[] = '        ZVAL_OBJ_COPY(&intern->' . $field->name . ', &php' . ucfirst($field->name) . '->std);';
+                $input[] = '';
             }
 
         }
@@ -170,14 +176,27 @@ class ObjectNewEx
             }
         }
         $input[] = '        };';
-//        $input[] = '';
+        $input[] = '';
 
         foreach ($struct->nonPrimitiveFields() as $field) {
+            if ($struct->name === 'AudioStream' && $field->name === 'buffer') { continue; }
             if ($field->isArray || $field->isPointer) {
-                $input[] = '        // ' . $field->name . ' array not yet supported needs to generate a hash table!';
-                $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
+                /*
+                    HashTable *return_hash;
+                    ALLOC_HASHTABLE(return_hash);
+                    zend_hash_init(return_hash, count_in, NULL, NULL, 0);
+                    ZVAL_ARR(&tmp, arr);
+                 */
+                $input[] = '        HashTable *' . $field->name . '_hash;';
+                $input[] = '        ALLOC_HASHTABLE(' . $field->name . '_hash);';
+                $input[] = '        zend_hash_init(' . $field->name . '_hash, 0, NULL, NULL, 0);';
+                $input[] = '        ZVAL_ARR(&intern->' . $field->nameLower . ', ' . $field->name . '_hash);';
+                $input[] = '';
+//                $input[] = '        // ' . $field->name . ' array not yet supported needs to generate a hash table!';
+//                $input[] = '        //intern->' . $field->name . ' = php' . ucfirst($field->name) . ';';
             } else {
                 $input[] = '        ZVAL_OBJ_COPY(&intern->' . $field->name . ', &php' . ucfirst($field->name) . '->std);';
+                $input[] = '';
             }
 
         }

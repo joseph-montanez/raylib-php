@@ -278,6 +278,7 @@ zend_object * php_raylib_color_new_ex(zend_class_entry *ce, zend_object *orig)/*
             .b = 0,
             .a = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

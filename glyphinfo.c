@@ -305,6 +305,7 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
         };
 
         ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
+
     } else {
         zend_object *image = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
 
@@ -323,7 +324,9 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
                 .format = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

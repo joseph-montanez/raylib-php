@@ -18,6 +18,7 @@
   },
   "scripts": {
     "generate-c-code": "php main.php",
+    "files_test": "php -dextension=../modules/raylib.so examples/core/test.php",
     "core_2d_camera": "php -dextension=../modules/raylib.so examples/core/core_2d_camera.php",
     "core_3d_camera_first_person": "php -dextension=../modules/raylib.so examples/core/core_3d_camera_first_person.php",
     "textures_background_scrolling": "php -dextension=../modules/raylib.so examples/textures/textures_background_scrolling.php",

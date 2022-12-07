@@ -320,10 +320,18 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
             .frameCount = other->modelanimation.frameCount,
         };
 
-        //123TODO: support array and pointers
-        //intern->bones = phpBones;
-        //123TODO: support array and pointers
-        //intern->framePoses = phpFramePoses;
+        HashTable *bones_hash;
+        ALLOC_HASHTABLE(bones_hash);
+        zend_hash_init(bones_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->bones)), NULL, NULL, 0);
+        zend_hash_copy(bones_hash, Z_ARRVAL_P(&other->bones), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->bones, bones_hash);
+
+        HashTable *framePoses_hash;
+        ALLOC_HASHTABLE(framePoses_hash);
+        zend_hash_init(framePoses_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->frameposes)), NULL, NULL, 0);
+        zend_hash_copy(framePoses_hash, Z_ARRVAL_P(&other->frameposes), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->frameposes, framePoses_hash);
+
     } else {
         // bones array not yet supported needs to generate a hash table!
         //zend_object *bones = php_raylib_boneinfo_new_ex(php_raylib_boneinfo_ce, NULL);
@@ -341,10 +349,17 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
             // .bones is an array and not yet supported via constructor
             // .framePoses is an array and not yet supported via constructor
         };
-        // bones array not yet supported needs to generate a hash table!
-        //intern->bones = phpBones;
-        // framePoses array not yet supported needs to generate a hash table!
-        //intern->framePoses = phpFramePoses;
+
+        HashTable *bones_hash;
+        ALLOC_HASHTABLE(bones_hash);
+        zend_hash_init(bones_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->bones, bones_hash);
+
+        HashTable *framePoses_hash;
+        ALLOC_HASHTABLE(framePoses_hash);
+        zend_hash_init(framePoses_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->frameposes, framePoses_hash);
+
     }
 
     zend_object_std_init(&intern->std, ce);

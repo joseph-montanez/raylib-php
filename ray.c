@@ -297,7 +297,9 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
         };
 
         ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
+
         ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
+
     } else {
         zend_object *position = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *direction = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -317,8 +319,11 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
                 .z = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
+
         ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

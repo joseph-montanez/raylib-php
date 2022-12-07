@@ -318,6 +318,7 @@ zend_object * php_raylib_vrdeviceinfo_new_ex(zend_class_entry *ce, zend_object *
             .lensDistortionValues = 0,
             .chromaAbCorrection = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

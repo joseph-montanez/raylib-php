@@ -278,6 +278,7 @@ zend_object * php_raylib_vector4_new_ex(zend_class_entry *ce, zend_object *orig)
             .z = 0,
             .w = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

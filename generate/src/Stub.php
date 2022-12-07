@@ -115,6 +115,9 @@ class Stub
                 if ($param->type && Helper::isString($param->type)) {
                     $paramType = 'string';
                 }
+                elseif ($param->type && $param->isRef) {
+                    $paramType = '&';
+                }
                 elseif ($param->type && Helper::isArray($param->type)) {
                     $paramType = 'array';
                 }

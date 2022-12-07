@@ -32,14 +32,10 @@ typedef struct _php_raylib_model_object {
     Model model;
     HashTable *prop_handler;
     zval transform;
-    // TODO: support for dynamic arrays
-    // zval *meshes;
-    // TODO: support for dynamic arrays
-    // zval *materials;
-    // TODO: support for dynamic arrays
-    // zval *bones;
-    // TODO: support for dynamic arrays
-    // zval *bindpose;
+    zval meshes;
+    zval materials;
+    zval bones;
+    zval bindpose;
     zend_object std;
 } php_raylib_model_object;
 

@@ -296,8 +296,6 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
             .channels = other->audiostream.channels
         };
 
-        //123TODO: support array and pointers
-        //intern->buffer = phpBuffer;
     } else {
         // buffer array not yet supported needs to generate a hash table!
         //zend_object *buffer = php_raylib_raudiobuffer_new_ex(php_raylib_raudiobuffer_ce, NULL);
@@ -311,8 +309,7 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
             .sampleSize = 0,
             .channels = 0
         };
-        // buffer array not yet supported needs to generate a hash table!
-        //intern->buffer = phpBuffer;
+
     }
 
     zend_object_std_init(&intern->std, ce);

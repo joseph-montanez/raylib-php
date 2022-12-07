@@ -16,8 +16,13 @@ class CFunction
             || $function->returnType === 'void *'
             || $function->returnType === 'const void *'
             || strstr($function->returnType, '*') !== false) {
-            $function->unsupported = true;
-            return $input;
+            if ($function->returnType === 'char **') {
+
+            } else {
+                $function->unsupported = true;
+                echo "Skipping " . $function->name . "\n";
+                return $input;
+            }
         }
         $params = [];
         /** @var \Raylib\Parser\Param $param */
@@ -37,11 +42,11 @@ class CFunction
         $argInfos = [];
         $refCount = 0;
         foreach ($function->params as $param) {
-            $ref =  Helper::isPrimitive($param->type) && $param->isRef;
+            $ref        = Helper::isPrimitive($param->type) && $param->isRef;
             $refCount   += $ref ? 1 : 0;
             $argInfos[] = (new ArgInfo())
-                    ->passByRef($ref)
-                    ->name($param->name);
+                ->passByRef($ref)
+                ->name($param->name);
         }
         $argInfoBegin = (new ArgBeginInfo())
             ->name('arginfo_' . ($function->rename ?? $function->name))
@@ -50,19 +55,19 @@ class CFunction
         foreach ($argInfos as $argInfo) {
             $argInfoBegin->add($argInfo);
         }
-        $input = array_merge($input, $argInfoBegin->build());
+        $input   = array_merge($input, $argInfoBegin->build());
         $input[] = sprintf("PHP_FUNCTION(%s)", $function->rename ?? $function->name);
         $input[] = '{';
         foreach ($function->params as $param) {
-            $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
-            $input = array_merge($input, $zParam->buildVariables('    '));
+            $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr(), $param->isRef);
+            $input  = array_merge($input, $zParam->buildVariables('    '));
         }
         $input[] = '';
         if ($function->paramCount > 0) {
             $input[] = sprintf("    ZEND_PARSE_PARAMETERS_START(%d, %d)", $function->paramCount, $function->paramCount);
             foreach ($function->params as $param) {
-                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
-                $input = array_merge($input, $zParam->build('        '));
+                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr(), $param->isRef);
+                $input  = array_merge($input, $zParam->build('        '));
             }
             $input[] = '    ZEND_PARSE_PARAMETERS_END();';
             $input[] = '';
@@ -72,7 +77,7 @@ class CFunction
         }
         $hasDef = false;
         foreach ($function->params as $param) {
-            $tr = $param->getTr();
+            $tr     = $param->getTr();
             $hasDef = true;
             if (!Helper::isPrimitive($param->type)) {
                 if ($param->isArray) {
@@ -103,6 +108,8 @@ class CFunction
                 'char *',
             ])) {
 
+            } elseif ($param->isRef) {
+                $input[] = strtr("    [typeNoStar] [name]_in;", $tr);
             } elseif ($param->isArray) {
                 $input[] = strtr("    zval *[nameLower]_element;", $tr);
                 $input[] = strtr("    int [nameLower]_index;", $tr);
@@ -132,7 +139,9 @@ class CFunction
             if (Helper::isString($param->type)) {
                 $fnParams[] = sprintf("%s->val", $param->name);
             } elseif (Helper::isInt($param->type)) {
-                if ($param->isArray) {
+                if ($param->isRef) {
+                    $fnParams[] = strtr("&[name]_in", $tr);
+                } elseif ($param->isArray) {
                     $fnParams[] = strtr("[nameLower]_array", $tr);
                 } else {
                     $fnParams[] = sprintf("(%s <= INT_MAX) ? (int) ((zend_long) %s) : -1", $param->name, $param->name);
@@ -158,6 +167,46 @@ class CFunction
                 $input[] = sprintf("    RETURN_LONG(%s(%s));", $function->name, implode(', ', $fnParams));
             } elseif (Helper::isFloat($function->returnType)) {
                 $input[] = sprintf("    RETURN_DOUBLE((double) %s(%s));", $function->name, implode(', ', $fnParams));
+            } elseif (Helper::isString($function->returnType)) {
+                if ($function->returnIsArray) {
+                    $tr                            = [];
+                    $tr['[returnArrayCountField]'] = $function->returnArrayCountField;
+                    $tr['[function]']              = $function->name;
+                    $tr['[returnType]']            = $function->returnType;
+                    $tr['[params]']                = implode(', ', $fnParams);
+
+                    $inParam = null;
+                    foreach ($function->params as $param) {
+                        if ($param->name === $function->returnArrayCountField) {
+                            $inParam = $param;
+                            break;
+                        }
+                    }
+
+                    $input[] = strtr("    [returnType] result_value =  [function]([params]);", $tr);
+                    $input[] = strtr("    // Assign back the in-parameter to the original tracked value", $tr);
+                    $input[] = strtr("    ZEND_TRY_ASSIGN_REF_LONG([returnArrayCountField], [returnArrayCountField]_in);", $tr);
+                    //ZVAL_STRING
+                    $input[] = '';
+
+                    $input[] = strtr("    HashTable *return_hash;", $tr);
+                    $input[] = strtr("    ALLOC_HASHTABLE(return_hash);", $tr);
+                    $input[] = strtr("    zend_hash_init(return_hash, [returnArrayCountField]_in, NULL, NULL, 0);", $tr);
+                    $input[] = '';
+
+
+                    $input[] = strtr("    for (int i = 0; i < [returnArrayCountField]_in; i++) {", $tr);
+                    $input[] = strtr("        zval zv;", $tr);
+//                    $input[] = strtr("        MAKE_STD_ZVAL(zv);", $tr);
+//                    $input[] = strtr("        ZVAL_STRINGL(&zv, result_value[i], strlen(result_value[i]));", $tr);
+                    $input[] = strtr("        ZVAL_STRING(&zv, result_value[i]);", $tr);
+                    $input[] = strtr("        zend_hash_index_update(return_hash, i, &zv);", $tr);
+                    $input[] = strtr("    }", $tr);
+                    $input[] = '';
+                    $input[] = strtr("    RETURN_ARR(return_hash);", $tr);
+                } else {
+                    $input[] = sprintf("    RETURN_STRING((char *) %s(%s));", $function->name, implode(', ', $fnParams));
+                }
             } elseif (!Helper::isPrimitive($function->returnType)) {
                 $input[] = sprintf("    %s originalResult = %s(%s);", $function->returnType, $function->name, implode(', ', $fnParams));
                 $input[] = sprintf("    zend_object *result = php_raylib_%s_new_ex(php_raylib_%s_ce, NULL);", $function->returnTypeLower, $function->returnTypeLower);
@@ -185,7 +234,8 @@ class CFunction
         return $input;
     }
 
-    public function buildParams(Func $function): array {
+    public function buildParams(Func $function): array
+    {
         $fnParams = [];
         foreach ($function->params as $param) {
             $tr = $param->getTr();

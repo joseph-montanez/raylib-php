@@ -302,6 +302,7 @@ zend_object * php_raylib_matrix_new_ex(zend_class_entry *ce, zend_object *orig)/
             .m14 = 0,
             .m15 = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

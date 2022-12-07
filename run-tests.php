@@ -23,7 +23,7 @@
    +----------------------------------------------------------------------+
  */
 
-/* $Id: b718246654392ccb7418d4922e00773b36fe2a89 $ */
+/* $Id: d772c85f95272ae802fd52d7a4ead33d8e254b66 $ */
 
 /* Temporary variables while this file is being refactored. */
 /** @var ?JUnit */
@@ -103,12 +103,12 @@ Options:
                 Do not delete 'all' files, 'php' test file, 'skip' or 'clean'
                 file.
 
-    --set-timeout [n]
-                Set timeout for individual tests, where [n] is the number of
+    --set-timeout <n>
+                Set timeout for individual tests, where <n> is the number of
                 seconds. The default value is 60 seconds, or 300 seconds when
                 testing for memory leaks.
 
-    --context [n]
+    --context <n>
                 Sets the number of lines of surrounding context to print for diffs.
                 The default value is 3.
 
@@ -119,8 +119,8 @@ Options:
                 'mem'. The result types get written independent of the log format,
                 however 'diff' only exists when a test fails.
 
-    --show-slow [n]
-                Show all tests that took longer than [n] milliseconds to run.
+    --show-slow <n>
+                Show all tests that took longer than <n> milliseconds to run.
 
     --no-clean  Do not execute clean section if any.
 
@@ -530,7 +530,11 @@ function main(): void
                     $just_save_results = true;
                     break;
                 case '--set-timeout':
-                    $environment['TEST_TIMEOUT'] = $argv[++$i];
+                    $timeout = $argv[++$i] ?? '';
+                    if (!preg_match('/^\d+$/', $timeout)) {
+                        error("'$timeout' is not a valid number of seconds, try e.g. --set-timeout 60 for 1 minute");
+                    }
+                    $environment['TEST_TIMEOUT'] = intval($timeout, 10);
                     break;
                 case '--context':
                     $context_line_count = $argv[++$i] ?? '';
@@ -545,7 +549,11 @@ function main(): void
                     }
                     break;
                 case '--show-slow':
-                    $slow_min_ms = $argv[++$i];
+                    $slow_min_ms = $argv[++$i] ?? '';
+                    if (!preg_match('/^\d+$/', $slow_min_ms)) {
+                        error("'$slow_min_ms' is not a valid number of milliseconds, try e.g. --show-slow 1000 for 1 second");
+                    }
+                    $slow_min_ms = intval($slow_min_ms, 10);
                     break;
                 case '--temp-source':
                     $temp_source = $argv[++$i];
@@ -598,7 +606,7 @@ function main(): void
                     }
                     break;
                 case '--version':
-                    echo '$Id: b718246654392ccb7418d4922e00773b36fe2a89 $' . "\n";
+                    echo '$Id: d772c85f95272ae802fd52d7a4ead33d8e254b66 $' . "\n";
                     exit(1);
 
                 default:
@@ -2085,11 +2093,19 @@ TEST $file
     $ini_settings = $workerID ? ['opcache.cache_id' => "worker$workerID"] : [];
 
     // Additional required extensions
+    $extensions = [];
     if ($test->hasSection('EXTENSIONS')) {
+        $extensions = preg_split("/[\n\r]+/", trim($test->getSection('EXTENSIONS')));
+    }
+    if (is_array($IN_REDIRECT) && $IN_REDIRECT['EXTENSIONS'] != []) {
+        $extensions = array_merge($extensions, $IN_REDIRECT['EXTENSIONS']);
+    }
+
+    /* Load required extensions */
+    if ($extensions != []) {
         $ext_params = [];
         settings2array($ini_overwrites, $ext_params);
         $ext_params = settings2params($ext_params);
-        $extensions = preg_split("/[\n\r]+/", trim($test->getSection('EXTENSIONS')));
         [$ext_dir, $loaded] = $skipCache->getExtensions("$orig_php $pass_options $extra_options $ext_params $no_file_cache");
         $ext_prefix = IS_WINDOWS ? "php_" : "";
         $missing = [];
@@ -2241,6 +2257,7 @@ TEST $file
         $IN_REDIRECT['via'] = "via [$shortname]\n\t";
         $IN_REDIRECT['dir'] = realpath(dirname($file));
         $IN_REDIRECT['prefix'] = $tested;
+        $IN_REDIRECT['EXTENSIONS'] = $extensions;
 
         if (!empty($IN_REDIRECT['TESTS'])) {
             if (is_array($org_file)) {
@@ -3395,6 +3412,9 @@ class JUnit
         'execution_time' => 0,
     ];
 
+    /**
+     * @throws Exception
+     */
     public function __construct(array $env, int $workerID)
     {
         // Check whether a junit log is wanted.
@@ -3612,6 +3632,9 @@ class JUnit
         $this->suites[$suite_name] = self::EMPTY_SUITE + ['name' => $suite_name];
     }
 
+    /**
+     * @throws Exception
+     */
     public function stopTimer(string $file_name): void
     {
         if (!$this->enabled) {
@@ -3811,6 +3834,9 @@ class TestFile
         'CREDITS', 'DESCRIPTION', 'CONFLICTS', 'WHITESPACE_SENSITIVE',
     ];
 
+    /**
+     * @throws BorkageException
+     */
     public function __construct(string $fileName, bool $inRedirect)
     {
         $this->fileName = $fileName;
@@ -3851,6 +3877,9 @@ class TestFile
         return !empty($this->sections[$name]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function getSection(string $name): string
     {
         if (!isset($this->sections[$name])) {
@@ -3866,7 +3895,7 @@ class TestFile
 
     public function isCGI(): bool
     {
-        return $this->sectionNotEmpty('CGI')
+        return $this->hasSection('CGI')
             || $this->sectionNotEmpty('GET')
             || $this->sectionNotEmpty('POST')
             || $this->sectionNotEmpty('GZIP_POST')
@@ -3887,6 +3916,7 @@ class TestFile
 
     /**
      * Load the sections of the test file
+     * @throws BorkageException
      */
     private function readFile(): void
     {
@@ -3949,6 +3979,9 @@ class TestFile
         fclose($fp);
     }
 
+    /**
+     * @throws BorkageException
+     */
     private function validateAndProcess(bool $inRedirect): void
     {
         // the redirect section allows a set of tests to be reused outside of

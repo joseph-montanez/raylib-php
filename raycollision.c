@@ -326,7 +326,9 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
         };
 
         ZVAL_OBJ_COPY(&intern->point, &phpPoint->std);
+
         ZVAL_OBJ_COPY(&intern->normal, &phpNormal->std);
+
     } else {
         zend_object *point = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *normal = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -348,8 +350,11 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
                 .z = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->point, &phpPoint->std);
+
         ZVAL_OBJ_COPY(&intern->normal, &phpNormal->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

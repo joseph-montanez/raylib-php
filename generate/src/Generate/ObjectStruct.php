@@ -23,12 +23,11 @@ class ObjectStruct
                     $input[] = '// NO idea what to do with rAudioBuffer';
                     $input[] = '//php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . ';';
                 } else {
-                    if ($field->arrayCountNumber > 0) {
-                        $input[] = '    zval ' . $field->nameLower . '[' . $field->arrayCountNumber . '];';
-                    } else {
-                        $input[] = '    // TODO: support for dynamic arrays';
-                        $input[] = '    // zval *' . $field->nameLower . ';';
-                    }
+//                    if ($field->arrayCountNumber > 0) {
+//                        $input[] = '    zval ' . $field->nameLower . '[' . $field->arrayCountNumber . '];';
+//                    } else {
+                        $input[] = '    zval ' . $field->nameLower . ';';
+//                    }
                 }
             } else {
                 $input[] = '    zval ' . $field->nameLower . ';';

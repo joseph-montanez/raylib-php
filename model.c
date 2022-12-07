@@ -425,14 +425,31 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
         };
 
         ZVAL_OBJ_COPY(&intern->transform, &phpTransform->std);
-        //123TODO: support array and pointers
-        //intern->meshes = phpMeshes;
-        //123TODO: support array and pointers
-        //intern->materials = phpMaterials;
-        //123TODO: support array and pointers
-        //intern->bones = phpBones;
-        //123TODO: support array and pointers
-        //intern->bindPose = phpBindPose;
+
+        HashTable *meshes_hash;
+        ALLOC_HASHTABLE(meshes_hash);
+        zend_hash_init(meshes_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->meshes)), NULL, NULL, 0);
+        zend_hash_copy(meshes_hash, Z_ARRVAL_P(&other->meshes), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->meshes, meshes_hash);
+
+        HashTable *materials_hash;
+        ALLOC_HASHTABLE(materials_hash);
+        zend_hash_init(materials_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->materials)), NULL, NULL, 0);
+        zend_hash_copy(materials_hash, Z_ARRVAL_P(&other->materials), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->materials, materials_hash);
+
+        HashTable *bones_hash;
+        ALLOC_HASHTABLE(bones_hash);
+        zend_hash_init(bones_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->bones)), NULL, NULL, 0);
+        zend_hash_copy(bones_hash, Z_ARRVAL_P(&other->bones), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->bones, bones_hash);
+
+        HashTable *bindPose_hash;
+        ALLOC_HASHTABLE(bindPose_hash);
+        zend_hash_init(bindPose_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->bindpose)), NULL, NULL, 0);
+        zend_hash_copy(bindPose_hash, Z_ARRVAL_P(&other->bindpose), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->bindpose, bindPose_hash);
+
     } else {
         zend_object *transform = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
         // meshes array not yet supported needs to generate a hash table!
@@ -482,15 +499,29 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
             // .bones is an array and not yet supported via constructor
             // .bindPose is an array and not yet supported via constructor
         };
+
         ZVAL_OBJ_COPY(&intern->transform, &phpTransform->std);
-        // meshes array not yet supported needs to generate a hash table!
-        //intern->meshes = phpMeshes;
-        // materials array not yet supported needs to generate a hash table!
-        //intern->materials = phpMaterials;
-        // bones array not yet supported needs to generate a hash table!
-        //intern->bones = phpBones;
-        // bindPose array not yet supported needs to generate a hash table!
-        //intern->bindPose = phpBindPose;
+
+        HashTable *meshes_hash;
+        ALLOC_HASHTABLE(meshes_hash);
+        zend_hash_init(meshes_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->meshes, meshes_hash);
+
+        HashTable *materials_hash;
+        ALLOC_HASHTABLE(materials_hash);
+        zend_hash_init(materials_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->materials, materials_hash);
+
+        HashTable *bones_hash;
+        ALLOC_HASHTABLE(bones_hash);
+        zend_hash_init(bones_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->bones, bones_hash);
+
+        HashTable *bindPose_hash;
+        ALLOC_HASHTABLE(bindPose_hash);
+        zend_hash_init(bindPose_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->bindpose, bindPose_hash);
+
     }
 
     zend_object_std_init(&intern->std, ce);

@@ -33,7 +33,7 @@ class Param
         $this->nameUpperFirst = ucfirst($paramInfo['name']);
         $this->nameLower = strtolower($paramInfo['name']);
         $this->nameUpper = strtoupper($paramInfo['name']);
-        $this->isArray = Helper::isArray($this->type);
+        $this->isArray = $paramInfo['isArray'] ?? Helper::isArray($this->type);
         $this->isPrimitive = Helper::isPrimitive($this->type);
 
         if ($paramInfo['isArray'] ?? false) {

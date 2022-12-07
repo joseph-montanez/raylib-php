@@ -520,20 +520,38 @@ class Parser
         $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern) {';
         foreach ($struct->nonPrimitiveFields() as $field) {
             if ($field->isArray || $field->isPointer) {
+                $tr = $field->getTr();
                 if ($field->arrayCountNumber) {
-                    for ($i = 0; $i < $field->arrayCountNumber; $i++) {
-                        $input[] = sprintf(
-                            '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
-                            $field->typePlainLower, $field->name, $i,
-                            $field->typePlainUpper, $field->nameLower, $i
-                        );
-                        $input[] = sprintf(
-                            '    intern->%s.%s[%d] = %s_%s->%s;',
-                            $struct->nameLower, $field->name, $i,
-                            $field->name, $i, $field->typePlainLower
-                        );
-                        $input[] = '';
-                    }
+                    $input[] = strtr("    zval *[nameLower]_element;", $tr);
+                    $input[] = strtr("    int [nameLower]_index;", $tr);
+                    $input[] = strtr('    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->[nameLower]), [nameLower]_element) {', $tr);
+                    $input[] = strtr('        ZVAL_DEREF([nameLower]_element);', $tr);
+                    $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
+                    $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
+                    $input[] = strtr('            intern->' . $struct->nameLower . '.[name][[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
+                    $input[] = strtr('        }', $tr);
+                    $input[] = strtr('', $tr);
+                    $input[] = strtr('        [nameLower]_index++;', $tr);
+                    $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
+                    $input[] = strtr('', $tr);
+
+
+//                    $input[] = sprintf('    for (int i = 0; i < %d; i++) {', $field->arrayCountNumber);
+//                    $input[] = sprintf('    }');
+// Dont need to do for now?
+//                     for ($i = 0; $i < $field->arrayCountNumber; $i++) {
+//                         $input[] = sprintf(
+//                             '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
+//                             $field->typePlainLower, $field->name, $i,
+//                             $field->typePlainUpper, $field->nameLower, $i
+//                         );
+//                         $input[] = sprintf(
+//                             '    intern->%s.%s[%d] = %s_%s->%s;',
+//                             $struct->nameLower, $field->name, $i,
+//                             $field->name, $i, $field->typePlainLower
+//                         );
+//                         $input[] = '';
+//                     }
                 } else {
                     $input[] = '    //TODO: Support for pointers and arrays;';
                     $input[] = '    //intern->' . $struct->nameLower . '.' . $field->name . ' = intern->' . $field->nameLower . '->' . $field->typePlainLower . ';';
@@ -550,20 +568,34 @@ class Parser
         $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern_reverse(php_raylib_' . $struct->nameLower . '_object *intern) {';
         foreach ($struct->nonPrimitiveFields() as $field) {
             if ($field->isArray || $field->isPointer) {
+                $tr = $field->getTr();
                 if ($field->arrayCountNumber) {
-                    for ($i = 0; $i < $field->arrayCountNumber; $i++) {
-                        $input[] = sprintf(
-                            '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
-                            $field->typePlainLower, $field->name, $i,
-                            $field->typePlainUpper, $field->nameLower, $i
-                        );
-                        $input[] = sprintf(
-                            '    %s_%s->%s = intern->%s.%s[%d];',
-                            $field->name, $i, $field->typePlainLower,
-                            $struct->nameLower, $field->name, $i
-                        );
-                        $input[] = '';
-                    }
+                    $input[] = strtr("    zval *[nameLower]_element;", $tr);
+                    $input[] = strtr("    int [nameLower]_index;", $tr);
+                    $input[] = strtr('    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->[nameLower]), [nameLower]_element) {', $tr);
+                    $input[] = strtr('        ZVAL_DEREF([nameLower]_element);', $tr);
+                    $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
+                    $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
+                    $input[] = strtr('            intern->' . $struct->nameLower . '.[name][[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
+                    $input[] = strtr('        }', $tr);
+                    $input[] = strtr('', $tr);
+                    $input[] = strtr('        [nameLower]_index++;', $tr);
+                    $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
+                    $input[] = strtr('', $tr);
+   // Might not need for now?
+//                     for ($i = 0; $i < $field->arrayCountNumber; $i++) {
+//                         $input[] = sprintf(
+//                             '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
+//                             $field->typePlainLower, $field->name, $i,
+//                             $field->typePlainUpper, $field->nameLower, $i
+//                         );
+//                         $input[] = sprintf(
+//                             '    %s_%s->%s = intern->%s.%s[%d];',
+//                             $field->name, $i, $field->typePlainLower,
+//                             $struct->nameLower, $field->name, $i
+//                         );
+//                         $input[] = '';
+//                     }
                 } else {
                     $input[] = '    //TODO: Support for pointers and arrays;';
                     $input[] = '    //intern->' . $struct->nameLower . '.' . $field->name . ' = intern->' . $field->nameLower . '->' . $field->typePlainLower . ';';

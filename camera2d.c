@@ -311,7 +311,9 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         };
 
         ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
+
         ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
+
     } else {
         zend_object *offset = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
         zend_object *target = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
@@ -331,8 +333,11 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
             .rotation = 0,
             .zoom = 0
         };
+
         ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
+
         ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

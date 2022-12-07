@@ -26,10 +26,8 @@ typedef struct _php_raylib_font_object {
     Font font;
     HashTable *prop_handler;
     zval texture;
-    // TODO: support for dynamic arrays
-    // zval *recs;
-    // TODO: support for dynamic arrays
-    // zval *glyphs;
+    zval recs;
+    zval glyphs;
     zend_object std;
 } php_raylib_font_object;
 

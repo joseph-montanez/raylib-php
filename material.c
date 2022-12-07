@@ -80,41 +80,17 @@ void php_raylib_material_update_intern(php_raylib_material_object *intern) {
     php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
     intern->material.shader = shaderObject->shader;
 
-    php_raylib_materialmap_object *maps_0 = Z_MATERIALMAP_OBJ_P(&intern->maps[0]);
-    intern->material.maps[0] = maps_0->materialmap;
+    zval *maps_element;
+    int maps_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->maps), maps_element) {
+        ZVAL_DEREF(maps_element);
+        if ((Z_TYPE_P(maps_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(maps_element), php_raylib_materialmap_ce))) {
+            php_raylib_materialmap_object *materialmap_obj =  Z_MATERIALMAP_OBJ_P(maps_element);
+            intern->material.maps[maps_index] = materialmap_obj->materialmap;
+        }
 
-    php_raylib_materialmap_object *maps_1 = Z_MATERIALMAP_OBJ_P(&intern->maps[1]);
-    intern->material.maps[1] = maps_1->materialmap;
-
-    php_raylib_materialmap_object *maps_2 = Z_MATERIALMAP_OBJ_P(&intern->maps[2]);
-    intern->material.maps[2] = maps_2->materialmap;
-
-    php_raylib_materialmap_object *maps_3 = Z_MATERIALMAP_OBJ_P(&intern->maps[3]);
-    intern->material.maps[3] = maps_3->materialmap;
-
-    php_raylib_materialmap_object *maps_4 = Z_MATERIALMAP_OBJ_P(&intern->maps[4]);
-    intern->material.maps[4] = maps_4->materialmap;
-
-    php_raylib_materialmap_object *maps_5 = Z_MATERIALMAP_OBJ_P(&intern->maps[5]);
-    intern->material.maps[5] = maps_5->materialmap;
-
-    php_raylib_materialmap_object *maps_6 = Z_MATERIALMAP_OBJ_P(&intern->maps[6]);
-    intern->material.maps[6] = maps_6->materialmap;
-
-    php_raylib_materialmap_object *maps_7 = Z_MATERIALMAP_OBJ_P(&intern->maps[7]);
-    intern->material.maps[7] = maps_7->materialmap;
-
-    php_raylib_materialmap_object *maps_8 = Z_MATERIALMAP_OBJ_P(&intern->maps[8]);
-    intern->material.maps[8] = maps_8->materialmap;
-
-    php_raylib_materialmap_object *maps_9 = Z_MATERIALMAP_OBJ_P(&intern->maps[9]);
-    intern->material.maps[9] = maps_9->materialmap;
-
-    php_raylib_materialmap_object *maps_10 = Z_MATERIALMAP_OBJ_P(&intern->maps[10]);
-    intern->material.maps[10] = maps_10->materialmap;
-
-    php_raylib_materialmap_object *maps_11 = Z_MATERIALMAP_OBJ_P(&intern->maps[11]);
-    intern->material.maps[11] = maps_11->materialmap;
+        maps_index++;
+    } ZEND_HASH_FOREACH_END();
 
 }
 
@@ -122,41 +98,17 @@ void php_raylib_material_update_intern_reverse(php_raylib_material_object *inter
     php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
     shaderObject->shader = intern->material.shader;
 
-    php_raylib_materialmap_object *maps_0 = Z_MATERIALMAP_OBJ_P(&intern->maps[0]);
-    maps_0->materialmap = intern->material.maps[0];
+    zval *maps_element;
+    int maps_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->maps), maps_element) {
+        ZVAL_DEREF(maps_element);
+        if ((Z_TYPE_P(maps_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(maps_element), php_raylib_materialmap_ce))) {
+            php_raylib_materialmap_object *materialmap_obj =  Z_MATERIALMAP_OBJ_P(maps_element);
+            intern->material.maps[maps_index] = materialmap_obj->materialmap;
+        }
 
-    php_raylib_materialmap_object *maps_1 = Z_MATERIALMAP_OBJ_P(&intern->maps[1]);
-    maps_1->materialmap = intern->material.maps[1];
-
-    php_raylib_materialmap_object *maps_2 = Z_MATERIALMAP_OBJ_P(&intern->maps[2]);
-    maps_2->materialmap = intern->material.maps[2];
-
-    php_raylib_materialmap_object *maps_3 = Z_MATERIALMAP_OBJ_P(&intern->maps[3]);
-    maps_3->materialmap = intern->material.maps[3];
-
-    php_raylib_materialmap_object *maps_4 = Z_MATERIALMAP_OBJ_P(&intern->maps[4]);
-    maps_4->materialmap = intern->material.maps[4];
-
-    php_raylib_materialmap_object *maps_5 = Z_MATERIALMAP_OBJ_P(&intern->maps[5]);
-    maps_5->materialmap = intern->material.maps[5];
-
-    php_raylib_materialmap_object *maps_6 = Z_MATERIALMAP_OBJ_P(&intern->maps[6]);
-    maps_6->materialmap = intern->material.maps[6];
-
-    php_raylib_materialmap_object *maps_7 = Z_MATERIALMAP_OBJ_P(&intern->maps[7]);
-    maps_7->materialmap = intern->material.maps[7];
-
-    php_raylib_materialmap_object *maps_8 = Z_MATERIALMAP_OBJ_P(&intern->maps[8]);
-    maps_8->materialmap = intern->material.maps[8];
-
-    php_raylib_materialmap_object *maps_9 = Z_MATERIALMAP_OBJ_P(&intern->maps[9]);
-    maps_9->materialmap = intern->material.maps[9];
-
-    php_raylib_materialmap_object *maps_10 = Z_MATERIALMAP_OBJ_P(&intern->maps[10]);
-    maps_10->materialmap = intern->material.maps[10];
-
-    php_raylib_materialmap_object *maps_11 = Z_MATERIALMAP_OBJ_P(&intern->maps[11]);
-    maps_11->materialmap = intern->material.maps[11];
+        maps_index++;
+    } ZEND_HASH_FOREACH_END();
 
 }
 typedef struct _raylib_material_prop_handler {
@@ -391,8 +343,13 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         memcpy(intern->material.params, other->material.params, sizeof intern->material.params);
 
         ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
-        //123TODO: support array and pointers
-        //intern->maps = phpMaps;
+
+        HashTable *maps_hash;
+        ALLOC_HASHTABLE(maps_hash);
+        zend_hash_init(maps_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->maps)), NULL, NULL, 0);
+        zend_hash_copy(maps_hash, Z_ARRVAL_P(&other->maps), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->maps, maps_hash);
+
     } else {
         zend_object *shader = php_raylib_shader_new_ex(php_raylib_shader_ce, NULL);
         // maps array not yet supported needs to generate a hash table!
@@ -410,9 +367,14 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
             // .maps is an array and not yet supported via constructor
             .params = 0
         };
+
         ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
-        // maps array not yet supported needs to generate a hash table!
-        //intern->maps = phpMaps;
+
+        HashTable *maps_hash;
+        ALLOC_HASHTABLE(maps_hash);
+        zend_hash_init(maps_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->maps, maps_hash);
+
     }
 
     zend_object_std_init(&intern->std, ce);

@@ -358,6 +358,7 @@ zend_object * php_raylib_mesh_new_ex(zend_class_entry *ce, zend_object *orig)/* 
             .vaoId = 0,
             .vboId = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

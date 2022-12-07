@@ -1741,6 +1741,41 @@ PHP_FUNCTION(IsFileExtension)
     RETURN_BOOL(IsFileExtension(fileName->val, ext->val));
 }
 
+// Get filenames in a directory path (memory should be freed)
+// RLAPI char ** GetDirectoryFiles(const char * dirPath, int * count);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GetDirectoryFiles, 0, 1, 2)
+    ZEND_ARG_INFO(0, dirPath)
+    ZEND_ARG_INFO(1, count)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(GetDirectoryFiles)
+{
+    zend_string *dirPath;
+    zval *count;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_STR(dirPath)
+        Z_PARAM_ZVAL(count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    int count_in;
+
+    char ** result_value =  GetDirectoryFiles(dirPath->val, &count_in);
+    // Assign back the in-parameter to the original tracked value
+    ZEND_TRY_ASSIGN_REF_LONG(count, count_in);
+
+    HashTable *return_hash;
+    ALLOC_HASHTABLE(return_hash);
+    zend_hash_init(return_hash, count_in, NULL, NULL, 0);
+
+    for (int i = 0; i < count_in; i++) {
+        zval zv;
+        ZVAL_STRING(&zv, result_value[i]);
+        zend_hash_index_update(return_hash, i, &zv);
+    }
+
+    RETURN_ARR(return_hash);
+}
+
 // Clear directory files paths buffers (free memory)
 // RLAPI void ClearDirectoryFiles();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ClearDirectoryFiles, 0, 0, 0)
@@ -1781,6 +1816,38 @@ PHP_FUNCTION(IsFileDropped)
     ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_BOOL(IsFileDropped());
+}
+
+// Get dropped files names (memory should be freed)
+// RLAPI char ** GetDroppedFiles(int * count);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GetDroppedFiles, 0, 1, 1)
+    ZEND_ARG_INFO(1, count)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(GetDroppedFiles)
+{
+    zval *count;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    int count_in;
+
+    char ** result_value =  GetDroppedFiles(&count_in);
+    // Assign back the in-parameter to the original tracked value
+    ZEND_TRY_ASSIGN_REF_LONG(count, count_in);
+
+    HashTable *return_hash;
+    ALLOC_HASHTABLE(return_hash);
+    zend_hash_init(return_hash, count_in, NULL, NULL, 0);
+
+    for (int i = 0; i < count_in; i++) {
+        zval zv;
+        ZVAL_STRING(&zv, result_value[i]);
+        zend_hash_index_update(return_hash, i, &zv);
+    }
+
+    RETURN_ARR(return_hash);
 }
 
 // Clear dropped files paths buffer (free memory)
@@ -11245,9 +11312,11 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(FileExists, arginfo_FileExists)
         ZEND_FE(DirectoryExists, arginfo_DirectoryExists)
         ZEND_FE(IsFileExtension, arginfo_IsFileExtension)
+        ZEND_FE(GetDirectoryFiles, arginfo_GetDirectoryFiles)
         ZEND_FE(ClearDirectoryFiles, arginfo_ClearDirectoryFiles)
         ZEND_FE(ChangeDirectory, arginfo_ChangeDirectory)
         ZEND_FE(IsFileDropped, arginfo_IsFileDropped)
+        ZEND_FE(GetDroppedFiles, arginfo_GetDroppedFiles)
         ZEND_FE(ClearDroppedFiles, arginfo_ClearDroppedFiles)
         ZEND_FE(GetFileModTime, arginfo_GetFileModTime)
         ZEND_FE(SaveStorageValue, arginfo_SaveStorageValue)

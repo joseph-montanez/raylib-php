@@ -22,6 +22,7 @@ class Func
     public bool $returnIsArray;
     public bool $returnIsPrimitive;
     public bool $unsupported = false;
+    public string $returnArrayCountField;
 
 
     /**
@@ -52,7 +53,8 @@ class Func
         }
         $this->paramCount = count($this->params);
 
-        $this->returnIsArray     = Helper::isArray($this->returnType);
-        $this->returnIsPrimitive = Helper::isPrimitive($this->returnType);
+        $this->returnIsArray         = $functionInfo['isArray'] ?? Helper::isArray($this->returnType);
+        $this->returnArrayCountField = $functionInfo['arrayCountField'] ?? '';
+        $this->returnIsPrimitive     = Helper::isPrimitive($this->returnType);
     }
 }

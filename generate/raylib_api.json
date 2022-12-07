@@ -3833,6 +3833,8 @@
       "name": "GetDirectoryFiles",
       "description": "Get filenames in a directory path (memory should be freed)",
       "returnType": "char **",
+      "arrayCountField": "count",
+      "isArray": true,
       "params": [
         {
           "type": "const char *",
@@ -3840,7 +3842,8 @@
         },
         {
           "type": "int *",
-          "name": "count"
+          "name": "count",
+          "isRef": true
         }
       ]
     },
@@ -3869,10 +3872,14 @@
       "name": "GetDroppedFiles",
       "description": "Get dropped files names (memory should be freed)",
       "returnType": "char **",
+      "arrayCountField": "count",
+      "isArray": true,
       "params": [
         {
           "type": "int *",
-          "name": "count"
+          "name": "count",
+          "isArray": false,
+          "isRef": true
         }
       ]
     },

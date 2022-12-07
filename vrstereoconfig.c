@@ -73,32 +73,56 @@ typedef int (*raylib_vrstereoconfig_write_float_array_t)(php_raylib_vrstereoconf
  * @param intern
  */
 void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern) {
-    php_raylib_matrix_object *projection_0 = Z_MATRIX_OBJ_P(&intern->projection[0]);
-    intern->vrstereoconfig.projection[0] = projection_0->matrix;
+    zval *projection_element;
+    int projection_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->projection), projection_element) {
+        ZVAL_DEREF(projection_element);
+        if ((Z_TYPE_P(projection_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(projection_element), php_raylib_matrix_ce))) {
+            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(projection_element);
+            intern->vrstereoconfig.projection[projection_index] = matrix_obj->matrix;
+        }
 
-    php_raylib_matrix_object *projection_1 = Z_MATRIX_OBJ_P(&intern->projection[1]);
-    intern->vrstereoconfig.projection[1] = projection_1->matrix;
+        projection_index++;
+    } ZEND_HASH_FOREACH_END();
 
-    php_raylib_matrix_object *viewOffset_0 = Z_MATRIX_OBJ_P(&intern->viewoffset[0]);
-    intern->vrstereoconfig.viewOffset[0] = viewOffset_0->matrix;
+    zval *viewoffset_element;
+    int viewoffset_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->viewoffset), viewoffset_element) {
+        ZVAL_DEREF(viewoffset_element);
+        if ((Z_TYPE_P(viewoffset_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(viewoffset_element), php_raylib_matrix_ce))) {
+            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(viewoffset_element);
+            intern->vrstereoconfig.viewOffset[viewoffset_index] = matrix_obj->matrix;
+        }
 
-    php_raylib_matrix_object *viewOffset_1 = Z_MATRIX_OBJ_P(&intern->viewoffset[1]);
-    intern->vrstereoconfig.viewOffset[1] = viewOffset_1->matrix;
+        viewoffset_index++;
+    } ZEND_HASH_FOREACH_END();
 
 }
 
 void php_raylib_vrstereoconfig_update_intern_reverse(php_raylib_vrstereoconfig_object *intern) {
-    php_raylib_matrix_object *projection_0 = Z_MATRIX_OBJ_P(&intern->projection[0]);
-    projection_0->matrix = intern->vrstereoconfig.projection[0];
+    zval *projection_element;
+    int projection_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->projection), projection_element) {
+        ZVAL_DEREF(projection_element);
+        if ((Z_TYPE_P(projection_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(projection_element), php_raylib_matrix_ce))) {
+            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(projection_element);
+            intern->vrstereoconfig.projection[projection_index] = matrix_obj->matrix;
+        }
 
-    php_raylib_matrix_object *projection_1 = Z_MATRIX_OBJ_P(&intern->projection[1]);
-    projection_1->matrix = intern->vrstereoconfig.projection[1];
+        projection_index++;
+    } ZEND_HASH_FOREACH_END();
 
-    php_raylib_matrix_object *viewOffset_0 = Z_MATRIX_OBJ_P(&intern->viewoffset[0]);
-    viewOffset_0->matrix = intern->vrstereoconfig.viewOffset[0];
+    zval *viewoffset_element;
+    int viewoffset_index;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->viewoffset), viewoffset_element) {
+        ZVAL_DEREF(viewoffset_element);
+        if ((Z_TYPE_P(viewoffset_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(viewoffset_element), php_raylib_matrix_ce))) {
+            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(viewoffset_element);
+            intern->vrstereoconfig.viewOffset[viewoffset_index] = matrix_obj->matrix;
+        }
 
-    php_raylib_matrix_object *viewOffset_1 = Z_MATRIX_OBJ_P(&intern->viewoffset[1]);
-    viewOffset_1->matrix = intern->vrstereoconfig.viewOffset[1];
+        viewoffset_index++;
+    } ZEND_HASH_FOREACH_END();
 
 }
 typedef struct _raylib_vrstereoconfig_prop_handler {
@@ -324,10 +348,18 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
         memcpy(intern->vrstereoconfig.scale, other->vrstereoconfig.scale, sizeof intern->vrstereoconfig.scale);
         memcpy(intern->vrstereoconfig.scaleIn, other->vrstereoconfig.scaleIn, sizeof intern->vrstereoconfig.scaleIn);
 
-        //123TODO: support array and pointers
-        //intern->projection = phpProjection;
-        //123TODO: support array and pointers
-        //intern->viewOffset = phpViewOffset;
+        HashTable *projection_hash;
+        ALLOC_HASHTABLE(projection_hash);
+        zend_hash_init(projection_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->projection)), NULL, NULL, 0);
+        zend_hash_copy(projection_hash, Z_ARRVAL_P(&other->projection), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->projection, projection_hash);
+
+        HashTable *viewOffset_hash;
+        ALLOC_HASHTABLE(viewOffset_hash);
+        zend_hash_init(viewOffset_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->viewoffset)), NULL, NULL, 0);
+        zend_hash_copy(viewOffset_hash, Z_ARRVAL_P(&other->viewoffset), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->viewoffset, viewOffset_hash);
+
     } else {
         // projection array not yet supported needs to generate a hash table!
         //zend_object *projection = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
@@ -349,10 +381,17 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
             .scale = 0,
             .scaleIn = 0
         };
-        // projection array not yet supported needs to generate a hash table!
-        //intern->projection = phpProjection;
-        // viewOffset array not yet supported needs to generate a hash table!
-        //intern->viewOffset = phpViewOffset;
+
+        HashTable *projection_hash;
+        ALLOC_HASHTABLE(projection_hash);
+        zend_hash_init(projection_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->projection, projection_hash);
+
+        HashTable *viewOffset_hash;
+        ALLOC_HASHTABLE(viewOffset_hash);
+        zend_hash_init(viewOffset_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->viewoffset, viewOffset_hash);
+
     }
 
     zend_object_std_init(&intern->std, ce);

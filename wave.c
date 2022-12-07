@@ -292,6 +292,7 @@ zend_object * php_raylib_wave_new_ex(zend_class_entry *ce, zend_object *orig)/* 
             .channels = 0,
             .data = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

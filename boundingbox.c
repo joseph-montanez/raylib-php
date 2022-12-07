@@ -297,7 +297,9 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
         };
 
         ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
+
         ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
+
     } else {
         zend_object *min = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *max = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
@@ -317,8 +319,11 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
                 .z = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
+
         ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

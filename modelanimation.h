@@ -23,10 +23,8 @@ extern zend_object_handlers php_raylib_modelanimation_object_handlers;
 typedef struct _php_raylib_modelanimation_object {
     ModelAnimation modelanimation;
     HashTable *prop_handler;
-    // TODO: support for dynamic arrays
-    // zval *bones;
-    // TODO: support for dynamic arrays
-    // zval *frameposes;
+    zval bones;
+    zval frameposes;
     zend_object std;
 } php_raylib_modelanimation_object;
 

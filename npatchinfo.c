@@ -305,6 +305,7 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
         };
 
         ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
+
     } else {
         zend_object *source = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
 
@@ -323,7 +324,9 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
             .bottom = 0,
             .layout = 0
         };
+
         ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

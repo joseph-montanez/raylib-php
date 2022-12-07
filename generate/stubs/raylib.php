@@ -1445,6 +1445,15 @@ function DirectoryExists(string $dirPath): bool { return false; }
 function IsFileExtension(string $fileName, string $ext): bool { return false; }
 
 /*
+ * Get filenames in a directory path (memory should be freed)
+ *
+ * @param string $dirPath
+ * @param & $count
+ *
+ */
+function GetDirectoryFiles(string $dirPath, & $count): string { return ""; }
+
+/*
  * Clear directory files paths buffers (free memory)
  *
  *
@@ -1465,6 +1474,14 @@ function ChangeDirectory(string $dir): bool { return false; }
  *
  */
 function IsFileDropped(): bool { return false; }
+
+/*
+ * Get dropped files names (memory should be freed)
+ *
+ * @param & $count
+ *
+ */
+function GetDroppedFiles(& $count): string { return ""; }
 
 /*
  * Clear dropped files paths buffer (free memory)
@@ -1845,10 +1862,10 @@ function SetCameraMode(\raylib\Camera3D $camera, int $mode): void {  }
 /*
  * Update camera position for selected mode
  *
- * @param \raylib\Camera3D $camera
+ * @param & $camera
  *
  */
-function UpdateCamera(\raylib\Camera3D $camera): void {  }
+function UpdateCamera(& $camera): void {  }
 
 /*
  * Set camera pan key to combine with mouse movement (free camera)
@@ -2387,10 +2404,10 @@ function CheckCollisionPointTriangle(\raylib\Vector2 $point, \raylib\Vector2 $p1
  * @param \raylib\Vector2 $endPos1
  * @param \raylib\Vector2 $startPos2
  * @param \raylib\Vector2 $endPos2
- * @param \raylib\Vector2 $collisionPoint
+ * @param & $collisionPoint
  *
  */
-function CheckCollisionLines(\raylib\Vector2 $startPos1, \raylib\Vector2 $endPos1, \raylib\Vector2 $startPos2, \raylib\Vector2 $endPos2, \raylib\Vector2 $collisionPoint): bool { return false; }
+function CheckCollisionLines(\raylib\Vector2 $startPos1, \raylib\Vector2 $endPos1, \raylib\Vector2 $startPos2, \raylib\Vector2 $endPos2, & $collisionPoint): bool { return false; }
 
 /*
  * Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
@@ -2611,90 +2628,90 @@ function ImageTextEx(\raylib\Font $font, string $text, float $fontSize, float $s
 /*
  * Convert image data to desired format
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $newFormat
  *
  */
-function ImageFormat(\raylib\Image $image, int $newFormat): void {  }
+function ImageFormat(& $image, int $newFormat): void {  }
 
 /*
  * Convert image to POT (power-of-two)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Color $fill
  *
  */
-function ImageToPOT(\raylib\Image $image, \raylib\Color $fill): void {  }
+function ImageToPOT(& $image, \raylib\Color $fill): void {  }
 
 /*
  * Crop an image to a defined rectangle
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Rectangle $crop
  *
  */
-function ImageCrop(\raylib\Image $image, \raylib\Rectangle $crop): void {  }
+function ImageCrop(& $image, \raylib\Rectangle $crop): void {  }
 
 /*
  * Crop image depending on alpha value
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param float $threshold
  *
  */
-function ImageAlphaCrop(\raylib\Image $image, float $threshold): void {  }
+function ImageAlphaCrop(& $image, float $threshold): void {  }
 
 /*
  * Clear alpha channel to desired color
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Color $color
  * @param float $threshold
  *
  */
-function ImageAlphaClear(\raylib\Image $image, \raylib\Color $color, float $threshold): void {  }
+function ImageAlphaClear(& $image, \raylib\Color $color, float $threshold): void {  }
 
 /*
  * Apply alpha mask to image
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Image $alphaMask
  *
  */
-function ImageAlphaMask(\raylib\Image $image, \raylib\Image $alphaMask): void {  }
+function ImageAlphaMask(& $image, \raylib\Image $alphaMask): void {  }
 
 /*
  * Premultiply alpha channel
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageAlphaPremultiply(\raylib\Image $image): void {  }
+function ImageAlphaPremultiply(& $image): void {  }
 
 /*
  * Resize image (Bicubic scaling algorithm)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $newWidth
  * @param int $newHeight
  *
  */
-function ImageResize(\raylib\Image $image, int $newWidth, int $newHeight): void {  }
+function ImageResize(& $image, int $newWidth, int $newHeight): void {  }
 
 /*
  * Resize image (Nearest-Neighbor scaling algorithm)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $newWidth
  * @param int $newHeight
  *
  */
-function ImageResizeNN(\raylib\Image $image, int $newWidth, int $newHeight): void {  }
+function ImageResizeNN(& $image, int $newWidth, int $newHeight): void {  }
 
 /*
  * Resize canvas and fill with color
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $newWidth
  * @param int $newHeight
  * @param int $offsetX
@@ -2702,128 +2719,128 @@ function ImageResizeNN(\raylib\Image $image, int $newWidth, int $newHeight): voi
  * @param \raylib\Color $fill
  *
  */
-function ImageResizeCanvas(\raylib\Image $image, int $newWidth, int $newHeight, int $offsetX, int $offsetY, \raylib\Color $fill): void {  }
+function ImageResizeCanvas(& $image, int $newWidth, int $newHeight, int $offsetX, int $offsetY, \raylib\Color $fill): void {  }
 
 /*
  * Compute all mipmap levels for a provided image
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageMipmaps(\raylib\Image $image): void {  }
+function ImageMipmaps(& $image): void {  }
 
 /*
  * Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $rBpp
  * @param int $gBpp
  * @param int $bBpp
  * @param int $aBpp
  *
  */
-function ImageDither(\raylib\Image $image, int $rBpp, int $gBpp, int $bBpp, int $aBpp): void {  }
+function ImageDither(& $image, int $rBpp, int $gBpp, int $bBpp, int $aBpp): void {  }
 
 /*
  * Flip image vertically
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageFlipVertical(\raylib\Image $image): void {  }
+function ImageFlipVertical(& $image): void {  }
 
 /*
  * Flip image horizontally
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageFlipHorizontal(\raylib\Image $image): void {  }
+function ImageFlipHorizontal(& $image): void {  }
 
 /*
  * Rotate image clockwise 90deg
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageRotateCW(\raylib\Image $image): void {  }
+function ImageRotateCW(& $image): void {  }
 
 /*
  * Rotate image counter-clockwise 90deg
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageRotateCCW(\raylib\Image $image): void {  }
+function ImageRotateCCW(& $image): void {  }
 
 /*
  * Modify image color: tint
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Color $color
  *
  */
-function ImageColorTint(\raylib\Image $image, \raylib\Color $color): void {  }
+function ImageColorTint(& $image, \raylib\Color $color): void {  }
 
 /*
  * Modify image color: invert
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageColorInvert(\raylib\Image $image): void {  }
+function ImageColorInvert(& $image): void {  }
 
 /*
  * Modify image color: grayscale
  *
- * @param \raylib\Image $image
+ * @param & $image
  *
  */
-function ImageColorGrayscale(\raylib\Image $image): void {  }
+function ImageColorGrayscale(& $image): void {  }
 
 /*
  * Modify image color: contrast (-100 to 100)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param float $contrast
  *
  */
-function ImageColorContrast(\raylib\Image $image, float $contrast): void {  }
+function ImageColorContrast(& $image, float $contrast): void {  }
 
 /*
  * Modify image color: brightness (-255 to 255)
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param int $brightness
  *
  */
-function ImageColorBrightness(\raylib\Image $image, int $brightness): void {  }
+function ImageColorBrightness(& $image, int $brightness): void {  }
 
 /*
  * Modify image color: replace color
  *
- * @param \raylib\Image $image
+ * @param & $image
  * @param \raylib\Color $color
  * @param \raylib\Color $replace
  *
  */
-function ImageColorReplace(\raylib\Image $image, \raylib\Color $color, \raylib\Color $replace): void {  }
+function ImageColorReplace(& $image, \raylib\Color $color, \raylib\Color $replace): void {  }
 
 /*
  * Unload color data loaded with LoadImageColors()
  *
- * @param \raylib\Color $colors
+ * @param & $colors
  *
  */
-function UnloadImageColors(\raylib\Color $colors): void {  }
+function UnloadImageColors(& $colors): void {  }
 
 /*
  * Unload colors palette loaded with LoadImagePalette()
  *
- * @param \raylib\Color $colors
+ * @param & $colors
  *
  */
-function UnloadImagePalette(\raylib\Color $colors): void {  }
+function UnloadImagePalette(& $colors): void {  }
 
 /*
  * Get image alpha border rectangle
@@ -2847,37 +2864,37 @@ function GetImageColor(\raylib\Image $image, int $x, int $y): \raylib\Color { re
 /*
  * Clear image background with given color
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Color $color
  *
  */
-function ImageClearBackground(\raylib\Image $dst, \raylib\Color $color): void {  }
+function ImageClearBackground(& $dst, \raylib\Color $color): void {  }
 
 /*
  * Draw pixel within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param int $posX
  * @param int $posY
  * @param \raylib\Color $color
  *
  */
-function ImageDrawPixel(\raylib\Image $dst, int $posX, int $posY, \raylib\Color $color): void {  }
+function ImageDrawPixel(& $dst, int $posX, int $posY, \raylib\Color $color): void {  }
 
 /*
  * Draw pixel within an image (Vector version)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Vector2 $position
  * @param \raylib\Color $color
  *
  */
-function ImageDrawPixelV(\raylib\Image $dst, \raylib\Vector2 $position, \raylib\Color $color): void {  }
+function ImageDrawPixelV(& $dst, \raylib\Vector2 $position, \raylib\Color $color): void {  }
 
 /*
  * Draw line within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param int $startPosX
  * @param int $startPosY
  * @param int $endPosX
@@ -2885,46 +2902,46 @@ function ImageDrawPixelV(\raylib\Image $dst, \raylib\Vector2 $position, \raylib\
  * @param \raylib\Color $color
  *
  */
-function ImageDrawLine(\raylib\Image $dst, int $startPosX, int $startPosY, int $endPosX, int $endPosY, \raylib\Color $color): void {  }
+function ImageDrawLine(& $dst, int $startPosX, int $startPosY, int $endPosX, int $endPosY, \raylib\Color $color): void {  }
 
 /*
  * Draw line within an image (Vector version)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Vector2 $start
  * @param \raylib\Vector2 $end
  * @param \raylib\Color $color
  *
  */
-function ImageDrawLineV(\raylib\Image $dst, \raylib\Vector2 $start, \raylib\Vector2 $end, \raylib\Color $color): void {  }
+function ImageDrawLineV(& $dst, \raylib\Vector2 $start, \raylib\Vector2 $end, \raylib\Color $color): void {  }
 
 /*
  * Draw circle within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param int $centerX
  * @param int $centerY
  * @param int $radius
  * @param \raylib\Color $color
  *
  */
-function ImageDrawCircle(\raylib\Image $dst, int $centerX, int $centerY, int $radius, \raylib\Color $color): void {  }
+function ImageDrawCircle(& $dst, int $centerX, int $centerY, int $radius, \raylib\Color $color): void {  }
 
 /*
  * Draw circle within an image (Vector version)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Vector2 $center
  * @param int $radius
  * @param \raylib\Color $color
  *
  */
-function ImageDrawCircleV(\raylib\Image $dst, \raylib\Vector2 $center, int $radius, \raylib\Color $color): void {  }
+function ImageDrawCircleV(& $dst, \raylib\Vector2 $center, int $radius, \raylib\Color $color): void {  }
 
 /*
  * Draw rectangle within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param int $posX
  * @param int $posY
  * @param int $width
@@ -2932,56 +2949,56 @@ function ImageDrawCircleV(\raylib\Image $dst, \raylib\Vector2 $center, int $radi
  * @param \raylib\Color $color
  *
  */
-function ImageDrawRectangle(\raylib\Image $dst, int $posX, int $posY, int $width, int $height, \raylib\Color $color): void {  }
+function ImageDrawRectangle(& $dst, int $posX, int $posY, int $width, int $height, \raylib\Color $color): void {  }
 
 /*
  * Draw rectangle within an image (Vector version)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Vector2 $position
  * @param \raylib\Vector2 $size
  * @param \raylib\Color $color
  *
  */
-function ImageDrawRectangleV(\raylib\Image $dst, \raylib\Vector2 $position, \raylib\Vector2 $size, \raylib\Color $color): void {  }
+function ImageDrawRectangleV(& $dst, \raylib\Vector2 $position, \raylib\Vector2 $size, \raylib\Color $color): void {  }
 
 /*
  * Draw rectangle within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Rectangle $rec
  * @param \raylib\Color $color
  *
  */
-function ImageDrawRectangleRec(\raylib\Image $dst, \raylib\Rectangle $rec, \raylib\Color $color): void {  }
+function ImageDrawRectangleRec(& $dst, \raylib\Rectangle $rec, \raylib\Color $color): void {  }
 
 /*
  * Draw rectangle lines within an image
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Rectangle $rec
  * @param int $thick
  * @param \raylib\Color $color
  *
  */
-function ImageDrawRectangleLines(\raylib\Image $dst, \raylib\Rectangle $rec, int $thick, \raylib\Color $color): void {  }
+function ImageDrawRectangleLines(& $dst, \raylib\Rectangle $rec, int $thick, \raylib\Color $color): void {  }
 
 /*
  * Draw a source image within a destination image (tint applied to source)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Image $src
  * @param \raylib\Rectangle $srcRec
  * @param \raylib\Rectangle $dstRec
  * @param \raylib\Color $tint
  *
  */
-function ImageDraw(\raylib\Image $dst, \raylib\Image $src, \raylib\Rectangle $srcRec, \raylib\Rectangle $dstRec, \raylib\Color $tint): void {  }
+function ImageDraw(& $dst, \raylib\Image $src, \raylib\Rectangle $srcRec, \raylib\Rectangle $dstRec, \raylib\Color $tint): void {  }
 
 /*
  * Draw text (using default font) within an image (destination)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param string $text
  * @param int $posX
  * @param int $posY
@@ -2989,12 +3006,12 @@ function ImageDraw(\raylib\Image $dst, \raylib\Image $src, \raylib\Rectangle $sr
  * @param \raylib\Color $color
  *
  */
-function ImageDrawText(\raylib\Image $dst, string $text, int $posX, int $posY, int $fontSize, \raylib\Color $color): void {  }
+function ImageDrawText(& $dst, string $text, int $posX, int $posY, int $fontSize, \raylib\Color $color): void {  }
 
 /*
  * Draw text (custom sprite font) within an image (destination)
  *
- * @param \raylib\Image $dst
+ * @param & $dst
  * @param \raylib\Font $font
  * @param string $text
  * @param \raylib\Vector2 $position
@@ -3003,7 +3020,7 @@ function ImageDrawText(\raylib\Image $dst, string $text, int $posX, int $posY, i
  * @param \raylib\Color $tint
  *
  */
-function ImageDrawTextEx(\raylib\Image $dst, \raylib\Font $font, string $text, \raylib\Vector2 $position, float $fontSize, float $spacing, \raylib\Color $tint): void {  }
+function ImageDrawTextEx(& $dst, \raylib\Font $font, string $text, \raylib\Vector2 $position, float $fontSize, float $spacing, \raylib\Color $tint): void {  }
 
 /*
  * Load texture from file into GPU memory (VRAM)
@@ -3058,10 +3075,10 @@ function UnloadRenderTexture(\raylib\RenderTexture $target): void {  }
 /*
  * Generate GPU mipmaps for a texture
  *
- * @param \raylib\Texture $texture
+ * @param & $texture
  *
  */
-function GenTextureMipmaps(\raylib\Texture $texture): void {  }
+function GenTextureMipmaps(& $texture): void {  }
 
 /*
  * Set texture scaling filter mode
@@ -3917,11 +3934,11 @@ function DrawBillboardPro(\raylib\Camera3D $camera, \raylib\Texture $texture, \r
 /*
  * Upload mesh vertex data in GPU and provide VAO/VBO ids
  *
- * @param \raylib\Mesh $mesh
+ * @param & $mesh
  * @param bool $dynamic
  *
  */
-function UploadMesh(\raylib\Mesh $mesh, bool $dynamic): void {  }
+function UploadMesh(& $mesh, bool $dynamic): void {  }
 
 /*
  * Unload mesh data from CPU and GPU
@@ -3946,11 +3963,11 @@ function DrawMesh(\raylib\Mesh $mesh, \raylib\Material $material, \raylib\Matrix
  *
  * @param \raylib\Mesh $mesh
  * @param \raylib\Material $material
- * @param \raylib\Matrix $transforms
+ * @param & $transforms
  * @param int $instances
  *
  */
-function DrawMeshInstanced(\raylib\Mesh $mesh, \raylib\Material $material, \raylib\Matrix $transforms, int $instances): void {  }
+function DrawMeshInstanced(\raylib\Mesh $mesh, \raylib\Material $material, & $transforms, int $instances): void {  }
 
 /*
  * Export mesh data to file, returns true on success
@@ -3972,18 +3989,18 @@ function GetMeshBoundingBox(\raylib\Mesh $mesh): \raylib\BoundingBox { return ne
 /*
  * Compute mesh tangents
  *
- * @param \raylib\Mesh $mesh
+ * @param & $mesh
  *
  */
-function GenMeshTangents(\raylib\Mesh $mesh): void {  }
+function GenMeshTangents(& $mesh): void {  }
 
 /*
  * Compute mesh binormals
  *
- * @param \raylib\Mesh $mesh
+ * @param & $mesh
  *
  */
-function GenMeshBinormals(\raylib\Mesh $mesh): void {  }
+function GenMeshBinormals(& $mesh): void {  }
 
 /*
  * Generate polygonal mesh
@@ -4113,22 +4130,22 @@ function UnloadMaterial(\raylib\Material $material): void {  }
 /*
  * Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
  *
- * @param \raylib\Material $material
+ * @param & $material
  * @param int $mapType
  * @param \raylib\Texture $texture
  *
  */
-function SetMaterialTexture(\raylib\Material $material, int $mapType, \raylib\Texture $texture): void {  }
+function SetMaterialTexture(& $material, int $mapType, \raylib\Texture $texture): void {  }
 
 /*
  * Set material for a mesh
  *
- * @param \raylib\Model $model
+ * @param & $model
  * @param int $meshId
  * @param int $materialId
  *
  */
-function SetModelMeshMaterial(\raylib\Model $model, int $meshId, int $materialId): void {  }
+function SetModelMeshMaterial(& $model, int $meshId, int $materialId): void {  }
 
 /*
  * Update model animation pose
@@ -4437,13 +4454,13 @@ function SetSoundPitch(\raylib\Sound $sound, float $pitch): void {  }
 /*
  * Convert wave data to desired format
  *
- * @param \raylib\Wave $wave
+ * @param & $wave
  * @param int $sampleRate
  * @param int $sampleSize
  * @param int $channels
  *
  */
-function WaveFormat(\raylib\Wave $wave, int $sampleRate, int $sampleSize, int $channels): void {  }
+function WaveFormat(& $wave, int $sampleRate, int $sampleSize, int $channels): void {  }
 
 /*
  * Copy a wave to a new wave
@@ -4456,12 +4473,12 @@ function WaveCopy(\raylib\Wave $wave): \raylib\Wave { return new \raylib\Wave; }
 /*
  * Crop a wave to defined samples range
  *
- * @param \raylib\Wave $wave
+ * @param & $wave
  * @param int $initSample
  * @param int $finalSample
  *
  */
-function WaveCrop(\raylib\Wave $wave, int $initSample, int $finalSample): void {  }
+function WaveCrop(& $wave, int $initSample, int $finalSample): void {  }
 
 /*
  * Unload samples data loaded with LoadWaveSamples()

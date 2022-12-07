@@ -326,8 +326,11 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
         };
 
         ZVAL_OBJ_COPY(&intern->translation, &phpTranslation->std);
+
         ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
+
         ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
+
     } else {
         zend_object *translation = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
         zend_object *rotation = php_raylib_vector4_new_ex(php_raylib_vector4_ce, NULL);
@@ -355,9 +358,13 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
                 .z = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->translation, &phpTranslation->std);
+
         ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
+
         ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

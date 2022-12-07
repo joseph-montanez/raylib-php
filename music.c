@@ -343,6 +343,7 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
         };
 
         ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
+
     } else {
         zend_object *stream = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, NULL);
 
@@ -360,7 +361,9 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
             .ctxType = 0,
             .ctxData = 0
         };
+
         ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

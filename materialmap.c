@@ -331,7 +331,9 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
         };
 
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+
         ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
+
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
         zend_object *color = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
@@ -355,8 +357,11 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
             },
             .value = 0
         };
+
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+
         ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

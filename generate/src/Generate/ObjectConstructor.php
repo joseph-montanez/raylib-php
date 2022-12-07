@@ -87,13 +87,13 @@ class ObjectConstructor
 
         if ($constructorFn) {
             foreach ($constructorFn->params as $param) {
-                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
+                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr(), $param->isRef);
                 $input = array_merge($input, $zParam->buildVariables('    '));
             }
             $input[] = '';
             $input[] = sprintf("    ZEND_PARSE_PARAMETERS_START(%d, %d)", $constructorFn->paramCount, $constructorFn->paramCount);
             foreach ($constructorFn->params as $param) {
-                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr());
+                $zParam = new ZParam($param->name, $param->type, $param->isArray, $param->getTr(), $param->isRef);
                 $input = array_merge($input, $zParam->build('        '));
             }
             $input[] = '    ZEND_PARSE_PARAMETERS_END();';
@@ -104,7 +104,7 @@ class ObjectConstructor
         } else {
             foreach ($struct->fields as $field) {
                 if ($field->isPrimitive) {
-                    $zParam = new ZParam($field->name, $field->type, $field->isArray, $field->getTr());
+                    $zParam = new ZParam($field->name, $field->type, $field->isArray, $field->getTr(), $field->isRef ?? false);
                     $input = array_merge($input, $zParam->buildVariables('    '));
 
                     if ($field->name === 'colors') {

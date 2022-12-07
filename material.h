@@ -23,7 +23,7 @@ typedef struct _php_raylib_material_object {
     Material material;
     HashTable *prop_handler;
     zval shader;
-    zval maps[12];
+    zval maps;
     zend_object std;
 } php_raylib_material_object;
 

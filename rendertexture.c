@@ -316,7 +316,9 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
         };
 
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+
         ZVAL_OBJ_COPY(&intern->depth, &phpDepth->std);
+
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
         zend_object *depth = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
@@ -341,8 +343,11 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
                 .format = 0
             }
         };
+
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
+
         ZVAL_OBJ_COPY(&intern->depth, &phpDepth->std);
+
     }
 
     zend_object_std_init(&intern->std, ce);

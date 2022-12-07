@@ -287,6 +287,7 @@ zend_object * php_raylib_shader_new_ex(zend_class_entry *ce, zend_object *orig)/
             .id = 0,
             .locs = 0
         };
+
     }
 
     zend_object_std_init(&intern->std, ce);

@@ -352,10 +352,19 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
         };
 
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
-        //123TODO: support array and pointers
-        //intern->recs = phpRecs;
-        //123TODO: support array and pointers
-        //intern->glyphs = phpGlyphs;
+
+        HashTable *recs_hash;
+        ALLOC_HASHTABLE(recs_hash);
+        zend_hash_init(recs_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->recs)), NULL, NULL, 0);
+        zend_hash_copy(recs_hash, Z_ARRVAL_P(&other->recs), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->recs, recs_hash);
+
+        HashTable *glyphs_hash;
+        ALLOC_HASHTABLE(glyphs_hash);
+        zend_hash_init(glyphs_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->glyphs)), NULL, NULL, 0);
+        zend_hash_copy(glyphs_hash, Z_ARRVAL_P(&other->glyphs), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->glyphs, glyphs_hash);
+
     } else {
         zend_object *texture = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
         // recs array not yet supported needs to generate a hash table!
@@ -383,11 +392,19 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
             // .recs is an array and not yet supported via constructor
             // .glyphs is an array and not yet supported via constructor
         };
+
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
-        // recs array not yet supported needs to generate a hash table!
-        //intern->recs = phpRecs;
-        // glyphs array not yet supported needs to generate a hash table!
-        //intern->glyphs = phpGlyphs;
+
+        HashTable *recs_hash;
+        ALLOC_HASHTABLE(recs_hash);
+        zend_hash_init(recs_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->recs, recs_hash);
+
+        HashTable *glyphs_hash;
+        ALLOC_HASHTABLE(glyphs_hash);
+        zend_hash_init(glyphs_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->glyphs, glyphs_hash);
+
     }
 
     zend_object_std_init(&intern->std, ce);
