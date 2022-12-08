@@ -1,4 +1,4 @@
-FROM php:8.1.2-zts
+FROM php:8.2-rc-zts
 
 RUN apt-get update && apt-get install -y build-essential git cmake libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev libzip-dev xvfb pkg-config
 
