@@ -310,6 +310,7 @@ namespace raylib {
 
 namespace raylib {
     class AudioStream {
+        public \raylib\rAudioProcessor $processor;
         public int $sampleRate;
         public int $sampleSize;
         public int $channels;
@@ -366,6 +367,15 @@ namespace raylib {
     }
 }
 
+namespace raylib {
+    class FilePathList {
+        public int $capacity;
+        public int $count;
+        public string $paths;
+        public function __construct() { }
+    }
+}
+
 namespace raylib\ConfigFlags {
     const FLAG_VSYNC_HINT = 64;
     const FLAG_FULLSCREEN_MODE = 2;
@@ -379,6 +389,7 @@ namespace raylib\ConfigFlags {
     const FLAG_WINDOW_ALWAYS_RUN = 256;
     const FLAG_WINDOW_TRANSPARENT = 16;
     const FLAG_WINDOW_HIGHDPI = 8192;
+    const FLAG_WINDOW_MOUSE_PASSTHROUGH = 16384;
     const FLAG_MSAA_4X_HINT = 32;
     const FLAG_INTERLACED_HINT = 65536;
 }
@@ -684,7 +695,8 @@ namespace raylib\BlendMode {
     const BLEND_MULTIPLIED = 2;
     const BLEND_ADD_COLORS = 3;
     const BLEND_SUBTRACT_COLORS = 4;
-    const BLEND_CUSTOM = 5;
+    const BLEND_ALPHA_PREMULTIPLY = 5;
+    const BLEND_CUSTOM = 6;
 }
 
 namespace raylib\Gesture {
@@ -934,7 +946,7 @@ function GetCurrentMonitor(): int { return 0; }
 function GetMonitorPosition(int $monitor): \raylib\Vector2 { return new \raylib\Vector2; }
 
 /*
- * Get specified monitor width (max available by monitor)
+ * Get specified monitor width (current video mode used by monitor)
  *
  * @param int $monitor
  *
@@ -942,7 +954,7 @@ function GetMonitorPosition(int $monitor): \raylib\Vector2 { return new \raylib\
 function GetMonitorWidth(int $monitor): int { return 0; }
 
 /*
- * Get specified monitor height (max available by monitor)
+ * Get specified monitor height (current video mode used by monitor)
  *
  * @param int $monitor
  *
@@ -996,6 +1008,20 @@ function GetWindowScaleDPI(): \raylib\Vector2 { return new \raylib\Vector2; }
 function SetClipboardText(string $text): void {  }
 
 /*
+ * Enable waiting for events on EndDrawing(), no automatic event polling
+ *
+ *
+ */
+function EnableEventWaiting(): void {  }
+
+/*
+ * Disable waiting for events on EndDrawing(), automatic events polling
+ *
+ *
+ */
+function DisableEventWaiting(): void {  }
+
+/*
  * Swap back buffer with front buffer (screen drawing)
  *
  *
@@ -1010,12 +1036,12 @@ function SwapScreenBuffer(): void {  }
 function PollInputEvents(): void {  }
 
 /*
- * Wait for some milliseconds (halt program execution)
+ * Wait for some time (halt program execution)
  *
- * @param float $ms
+ * @param float $seconds
  *
  */
-function WaitTime(float $ms): void {  }
+function WaitTime(float $seconds): void {  }
 
 /*
  * Shows cursor
@@ -1304,6 +1330,15 @@ function GetCameraMatrix2D(\raylib\Camera2D $camera): \raylib\Matrix { return ne
 function GetWorldToScreen(\raylib\Vector3 $position, \raylib\Camera3D $camera): \raylib\Vector2 { return new \raylib\Vector2; }
 
 /*
+ * Get the world space position for a 2d camera screen space position
+ *
+ * @param \raylib\Vector2 $position
+ * @param \raylib\Camera2D $camera
+ *
+ */
+function GetScreenToWorld2D(\raylib\Vector2 $position, \raylib\Camera2D $camera): \raylib\Vector2 { return new \raylib\Vector2; }
+
+/*
  * Get size position for a 3d world space position
  *
  * @param \raylib\Vector3 $position
@@ -1322,15 +1357,6 @@ function GetWorldToScreenEx(\raylib\Vector3 $position, \raylib\Camera3D $camera,
  *
  */
 function GetWorldToScreen2D(\raylib\Vector2 $position, \raylib\Camera2D $camera): \raylib\Vector2 { return new \raylib\Vector2; }
-
-/*
- * Get the world space position for a 2d camera screen space position
- *
- * @param \raylib\Vector2 $position
- * @param \raylib\Camera2D $camera
- *
- */
-function GetScreenToWorld2D(\raylib\Vector2 $position, \raylib\Camera2D $camera): \raylib\Vector2 { return new \raylib\Vector2; }
 
 /*
  * Set target FPS (maximum)
@@ -1403,6 +1429,24 @@ function SetConfigFlags(int $flags): void {  }
 function SetTraceLogLevel(int $logLevel): void {  }
 
 /*
+ * Open URL with default system browser (if available)
+ *
+ * @param string $url
+ *
+ */
+function OpenURL(string $url): void {  }
+
+/*
+ * Export data to code (.h), returns true on success
+ *
+ * @param string $data
+ * @param int $size
+ * @param string $fileName
+ *
+ */
+function ExportDataAsCode(string $data, int $size, string $fileName): bool { return false; }
+
+/*
  * Unload file text data allocated by LoadFileText()
  *
  * @param string $text
@@ -1445,20 +1489,12 @@ function DirectoryExists(string $dirPath): bool { return false; }
 function IsFileExtension(string $fileName, string $ext): bool { return false; }
 
 /*
- * Get filenames in a directory path (memory should be freed)
+ * Get file length in bytes (NOTE: GetFileSize() conflicts with windows.h)
  *
- * @param string $dirPath
- * @param & $count
- *
- */
-function GetDirectoryFiles(string $dirPath, & $count): string { return ""; }
-
-/*
- * Clear directory files paths buffers (free memory)
- *
+ * @param string $fileName
  *
  */
-function ClearDirectoryFiles(): void {  }
+function GetFileLength(string $fileName): int { return 0; }
 
 /*
  * Change working directory, return true on success
@@ -1469,6 +1505,40 @@ function ClearDirectoryFiles(): void {  }
 function ChangeDirectory(string $dir): bool { return false; }
 
 /*
+ * Check if a given path is a file or a directory
+ *
+ * @param string $path
+ *
+ */
+function IsPathFile(string $path): bool { return false; }
+
+/*
+ * Load directory filepaths
+ *
+ * @param string $dirPath
+ *
+ */
+function LoadDirectoryFiles(string $dirPath): \raylib\FilePathList { return new \raylib\FilePathList; }
+
+/*
+ * Load directory filepaths with extension filtering and recursive directory scan
+ *
+ * @param string $basePath
+ * @param string $filter
+ * @param bool $scanSubdirs
+ *
+ */
+function LoadDirectoryFilesEx(string $basePath, string $filter, bool $scanSubdirs): \raylib\FilePathList { return new \raylib\FilePathList; }
+
+/*
+ * Unload filepaths
+ *
+ * @param \raylib\FilePathList $files
+ *
+ */
+function UnloadDirectoryFiles(\raylib\FilePathList $files): void {  }
+
+/*
  * Check if a file has been dropped into window
  *
  *
@@ -1476,19 +1546,19 @@ function ChangeDirectory(string $dir): bool { return false; }
 function IsFileDropped(): bool { return false; }
 
 /*
- * Get dropped files names (memory should be freed)
+ * Load dropped filepaths
  *
- * @param & $count
  *
  */
-function GetDroppedFiles(& $count): string { return ""; }
+function LoadDroppedFiles(): \raylib\FilePathList { return new \raylib\FilePathList; }
 
 /*
- * Clear dropped files paths buffer (free memory)
+ * Unload dropped filepaths
  *
+ * @param \raylib\FilePathList $files
  *
  */
-function ClearDroppedFiles(): void {  }
+function UnloadDroppedFiles(\raylib\FilePathList $files): void {  }
 
 /*
  * Get file modification time (last write time)
@@ -1497,31 +1567,6 @@ function ClearDroppedFiles(): void {  }
  *
  */
 function GetFileModTime(string $fileName): int { return 0; }
-
-/*
- * Save integer value to storage file (to defined position), returns true on success
- *
- * @param int $position
- * @param int $value
- *
- */
-function SaveStorageValue(int $position, int $value): bool { return false; }
-
-/*
- * Load integer value from storage file (from defined position)
- *
- * @param int $position
- *
- */
-function LoadStorageValue(int $position): int { return 0; }
-
-/*
- * Open URL with default system browser (if available)
- *
- * @param string $url
- *
- */
-function OpenURL(string $url): void {  }
 
 /*
  * Check if a key has been pressed once
@@ -1741,11 +1786,18 @@ function SetMouseOffset(int $offsetX, int $offsetY): void {  }
 function SetMouseScale(float $scaleX, float $scaleY): void {  }
 
 /*
- * Get mouse wheel movement Y
+ * Get mouse wheel movement for X or Y, whichever is larger
  *
  *
  */
 function GetMouseWheelMove(): float { return 0.00; }
+
+/*
+ * Get mouse wheel movement for both X and Y
+ *
+ *
+ */
+function GetMouseWheelMoveV(): \raylib\Vector2 { return new \raylib\Vector2; }
 
 /*
  * Set mouse cursor
@@ -2928,7 +2980,7 @@ function ImageDrawLineV(& $dst, \raylib\Vector2 $start, \raylib\Vector2 $end, \r
 function ImageDrawCircle(& $dst, int $centerX, int $centerY, int $radius, \raylib\Color $color): void {  }
 
 /*
- * Draw circle within an image (Vector version)
+ * Draw a filled circle within an image (Vector version)
  *
  * @param & $dst
  * @param \raylib\Vector2 $center
@@ -3430,6 +3482,20 @@ function DrawTextPro(\raylib\Font $font, string $text, \raylib\Vector2 $position
  *
  */
 function DrawTextCodepoint(\raylib\Font $font, int $codepoint, \raylib\Vector2 $position, float $fontSize, \raylib\Color $tint): void {  }
+
+/*
+ * Draw multiple character (codepoint)
+ *
+ * @param \raylib\Font $font
+ * @param array $codepoints
+ * @param int $count
+ * @param \raylib\Vector2 $position
+ * @param float $fontSize
+ * @param float $spacing
+ * @param \raylib\Color $tint
+ *
+ */
+function DrawTextCodepoints(\raylib\Font $font, array $codepoints, int $count, \raylib\Vector2 $position, float $fontSize, float $spacing, \raylib\Color $tint): void {  }
 
 /*
  * Measure string width for default font
@@ -3995,14 +4061,6 @@ function GetMeshBoundingBox(\raylib\Mesh $mesh): \raylib\BoundingBox { return ne
 function GenMeshTangents(& $mesh): void {  }
 
 /*
- * Compute mesh binormals
- *
- * @param & $mesh
- *
- */
-function GenMeshBinormals(& $mesh): void {  }
-
-/*
  * Generate polygonal mesh
  *
  * @param int $sides
@@ -4233,15 +4291,6 @@ function GetRayCollisionSphere(\raylib\Ray $ray, \raylib\Vector3 $center, float 
 function GetRayCollisionBox(\raylib\Ray $ray, \raylib\BoundingBox $box): \raylib\RayCollision { return new \raylib\RayCollision; }
 
 /*
- * Get collision info between ray and model
- *
- * @param \raylib\Ray $ray
- * @param \raylib\Model $model
- *
- */
-function GetRayCollisionModel(\raylib\Ray $ray, \raylib\Model $model): \raylib\RayCollision { return new \raylib\RayCollision; }
-
-/*
  * Get collision info between ray and mesh
  *
  * @param \raylib\Ray $ray
@@ -4452,15 +4501,13 @@ function SetSoundVolume(\raylib\Sound $sound, float $volume): void {  }
 function SetSoundPitch(\raylib\Sound $sound, float $pitch): void {  }
 
 /*
- * Convert wave data to desired format
+ * Set pan for a sound (0.5 is center)
  *
- * @param & $wave
- * @param int $sampleRate
- * @param int $sampleSize
- * @param int $channels
+ * @param \raylib\Sound $sound
+ * @param float $pan
  *
  */
-function WaveFormat(& $wave, int $sampleRate, int $sampleSize, int $channels): void {  }
+function SetSoundPan(\raylib\Sound $sound, float $pan): void {  }
 
 /*
  * Copy a wave to a new wave
@@ -4481,6 +4528,17 @@ function WaveCopy(\raylib\Wave $wave): \raylib\Wave { return new \raylib\Wave; }
 function WaveCrop(& $wave, int $initSample, int $finalSample): void {  }
 
 /*
+ * Convert wave data to desired format
+ *
+ * @param & $wave
+ * @param int $sampleRate
+ * @param int $sampleSize
+ * @param int $channels
+ *
+ */
+function WaveFormat(& $wave, int $sampleRate, int $sampleSize, int $channels): void {  }
+
+/*
  * Unload samples data loaded with LoadWaveSamples()
  *
  * @param array $samples
@@ -4495,6 +4553,16 @@ function UnloadWaveSamples(array $samples): void {  }
  *
  */
 function LoadMusicStream(string $fileName): \raylib\Music { return new \raylib\Music; }
+
+/*
+ * Load music stream from data
+ *
+ * @param string $fileType
+ * @param array $data
+ * @param int $dataSize
+ *
+ */
+function LoadMusicStreamFromMemory(string $fileType, array $data, int $dataSize): \raylib\Music { return new \raylib\Music; }
 
 /*
  * Unload music stream
@@ -4578,6 +4646,15 @@ function SetMusicVolume(\raylib\Music $music, float $volume): void {  }
  *
  */
 function SetMusicPitch(\raylib\Music $music, float $pitch): void {  }
+
+/*
+ * Set pan for a music (0.5 is center)
+ *
+ * @param \raylib\Music $music
+ * @param float $pan
+ *
+ */
+function SetMusicPan(\raylib\Music $music, float $pan): void {  }
 
 /*
  * Get music time length (in seconds)
@@ -4678,6 +4755,15 @@ function SetAudioStreamVolume(\raylib\AudioStream $stream, float $volume): void 
  *
  */
 function SetAudioStreamPitch(\raylib\AudioStream $stream, float $pitch): void {  }
+
+/*
+ * Set pan for audio stream (0.5 is centered)
+ *
+ * @param \raylib\AudioStream $stream
+ * @param float $pan
+ *
+ */
+function SetAudioStreamPan(\raylib\AudioStream $stream, float $pan): void {  }
 
 /*
  * Default size for new audio streams

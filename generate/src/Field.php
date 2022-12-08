@@ -27,6 +27,8 @@ class Field
                                 $arrayCountEnum = null,
                                 $arrayCountNumber = null)
     {
+        echo 'Field: ', $type, ' - ', $name, PHP_EOL;
+
         $this->type = $type;
 
         $this->name = $name;

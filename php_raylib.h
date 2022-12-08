@@ -68,6 +68,7 @@ zend_class_entry *php_raylib_sound_ce;
 zend_class_entry *php_raylib_music_ce;
 zend_class_entry *php_raylib_vrdeviceinfo_ce;
 zend_class_entry *php_raylib_vrstereoconfig_ce;
+zend_class_entry *php_raylib_filepathlist_ce;
 
 
 #ifdef PHP_WIN32

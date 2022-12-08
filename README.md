@@ -128,7 +128,7 @@ Windows is by far the hardest platform to support and build for. Please use the 
 #### Mac OS
 
     brew install php@8.1
-    brew install raylib@4.0.0
+    brew install raylib@4.2.0
 
 #### Build
 

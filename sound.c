@@ -293,6 +293,7 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
         intern->sound = (Sound) {
             .stream = (AudioStream) {
                 .buffer = other->sound.stream.buffer,
+                .processor = other->sound.stream.processor,
                 .sampleRate = other->sound.stream.sampleRate,
                 .sampleSize = other->sound.stream.sampleSize,
                 .channels = other->sound.stream.channels
@@ -310,6 +311,7 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
         intern->sound = (Sound) {
             .stream = (AudioStream) {
                 .buffer = 0,
+                .processor = 0,
                 .sampleRate = 0,
                 .sampleSize = 0,
                 .channels = 0

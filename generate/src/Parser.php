@@ -89,6 +89,15 @@ class Parser
                 'SetPixelColor', //-- Not Yet Supported
                 'GenImageFontAtlas', //-- Not Yet Supported
                 'UpdateMeshBuffer', //-- Not Yet Supported
+                'SetShaderValue', //-- Not Yet Supported
+                'SetShaderValueV', //-- Not Yet Supported
+                'UpdateTexture', //-- Not Yet Supported
+                'UpdateTextureRec', //-- Not Yet Supported
+                'UpdateSound', //-- Not Yet Supported
+                'UpdateAudioStream', //-- Not Yet Supported
+                'SetAudioStreamCallback', //-- Not Yet Supported
+                'AttachAudioStreamProcessor', //-- Not Yet Supported
+                'DetachAudioStreamProcessor', //-- Not Yet Supported
             ])) {
                 $function->unsupported = true;
             }

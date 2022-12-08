@@ -7,7 +7,7 @@
     <summary>Provides a wrapper to the RayLib library.</summary>
     <description>
         RayLib-PHP is a native php extension to create games using the RayLib API.
-        This extension requires RayLib version 4.0+ and PHP 8.0.0+.
+        This extension requires RayLib version 4.2+ and PHP 8.0.0+.
     </description>
     <lead>
         <name>Joseph Montañez</name>

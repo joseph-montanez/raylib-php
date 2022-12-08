@@ -64,6 +64,9 @@ static HashTable php_raylib_audiostream_prop_handlers;
 typedef HashTable * (*raylib_audiostream_read_raudiobuffer_array_t)(php_raylib_audiostream_object *obj);
 typedef int (*raylib_audiostream_write_raudiobuffer_array_t)(php_raylib_audiostream_object *obj,  zval *value);
 
+typedef zend_object * (*raylib_audiostream_read_raudioprocessor__t)(php_raylib_audiostream_object *obj);
+typedef int (*raylib_audiostream_write_raudioprocessor__t)(php_raylib_audiostream_object *obj,  zval *value);
+
 typedef zend_long (*raylib_audiostream_read_unsigned_int_t)(php_raylib_audiostream_object *obj);
 typedef int (*raylib_audiostream_write_unsigned_int_t)(php_raylib_audiostream_object *obj,  zval *value);
 
@@ -74,15 +77,21 @@ typedef int (*raylib_audiostream_write_unsigned_int_t)(php_raylib_audiostream_ob
 void php_raylib_audiostream_update_intern(php_raylib_audiostream_object *intern) {
     //TODO: Support for pointers and arrays;
     //intern->audiostream.buffer = intern->buffer->raudiobuffer;
+    //TODO: Support for pointers and arrays;
+    //intern->audiostream.processor = intern->processor->raudioprocessor;
 }
 
 void php_raylib_audiostream_update_intern_reverse(php_raylib_audiostream_object *intern) {
     //TODO: Support for pointers and arrays;
     //intern->audiostream.buffer = intern->buffer->raudiobuffer;
+    //TODO: Support for pointers and arrays;
+    //intern->audiostream.processor = intern->processor->raudioprocessor;
 }
 typedef struct _raylib_audiostream_prop_handler {
     raylib_audiostream_read_raudiobuffer_array_t read_raudiobuffer_array_func;
     raylib_audiostream_write_raudiobuffer_array_t write_raudiobuffer_array_func;
+    raylib_audiostream_read_raudioprocessor__t read_raudioprocessor__func;
+    raylib_audiostream_write_raudioprocessor__t write_raudioprocessor__func;
     raylib_audiostream_read_unsigned_int_t read_unsigned_int_func;
     raylib_audiostream_write_unsigned_int_t write_unsigned_int_func;
 } raylib_audiostream_prop_handler;
@@ -90,6 +99,8 @@ typedef struct _raylib_audiostream_prop_handler {
 static void php_raylib_audiostream_register_prop_handler(HashTable *prop_handler, char *name,
                                                       raylib_audiostream_read_raudiobuffer_array_t read_raudiobuffer_array_func,
                                                       raylib_audiostream_write_raudiobuffer_array_t write_raudiobuffer_array_func,
+                                                      raylib_audiostream_read_raudioprocessor__t read_raudioprocessor__func,
+                                                      raylib_audiostream_write_raudioprocessor__t write_raudioprocessor__func,
                                                       raylib_audiostream_read_unsigned_int_t read_unsigned_int_func,
                                                       raylib_audiostream_write_unsigned_int_t write_unsigned_int_func) /* {{{ */
 {
@@ -97,6 +108,8 @@ static void php_raylib_audiostream_register_prop_handler(HashTable *prop_handler
 
     hnd.read_raudiobuffer_array_func = read_raudiobuffer_array_func;
     hnd.write_raudiobuffer_array_func = write_raudiobuffer_array_func;
+    hnd.read_raudioprocessor__func = read_raudioprocessor__func;
+    hnd.write_raudioprocessor__func = write_raudioprocessor__func;
     hnd.read_unsigned_int_func = read_unsigned_int_func;
     hnd.write_unsigned_int_func = write_unsigned_int_func;
 
@@ -112,6 +125,10 @@ static zval *php_raylib_audiostream_property_reader(php_raylib_audiostream_objec
     if (obj != NULL && hnd->read_raudiobuffer_array_func) {
         HashTable *ret = hnd->read_raudiobuffer_array_func(obj);
         ZVAL_ARR(rv, ret);
+    }
+    else if (obj != NULL && hnd->read_raudioprocessor__func) {
+        zend_object *ret = hnd->read_raudioprocessor__func(obj);
+        ZVAL_OBJ(rv, ret);
     }
     else if (obj != NULL && hnd->read_unsigned_int_func) {
         ZVAL_LONG(rv, hnd->read_unsigned_int_func(obj));
@@ -176,6 +193,8 @@ static zval *php_raylib_audiostream_write_property(zend_object *object, zend_str
 
     if (hnd && hnd->write_raudiobuffer_array_func) {
         hnd->write_raudiobuffer_array_func(obj, value);
+    } else if (hnd && hnd->write_raudioprocessor__func) {
+        hnd->write_raudioprocessor__func(obj, value);
     } else if (hnd && hnd->write_unsigned_int_func) {
         hnd->write_unsigned_int_func(obj, value);
     } else {
@@ -286,9 +305,13 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
 
         // buffer array not yet supported needs to generate a hash table!
         //zend_object *buffer = php_raylib_raudiobuffer_new_ex(php_raylib_raudiobuffer_ce, &other->buffer->std);
+        // processor array not yet supported needs to generate a hash table!
+        //zend_object *processor = php_raylib_raudioprocessor_new_ex(php_raylib_raudioprocessor_ce, &other->processor->std);
 
         // buffer array not yet supported needs to generate a hash table!
         //php_raylib_raudiobuffer_object *phpBuffer = php_raylib_raudiobuffer_fetch_object(buffer);
+        // processor array not yet supported needs to generate a hash table!
+        //php_raylib_raudioprocessor_object *phpProcessor = php_raylib_raudioprocessor_fetch_object(processor);
 
         intern->audiostream = (AudioStream) {
             .sampleRate = other->audiostream.sampleRate,
@@ -296,19 +319,35 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
             .channels = other->audiostream.channels
         };
 
+        HashTable *processor_hash;
+        ALLOC_HASHTABLE(processor_hash);
+        zend_hash_init(processor_hash, zend_hash_num_elements(Z_ARRVAL_P(&other->processor)), NULL, NULL, 0);
+        zend_hash_copy(processor_hash, Z_ARRVAL_P(&other->processor), (copy_ctor_func_t) zval_add_ref);
+        ZVAL_ARR(&intern->processor, processor_hash);
+
     } else {
         // buffer array not yet supported needs to generate a hash table!
         //zend_object *buffer = php_raylib_raudiobuffer_new_ex(php_raylib_raudiobuffer_ce, NULL);
+        // processor array not yet supported needs to generate a hash table!
+        //zend_object *processor = php_raylib_raudioprocessor_new_ex(php_raylib_raudioprocessor_ce, NULL);
 
         // buffer array not yet supported needs to generate a hash table!
         //php_raylib_raudiobuffer_object *phpBuffer = php_raylib_raudiobuffer_fetch_object(buffer);
+        // processor array not yet supported needs to generate a hash table!
+        //php_raylib_raudioprocessor_object *phpProcessor = php_raylib_raudioprocessor_fetch_object(processor);
 
         intern->audiostream = (AudioStream) {
             // .buffer is an array and not yet supported via constructor
+            // .processor is an array and not yet supported via constructor
             .sampleRate = 0,
             .sampleSize = 0,
             .channels = 0
         };
+
+        HashTable *processor_hash;
+        ALLOC_HASHTABLE(processor_hash);
+        zend_hash_init(processor_hash, 0, NULL, NULL, 0);
+        ZVAL_ARR(&intern->processor, processor_hash);
 
     }
 
@@ -354,6 +393,14 @@ static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_obje
 }
 /* }}} */
 
+static zend_object * php_raylib_audiostream_get_processor(php_raylib_audiostream_object *obj) /* {{{ */
+{
+    //TODO: Support for pointer and arrays
+    //GC_ADDREF(&obj->processor->std);
+    //return &obj->processor->std;
+}
+/* }}} */
+
 static zend_long php_raylib_audiostream_get_samplerate(php_raylib_audiostream_object *obj) /* {{{ */
 {
     return (zend_long) obj->audiostream.sampleRate;
@@ -377,6 +424,21 @@ static int php_raylib_audiostream_set_buffer(php_raylib_audiostream_object *obj,
     int ret = SUCCESS;
 
     //TODO: Set Array Not yet supported
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_audiostream_set_processor(php_raylib_audiostream_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        // Cannot set this to null...
+        return ret;
+    }
+
+    obj->processor = *newval;
 
     return ret;
 }
@@ -455,8 +517,9 @@ void php_raylib_audiostream_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_audiostream_prop_handlers, 0, NULL, php_raylib_audiostream_free_prop_handler, 1);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "buffer", php_raylib_audiostream_get_buffer, php_raylib_audiostream_set_buffer, NULL, NULL);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplerate", NULL, NULL, php_raylib_audiostream_get_samplerate, php_raylib_audiostream_set_samplerate);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplesize", NULL, NULL, php_raylib_audiostream_get_samplesize, php_raylib_audiostream_set_samplesize);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "channels", NULL, NULL, php_raylib_audiostream_get_channels, php_raylib_audiostream_set_channels);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "buffer", php_raylib_audiostream_get_buffer, php_raylib_audiostream_set_buffer, NULL, NULL, NULL, NULL);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "processor", NULL, NULL, php_raylib_audiostream_get_processor, php_raylib_audiostream_set_processor, NULL, NULL);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplerate", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplerate, php_raylib_audiostream_set_samplerate);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplesize", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplesize, php_raylib_audiostream_set_samplesize);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "channels", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_channels, php_raylib_audiostream_set_channels);
 }

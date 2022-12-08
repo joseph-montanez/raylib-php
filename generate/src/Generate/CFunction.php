@@ -90,10 +90,14 @@ class CFunction
 
                     $input[] = strtr('    ZEND_HASH_FOREACH_VAL([nameLower]_hash, [nameLower]_element) {', $tr);
                     $input[] = strtr('        ZVAL_DEREF([nameLower]_element);', $tr);
-                    $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
-                    $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
-                    $input[] = strtr('            [nameLower]_array[[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
-                    $input[] = strtr('        }', $tr);
+                    if ($param->isPrimitive) {
+                        $input[] = strtr('        [nameLower]_array[[nameLower]_index] = [nameLower]_element;', $tr);
+                    } else {
+                        $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
+                        $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
+                        $input[] = strtr('            [nameLower]_array[[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
+                        $input[] = strtr('        }', $tr);
+                    }
                     $input[] = strtr('', $tr);
                     $input[] = strtr('        [nameLower]_index++;', $tr);
                     $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);

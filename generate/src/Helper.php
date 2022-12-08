@@ -43,6 +43,7 @@ class Helper
             str_starts_with($type, 'long') ||
             str_starts_with($type, 'unsigned') ||
             str_starts_with($type, 'const unsigned') ||
+            str_starts_with($type, 'const int') ||
             str_starts_with($type, 'float') ||
             str_starts_with($type, 'double') ||
             str_starts_with($type, 'const char') ||
@@ -64,6 +65,7 @@ class Helper
             || str_starts_with($type, 'long')
             || str_starts_with($type, 'unsigned short')
             || str_starts_with($type, 'unsigned int')
+            || str_starts_with($type, 'const int')
             || str_starts_with($type, 'const unsigned char')
             || str_starts_with($type, 'unsigned char');
 

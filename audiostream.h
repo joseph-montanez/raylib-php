@@ -7,6 +7,7 @@ extern zend_class_entry * php_raylib_audiostream_ce;
 // External Free Objects - Prevent Circular Dependency
 //TODO: Support array/hash
 //extern void php_raylib_raudiobuffer_array_free_storage(zend_object *object);
+extern void php_raylib_raudioprocessor__free_storage(zend_object *object);
 
 extern void php_raylib_audiostream_free_storage(zend_object * object);
 
@@ -21,6 +22,7 @@ typedef struct _php_raylib_audiostream_object {
     HashTable *prop_handler;
 // NO idea what to do with rAudioBuffer
 //php_raylib_raudiobuffer_object *buffer;
+    zval processor;
     zend_object std;
 } php_raylib_audiostream_object;
 

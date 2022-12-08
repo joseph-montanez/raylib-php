@@ -100,6 +100,7 @@ typedef struct tagMSG* LPMSG;
 #include "music.h"
 #include "vrdeviceinfo.h"
 #include "vrstereoconfig.h"
+#include "filepathlist.h"
 #include "texture.h"
 #include "texture.h"
 #include "rendertexture.h"
@@ -551,7 +552,7 @@ PHP_FUNCTION(GetMonitorPosition)
     RETURN_OBJ(&phpResult->std);
 }
 
-// Get specified monitor width (max available by monitor)
+// Get specified monitor width (current video mode used by monitor)
 // RLAPI int GetMonitorWidth(int monitor);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMonitorWidth, 0, 0, 1)
     ZEND_ARG_INFO(0, monitor)
@@ -568,7 +569,7 @@ PHP_FUNCTION(GetMonitorWidth)
     RETURN_LONG(GetMonitorWidth((monitor <= INT_MAX) ? (int) ((zend_long) monitor) : -1));
 }
 
-// Get specified monitor height (max available by monitor)
+// Get specified monitor height (current video mode used by monitor)
 // RLAPI int GetMonitorHeight(int monitor);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMonitorHeight, 0, 0, 1)
     ZEND_ARG_INFO(0, monitor)
@@ -688,6 +689,32 @@ PHP_FUNCTION(SetClipboardText)
 
 }
 
+// Enable waiting for events on EndDrawing(), no automatic event polling
+// RLAPI void EnableEventWaiting();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_EnableEventWaiting, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(EnableEventWaiting)
+{
+
+    ZEND_PARSE_PARAMETERS_NONE();
+
+    EnableEventWaiting();
+
+}
+
+// Disable waiting for events on EndDrawing(), automatic events polling
+// RLAPI void DisableEventWaiting();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_DisableEventWaiting, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(DisableEventWaiting)
+{
+
+    ZEND_PARSE_PARAMETERS_NONE();
+
+    DisableEventWaiting();
+
+}
+
 // Swap back buffer with front buffer (screen drawing)
 // RLAPI void SwapScreenBuffer();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_SwapScreenBuffer, 0, 0, 0)
@@ -714,21 +741,21 @@ PHP_FUNCTION(PollInputEvents)
 
 }
 
-// Wait for some milliseconds (halt program execution)
-// RLAPI void WaitTime(float ms);
+// Wait for some time (halt program execution)
+// RLAPI void WaitTime(double seconds);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_WaitTime, 0, 0, 1)
-    ZEND_ARG_INFO(0, ms)
+    ZEND_ARG_INFO(0, seconds)
 ZEND_END_ARG_INFO()
 PHP_FUNCTION(WaitTime)
 {
-    double ms;
+    double seconds;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_DOUBLE(ms)
+        Z_PARAM_DOUBLE(seconds)
     ZEND_PARSE_PARAMETERS_END();
 
 
-    WaitTime((float) ms);
+    WaitTime((double) seconds);
 
 }
 
@@ -1410,6 +1437,35 @@ PHP_FUNCTION(GetWorldToScreen)
     RETURN_OBJ(&phpResult->std);
 }
 
+// Get the world space position for a 2d camera screen space position
+// RLAPI Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GetScreenToWorld2D, 0, 0, 2)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, camera)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(GetScreenToWorld2D)
+{
+    zval *position;
+    zval *camera;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_ZVAL(camera)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
+    php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
+    php_raylib_camera2d_update_intern(phpCamera);
+
+    Vector2 originalResult = GetScreenToWorld2D(phpPosition->vector2, phpCamera->camera2d);
+    zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
+    phpResult->vector2 = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
+}
+
 // Get size position for a 3d world space position
 // RLAPI Vector2 GetWorldToScreenEx(Vector3 position, Camera3D camera, int width, int height);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GetWorldToScreenEx, 0, 0, 4)
@@ -1467,35 +1523,6 @@ PHP_FUNCTION(GetWorldToScreen2D)
     php_raylib_camera2d_update_intern(phpCamera);
 
     Vector2 originalResult = GetWorldToScreen2D(phpPosition->vector2, phpCamera->camera2d);
-    zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
-    php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2 = originalResult;
-
-    RETURN_OBJ(&phpResult->std);
-}
-
-// Get the world space position for a 2d camera screen space position
-// RLAPI Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GetScreenToWorld2D, 0, 0, 2)
-    ZEND_ARG_INFO(0, position)
-    ZEND_ARG_INFO(0, camera)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(GetScreenToWorld2D)
-{
-    zval *position;
-    zval *camera;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_ZVAL(position)
-        Z_PARAM_ZVAL(camera)
-    ZEND_PARSE_PARAMETERS_END();
-
-    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
-    php_raylib_vector2_update_intern(phpPosition);
-    php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
-    php_raylib_camera2d_update_intern(phpCamera);
-
-    Vector2 originalResult = GetScreenToWorld2D(phpPosition->vector2, phpCamera->camera2d);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
     phpResult->vector2 = originalResult;
@@ -1649,6 +1676,47 @@ PHP_FUNCTION(SetTraceLogLevel)
 
 }
 
+// Open URL with default system browser (if available)
+// RLAPI void OpenURL(const char * url);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenURL, 0, 0, 1)
+    ZEND_ARG_INFO(0, url)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(OpenURL)
+{
+    zend_string *url;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(url)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    OpenURL(url->val);
+
+}
+
+// Export data to code (.h), returns true on success
+// RLAPI bool ExportDataAsCode(const char * data, unsigned int size, const char * fileName);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ExportDataAsCode, 0, 0, 3)
+    ZEND_ARG_INFO(0, data)
+    ZEND_ARG_INFO(0, size)
+    ZEND_ARG_INFO(0, fileName)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(ExportDataAsCode)
+{
+    zend_string *data;
+    zend_long size;
+    zend_string *fileName;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_STR(data)
+        Z_PARAM_LONG(size)
+        Z_PARAM_STR(fileName)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    RETURN_BOOL(ExportDataAsCode(data->val, (size <= INT_MAX) ? (int) ((zend_long) size) : -1, fileName->val));
+}
+
 // Unload file text data allocated by LoadFileText()
 // RLAPI void UnloadFileText(char * text);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadFileText, 0, 0, 1)
@@ -1741,52 +1809,21 @@ PHP_FUNCTION(IsFileExtension)
     RETURN_BOOL(IsFileExtension(fileName->val, ext->val));
 }
 
-// Get filenames in a directory path (memory should be freed)
-// RLAPI char ** GetDirectoryFiles(const char * dirPath, int * count);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GetDirectoryFiles, 0, 1, 2)
-    ZEND_ARG_INFO(0, dirPath)
-    ZEND_ARG_INFO(1, count)
+// Get file length in bytes (NOTE: GetFileSize() conflicts with windows.h)
+// RLAPI int GetFileLength(const char * fileName);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GetFileLength, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
 ZEND_END_ARG_INFO()
-PHP_FUNCTION(GetDirectoryFiles)
+PHP_FUNCTION(GetFileLength)
 {
-    zend_string *dirPath;
-    zval *count;
+    zend_string *fileName;
 
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_STR(dirPath)
-        Z_PARAM_ZVAL(count)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(fileName)
     ZEND_PARSE_PARAMETERS_END();
 
-    int count_in;
 
-    char ** result_value =  GetDirectoryFiles(dirPath->val, &count_in);
-    // Assign back the in-parameter to the original tracked value
-    ZEND_TRY_ASSIGN_REF_LONG(count, count_in);
-
-    HashTable *return_hash;
-    ALLOC_HASHTABLE(return_hash);
-    zend_hash_init(return_hash, count_in, NULL, NULL, 0);
-
-    for (int i = 0; i < count_in; i++) {
-        zval zv;
-        ZVAL_STRING(&zv, result_value[i]);
-        zend_hash_index_update(return_hash, i, &zv);
-    }
-
-    RETURN_ARR(return_hash);
-}
-
-// Clear directory files paths buffers (free memory)
-// RLAPI void ClearDirectoryFiles();
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ClearDirectoryFiles, 0, 0, 0)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(ClearDirectoryFiles)
-{
-
-    ZEND_PARSE_PARAMETERS_NONE();
-
-    ClearDirectoryFiles();
-
+    RETURN_LONG(GetFileLength(fileName->val));
 }
 
 // Change working directory, return true on success
@@ -1806,6 +1843,93 @@ PHP_FUNCTION(ChangeDirectory)
     RETURN_BOOL(ChangeDirectory(dir->val));
 }
 
+// Check if a given path is a file or a directory
+// RLAPI bool IsPathFile(const char * path);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_IsPathFile, 0, 0, 1)
+    ZEND_ARG_INFO(0, path)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(IsPathFile)
+{
+    zend_string *path;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(path)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    RETURN_BOOL(IsPathFile(path->val));
+}
+
+// Load directory filepaths
+// RLAPI FilePathList LoadDirectoryFiles(const char * dirPath);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadDirectoryFiles, 0, 0, 1)
+    ZEND_ARG_INFO(0, dirPath)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(LoadDirectoryFiles)
+{
+    zend_string *dirPath;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(dirPath)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    FilePathList originalResult = LoadDirectoryFiles(dirPath->val);
+    zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
+    php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
+    phpResult->filepathlist = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
+}
+
+// Load directory filepaths with extension filtering and recursive directory scan
+// RLAPI FilePathList LoadDirectoryFilesEx(const char * basePath, const char * filter, bool scanSubdirs);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadDirectoryFilesEx, 0, 0, 3)
+    ZEND_ARG_INFO(0, basePath)
+    ZEND_ARG_INFO(0, filter)
+    ZEND_ARG_INFO(0, scanSubdirs)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(LoadDirectoryFilesEx)
+{
+    zend_string *basePath;
+    zend_string *filter;
+    bool scanSubdirs;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_STR(basePath)
+        Z_PARAM_STR(filter)
+        Z_PARAM_BOOL(scanSubdirs)
+    ZEND_PARSE_PARAMETERS_END();
+
+
+    FilePathList originalResult = LoadDirectoryFilesEx(basePath->val, filter->val, scanSubdirs);
+    zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
+    php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
+    phpResult->filepathlist = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
+}
+
+// Unload filepaths
+// RLAPI void UnloadDirectoryFiles(FilePathList files);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadDirectoryFiles, 0, 0, 1)
+    ZEND_ARG_INFO(0, files)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(UnloadDirectoryFiles)
+{
+    zval *files;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(files)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_filepathlist_object *phpFiles = Z_FILEPATHLIST_OBJ_P(files);
+    php_raylib_filepathlist_update_intern(phpFiles);
+
+    UnloadDirectoryFiles(phpFiles->filepathlist);
+
+}
+
 // Check if a file has been dropped into window
 // RLAPI bool IsFileDropped();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_IsFileDropped, 0, 0, 0)
@@ -1818,48 +1942,40 @@ PHP_FUNCTION(IsFileDropped)
     RETURN_BOOL(IsFileDropped());
 }
 
-// Get dropped files names (memory should be freed)
-// RLAPI char ** GetDroppedFiles(int * count);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GetDroppedFiles, 0, 1, 1)
-    ZEND_ARG_INFO(1, count)
+// Load dropped filepaths
+// RLAPI FilePathList LoadDroppedFiles();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadDroppedFiles, 0, 0, 0)
 ZEND_END_ARG_INFO()
-PHP_FUNCTION(GetDroppedFiles)
-{
-    zval *count;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_ZVAL(count)
-    ZEND_PARSE_PARAMETERS_END();
-
-    int count_in;
-
-    char ** result_value =  GetDroppedFiles(&count_in);
-    // Assign back the in-parameter to the original tracked value
-    ZEND_TRY_ASSIGN_REF_LONG(count, count_in);
-
-    HashTable *return_hash;
-    ALLOC_HASHTABLE(return_hash);
-    zend_hash_init(return_hash, count_in, NULL, NULL, 0);
-
-    for (int i = 0; i < count_in; i++) {
-        zval zv;
-        ZVAL_STRING(&zv, result_value[i]);
-        zend_hash_index_update(return_hash, i, &zv);
-    }
-
-    RETURN_ARR(return_hash);
-}
-
-// Clear dropped files paths buffer (free memory)
-// RLAPI void ClearDroppedFiles();
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ClearDroppedFiles, 0, 0, 0)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(ClearDroppedFiles)
+PHP_FUNCTION(LoadDroppedFiles)
 {
 
     ZEND_PARSE_PARAMETERS_NONE();
 
-    ClearDroppedFiles();
+    FilePathList originalResult = LoadDroppedFiles();
+    zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
+    php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
+    phpResult->filepathlist = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
+}
+
+// Unload dropped filepaths
+// RLAPI void UnloadDroppedFiles(FilePathList files);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadDroppedFiles, 0, 0, 1)
+    ZEND_ARG_INFO(0, files)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(UnloadDroppedFiles)
+{
+    zval *files;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ZVAL(files)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_filepathlist_object *phpFiles = Z_FILEPATHLIST_OBJ_P(files);
+    php_raylib_filepathlist_update_intern(phpFiles);
+
+    UnloadDroppedFiles(phpFiles->filepathlist);
 
 }
 
@@ -1878,61 +1994,6 @@ PHP_FUNCTION(GetFileModTime)
 
 
     RETURN_LONG(GetFileModTime(fileName->val));
-}
-
-// Save integer value to storage file (to defined position), returns true on success
-// RLAPI bool SaveStorageValue(unsigned int position, int value);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_SaveStorageValue, 0, 0, 2)
-    ZEND_ARG_INFO(0, position)
-    ZEND_ARG_INFO(0, value)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(SaveStorageValue)
-{
-    zend_long position;
-    zend_long value;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_LONG(position)
-        Z_PARAM_LONG(value)
-    ZEND_PARSE_PARAMETERS_END();
-
-
-    RETURN_BOOL(SaveStorageValue((position <= INT_MAX) ? (int) ((zend_long) position) : -1, (value <= INT_MAX) ? (int) ((zend_long) value) : -1));
-}
-
-// Load integer value from storage file (from defined position)
-// RLAPI int LoadStorageValue(unsigned int position);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadStorageValue, 0, 0, 1)
-    ZEND_ARG_INFO(0, position)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(LoadStorageValue)
-{
-    zend_long position;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_LONG(position)
-    ZEND_PARSE_PARAMETERS_END();
-
-
-    RETURN_LONG(LoadStorageValue((position <= INT_MAX) ? (int) ((zend_long) position) : -1));
-}
-
-// Open URL with default system browser (if available)
-// RLAPI void OpenURL(const char * url);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_OpenURL, 0, 0, 1)
-    ZEND_ARG_INFO(0, url)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(OpenURL)
-{
-    zend_string *url;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_STR(url)
-    ZEND_PARSE_PARAMETERS_END();
-
-
-    OpenURL(url->val);
-
 }
 
 // Check if a key has been pressed once
@@ -2397,7 +2458,7 @@ PHP_FUNCTION(SetMouseScale)
 
 }
 
-// Get mouse wheel movement Y
+// Get mouse wheel movement for X or Y, whichever is larger
 // RLAPI float GetMouseWheelMove();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMouseWheelMove, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -2407,6 +2468,23 @@ PHP_FUNCTION(GetMouseWheelMove)
     ZEND_PARSE_PARAMETERS_NONE();
 
     RETURN_DOUBLE((double) GetMouseWheelMove());
+}
+
+// Get mouse wheel movement for both X and Y
+// RLAPI Vector2 GetMouseWheelMoveV();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_GetMouseWheelMoveV, 0, 0, 0)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(GetMouseWheelMoveV)
+{
+
+    ZEND_PARSE_PARAMETERS_NONE();
+
+    Vector2 originalResult = GetMouseWheelMoveV();
+    zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
+    php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
+    phpResult->vector2 = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
 }
 
 // Set mouse cursor
@@ -2643,7 +2721,7 @@ PHP_FUNCTION(SetCameraMode)
 }
 
 // Update camera position for selected mode
-// RLAPI void UpdateCamera(Camera3D * camera);
+// RLAPI void UpdateCamera(Camera3D* camera);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UpdateCamera, 0, 0, 1)
     ZEND_ARG_INFO(0, camera)
 ZEND_END_ARG_INFO()
@@ -3036,7 +3114,7 @@ PHP_FUNCTION(DrawLineBezierCubic)
 }
 
 // Draw lines sequence
-// RLAPI void DrawLineStrip(Vector2 * points, int pointCount, Color color);
+// RLAPI void DrawLineStrip(Vector2* points, int pointCount, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawLineStrip, 0, 0, 3)
     ZEND_ARG_INFO(0, points)
     ZEND_ARG_INFO(0, pointCount)
@@ -3059,7 +3137,7 @@ PHP_FUNCTION(DrawLineStrip)
     HashTable *points_hash = Z_ARRVAL_P(points);
     SEPARATE_ARRAY(points);
     int points_count = zend_hash_num_elements(points_hash);
-    Vector2 * points_array = safe_emalloc(sizeof(Vector2 *), points_count, 0);
+    Vector2* points_array = safe_emalloc(sizeof(Vector2*), points_count, 0);
     ZEND_HASH_FOREACH_VAL(points_hash, points_element) {
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
@@ -3844,7 +3922,7 @@ PHP_FUNCTION(DrawTriangleLines)
 }
 
 // Draw a triangle fan defined by points (first vertex is the center)
-// RLAPI void DrawTriangleFan(Vector2 * points, int pointCount, Color color);
+// RLAPI void DrawTriangleFan(Vector2* points, int pointCount, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawTriangleFan, 0, 0, 3)
     ZEND_ARG_INFO(0, points)
     ZEND_ARG_INFO(0, pointCount)
@@ -3867,7 +3945,7 @@ PHP_FUNCTION(DrawTriangleFan)
     HashTable *points_hash = Z_ARRVAL_P(points);
     SEPARATE_ARRAY(points);
     int points_count = zend_hash_num_elements(points_hash);
-    Vector2 * points_array = safe_emalloc(sizeof(Vector2 *), points_count, 0);
+    Vector2* points_array = safe_emalloc(sizeof(Vector2*), points_count, 0);
     ZEND_HASH_FOREACH_VAL(points_hash, points_element) {
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
@@ -3885,7 +3963,7 @@ PHP_FUNCTION(DrawTriangleFan)
 }
 
 // Draw a triangle strip defined by points
-// RLAPI void DrawTriangleStrip(Vector2 * points, int pointCount, Color color);
+// RLAPI void DrawTriangleStrip(Vector2* points, int pointCount, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawTriangleStrip, 0, 0, 3)
     ZEND_ARG_INFO(0, points)
     ZEND_ARG_INFO(0, pointCount)
@@ -3908,7 +3986,7 @@ PHP_FUNCTION(DrawTriangleStrip)
     HashTable *points_hash = Z_ARRVAL_P(points);
     SEPARATE_ARRAY(points);
     int points_count = zend_hash_num_elements(points_hash);
-    Vector2 * points_array = safe_emalloc(sizeof(Vector2 *), points_count, 0);
+    Vector2* points_array = safe_emalloc(sizeof(Vector2*), points_count, 0);
     ZEND_HASH_FOREACH_VAL(points_hash, points_element) {
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
@@ -4197,7 +4275,7 @@ PHP_FUNCTION(CheckCollisionPointTriangle)
 }
 
 // Check the collision between two lines defined by two points each, returns collision point by reference
-// RLAPI bool CheckCollisionLines(Vector2 startPos1, Vector2 endPos1, Vector2 startPos2, Vector2 endPos2, Vector2 * collisionPoint);
+// RLAPI bool CheckCollisionLines(Vector2 startPos1, Vector2 endPos1, Vector2 startPos2, Vector2 endPos2, Vector2* collisionPoint);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_CheckCollisionLines, 0, 0, 5)
     ZEND_ARG_INFO(0, startPos1)
     ZEND_ARG_INFO(0, endPos1)
@@ -4895,7 +4973,7 @@ PHP_FUNCTION(ImageTextEx)
 }
 
 // Convert image data to desired format
-// RLAPI void ImageFormat(Image * image, int newFormat);
+// RLAPI void ImageFormat(Image* image, int newFormat);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFormat, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newFormat)
@@ -4919,7 +4997,7 @@ PHP_FUNCTION(ImageFormat)
 }
 
 // Convert image to POT (power-of-two)
-// RLAPI void ImageToPOT(Image * image, Color fill);
+// RLAPI void ImageToPOT(Image* image, Color fill);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageToPOT, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, fill)
@@ -4945,7 +5023,7 @@ PHP_FUNCTION(ImageToPOT)
 }
 
 // Crop an image to a defined rectangle
-// RLAPI void ImageCrop(Image * image, Rectangle crop);
+// RLAPI void ImageCrop(Image* image, Rectangle crop);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_rlImageCrop, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, crop)
@@ -4971,7 +5049,7 @@ PHP_FUNCTION(rlImageCrop)
 }
 
 // Crop image depending on alpha value
-// RLAPI void ImageAlphaCrop(Image * image, float threshold);
+// RLAPI void ImageAlphaCrop(Image* image, float threshold);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaCrop, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, threshold)
@@ -4995,7 +5073,7 @@ PHP_FUNCTION(ImageAlphaCrop)
 }
 
 // Clear alpha channel to desired color
-// RLAPI void ImageAlphaClear(Image * image, Color color, float threshold);
+// RLAPI void ImageAlphaClear(Image* image, Color color, float threshold);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaClear, 0, 0, 3)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
@@ -5024,7 +5102,7 @@ PHP_FUNCTION(ImageAlphaClear)
 }
 
 // Apply alpha mask to image
-// RLAPI void ImageAlphaMask(Image * image, Image alphaMask);
+// RLAPI void ImageAlphaMask(Image* image, Image alphaMask);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaMask, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, alphaMask)
@@ -5050,7 +5128,7 @@ PHP_FUNCTION(ImageAlphaMask)
 }
 
 // Premultiply alpha channel
-// RLAPI void ImageAlphaPremultiply(Image * image);
+// RLAPI void ImageAlphaPremultiply(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageAlphaPremultiply, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5071,7 +5149,7 @@ PHP_FUNCTION(ImageAlphaPremultiply)
 }
 
 // Resize image (Bicubic scaling algorithm)
-// RLAPI void ImageResize(Image * image, int newWidth, int newHeight);
+// RLAPI void ImageResize(Image* image, int newWidth, int newHeight);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResize, 0, 0, 3)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
@@ -5098,7 +5176,7 @@ PHP_FUNCTION(ImageResize)
 }
 
 // Resize image (Nearest-Neighbor scaling algorithm)
-// RLAPI void ImageResizeNN(Image * image, int newWidth, int newHeight);
+// RLAPI void ImageResizeNN(Image* image, int newWidth, int newHeight);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeNN, 0, 0, 3)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
@@ -5125,7 +5203,7 @@ PHP_FUNCTION(ImageResizeNN)
 }
 
 // Resize canvas and fill with color
-// RLAPI void ImageResizeCanvas(Image * image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill);
+// RLAPI void ImageResizeCanvas(Image* image, int newWidth, int newHeight, int offsetX, int offsetY, Color fill);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageResizeCanvas, 0, 0, 6)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, newWidth)
@@ -5163,7 +5241,7 @@ PHP_FUNCTION(ImageResizeCanvas)
 }
 
 // Compute all mipmap levels for a provided image
-// RLAPI void ImageMipmaps(Image * image);
+// RLAPI void ImageMipmaps(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageMipmaps, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5184,7 +5262,7 @@ PHP_FUNCTION(ImageMipmaps)
 }
 
 // Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
-// RLAPI void ImageDither(Image * image, int rBpp, int gBpp, int bBpp, int aBpp);
+// RLAPI void ImageDither(Image* image, int rBpp, int gBpp, int bBpp, int aBpp);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDither, 0, 0, 5)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, rBpp)
@@ -5217,7 +5295,7 @@ PHP_FUNCTION(ImageDither)
 }
 
 // Flip image vertically
-// RLAPI void ImageFlipVertical(Image * image);
+// RLAPI void ImageFlipVertical(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipVertical, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5238,7 +5316,7 @@ PHP_FUNCTION(ImageFlipVertical)
 }
 
 // Flip image horizontally
-// RLAPI void ImageFlipHorizontal(Image * image);
+// RLAPI void ImageFlipHorizontal(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageFlipHorizontal, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5259,7 +5337,7 @@ PHP_FUNCTION(ImageFlipHorizontal)
 }
 
 // Rotate image clockwise 90deg
-// RLAPI void ImageRotateCW(Image * image);
+// RLAPI void ImageRotateCW(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCW, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5280,7 +5358,7 @@ PHP_FUNCTION(ImageRotateCW)
 }
 
 // Rotate image counter-clockwise 90deg
-// RLAPI void ImageRotateCCW(Image * image);
+// RLAPI void ImageRotateCCW(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageRotateCCW, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5301,7 +5379,7 @@ PHP_FUNCTION(ImageRotateCCW)
 }
 
 // Modify image color: tint
-// RLAPI void ImageColorTint(Image * image, Color color);
+// RLAPI void ImageColorTint(Image* image, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorTint, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
@@ -5327,7 +5405,7 @@ PHP_FUNCTION(ImageColorTint)
 }
 
 // Modify image color: invert
-// RLAPI void ImageColorInvert(Image * image);
+// RLAPI void ImageColorInvert(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorInvert, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5348,7 +5426,7 @@ PHP_FUNCTION(ImageColorInvert)
 }
 
 // Modify image color: grayscale
-// RLAPI void ImageColorGrayscale(Image * image);
+// RLAPI void ImageColorGrayscale(Image* image);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorGrayscale, 0, 0, 1)
     ZEND_ARG_INFO(0, image)
 ZEND_END_ARG_INFO()
@@ -5369,7 +5447,7 @@ PHP_FUNCTION(ImageColorGrayscale)
 }
 
 // Modify image color: contrast (-100 to 100)
-// RLAPI void ImageColorContrast(Image * image, float contrast);
+// RLAPI void ImageColorContrast(Image* image, float contrast);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorContrast, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, contrast)
@@ -5393,7 +5471,7 @@ PHP_FUNCTION(ImageColorContrast)
 }
 
 // Modify image color: brightness (-255 to 255)
-// RLAPI void ImageColorBrightness(Image * image, int brightness);
+// RLAPI void ImageColorBrightness(Image* image, int brightness);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorBrightness, 0, 0, 2)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, brightness)
@@ -5417,7 +5495,7 @@ PHP_FUNCTION(ImageColorBrightness)
 }
 
 // Modify image color: replace color
-// RLAPI void ImageColorReplace(Image * image, Color color, Color replace);
+// RLAPI void ImageColorReplace(Image* image, Color color, Color replace);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageColorReplace, 0, 0, 3)
     ZEND_ARG_INFO(0, image)
     ZEND_ARG_INFO(0, color)
@@ -5448,7 +5526,7 @@ PHP_FUNCTION(ImageColorReplace)
 }
 
 // Unload color data loaded with LoadImageColors()
-// RLAPI void UnloadImageColors(Color * colors);
+// RLAPI void UnloadImageColors(Color* colors);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImageColors, 0, 0, 1)
     ZEND_ARG_INFO(0, colors)
 ZEND_END_ARG_INFO()
@@ -5469,7 +5547,7 @@ PHP_FUNCTION(UnloadImageColors)
 }
 
 // Unload colors palette loaded with LoadImagePalette()
-// RLAPI void UnloadImagePalette(Color * colors);
+// RLAPI void UnloadImagePalette(Color* colors);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadImagePalette, 0, 0, 1)
     ZEND_ARG_INFO(0, colors)
 ZEND_END_ARG_INFO()
@@ -5547,7 +5625,7 @@ PHP_FUNCTION(GetImageColor)
 }
 
 // Clear image background with given color
-// RLAPI void ImageClearBackground(Image * dst, Color color);
+// RLAPI void ImageClearBackground(Image* dst, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageClearBackground, 0, 0, 2)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, color)
@@ -5573,7 +5651,7 @@ PHP_FUNCTION(ImageClearBackground)
 }
 
 // Draw pixel within an image
-// RLAPI void ImageDrawPixel(Image * dst, int posX, int posY, Color color);
+// RLAPI void ImageDrawPixel(Image* dst, int posX, int posY, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixel, 0, 0, 4)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, posX)
@@ -5605,7 +5683,7 @@ PHP_FUNCTION(ImageDrawPixel)
 }
 
 // Draw pixel within an image (Vector version)
-// RLAPI void ImageDrawPixelV(Image * dst, Vector2 position, Color color);
+// RLAPI void ImageDrawPixelV(Image* dst, Vector2 position, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawPixelV, 0, 0, 3)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, position)
@@ -5636,7 +5714,7 @@ PHP_FUNCTION(ImageDrawPixelV)
 }
 
 // Draw line within an image
-// RLAPI void ImageDrawLine(Image * dst, int startPosX, int startPosY, int endPosX, int endPosY, Color color);
+// RLAPI void ImageDrawLine(Image* dst, int startPosX, int startPosY, int endPosX, int endPosY, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLine, 0, 0, 6)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, startPosX)
@@ -5674,7 +5752,7 @@ PHP_FUNCTION(ImageDrawLine)
 }
 
 // Draw line within an image (Vector version)
-// RLAPI void ImageDrawLineV(Image * dst, Vector2 start, Vector2 end, Color color);
+// RLAPI void ImageDrawLineV(Image* dst, Vector2 start, Vector2 end, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawLineV, 0, 0, 4)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, start)
@@ -5710,7 +5788,7 @@ PHP_FUNCTION(ImageDrawLineV)
 }
 
 // Draw circle within an image
-// RLAPI void ImageDrawCircle(Image * dst, int centerX, int centerY, int radius, Color color);
+// RLAPI void ImageDrawCircle(Image* dst, int centerX, int centerY, int radius, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircle, 0, 0, 5)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, centerX)
@@ -5744,8 +5822,8 @@ PHP_FUNCTION(ImageDrawCircle)
     php_raylib_image_update_intern_reverse(phpDst);
 }
 
-// Draw circle within an image (Vector version)
-// RLAPI void ImageDrawCircleV(Image * dst, Vector2 center, int radius, Color color);
+// Draw a filled circle within an image (Vector version)
+// RLAPI void ImageDrawCircleV(Image* dst, Vector2 center, int radius, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawCircleV, 0, 0, 4)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, center)
@@ -5779,7 +5857,7 @@ PHP_FUNCTION(ImageDrawCircleV)
 }
 
 // Draw rectangle within an image
-// RLAPI void ImageDrawRectangle(Image * dst, int posX, int posY, int width, int height, Color color);
+// RLAPI void ImageDrawRectangle(Image* dst, int posX, int posY, int width, int height, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangle, 0, 0, 6)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, posX)
@@ -5817,7 +5895,7 @@ PHP_FUNCTION(ImageDrawRectangle)
 }
 
 // Draw rectangle within an image (Vector version)
-// RLAPI void ImageDrawRectangleV(Image * dst, Vector2 position, Vector2 size, Color color);
+// RLAPI void ImageDrawRectangleV(Image* dst, Vector2 position, Vector2 size, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleV, 0, 0, 4)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, position)
@@ -5853,7 +5931,7 @@ PHP_FUNCTION(ImageDrawRectangleV)
 }
 
 // Draw rectangle within an image
-// RLAPI void ImageDrawRectangleRec(Image * dst, Rectangle rec, Color color);
+// RLAPI void ImageDrawRectangleRec(Image* dst, Rectangle rec, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleRec, 0, 0, 3)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, rec)
@@ -5884,7 +5962,7 @@ PHP_FUNCTION(ImageDrawRectangleRec)
 }
 
 // Draw rectangle lines within an image
-// RLAPI void ImageDrawRectangleLines(Image * dst, Rectangle rec, int thick, Color color);
+// RLAPI void ImageDrawRectangleLines(Image* dst, Rectangle rec, int thick, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawRectangleLines, 0, 0, 4)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, rec)
@@ -5918,7 +5996,7 @@ PHP_FUNCTION(ImageDrawRectangleLines)
 }
 
 // Draw a source image within a destination image (tint applied to source)
-// RLAPI void ImageDraw(Image * dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
+// RLAPI void ImageDraw(Image* dst, Image src, Rectangle srcRec, Rectangle dstRec, Color tint);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDraw, 0, 0, 5)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, src)
@@ -5959,7 +6037,7 @@ PHP_FUNCTION(ImageDraw)
 }
 
 // Draw text (using default font) within an image (destination)
-// RLAPI void ImageDrawText(Image * dst, const char * text, int posX, int posY, int fontSize, Color color);
+// RLAPI void ImageDrawText(Image* dst, const char * text, int posX, int posY, int fontSize, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawText, 0, 0, 6)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, text)
@@ -5997,7 +6075,7 @@ PHP_FUNCTION(ImageDrawText)
 }
 
 // Draw text (custom sprite font) within an image (destination)
-// RLAPI void ImageDrawTextEx(Image * dst, Font font, const char * text, Vector2 position, float fontSize, float spacing, Color tint);
+// RLAPI void ImageDrawTextEx(Image* dst, Font font, const char * text, Vector2 position, float fontSize, float spacing, Color tint);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ImageDrawTextEx, 0, 0, 7)
     ZEND_ARG_INFO(0, dst)
     ZEND_ARG_INFO(0, font)
@@ -6180,7 +6258,7 @@ PHP_FUNCTION(UnloadRenderTexture)
 }
 
 // Generate GPU mipmaps for a texture
-// RLAPI void GenTextureMipmaps(Texture * texture);
+// RLAPI void GenTextureMipmaps(Texture* texture);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GenTextureMipmaps, 0, 0, 1)
     ZEND_ARG_INFO(0, texture)
 ZEND_END_ARG_INFO()
@@ -6551,7 +6629,7 @@ PHP_FUNCTION(DrawTextureNPatch)
 }
 
 // Draw a textured polygon
-// RLAPI void DrawTexturePoly(Texture texture, Vector2 center, Vector2 * points, Vector2 * texcoords, int pointCount, Color tint);
+// RLAPI void DrawTexturePoly(Texture texture, Vector2 center, Vector2* points, Vector2* texcoords, int pointCount, Color tint);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawTexturePoly, 0, 0, 6)
     ZEND_ARG_INFO(0, texture)
     ZEND_ARG_INFO(0, center)
@@ -6587,7 +6665,7 @@ PHP_FUNCTION(DrawTexturePoly)
     HashTable *points_hash = Z_ARRVAL_P(points);
     SEPARATE_ARRAY(points);
     int points_count = zend_hash_num_elements(points_hash);
-    Vector2 * points_array = safe_emalloc(sizeof(Vector2 *), points_count, 0);
+    Vector2* points_array = safe_emalloc(sizeof(Vector2*), points_count, 0);
     ZEND_HASH_FOREACH_VAL(points_hash, points_element) {
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
@@ -6602,7 +6680,7 @@ PHP_FUNCTION(DrawTexturePoly)
     HashTable *texcoords_hash = Z_ARRVAL_P(texcoords);
     SEPARATE_ARRAY(texcoords);
     int texcoords_count = zend_hash_num_elements(texcoords_hash);
-    Vector2 * texcoords_array = safe_emalloc(sizeof(Vector2 *), texcoords_count, 0);
+    Vector2* texcoords_array = safe_emalloc(sizeof(Vector2*), texcoords_count, 0);
     ZEND_HASH_FOREACH_VAL(texcoords_hash, texcoords_element) {
         ZVAL_DEREF(texcoords_element);
         if ((Z_TYPE_P(texcoords_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(texcoords_element), php_raylib_vector2_ce))) {
@@ -7053,7 +7131,7 @@ PHP_FUNCTION(LoadFontFromMemory)
 }
 
 // Unload font chars info data (RAM)
-// RLAPI void UnloadFontData(GlyphInfo * chars, int glyphCount);
+// RLAPI void UnloadFontData(GlyphInfo* chars, int glyphCount);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UnloadFontData, 0, 0, 2)
     ZEND_ARG_INFO(0, chars)
     ZEND_ARG_INFO(0, glyphCount)
@@ -7073,7 +7151,7 @@ PHP_FUNCTION(UnloadFontData)
     HashTable *chars_hash = Z_ARRVAL_P(chars);
     SEPARATE_ARRAY(chars);
     int chars_count = zend_hash_num_elements(chars_hash);
-    GlyphInfo * chars_array = safe_emalloc(sizeof(GlyphInfo *), chars_count, 0);
+    GlyphInfo* chars_array = safe_emalloc(sizeof(GlyphInfo*), chars_count, 0);
     ZEND_HASH_FOREACH_VAL(chars_hash, chars_element) {
         ZVAL_DEREF(chars_element);
         if ((Z_TYPE_P(chars_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(chars_element), php_raylib_glyphinfo_ce))) {
@@ -7302,6 +7380,62 @@ PHP_FUNCTION(DrawTextCodepoint)
     php_raylib_color_update_intern(phpTint);
 
     DrawTextCodepoint(phpFont->font, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1, phpPosition->vector2, (float) fontSize, phpTint->color);
+
+}
+
+// Draw multiple character (codepoint)
+// RLAPI void DrawTextCodepoints(Font font, const int * codepoints, int count, Vector2 position, float fontSize, float spacing, Color tint);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawTextCodepoints, 0, 0, 7)
+    ZEND_ARG_INFO(0, font)
+    ZEND_ARG_INFO(0, codepoints)
+    ZEND_ARG_INFO(0, count)
+    ZEND_ARG_INFO(0, position)
+    ZEND_ARG_INFO(0, fontSize)
+    ZEND_ARG_INFO(0, spacing)
+    ZEND_ARG_INFO(0, tint)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(DrawTextCodepoints)
+{
+    zval *font;
+    zval *codepoints;
+    zend_long count;
+    zval *position;
+    double fontSize;
+    double spacing;
+    zval *tint;
+
+    ZEND_PARSE_PARAMETERS_START(7, 7)
+        Z_PARAM_ZVAL(font)
+        Z_PARAM_ARRAY(codepoints)
+        Z_PARAM_LONG(count)
+        Z_PARAM_ZVAL(position)
+        Z_PARAM_DOUBLE(fontSize)
+        Z_PARAM_DOUBLE(spacing)
+        Z_PARAM_ZVAL(tint)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
+    php_raylib_font_update_intern(phpFont);
+    zval *codepoints_element;
+    int codepoints_index;
+    HashTable *codepoints_hash = Z_ARRVAL_P(codepoints);
+    SEPARATE_ARRAY(codepoints);
+    int codepoints_count = zend_hash_num_elements(codepoints_hash);
+    int * codepoints_array = safe_emalloc(sizeof(int *), codepoints_count, 0);
+    ZEND_HASH_FOREACH_VAL(codepoints_hash, codepoints_element) {
+        ZVAL_DEREF(codepoints_element);
+        if (Z_TYPE_P(codepoints_element) == IS_LONG) {
+            codepoints_array[codepoints_index] = (const int) Z_LVAL_P(codepoints_element);
+        }
+
+        codepoints_index++;
+    } ZEND_HASH_FOREACH_END();
+    php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
+    php_raylib_vector2_update_intern(phpPosition);
+    php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
+    php_raylib_color_update_intern(phpTint);
+
+    DrawTextCodepoints(phpFont->font, codepoints_array, (count <= INT_MAX) ? (int) ((zend_long) count) : -1, phpPosition->vector2, (float) fontSize, (float) spacing, phpTint->color);
 
 }
 
@@ -7776,7 +7910,7 @@ PHP_FUNCTION(DrawTriangle3D)
 }
 
 // Draw a triangle strip defined by points
-// RLAPI void DrawTriangleStrip3D(Vector3 * points, int pointCount, Color color);
+// RLAPI void DrawTriangleStrip3D(Vector3* points, int pointCount, Color color);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawTriangleStrip3D, 0, 0, 3)
     ZEND_ARG_INFO(0, points)
     ZEND_ARG_INFO(0, pointCount)
@@ -7799,7 +7933,7 @@ PHP_FUNCTION(DrawTriangleStrip3D)
     HashTable *points_hash = Z_ARRVAL_P(points);
     SEPARATE_ARRAY(points);
     int points_count = zend_hash_num_elements(points_hash);
-    Vector3 * points_array = safe_emalloc(sizeof(Vector3 *), points_count, 0);
+    Vector3* points_array = safe_emalloc(sizeof(Vector3*), points_count, 0);
     ZEND_HASH_FOREACH_VAL(points_hash, points_element) {
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector3_ce))) {
@@ -8780,7 +8914,7 @@ PHP_FUNCTION(DrawBillboardPro)
 }
 
 // Upload mesh vertex data in GPU and provide VAO/VBO ids
-// RLAPI void UploadMesh(Mesh * mesh, bool dynamic);
+// RLAPI void UploadMesh(Mesh* mesh, bool dynamic);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_UploadMesh, 0, 0, 2)
     ZEND_ARG_INFO(0, mesh)
     ZEND_ARG_INFO(0, dynamic)
@@ -8854,7 +8988,7 @@ PHP_FUNCTION(DrawMesh)
 }
 
 // Draw multiple mesh instances with material and different transforms
-// RLAPI void DrawMeshInstanced(Mesh mesh, Material material, Matrix * transforms, int instances);
+// RLAPI void DrawMeshInstanced(Mesh mesh, Material material, Matrix* transforms, int instances);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_DrawMeshInstanced, 0, 0, 4)
     ZEND_ARG_INFO(0, mesh)
     ZEND_ARG_INFO(0, material)
@@ -8934,7 +9068,7 @@ PHP_FUNCTION(GetMeshBoundingBox)
 }
 
 // Compute mesh tangents
-// RLAPI void GenMeshTangents(Mesh * mesh);
+// RLAPI void GenMeshTangents(Mesh* mesh);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshTangents, 0, 0, 1)
     ZEND_ARG_INFO(0, mesh)
 ZEND_END_ARG_INFO()
@@ -8950,27 +9084,6 @@ PHP_FUNCTION(GenMeshTangents)
     php_raylib_mesh_update_intern(phpMesh);
 
     GenMeshTangents(&phpMesh->mesh);
-
-    php_raylib_mesh_update_intern_reverse(phpMesh);
-}
-
-// Compute mesh binormals
-// RLAPI void GenMeshBinormals(Mesh * mesh);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GenMeshBinormals, 0, 0, 1)
-    ZEND_ARG_INFO(0, mesh)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(GenMeshBinormals)
-{
-    zval *mesh;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_ZVAL(mesh)
-    ZEND_PARSE_PARAMETERS_END();
-
-    php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
-    php_raylib_mesh_update_intern(phpMesh);
-
-    GenMeshBinormals(&phpMesh->mesh);
 
     php_raylib_mesh_update_intern_reverse(phpMesh);
 }
@@ -9329,7 +9442,7 @@ PHP_FUNCTION(UnloadMaterial)
 }
 
 // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
-// RLAPI void SetMaterialTexture(Material * material, int mapType, Texture texture);
+// RLAPI void SetMaterialTexture(Material* material, int mapType, Texture texture);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_SetMaterialTexture, 0, 0, 3)
     ZEND_ARG_INFO(0, material)
     ZEND_ARG_INFO(0, mapType)
@@ -9358,7 +9471,7 @@ PHP_FUNCTION(SetMaterialTexture)
 }
 
 // Set material for a mesh
-// RLAPI void SetModelMeshMaterial(Model * model, int meshId, int materialId);
+// RLAPI void SetModelMeshMaterial(Model* model, int meshId, int materialId);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_SetModelMeshMaterial, 0, 0, 3)
     ZEND_ARG_INFO(0, model)
     ZEND_ARG_INFO(0, meshId)
@@ -9627,35 +9740,6 @@ PHP_FUNCTION(GetRayCollisionBox)
     php_raylib_boundingbox_update_intern(phpBox);
 
     RayCollision originalResult = GetRayCollisionBox(phpRay->ray, phpBox->boundingbox);
-    zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
-    php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision = originalResult;
-
-    RETURN_OBJ(&phpResult->std);
-}
-
-// Get collision info between ray and model
-// RLAPI RayCollision GetRayCollisionModel(Ray ray, Model model);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_GetRayCollisionModel, 0, 0, 2)
-    ZEND_ARG_INFO(0, ray)
-    ZEND_ARG_INFO(0, model)
-ZEND_END_ARG_INFO()
-PHP_FUNCTION(GetRayCollisionModel)
-{
-    zval *ray;
-    zval *model;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-        Z_PARAM_ZVAL(ray)
-        Z_PARAM_ZVAL(model)
-    ZEND_PARSE_PARAMETERS_END();
-
-    php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
-    php_raylib_ray_update_intern(phpRay);
-    php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
-    php_raylib_model_update_intern(phpModel);
-
-    RayCollision originalResult = GetRayCollisionModel(phpRay->ray, phpModel->model);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
     phpResult->raycollision = originalResult;
@@ -10220,34 +10304,27 @@ PHP_FUNCTION(SetSoundPitch)
 
 }
 
-// Convert wave data to desired format
-// RLAPI void WaveFormat(Wave * wave, int sampleRate, int sampleSize, int channels);
-ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveFormat, 0, 0, 4)
-    ZEND_ARG_INFO(0, wave)
-    ZEND_ARG_INFO(0, sampleRate)
-    ZEND_ARG_INFO(0, sampleSize)
-    ZEND_ARG_INFO(0, channels)
+// Set pan for a sound (0.5 is center)
+// RLAPI void SetSoundPan(Sound sound, float pan);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetSoundPan, 0, 0, 2)
+    ZEND_ARG_INFO(0, sound)
+    ZEND_ARG_INFO(0, pan)
 ZEND_END_ARG_INFO()
-PHP_FUNCTION(WaveFormat)
+PHP_FUNCTION(SetSoundPan)
 {
-    zval *wave;
-    zend_long sampleRate;
-    zend_long sampleSize;
-    zend_long channels;
+    zval *sound;
+    double pan;
 
-    ZEND_PARSE_PARAMETERS_START(4, 4)
-        Z_PARAM_ZVAL(wave)
-        Z_PARAM_LONG(sampleRate)
-        Z_PARAM_LONG(sampleSize)
-        Z_PARAM_LONG(channels)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(sound)
+        Z_PARAM_DOUBLE(pan)
     ZEND_PARSE_PARAMETERS_END();
 
-    php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
-    php_raylib_wave_update_intern(phpWave);
+    php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
+    php_raylib_sound_update_intern(phpSound);
 
-    WaveFormat(&phpWave->wave, (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
+    SetSoundPan(phpSound->sound, (float) pan);
 
-    php_raylib_wave_update_intern_reverse(phpWave);
 }
 
 // Copy a wave to a new wave
@@ -10275,7 +10352,7 @@ PHP_FUNCTION(WaveCopy)
 }
 
 // Crop a wave to defined samples range
-// RLAPI void WaveCrop(Wave * wave, int initSample, int finalSample);
+// RLAPI void WaveCrop(Wave* wave, int initSample, int finalSample);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveCrop, 0, 0, 3)
     ZEND_ARG_INFO(0, wave)
     ZEND_ARG_INFO(0, initSample)
@@ -10297,6 +10374,36 @@ PHP_FUNCTION(WaveCrop)
     php_raylib_wave_update_intern(phpWave);
 
     WaveCrop(&phpWave->wave, (initSample <= INT_MAX) ? (int) ((zend_long) initSample) : -1, (finalSample <= INT_MAX) ? (int) ((zend_long) finalSample) : -1);
+
+    php_raylib_wave_update_intern_reverse(phpWave);
+}
+
+// Convert wave data to desired format
+// RLAPI void WaveFormat(Wave* wave, int sampleRate, int sampleSize, int channels);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_WaveFormat, 0, 0, 4)
+    ZEND_ARG_INFO(0, wave)
+    ZEND_ARG_INFO(0, sampleRate)
+    ZEND_ARG_INFO(0, sampleSize)
+    ZEND_ARG_INFO(0, channels)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(WaveFormat)
+{
+    zval *wave;
+    zend_long sampleRate;
+    zend_long sampleSize;
+    zend_long channels;
+
+    ZEND_PARSE_PARAMETERS_START(4, 4)
+        Z_PARAM_ZVAL(wave)
+        Z_PARAM_LONG(sampleRate)
+        Z_PARAM_LONG(sampleSize)
+        Z_PARAM_LONG(channels)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
+    php_raylib_wave_update_intern(phpWave);
+
+    WaveFormat(&phpWave->wave, (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
 
     php_raylib_wave_update_intern_reverse(phpWave);
 }
@@ -10348,6 +10455,48 @@ PHP_FUNCTION(LoadMusicStream)
 
 
     Music originalResult = LoadMusicStream(fileName->val);
+    zend_object *result = php_raylib_music_new_ex(php_raylib_music_ce, NULL);
+    php_raylib_music_object *phpResult = php_raylib_music_fetch_object(result);
+    phpResult->music = originalResult;
+
+    RETURN_OBJ(&phpResult->std);
+}
+
+// Load music stream from data
+// RLAPI Music LoadMusicStreamFromMemory(const char * fileType, const unsigned char * data, int dataSize);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadMusicStreamFromMemory, 0, 0, 3)
+    ZEND_ARG_INFO(0, fileType)
+    ZEND_ARG_INFO(0, data)
+    ZEND_ARG_INFO(0, dataSize)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(LoadMusicStreamFromMemory)
+{
+    zend_string *fileType;
+    zval *data;
+    zend_long dataSize;
+
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+        Z_PARAM_STR(fileType)
+        Z_PARAM_ARRAY(data)
+        Z_PARAM_LONG(dataSize)
+    ZEND_PARSE_PARAMETERS_END();
+
+    zval *data_element;
+    int data_index;
+    HashTable *data_hash = Z_ARRVAL_P(data);
+    SEPARATE_ARRAY(data);
+    int data_count = zend_hash_num_elements(data_hash);
+    unsigned char * data_array = safe_emalloc(sizeof(unsigned char *), data_count, 0);
+    ZEND_HASH_FOREACH_VAL(data_hash, data_element) {
+        ZVAL_DEREF(data_element);
+        if (Z_TYPE_P(data_element) == IS_LONG) {
+            data_array[data_index] = (const unsigned char) Z_LVAL_P(data_element);
+        }
+
+        data_index++;
+    } ZEND_HASH_FOREACH_END();
+
+    Music originalResult = LoadMusicStreamFromMemory(fileType->val, data_array, (dataSize <= INT_MAX) ? (int) ((zend_long) dataSize) : -1);
     zend_object *result = php_raylib_music_new_ex(php_raylib_music_ce, NULL);
     php_raylib_music_object *phpResult = php_raylib_music_fetch_object(result);
     phpResult->music = originalResult;
@@ -10560,6 +10709,29 @@ PHP_FUNCTION(SetMusicPitch)
     php_raylib_music_update_intern(phpMusic);
 
     SetMusicPitch(phpMusic->music, (float) pitch);
+
+}
+
+// Set pan for a music (0.5 is center)
+// RLAPI void SetMusicPan(Music music, float pan);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetMusicPan, 0, 0, 2)
+    ZEND_ARG_INFO(0, music)
+    ZEND_ARG_INFO(0, pan)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(SetMusicPan)
+{
+    zval *music;
+    double pan;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(music)
+        Z_PARAM_DOUBLE(pan)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
+    php_raylib_music_update_intern(phpMusic);
+
+    SetMusicPan(phpMusic->music, (float) pan);
 
 }
 
@@ -10813,6 +10985,29 @@ PHP_FUNCTION(SetAudioStreamPitch)
 
 }
 
+// Set pan for audio stream (0.5 is centered)
+// RLAPI void SetAudioStreamPan(AudioStream stream, float pan);
+ZEND_BEGIN_ARG_INFO_EX(arginfo_SetAudioStreamPan, 0, 0, 2)
+    ZEND_ARG_INFO(0, stream)
+    ZEND_ARG_INFO(0, pan)
+ZEND_END_ARG_INFO()
+PHP_FUNCTION(SetAudioStreamPan)
+{
+    zval *stream;
+    double pan;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_ZVAL(stream)
+        Z_PARAM_DOUBLE(pan)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
+    php_raylib_audiostream_update_intern(phpStream);
+
+    SetAudioStreamPan(phpStream->audiostream, (float) pan);
+
+}
+
 // Default size for new audio streams
 // RLAPI void SetAudioStreamBufferSizeDefault(int size);
 ZEND_BEGIN_ARG_INFO_EX(arginfo_SetAudioStreamBufferSizeDefault, 0, 0, 1)
@@ -10866,6 +11061,7 @@ PHP_MINIT_FUNCTION(raylib)
     php_raylib_music_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS_PASSTHRU);
+    php_raylib_filepathlist_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_texture_startup(INIT_FUNC_ARGS_PASSTHRU);
     php_raylib_rendertexture_startup(INIT_FUNC_ARGS_PASSTHRU);
@@ -10885,6 +11081,7 @@ PHP_MINIT_FUNCTION(raylib)
     REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_WINDOW_ALWAYS_RUN", FLAG_WINDOW_ALWAYS_RUN, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_WINDOW_TRANSPARENT", FLAG_WINDOW_TRANSPARENT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_WINDOW_HIGHDPI", FLAG_WINDOW_HIGHDPI, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_WINDOW_MOUSE_PASSTHROUGH", FLAG_WINDOW_MOUSE_PASSTHROUGH, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_MSAA_4X_HINT", FLAG_MSAA_4X_HINT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\ConfigFlags", "FLAG_INTERLACED_HINT", FLAG_INTERLACED_HINT, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\TraceLogLevel", "LOG_ALL", LOG_ALL, CONST_CS | CONST_PERSISTENT);
@@ -11142,6 +11339,7 @@ PHP_MINIT_FUNCTION(raylib)
     REGISTER_NS_LONG_CONSTANT("raylib\\BlendMode", "BLEND_MULTIPLIED", BLEND_MULTIPLIED, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\BlendMode", "BLEND_ADD_COLORS", BLEND_ADD_COLORS, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\BlendMode", "BLEND_SUBTRACT_COLORS", BLEND_SUBTRACT_COLORS, CONST_CS | CONST_PERSISTENT);
+    REGISTER_NS_LONG_CONSTANT("raylib\\BlendMode", "BLEND_ALPHA_PREMULTIPLY", BLEND_ALPHA_PREMULTIPLY, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\BlendMode", "BLEND_CUSTOM", BLEND_CUSTOM, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\Gesture", "GESTURE_NONE", GESTURE_NONE, CONST_CS | CONST_PERSISTENT);
     REGISTER_NS_LONG_CONSTANT("raylib\\Gesture", "GESTURE_TAP", GESTURE_TAP, CONST_CS | CONST_PERSISTENT);
@@ -11256,6 +11454,8 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(GetWindowPosition, arginfo_GetWindowPosition)
         ZEND_FE(GetWindowScaleDPI, arginfo_GetWindowScaleDPI)
         ZEND_FE(SetClipboardText, arginfo_SetClipboardText)
+        ZEND_FE(EnableEventWaiting, arginfo_EnableEventWaiting)
+        ZEND_FE(DisableEventWaiting, arginfo_DisableEventWaiting)
         ZEND_FE(SwapScreenBuffer, arginfo_SwapScreenBuffer)
         ZEND_FE(PollInputEvents, arginfo_PollInputEvents)
         ZEND_FE(WaitTime, arginfo_WaitTime)
@@ -11295,9 +11495,9 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(GetCameraMatrix, arginfo_GetCameraMatrix)
         ZEND_FE(GetCameraMatrix2D, arginfo_GetCameraMatrix2D)
         ZEND_FE(GetWorldToScreen, arginfo_GetWorldToScreen)
+        ZEND_FE(GetScreenToWorld2D, arginfo_GetScreenToWorld2D)
         ZEND_FE(GetWorldToScreenEx, arginfo_GetWorldToScreenEx)
         ZEND_FE(GetWorldToScreen2D, arginfo_GetWorldToScreen2D)
-        ZEND_FE(GetScreenToWorld2D, arginfo_GetScreenToWorld2D)
         ZEND_FE(SetTargetFPS, arginfo_SetTargetFPS)
         ZEND_FE(GetFPS, arginfo_GetFPS)
         ZEND_FE(GetFrameTime, arginfo_GetFrameTime)
@@ -11307,21 +11507,23 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(TakeScreenshot, arginfo_TakeScreenshot)
         ZEND_FE(SetConfigFlags, arginfo_SetConfigFlags)
         ZEND_FE(SetTraceLogLevel, arginfo_SetTraceLogLevel)
+        ZEND_FE(OpenURL, arginfo_OpenURL)
+        ZEND_FE(ExportDataAsCode, arginfo_ExportDataAsCode)
         ZEND_FE(UnloadFileText, arginfo_UnloadFileText)
         ZEND_FE(SaveFileText, arginfo_SaveFileText)
         ZEND_FE(FileExists, arginfo_FileExists)
         ZEND_FE(DirectoryExists, arginfo_DirectoryExists)
         ZEND_FE(IsFileExtension, arginfo_IsFileExtension)
-        ZEND_FE(GetDirectoryFiles, arginfo_GetDirectoryFiles)
-        ZEND_FE(ClearDirectoryFiles, arginfo_ClearDirectoryFiles)
+        ZEND_FE(GetFileLength, arginfo_GetFileLength)
         ZEND_FE(ChangeDirectory, arginfo_ChangeDirectory)
+        ZEND_FE(IsPathFile, arginfo_IsPathFile)
+        ZEND_FE(LoadDirectoryFiles, arginfo_LoadDirectoryFiles)
+        ZEND_FE(LoadDirectoryFilesEx, arginfo_LoadDirectoryFilesEx)
+        ZEND_FE(UnloadDirectoryFiles, arginfo_UnloadDirectoryFiles)
         ZEND_FE(IsFileDropped, arginfo_IsFileDropped)
-        ZEND_FE(GetDroppedFiles, arginfo_GetDroppedFiles)
-        ZEND_FE(ClearDroppedFiles, arginfo_ClearDroppedFiles)
+        ZEND_FE(LoadDroppedFiles, arginfo_LoadDroppedFiles)
+        ZEND_FE(UnloadDroppedFiles, arginfo_UnloadDroppedFiles)
         ZEND_FE(GetFileModTime, arginfo_GetFileModTime)
-        ZEND_FE(SaveStorageValue, arginfo_SaveStorageValue)
-        ZEND_FE(LoadStorageValue, arginfo_LoadStorageValue)
-        ZEND_FE(OpenURL, arginfo_OpenURL)
         ZEND_FE(IsKeyPressed, arginfo_IsKeyPressed)
         ZEND_FE(IsKeyDown, arginfo_IsKeyDown)
         ZEND_FE(IsKeyReleased, arginfo_IsKeyReleased)
@@ -11350,6 +11552,7 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(SetMouseOffset, arginfo_SetMouseOffset)
         ZEND_FE(SetMouseScale, arginfo_SetMouseScale)
         ZEND_FE(GetMouseWheelMove, arginfo_GetMouseWheelMove)
+        ZEND_FE(GetMouseWheelMoveV, arginfo_GetMouseWheelMoveV)
         ZEND_FE(SetMouseCursor, arginfo_SetMouseCursor)
         ZEND_FE(GetTouchX, arginfo_GetTouchX)
         ZEND_FE(GetTouchY, arginfo_GetTouchY)
@@ -11518,6 +11721,7 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(DrawTextEx, arginfo_DrawTextEx)
         ZEND_FE(DrawTextPro, arginfo_DrawTextPro)
         ZEND_FE(DrawTextCodepoint, arginfo_DrawTextCodepoint)
+        ZEND_FE(DrawTextCodepoints, arginfo_DrawTextCodepoints)
         ZEND_FE(MeasureText, arginfo_MeasureText)
         ZEND_FE(MeasureTextEx, arginfo_MeasureTextEx)
         ZEND_FE(GetGlyphIndex, arginfo_GetGlyphIndex)
@@ -11573,7 +11777,6 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(ExportMesh, arginfo_ExportMesh)
         ZEND_FE(GetMeshBoundingBox, arginfo_GetMeshBoundingBox)
         ZEND_FE(GenMeshTangents, arginfo_GenMeshTangents)
-        ZEND_FE(GenMeshBinormals, arginfo_GenMeshBinormals)
         ZEND_FE(GenMeshPoly, arginfo_GenMeshPoly)
         ZEND_FE(GenMeshPlane, arginfo_GenMeshPlane)
         ZEND_FE(GenMeshCube, arginfo_GenMeshCube)
@@ -11598,7 +11801,6 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(CheckCollisionBoxSphere, arginfo_CheckCollisionBoxSphere)
         ZEND_FE(GetRayCollisionSphere, arginfo_GetRayCollisionSphere)
         ZEND_FE(GetRayCollisionBox, arginfo_GetRayCollisionBox)
-        ZEND_FE(GetRayCollisionModel, arginfo_GetRayCollisionModel)
         ZEND_FE(GetRayCollisionMesh, arginfo_GetRayCollisionMesh)
         ZEND_FE(GetRayCollisionTriangle, arginfo_GetRayCollisionTriangle)
         ZEND_FE(GetRayCollisionQuad, arginfo_GetRayCollisionQuad)
@@ -11624,11 +11826,13 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(IsSoundPlaying, arginfo_IsSoundPlaying)
         ZEND_FE(SetSoundVolume, arginfo_SetSoundVolume)
         ZEND_FE(SetSoundPitch, arginfo_SetSoundPitch)
-        ZEND_FE(WaveFormat, arginfo_WaveFormat)
+        ZEND_FE(SetSoundPan, arginfo_SetSoundPan)
         ZEND_FE(WaveCopy, arginfo_WaveCopy)
         ZEND_FE(WaveCrop, arginfo_WaveCrop)
+        ZEND_FE(WaveFormat, arginfo_WaveFormat)
         ZEND_FE(UnloadWaveSamples, arginfo_UnloadWaveSamples)
         ZEND_FE(LoadMusicStream, arginfo_LoadMusicStream)
+        ZEND_FE(LoadMusicStreamFromMemory, arginfo_LoadMusicStreamFromMemory)
         ZEND_FE(UnloadMusicStream, arginfo_UnloadMusicStream)
         ZEND_FE(PlayMusicStream, arginfo_PlayMusicStream)
         ZEND_FE(IsMusicStreamPlaying, arginfo_IsMusicStreamPlaying)
@@ -11639,6 +11843,7 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(SeekMusicStream, arginfo_SeekMusicStream)
         ZEND_FE(SetMusicVolume, arginfo_SetMusicVolume)
         ZEND_FE(SetMusicPitch, arginfo_SetMusicPitch)
+        ZEND_FE(SetMusicPan, arginfo_SetMusicPan)
         ZEND_FE(GetMusicTimeLength, arginfo_GetMusicTimeLength)
         ZEND_FE(GetMusicTimePlayed, arginfo_GetMusicTimePlayed)
         ZEND_FE(LoadAudioStream, arginfo_LoadAudioStream)
@@ -11651,6 +11856,7 @@ const zend_function_entry raylib_functions[] = {
         ZEND_FE(StopAudioStream, arginfo_StopAudioStream)
         ZEND_FE(SetAudioStreamVolume, arginfo_SetAudioStreamVolume)
         ZEND_FE(SetAudioStreamPitch, arginfo_SetAudioStreamPitch)
+        ZEND_FE(SetAudioStreamPan, arginfo_SetAudioStreamPan)
         ZEND_FE(SetAudioStreamBufferSizeDefault, arginfo_SetAudioStreamBufferSizeDefault)
         PHP_FE_END
 };
