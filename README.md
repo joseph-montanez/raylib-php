@@ -198,64 +198,32 @@ Once you have PHP & Raylib setup you can then compile the extension
 
 ## Not Yet Implemented
 
- - SetWindowOpacity is not yet supported
- - GetWindowHandle is not yet supported
- - GetRenderWidth is not yet supported
- - GetRenderHeight is not yet supported
- - GetMonitorName is not yet supported
- - GetClipboardText is not yet supported
- - SetShaderValue is not yet supported
- - SetShaderValueV is not yet supported
- - TraceLog is not yet supported
- - MemAlloc is not yet supported
- - MemRealloc is not yet supported
- - MemFree is not yet supported
- - SetTraceLogCallback is not yet supported
- - SetLoadFileDataCallback is not yet supported
- - SetSaveFileDataCallback is not yet supported
- - SetLoadFileTextCallback is not yet supported
- - SetSaveFileTextCallback is not yet supported
- - LoadFileData is not yet supported
- - UnloadFileData is not yet supported
- - SaveFileData is not yet supported
- - LoadFileText is not yet supported
- - GetFileExtension is not yet supported
- - GetFileName is not yet supported
- - GetFileNameWithoutExt is not yet supported
- - GetDirectoryPath is not yet supported
- - GetPrevDirectoryPath is not yet supported
- - GetWorkingDirectory is not yet supported
- - GetDirectoryFiles is not yet supported
- - GetDroppedFiles is not yet supported
- - CompressData is not yet supported
- - DecompressData is not yet supported
- - EncodeDataBase64 is not yet supported
- - DecodeDataBase64 is not yet supported
- - GetGamepadName is not yet supported
- - LoadImageColors is not yet supported
- - LoadImagePalette is not yet supported
- - UpdateTexture is not yet supported
- - UpdateTextureRec is not yet supported
- - GetPixelColor is not yet supported
- - SetPixelColor is not yet supported
- - LoadFontData is not yet supported
- - GenImageFontAtlas is not yet supported
- - LoadCodepoints is not yet supported
- - CodepointToUTF8 is not yet supported
- - TextCodepointsToUTF8 is not yet supported
- - TextFormat is not yet supported
- - TextSubtext is not yet supported
- - TextReplace is not yet supported
- - TextInsert is not yet supported
- - TextJoin is not yet supported
- - TextSplit is not yet supported
- - TextToUpper is not yet supported
- - TextToLower is not yet supported
- - TextToPascal is not yet supported
- - UpdateMeshBuffer is not yet supported
- - LoadMaterials is not yet supported
- - LoadModelAnimations is not yet supported
- - UpdateSound is not yet supported
- - LoadWaveSamples is not yet supported
- - LoadMusicStreamFromMemory is not yet supported
- - UpdateAudioStream is not yet supported
+These are methods that may be able to work later on with more development. For example callbacks are generally not 
+supported yet, but can be later.
+
+ - GetRenderWidth
+ - GetRenderHeight
+ - TraceLog
+ - SetTraceLogCallback
+ - SetSaveFileDataCallback
+ - SetLoadFileTextCallback
+ - SetSaveFileTextCallback
+ - SetLoadFileDataCallback
+ - SaveFileData
+ - MemFree
+ - SetWindowOpacity
+ - GetPixelColor
+ - SetPixelColor
+ - GenImageFontAtlas
+ - UpdateMeshBuffer
+ - SetShaderValue
+ - SetShaderValueV
+ - UpdateTexture
+ - UpdateTextureRec
+ - UpdateSound
+ - UpdateAudioStream
+ - SetAudioStreamCallback
+ - AttachAudioStreamProcessor
+ - DetachAudioStreamProcessor
+ - AttachAudioMixedProcessor
+ - DetachAudioMixedProcessor
