@@ -482,6 +482,11 @@ class Parser
         $input[] = '#include "include/hashmap.h"';
         $input[] = '';
 
+        $input[] = '#ifdef PHP_WIN32';
+        $input[] = '    #include <Wincrypt.h>';
+        $input[] = '#endif';
+        $input[] = '';
+
         $headers = [];
         foreach ($struct->nonPrimitiveFields() as $field) {
             $fieldType     = $field->type;
@@ -968,7 +973,6 @@ class Parser
         $input[] = '    glfw_check_lib = CHECK_LIB("glfw3.lib", "raylib", raylib_lib_paths);';
         $input[] = '    glfw_check_header = CHECK_HEADER_ADD_INCLUDE("glfw3.h", "CFLAGS_RAYLIB", raylib_include_paths);';
         $input[] = '    glfw_check_header2 = CHECK_HEADER_ADD_INCLUDE("glfw3native.h", "CFLAGS_RAYLIB", raylib_include_paths);';
-        $input[] = '    glfw_check_header3 = CHECK_HEADER_ADD_INCLUDE("glfw_config.h", "CFLAGS_RAYLIB", raylib_include_paths);';
         $input[] = '    if (';
         $input[] = '        //-- Raylib';
         $input[] = '        raylib_check_lib &&';
@@ -976,8 +980,7 @@ class Parser
         $input[] = '        //-- GLFW';
         $input[] = '        glfw_check_lib &&';
         $input[] = '        glfw_check_header &&';
-        $input[] = '        glfw_check_header2 &&';
-        $input[] = '        glfw_check_header3';
+        $input[] = '        glfw_check_header2';
         $input[] = '        ) {';
         $input[] = '';
         $input[] = '        ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");';

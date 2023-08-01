@@ -52,6 +52,10 @@ typedef struct tagMSG* LPMSG;
 #include "raylib.h"
 #include "include/hashmap.h"
 
+#ifdef PHP_WIN32
+    #include <Wincrypt.h>
+#endif
+
 #include "vector3.h"
 
 #include "camera3d.h"

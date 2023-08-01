@@ -12,7 +12,6 @@ if (PHP_RAYLIB != "no") {
     glfw_check_lib = CHECK_LIB("glfw3.lib", "raylib", raylib_lib_paths);
     glfw_check_header = CHECK_HEADER_ADD_INCLUDE("glfw3.h", "CFLAGS_RAYLIB", raylib_include_paths);
     glfw_check_header2 = CHECK_HEADER_ADD_INCLUDE("glfw3native.h", "CFLAGS_RAYLIB", raylib_include_paths);
-    glfw_check_header3 = CHECK_HEADER_ADD_INCLUDE("glfw_config.h", "CFLAGS_RAYLIB", raylib_include_paths);
     if (
         //-- Raylib
         raylib_check_lib &&
@@ -20,8 +19,7 @@ if (PHP_RAYLIB != "no") {
         //-- GLFW
         glfw_check_lib &&
         glfw_check_header &&
-        glfw_check_header2 &&
-        glfw_check_header3
+        glfw_check_header2
         ) {
 
         ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");
