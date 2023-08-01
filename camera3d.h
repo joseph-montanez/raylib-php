@@ -1,8 +1,7 @@
 #ifndef PHP_RAYLIB_CAMERA3D_H
 #define PHP_RAYLIB_CAMERA3D_H
 
-#include "vector3.h"
-#include "vector3.h"
+#include "include/hashmap.h"
 #include "vector3.h"
 
 extern zend_class_entry * php_raylib_camera3d_ce;
@@ -18,8 +17,24 @@ extern zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_objec
 
 extern zend_object_handlers php_raylib_camera3d_object_handlers;
 
+struct RL_Camera3D {
+    unsigned int id;
+    char *guid;
+    Camera3D data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_Camera3D **RL_Camera3D_Object_List;
+static hashmap *RL_Camera3D_Object_Map;
+
+char* RL_Camera3D_Hash_Id(char *str, size_t size);
+struct RL_Camera3D* RL_Camera3D_Create();
+void RL_Camera3D_Delete(struct RL_Camera3D* object, int index);
+void RL_Camera3D_Free(struct RL_Camera3D* object);
+
 typedef struct _php_raylib_camera3d_object {
-    Camera3D camera3d;
+    struct RL_Camera3D *camera3d;
     HashTable *prop_handler;
     zval position;
     zval target;
@@ -34,8 +49,5 @@ static inline php_raylib_camera3d_object *php_raylib_camera3d_fetch_object(zend_
 #define Z_CAMERA3D_OBJ_P(zv) php_raylib_camera3d_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_camera3d_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_camera3d_update_intern(php_raylib_camera3d_object *intern);
-extern void php_raylib_camera3d_update_intern_reverse(php_raylib_camera3d_object *intern);
 
 #endif //PHP_RAYLIB_CAMERA3D_H

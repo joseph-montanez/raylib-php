@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "matrix.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MATRIX_OBJECT_ID = 0;
+static unsigned char RL_MATRIX_INIT = 0;
+static const unsigned int RL_MATRIX_MAX_OBJECTS = 999999;
+
+char* RL_Matrix_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Matrix* RL_Matrix_Create() {
+    //-- Create the initial data structures
+    if (RL_MATRIX_INIT == 0) {
+        RL_Matrix_Object_List = (struct RL_Matrix**) malloc(0);
+        RL_Matrix_Object_Map = hashmap_create();
+        RL_MATRIX_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Matrix* object = (struct RL_Matrix*) malloc(sizeof(struct RL_Matrix));
+    object->id = RL_MATRIX_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Matrix_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Matrix_Object_List = (struct RL_Matrix**) realloc(RL_Matrix_Object_List, RL_MATRIX_OBJECT_ID * sizeof(struct RL_Matrix*));
+    RL_Matrix_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Matrix_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Matrix_Delete(struct RL_Matrix* object, int index) {
+    if (index < 0 || index >= RL_MATRIX_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Matrix_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Matrix_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Matrix_Object_List[index], &RL_Matrix_Object_List[index + 1], (RL_MATRIX_OBJECT_ID - index - 1) * sizeof(struct RL_Matrix *));
+
+    // Decrement the count and resize the array
+    RL_MATRIX_OBJECT_ID--;
+    RL_Matrix_Object_List = (struct RL_Matrix **)realloc(RL_Matrix_Object_List, (RL_MATRIX_OBJECT_ID) * sizeof(struct RL_Matrix *));
+}
+
+void RL_Matrix_Free(struct RL_Matrix* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Matrix PHP Custom Object
@@ -64,15 +144,6 @@ static HashTable php_raylib_matrix_prop_handlers;
 typedef double (*raylib_matrix_read_float_t)(php_raylib_matrix_object *obj);
 typedef int (*raylib_matrix_write_float_t)(php_raylib_matrix_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_matrix_update_intern(php_raylib_matrix_object *intern) {
-}
-
-void php_raylib_matrix_update_intern_reverse(php_raylib_matrix_object *intern) {
-}
 typedef struct _raylib_matrix_prop_handler {
     raylib_matrix_read_float_t read_float_func;
     raylib_matrix_write_float_t write_float_func;
@@ -245,6 +316,11 @@ void php_raylib_matrix_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_matrix_object *intern = php_raylib_matrix_fetch_object(object);
 
+    intern->matrix->refCount--;
+    if (intern->matrix->refCount < 1) {
+        RL_Matrix_Free(intern->matrix);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -265,41 +341,42 @@ zend_object * php_raylib_matrix_new_ex(zend_class_entry *ce, zend_object *orig)/
     if (orig) {
         php_raylib_matrix_object *other = php_raylib_matrix_fetch_object(orig);
 
-        intern->matrix = (Matrix) {
-            .m0 = other->matrix.m0,
-            .m1 = other->matrix.m1,
-            .m2 = other->matrix.m2,
-            .m3 = other->matrix.m3,
-            .m4 = other->matrix.m4,
-            .m5 = other->matrix.m5,
-            .m6 = other->matrix.m6,
-            .m7 = other->matrix.m7,
-            .m8 = other->matrix.m8,
-            .m9 = other->matrix.m9,
-            .m10 = other->matrix.m10,
-            .m11 = other->matrix.m11,
-            .m12 = other->matrix.m12,
-            .m13 = other->matrix.m13,
-            .m14 = other->matrix.m14,
-            .m15 = other->matrix.m15
+        intern->matrix->data = (Matrix) {
+            .m0 = other->matrix->data.m0,
+            .m4 = other->matrix->data.m4,
+            .m8 = other->matrix->data.m8,
+            .m12 = other->matrix->data.m12,
+            .m1 = other->matrix->data.m1,
+            .m5 = other->matrix->data.m5,
+            .m9 = other->matrix->data.m9,
+            .m13 = other->matrix->data.m13,
+            .m2 = other->matrix->data.m2,
+            .m6 = other->matrix->data.m6,
+            .m10 = other->matrix->data.m10,
+            .m14 = other->matrix->data.m14,
+            .m3 = other->matrix->data.m3,
+            .m7 = other->matrix->data.m7,
+            .m11 = other->matrix->data.m11,
+            .m15 = other->matrix->data.m15
         };
     } else {
-        intern->matrix = (Matrix) {
+        intern->matrix = RL_Matrix_Create();
+        intern->matrix->data = (Matrix) {
             .m0 = 0,
-            .m1 = 0,
-            .m2 = 0,
-            .m3 = 0,
             .m4 = 0,
-            .m5 = 0,
-            .m6 = 0,
-            .m7 = 0,
             .m8 = 0,
-            .m9 = 0,
-            .m10 = 0,
-            .m11 = 0,
             .m12 = 0,
+            .m1 = 0,
+            .m5 = 0,
+            .m9 = 0,
             .m13 = 0,
+            .m2 = 0,
+            .m6 = 0,
+            .m10 = 0,
             .m14 = 0,
+            .m3 = 0,
+            .m7 = 0,
+            .m11 = 0,
             .m15 = 0
         };
 
@@ -333,69 +410,69 @@ static zend_object *php_raylib_matrix_clone(zend_object *old_object) /* {{{  */
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_matrix__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, m0, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m1, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m2, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m3, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m4, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m5, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m6, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m7, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m8, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m9, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m10, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m11, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m12, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m13, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m14, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, m15, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, m0, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m4, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m8, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m12, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m1, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m5, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m9, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m13, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m2, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m6, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m10, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m14, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m3, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m7, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m11, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, m15, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Matrix, __construct)
 {
     double m0;
     bool m0_is_null = 1;
 
-    double m1;
-    bool m1_is_null = 1;
-
-    double m2;
-    bool m2_is_null = 1;
-
-    double m3;
-    bool m3_is_null = 1;
-
     double m4;
     bool m4_is_null = 1;
-
-    double m5;
-    bool m5_is_null = 1;
-
-    double m6;
-    bool m6_is_null = 1;
-
-    double m7;
-    bool m7_is_null = 1;
 
     double m8;
     bool m8_is_null = 1;
 
-    double m9;
-    bool m9_is_null = 1;
-
-    double m10;
-    bool m10_is_null = 1;
-
-    double m11;
-    bool m11_is_null = 1;
-
     double m12;
     bool m12_is_null = 1;
+
+    double m1;
+    bool m1_is_null = 1;
+
+    double m5;
+    bool m5_is_null = 1;
+
+    double m9;
+    bool m9_is_null = 1;
 
     double m13;
     bool m13_is_null = 1;
 
+    double m2;
+    bool m2_is_null = 1;
+
+    double m6;
+    bool m6_is_null = 1;
+
+    double m10;
+    bool m10_is_null = 1;
+
     double m14;
     bool m14_is_null = 1;
+
+    double m3;
+    bool m3_is_null = 1;
+
+    double m7;
+    bool m7_is_null = 1;
+
+    double m11;
+    bool m11_is_null = 1;
 
     double m15;
     bool m15_is_null = 1;
@@ -403,20 +480,20 @@ PHP_METHOD(Matrix, __construct)
     ZEND_PARSE_PARAMETERS_START(0, 16)
         Z_PARAM_OPTIONAL
         Z_PARAM_DOUBLE_OR_NULL(m0, m0_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m1, m1_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m2, m2_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m3, m3_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m4, m4_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m5, m5_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m6, m6_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m7, m7_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m8, m8_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m9, m9_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m10, m10_is_null)
-        Z_PARAM_DOUBLE_OR_NULL(m11, m11_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m12, m12_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m1, m1_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m5, m5_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m9, m9_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m13, m13_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m2, m2_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m6, m6_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m10, m10_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m14, m14_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m3, m3_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m7, m7_is_null)
+        Z_PARAM_DOUBLE_OR_NULL(m11, m11_is_null)
         Z_PARAM_DOUBLE_OR_NULL(m15, m15_is_null)
     ZEND_PARSE_PARAMETERS_END();
 
@@ -426,60 +503,60 @@ PHP_METHOD(Matrix, __construct)
         m0 = 0.0f;
     }
 
-    if (m1_is_null) {
-        m1 = 0.0f;
-    }
-
-    if (m2_is_null) {
-        m2 = 0.0f;
-    }
-
-    if (m3_is_null) {
-        m3 = 0.0f;
-    }
-
     if (m4_is_null) {
         m4 = 0.0f;
-    }
-
-    if (m5_is_null) {
-        m5 = 0.0f;
-    }
-
-    if (m6_is_null) {
-        m6 = 0.0f;
-    }
-
-    if (m7_is_null) {
-        m7 = 0.0f;
     }
 
     if (m8_is_null) {
         m8 = 0.0f;
     }
 
-    if (m9_is_null) {
-        m9 = 0.0f;
-    }
-
-    if (m10_is_null) {
-        m10 = 0.0f;
-    }
-
-    if (m11_is_null) {
-        m11 = 0.0f;
-    }
-
     if (m12_is_null) {
         m12 = 0.0f;
+    }
+
+    if (m1_is_null) {
+        m1 = 0.0f;
+    }
+
+    if (m5_is_null) {
+        m5 = 0.0f;
+    }
+
+    if (m9_is_null) {
+        m9 = 0.0f;
     }
 
     if (m13_is_null) {
         m13 = 0.0f;
     }
 
+    if (m2_is_null) {
+        m2 = 0.0f;
+    }
+
+    if (m6_is_null) {
+        m6 = 0.0f;
+    }
+
+    if (m10_is_null) {
+        m10 = 0.0f;
+    }
+
     if (m14_is_null) {
         m14 = 0.0f;
+    }
+
+    if (m3_is_null) {
+        m3 = 0.0f;
+    }
+
+    if (m7_is_null) {
+        m7 = 0.0f;
+    }
+
+    if (m11_is_null) {
+        m11 = 0.0f;
     }
 
     if (m15_is_null) {
@@ -488,119 +565,119 @@ PHP_METHOD(Matrix, __construct)
 
 
 
-    intern->matrix = (Matrix) {
-        .m0 = m0,
-        .m1 = m1,
-        .m2 = m2,
-        .m3 = m3,
-        .m4 = m4,
-        .m5 = m5,
-        .m6 = m6,
-        .m7 = m7,
-        .m8 = m8,
-        .m9 = m9,
-        .m10 = m10,
-        .m11 = m11,
-        .m12 = m12,
-        .m13 = m13,
-        .m14 = m14,
-        .m15 = m15
+    intern->matrix->data = (Matrix) {
+        .m0 = (float) m0,
+        .m4 = (float) m4,
+        .m8 = (float) m8,
+        .m12 = (float) m12,
+        .m1 = (float) m1,
+        .m5 = (float) m5,
+        .m9 = (float) m9,
+        .m13 = (float) m13,
+        .m2 = (float) m2,
+        .m6 = (float) m6,
+        .m10 = (float) m10,
+        .m14 = (float) m14,
+        .m3 = (float) m3,
+        .m7 = (float) m7,
+        .m11 = (float) m11,
+        .m15 = (float) m15
     };
 }
 
 static double php_raylib_matrix_get_m0(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m0;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m1(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m1;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m2(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m2;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m3(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m3;
+    return (double) obj->matrix->data.m0;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m4(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m4;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m5(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m5;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m6(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m6;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m7(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m7;
+    return (double) obj->matrix->data.m4;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m8(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m8;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m9(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m9;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m10(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m10;
-}
-/* }}} */
-
-static double php_raylib_matrix_get_m11(php_raylib_matrix_object *obj) /* {{{ */
-{
-    return (double) obj->matrix.m11;
+    return (double) obj->matrix->data.m8;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m12(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m12;
+    return (double) obj->matrix->data.m12;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m1(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m1;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m5(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m5;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m9(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m9;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m13(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m13;
+    return (double) obj->matrix->data.m13;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m2(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m2;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m6(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m6;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m10(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m10;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m14(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m14;
+    return (double) obj->matrix->data.m14;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m3(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m3;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m7(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m7;
+}
+/* }}} */
+
+static double php_raylib_matrix_get_m11(php_raylib_matrix_object *obj) /* {{{ */
+{
+    return (double) obj->matrix->data.m11;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m15(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix.m15;
+    return (double) obj->matrix->data.m15;
 }
 /* }}} */
 
@@ -609,56 +686,11 @@ static int php_raylib_matrix_set_m0(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m0 = 0;
+        obj->matrix->data.m0 = 0;
         return ret;
     }
 
-    obj->matrix.m0 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m1(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m1 = 0;
-        return ret;
-    }
-
-    obj->matrix.m1 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m2(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m2 = 0;
-        return ret;
-    }
-
-    obj->matrix.m2 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m3(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m3 = 0;
-        return ret;
-    }
-
-    obj->matrix.m3 = (float) zval_get_double(newval);
+    obj->matrix->data.m0 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -669,56 +701,11 @@ static int php_raylib_matrix_set_m4(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m4 = 0;
+        obj->matrix->data.m4 = 0;
         return ret;
     }
 
-    obj->matrix.m4 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m5(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m5 = 0;
-        return ret;
-    }
-
-    obj->matrix.m5 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m6(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m6 = 0;
-        return ret;
-    }
-
-    obj->matrix.m6 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m7(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m7 = 0;
-        return ret;
-    }
-
-    obj->matrix.m7 = (float) zval_get_double(newval);
+    obj->matrix->data.m4 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -729,56 +716,11 @@ static int php_raylib_matrix_set_m8(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m8 = 0;
+        obj->matrix->data.m8 = 0;
         return ret;
     }
 
-    obj->matrix.m8 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m9(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m9 = 0;
-        return ret;
-    }
-
-    obj->matrix.m9 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m10(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m10 = 0;
-        return ret;
-    }
-
-    obj->matrix.m10 = (float) zval_get_double(newval);
-
-    return ret;
-}
-/* }}} */
-
-static int php_raylib_matrix_set_m11(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
-{
-    int ret = SUCCESS;
-
-    if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m11 = 0;
-        return ret;
-    }
-
-    obj->matrix.m11 = (float) zval_get_double(newval);
+    obj->matrix->data.m8 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -789,11 +731,56 @@ static int php_raylib_matrix_set_m12(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m12 = 0;
+        obj->matrix->data.m12 = 0;
         return ret;
     }
 
-    obj->matrix.m12 = (float) zval_get_double(newval);
+    obj->matrix->data.m12 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m1(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m1 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m1 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m5(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m5 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m5 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m9(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m9 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m9 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -804,11 +791,56 @@ static int php_raylib_matrix_set_m13(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m13 = 0;
+        obj->matrix->data.m13 = 0;
         return ret;
     }
 
-    obj->matrix.m13 = (float) zval_get_double(newval);
+    obj->matrix->data.m13 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m2(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m2 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m2 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m6(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m6 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m6 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m10(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m10 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m10 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -819,11 +851,56 @@ static int php_raylib_matrix_set_m14(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m14 = 0;
+        obj->matrix->data.m14 = 0;
         return ret;
     }
 
-    obj->matrix.m14 = (float) zval_get_double(newval);
+    obj->matrix->data.m14 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m3(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m3 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m3 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m7(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m7 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m7 = (float) zval_get_double(newval);
+
+    return ret;
+}
+/* }}} */
+
+static int php_raylib_matrix_set_m11(php_raylib_matrix_object *obj, zval *newval) /* {{{ */
+{
+    int ret = SUCCESS;
+
+    if (Z_TYPE_P(newval) == IS_NULL) {
+        obj->matrix->data.m11 = 0;
+        return ret;
+    }
+
+    obj->matrix->data.m11 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -834,11 +911,11 @@ static int php_raylib_matrix_set_m15(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix.m15 = 0;
+        obj->matrix->data.m15 = 0;
         return ret;
     }
 
-    obj->matrix.m15 = (float) zval_get_double(newval);
+    obj->matrix->data.m15 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -873,19 +950,19 @@ void php_raylib_matrix_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_matrix_prop_handlers, 0, NULL, php_raylib_matrix_free_prop_handler, 1);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m0", php_raylib_matrix_get_m0, php_raylib_matrix_set_m0);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m1", php_raylib_matrix_get_m1, php_raylib_matrix_set_m1);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m2", php_raylib_matrix_get_m2, php_raylib_matrix_set_m2);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m3", php_raylib_matrix_get_m3, php_raylib_matrix_set_m3);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m4", php_raylib_matrix_get_m4, php_raylib_matrix_set_m4);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m5", php_raylib_matrix_get_m5, php_raylib_matrix_set_m5);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m6", php_raylib_matrix_get_m6, php_raylib_matrix_set_m6);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m7", php_raylib_matrix_get_m7, php_raylib_matrix_set_m7);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m8", php_raylib_matrix_get_m8, php_raylib_matrix_set_m8);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m9", php_raylib_matrix_get_m9, php_raylib_matrix_set_m9);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m10", php_raylib_matrix_get_m10, php_raylib_matrix_set_m10);
-    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m11", php_raylib_matrix_get_m11, php_raylib_matrix_set_m11);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m12", php_raylib_matrix_get_m12, php_raylib_matrix_set_m12);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m1", php_raylib_matrix_get_m1, php_raylib_matrix_set_m1);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m5", php_raylib_matrix_get_m5, php_raylib_matrix_set_m5);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m9", php_raylib_matrix_get_m9, php_raylib_matrix_set_m9);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m13", php_raylib_matrix_get_m13, php_raylib_matrix_set_m13);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m2", php_raylib_matrix_get_m2, php_raylib_matrix_set_m2);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m6", php_raylib_matrix_get_m6, php_raylib_matrix_set_m6);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m10", php_raylib_matrix_get_m10, php_raylib_matrix_set_m10);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m14", php_raylib_matrix_get_m14, php_raylib_matrix_set_m14);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m3", php_raylib_matrix_get_m3, php_raylib_matrix_set_m3);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m7", php_raylib_matrix_get_m7, php_raylib_matrix_set_m7);
+    php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m11", php_raylib_matrix_get_m11, php_raylib_matrix_set_m11);
     php_raylib_matrix_register_prop_handler(&php_raylib_matrix_prop_handlers, "m15", php_raylib_matrix_get_m15, php_raylib_matrix_set_m15);
 }

@@ -19,6 +19,7 @@ use Raylib\Parser\Generate\ObjectPropertyHandler;
 use Raylib\Parser\Generate\ObjectPropertySetters;
 use Raylib\Parser\Generate\ObjectPropertyReader;
 use Raylib\Parser\Generate\ObjectPropertyWriter;
+use Raylib\Parser\Generate\ObjectRL;
 use Raylib\Parser\Generate\ObjectStartup;
 use Raylib\Parser\Generate\ObjectStruct;
 
@@ -98,6 +99,8 @@ class Parser
                 'SetAudioStreamCallback', //-- Not Yet Supported
                 'AttachAudioStreamProcessor', //-- Not Yet Supported
                 'DetachAudioStreamProcessor', //-- Not Yet Supported
+                'AttachAudioMixedProcessor', //-- Not Yet Supported
+                'DetachAudioMixedProcessor', //-- Not Yet Supported
             ])) {
                 $function->unsupported = true;
             }
@@ -363,7 +366,9 @@ class Parser
         $input[] = '#define PHP_RAYLIB_' . $struct->nameUpper . '_H';
         $input[] = '';
 
+        $input[] = '#include "include/hashmap.h"';
         //-- Include headers for references below
+        $includes = [];
         foreach ($struct->nonPrimitiveFields() as $field) {
             $fieldType     = $field->type;
             $fieldTypeName = $field->typeName;
@@ -378,11 +383,16 @@ class Parser
 
             if ($structsByType[$fieldType]->isAlias) {
                 $aliasStruct = $structsByType[$structsByType[$fieldType]->alias];
-                $input[]     = '#include "' . str_replace('_array', '', $aliasStruct->nameLower) . '.h"';
+                $includes[]     = '#include "' . str_replace('_array', '', $aliasStruct->nameLower) . '.h"';
             } else {
-                $input[] = '#include "' . str_replace('_array', '', $fieldTypeName) . '.h"';
+                $includes[] = '#include "' . str_replace('_array', '', $fieldTypeName) . '.h"';
             }
         }
+        $includes = array_unique($includes);
+        foreach ($includes as $include) {
+            $input []= $include;
+        }
+
         $input[] = '';
 
         //-- PHP Class Entry
@@ -399,7 +409,7 @@ class Parser
             if ($field->isArray) {
                 $input[] = '//TODO: Support array/hash';
                 $input[] = '//extern void php_raylib_' . $field->typeName . '_free_storage(zend_object *object);';
-            } elseif ($structsByType[$field->typePlain]->isAlias) {
+            } elseif (isset($structsByType[$field->typePlain]) && $structsByType[$field->typePlain]->isAlias) {
                 $aliasStruct = $structsByType[$structsByType[$field->type]->alias];
 
                 $input[] = 'extern void php_raylib_' . $aliasStruct->nameLower . '_free_storage(zend_object *object);';
@@ -427,6 +437,8 @@ class Parser
         $input[] = 'extern zend_object_handlers php_raylib_' . $struct->nameLower . '_object_handlers;';
         $input[] = '';
 
+        $input = (new ObjectRL())->generate($structsByType, $struct, $input);
+
         //-- PHP Object
         $input = (new ObjectStruct())->generate($structsByType, $struct, $input);
 
@@ -439,10 +451,6 @@ class Parser
         $input[] = '';
 
         $input[] = 'void php_raylib_' . $struct->nameLower . '_startup(INIT_FUNC_ARGS);';
-        $input[] = '';
-
-        $input[] = 'extern void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern);';
-        $input[] = 'extern void php_raylib_' . $struct->nameLower . '_update_intern_reverse(php_raylib_' . $struct->nameLower . '_object *intern);';
         $input[] = '';
 
         $input[] = '#endif //PHP_RAYLIB_' . $struct->nameUpper . '_H';
@@ -471,6 +479,7 @@ class Parser
         $input[] = '';
 
         $input[] = '#include "raylib.h"';
+        $input[] = '#include "include/hashmap.h"';
         $input[] = '';
 
         $headers = [];
@@ -500,6 +509,90 @@ class Parser
         $input[] = '#include "' . $struct->nameLower . '.h"';
         $input[] = '';
 
+
+        $input[] = '//-- Custom RayLib Struct Containers';
+        $input[] = 'static unsigned int RL_' . $struct->nameUpper . '_OBJECT_ID = 0;';
+        $input[] = 'static unsigned char RL_' . $struct->nameUpper . '_INIT = 0;';
+        $input[] = 'static const unsigned int RL_' . $struct->nameUpper . '_MAX_OBJECTS = 999999;';
+        $input[] = '';
+        $input[] = 'char* RL_' . $struct->name . '_Hash_Id(char *str, size_t size) {';
+        $input[] = '    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";';
+        $input[] = '    const int charset_size = sizeof(charset) - 1;';
+        $input[] = '    for (size_t i = 0; i < size - 1; i++) {';
+        $input[] = '#ifdef PHP_WIN32';
+        $input[] = '        // On Windows, use CryptGenRandom to generate random bytes';
+        $input[] = '        HCRYPTPROV hCryptProv;';
+        $input[] = '        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {';
+        $input[] = '            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());';
+        $input[] = '            return NULL;';
+        $input[] = '        }';
+        $input[] = '        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {';
+        $input[] = '            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());';
+        $input[] = '            return NULL;';
+        $input[] = '        }';
+        $input[] = '        CryptReleaseContext(hCryptProv, 0);';
+        $input[] = '#else';
+        $input[] = '        // On other platforms, use arc4random to generate random bytes';
+        $input[] = '        str[i] = charset[arc4random_uniform(charset_size)];';
+        $input[] = '#endif';
+        $input[] = '    }';
+        $input[] = '    str[size-1] = \'\0\';';
+        $input[] = '    return str;';
+        $input[] = '}';
+        $input[] = '';
+        $input[] = 'struct RL_' . $struct->name . '* RL_' . $struct->name . '_Create() {';
+        $input[] = '    //-- Create the initial data structures';
+        $input[] = '    if (RL_' . $struct->nameUpper . '_INIT == 0) {';
+        $input[] = '        RL_' . $struct->name . '_Object_List = (struct RL_' . $struct->name . '**) malloc(0);';
+        $input[] = '        RL_' . $struct->name . '_Object_Map = hashmap_create();';
+        $input[] = '        RL_' . $struct->nameUpper . '_INIT = 1;';
+        $input[] = '    }';
+        $input[] = '';
+        $input[] = '    //-- Create the container object';
+        $input[] = '    struct RL_' . $struct->name . '* object = (struct RL_' . $struct->name . '*) malloc(sizeof(struct RL_' . $struct->name . '));';
+        $input[] = '    object->id = RL_' . $struct->nameUpper . '_OBJECT_ID++;';
+        $input[] = '    object->guid = calloc(33, sizeof(char));';
+        $input[] = '    object->guid = RL_' . $struct->name . '_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID';
+        // Or list this?
+        // RL_Vector3_Hash_Id(object->guid, 33); // Generate hash ID
+        $input[] = '    object->refCount = 1;';
+        $input[] = '    object->deleted = 0;';
+        $input[] = '';
+        $input[] = '    //-- Push to the dynamic array list';
+        $input[] = '    RL_' . $struct->name . '_Object_List = (struct RL_' . $struct->name . '**) realloc(RL_' . $struct->name . '_Object_List, RL_' . $struct->nameUpper . '_OBJECT_ID * sizeof(struct RL_' . $struct->name . '*));';
+        $input[] = '    RL_' . $struct->name . '_Object_List[object->id] = object;';
+        $input[] = '';
+        $input[] = '    //-- Add to hashmap';
+        $input[] = '    hashmap_set(RL_' . $struct->name . '_Object_Map, object->guid, sizeof(object->guid) - 1, object);';
+        $input[] = '';
+        $input[] = '    return object;';
+        $input[] = '}';
+        $input[] = '';
+        $input[] = 'void RL_' . $struct->name . '_Delete(struct RL_' . $struct->name . '* object, int index) {';
+        $input[] = '    if (index < 0 || index >= RL_' . $struct->nameUpper . '_OBJECT_ID) {';
+        $input[] = '        // Error: invalid index';
+        $input[] = '        return;';
+        $input[] = '    }';
+        $input[] = '';
+        $input[] = '    hashmap_remove(RL_' . $struct->name . '_Object_Map, object->guid, sizeof(object->guid) -1);';
+        $input[] = '';
+        $input[] = '    // Free the memory for the element being deleted';
+        $input[] = '    free(RL_' . $struct->name . '_Object_List[index]);';
+        $input[] = '';
+        $input[] = '    // Shift the remaining elements over by one';
+        $input[] = '    memmove(&RL_' . $struct->name . '_Object_List[index], &RL_' . $struct->name . '_Object_List[index + 1], (RL_' . $struct->nameUpper . '_OBJECT_ID - index - 1) * sizeof(struct RL_' . $struct->name . ' *));';
+        $input[] = '';
+        $input[] = '    // Decrement the count and resize the array';
+        $input[] = '    RL_' . $struct->nameUpper . '_OBJECT_ID--;';
+        $input[] = '    RL_' . $struct->name . '_Object_List = (struct RL_' . $struct->name . ' **)realloc(RL_' . $struct->name . '_Object_List, (RL_' . $struct->nameUpper . '_OBJECT_ID) * sizeof(struct RL_' . $struct->name . ' *));';
+        $input[] = '}';
+        $input[] = '';
+        $input[] = 'void RL_' . $struct->name . '_Free(struct RL_' . $struct->name . '* object) {';
+        $input[] = '    free(object);';
+        $input[] = '}';
+        $input[] = '';
+
+
         $input[] = '//------------------------------------------------------------------------------------------------------';
         $input[] = '//-- raylib ' . $struct->name . ' PHP Custom Object';
         $input[] = '//------------------------------------------------------------------------------------------------------';
@@ -518,104 +611,6 @@ class Parser
             $input[] = 'typedef int (*raylib_' . $struct->nameLower . '_write_' . $field->typeName . '_t)(php_raylib_' . $struct->nameLower . '_object *obj,  zval *value);';
             $input[] = '';
         }
-
-
-        //-- Object Internal Update Function
-        // This will let c structs feel more like PHP objects i.e $camera->offset->x instead of $camera->getOffsetX()
-        $input[] = '/**';
-        $input[] = ' * This is used to update internal object references';
-        $input[] = ' * @param intern';
-        $input[] = ' */';
-        $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern(php_raylib_' . $struct->nameLower . '_object *intern) {';
-        foreach ($struct->nonPrimitiveFields() as $field) {
-            if ($field->isArray || $field->isPointer) {
-                $tr = $field->getTr();
-                if ($field->arrayCountNumber) {
-                    $input[] = strtr("    zval *[nameLower]_element;", $tr);
-                    $input[] = strtr("    int [nameLower]_index;", $tr);
-                    $input[] = strtr('    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->[nameLower]), [nameLower]_element) {', $tr);
-                    $input[] = strtr('        ZVAL_DEREF([nameLower]_element);', $tr);
-                    $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
-                    $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
-                    $input[] = strtr('            intern->' . $struct->nameLower . '.[name][[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
-                    $input[] = strtr('        }', $tr);
-                    $input[] = strtr('', $tr);
-                    $input[] = strtr('        [nameLower]_index++;', $tr);
-                    $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
-                    $input[] = strtr('', $tr);
-
-
-//                    $input[] = sprintf('    for (int i = 0; i < %d; i++) {', $field->arrayCountNumber);
-//                    $input[] = sprintf('    }');
-// Dont need to do for now?
-//                     for ($i = 0; $i < $field->arrayCountNumber; $i++) {
-//                         $input[] = sprintf(
-//                             '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
-//                             $field->typePlainLower, $field->name, $i,
-//                             $field->typePlainUpper, $field->nameLower, $i
-//                         );
-//                         $input[] = sprintf(
-//                             '    intern->%s.%s[%d] = %s_%s->%s;',
-//                             $struct->nameLower, $field->name, $i,
-//                             $field->name, $i, $field->typePlainLower
-//                         );
-//                         $input[] = '';
-//                     }
-                } else {
-                    $input[] = '    //TODO: Support for pointers and arrays;';
-                    $input[] = '    //intern->' . $struct->nameLower . '.' . $field->name . ' = intern->' . $field->nameLower . '->' . $field->typePlainLower . ';';
-                }
-            } else {
-                $input[] = '    php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . 'Object = Z_' . $field->typePlainUpper . '_OBJ_P(&intern->' . $field->name . ');';
-                $input[] = '    intern->' . $struct->nameLower . '.' . $field->name . ' = ' . $field->nameLower . 'Object->' . $field->typePlainLower . ';';
-                $input[] = '';
-            }
-        }
-        $input[] = '}';
-        $input[] = '';
-
-        $input[] = 'void php_raylib_' . $struct->nameLower . '_update_intern_reverse(php_raylib_' . $struct->nameLower . '_object *intern) {';
-        foreach ($struct->nonPrimitiveFields() as $field) {
-            if ($field->isArray || $field->isPointer) {
-                $tr = $field->getTr();
-                if ($field->arrayCountNumber) {
-                    $input[] = strtr("    zval *[nameLower]_element;", $tr);
-                    $input[] = strtr("    int [nameLower]_index;", $tr);
-                    $input[] = strtr('    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->[nameLower]), [nameLower]_element) {', $tr);
-                    $input[] = strtr('        ZVAL_DEREF([nameLower]_element);', $tr);
-                    $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
-                    $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
-                    $input[] = strtr('            intern->' . $struct->nameLower . '.[name][[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
-                    $input[] = strtr('        }', $tr);
-                    $input[] = strtr('', $tr);
-                    $input[] = strtr('        [nameLower]_index++;', $tr);
-                    $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
-                    $input[] = strtr('', $tr);
-   // Might not need for now?
-//                     for ($i = 0; $i < $field->arrayCountNumber; $i++) {
-//                         $input[] = sprintf(
-//                             '    php_raylib_%s_object *%s_%s = Z_%s_OBJ_P(&intern->%s[%d]);',
-//                             $field->typePlainLower, $field->name, $i,
-//                             $field->typePlainUpper, $field->nameLower, $i
-//                         );
-//                         $input[] = sprintf(
-//                             '    %s_%s->%s = intern->%s.%s[%d];',
-//                             $field->name, $i, $field->typePlainLower,
-//                             $struct->nameLower, $field->name, $i
-//                         );
-//                         $input[] = '';
-//                     }
-                } else {
-                    $input[] = '    //TODO: Support for pointers and arrays;';
-                    $input[] = '    //intern->' . $struct->nameLower . '.' . $field->name . ' = intern->' . $field->nameLower . '->' . $field->typePlainLower . ';';
-                }
-            } else {
-                $input[] = '    php_raylib_' . $field->typePlainLower . '_object *' . $field->nameLower . 'Object = Z_' . $field->typePlainUpper . '_OBJ_P(&intern->' . $field->name . ');';
-                $input[] = '    ' . $field->nameLower . 'Object->' . $field->typePlainLower . ' = intern->' . $struct->nameLower . '.' . $field->name . ';';
-                $input[] = '';
-            }
-        }
-        $input[] = '}';
 
         //--------------------------------------------------------------------------------------------------------------
         //-- Object Property Handler
@@ -872,13 +867,13 @@ class Parser
         $input[] = '  AC_PATH_PROG(PKG_CONFIG, pkg-config, no)';
         $input[] = '  AC_MSG_CHECKING(for libraylib)';
         $input[] = '  if test -x "$PKG_CONFIG" && $PKG_CONFIG --exists raylib; then';
-        $input[] = '    if $PKG_CONFIG raylib --atleast-version 4.0.0; then';
+        $input[] = '    if $PKG_CONFIG raylib --atleast-version 4.2.0; then';
         $input[] = '      LIBRAYLIB_CFLAGS=`$PKG_CONFIG raylib --cflags`';
         $input[] = '      LIBRAYLIB_LIBDIR=`$PKG_CONFIG raylib --libs`';
         $input[] = '      LIBRAYLIB_VERSON=`$PKG_CONFIG raylib --modversion`';
         $input[] = '      AC_MSG_RESULT(from pkgconfig: version $LIBRAYLIB_VERSON)';
         $input[] = '    else';
-        $input[] = '      AC_MSG_ERROR(system libraylib is too old: version 4.0.0 required)';
+        $input[] = '      AC_MSG_ERROR(system libraylib is too old: version 4.2.0 required)';
         $input[] = '    fi';
         $input[] = '  else';
         $input[] = '    AC_MSG_ERROR(pkg-config not found)';
@@ -887,7 +882,7 @@ class Parser
         $input[] = '  PHP_EVAL_INCLINE($LIBRAYLIB_CFLAGS)';
         $input[] = '';
         $input[] = '  dnl # --with-raylib -> check with-path';
-        $input[] = '  SEARCH_PATH="/usr/local /usr /opt/homebrew/Cellar/raylib/4.0.0 ./cmake-build-debug/_deps/raylib-src/src"     # you might want to change this';
+        $input[] = '  SEARCH_PATH="/usr/local /usr /opt/homebrew/Cellar/raylib/4.5.0 ./cmake-build-debug/_deps/raylib-src/src"     # you might want to change this';
         $input[] = '  SEARCH_FOR="/include/raylib.h"  # you most likely want to change this';
         $input[] = '  if test -r $PHP_RAYLIB/$SEARCH_FOR; then # path given as parameter';
         $input[] = '    RAYLIB_DIR=$PHP_RAYLIB';

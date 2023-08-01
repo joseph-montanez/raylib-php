@@ -15,7 +15,7 @@ class Func
     public string $returnTypeLower;
     public string $returnTypeUpper;
     /**
-     * @var \Raylib\Parser\Params[]
+     * @var \Raylib\Parser\Param[]
      */
     public array $params;
     public int $paramCount;

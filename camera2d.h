@@ -1,7 +1,7 @@
 #ifndef PHP_RAYLIB_CAMERA2D_H
 #define PHP_RAYLIB_CAMERA2D_H
 
-#include "vector2.h"
+#include "include/hashmap.h"
 #include "vector2.h"
 
 extern zend_class_entry * php_raylib_camera2d_ce;
@@ -17,8 +17,24 @@ extern zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_objec
 
 extern zend_object_handlers php_raylib_camera2d_object_handlers;
 
+struct RL_Camera2D {
+    unsigned int id;
+    char *guid;
+    Camera2D data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_Camera2D **RL_Camera2D_Object_List;
+static hashmap *RL_Camera2D_Object_Map;
+
+char* RL_Camera2D_Hash_Id(char *str, size_t size);
+struct RL_Camera2D* RL_Camera2D_Create();
+void RL_Camera2D_Delete(struct RL_Camera2D* object, int index);
+void RL_Camera2D_Free(struct RL_Camera2D* object);
+
 typedef struct _php_raylib_camera2d_object {
-    Camera2D camera2d;
+    struct RL_Camera2D *camera2d;
     HashTable *prop_handler;
     zval offset;
     zval target;
@@ -32,8 +48,5 @@ static inline php_raylib_camera2d_object *php_raylib_camera2d_fetch_object(zend_
 #define Z_CAMERA2D_OBJ_P(zv) php_raylib_camera2d_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_camera2d_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern);
-extern void php_raylib_camera2d_update_intern_reverse(php_raylib_camera2d_object *intern);
 
 #endif //PHP_RAYLIB_CAMERA2D_H

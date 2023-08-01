@@ -50,11 +50,91 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "texture.h"
 #include "color.h"
 
 #include "materialmap.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MATERIALMAP_OBJECT_ID = 0;
+static unsigned char RL_MATERIALMAP_INIT = 0;
+static const unsigned int RL_MATERIALMAP_MAX_OBJECTS = 999999;
+
+char* RL_MaterialMap_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_MaterialMap* RL_MaterialMap_Create() {
+    //-- Create the initial data structures
+    if (RL_MATERIALMAP_INIT == 0) {
+        RL_MaterialMap_Object_List = (struct RL_MaterialMap**) malloc(0);
+        RL_MaterialMap_Object_Map = hashmap_create();
+        RL_MATERIALMAP_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_MaterialMap* object = (struct RL_MaterialMap*) malloc(sizeof(struct RL_MaterialMap));
+    object->id = RL_MATERIALMAP_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_MaterialMap_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_MaterialMap_Object_List = (struct RL_MaterialMap**) realloc(RL_MaterialMap_Object_List, RL_MATERIALMAP_OBJECT_ID * sizeof(struct RL_MaterialMap*));
+    RL_MaterialMap_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_MaterialMap_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_MaterialMap_Delete(struct RL_MaterialMap* object, int index) {
+    if (index < 0 || index >= RL_MATERIALMAP_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_MaterialMap_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_MaterialMap_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_MaterialMap_Object_List[index], &RL_MaterialMap_Object_List[index + 1], (RL_MATERIALMAP_OBJECT_ID - index - 1) * sizeof(struct RL_MaterialMap *));
+
+    // Decrement the count and resize the array
+    RL_MATERIALMAP_OBJECT_ID--;
+    RL_MaterialMap_Object_List = (struct RL_MaterialMap **)realloc(RL_MaterialMap_Object_List, (RL_MATERIALMAP_OBJECT_ID) * sizeof(struct RL_MaterialMap *));
+}
+
+void RL_MaterialMap_Free(struct RL_MaterialMap* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib MaterialMap PHP Custom Object
@@ -72,27 +152,6 @@ typedef int (*raylib_materialmap_write_color_t)(php_raylib_materialmap_object *o
 typedef double (*raylib_materialmap_read_float_t)(php_raylib_materialmap_object *obj);
 typedef int (*raylib_materialmap_write_float_t)(php_raylib_materialmap_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_materialmap_update_intern(php_raylib_materialmap_object *intern) {
-    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
-    intern->materialmap.texture = textureObject->texture;
-
-    php_raylib_color_object *colorObject = Z_COLOR_OBJ_P(&intern->color);
-    intern->materialmap.color = colorObject->color;
-
-}
-
-void php_raylib_materialmap_update_intern_reverse(php_raylib_materialmap_object *intern) {
-    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
-    textureObject->texture = intern->materialmap.texture;
-
-    php_raylib_color_object *colorObject = Z_COLOR_OBJ_P(&intern->color);
-    colorObject->color = intern->materialmap.color;
-
-}
 typedef struct _raylib_materialmap_prop_handler {
     raylib_materialmap_read_texture_t read_texture_func;
     raylib_materialmap_write_texture_t write_texture_func;
@@ -289,6 +348,11 @@ void php_raylib_materialmap_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_materialmap_object *intern = php_raylib_materialmap_fetch_object(object);
 
+    intern->materialmap->refCount--;
+    if (intern->materialmap->refCount < 1) {
+        RL_MaterialMap_Free(intern->materialmap);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -313,21 +377,21 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(&other->color);
 
 
-        intern->materialmap = (MaterialMap) {
+        intern->materialmap->data = (MaterialMap) {
             .texture = (Texture) {
-                .id = other->materialmap.texture.id,
-                .width = other->materialmap.texture.width,
-                .height = other->materialmap.texture.height,
-                .mipmaps = other->materialmap.texture.mipmaps,
-                .format = other->materialmap.texture.format
+                .id = other->materialmap->data.texture.id,
+                .width = other->materialmap->data.texture.width,
+                .height = other->materialmap->data.texture.height,
+                .mipmaps = other->materialmap->data.texture.mipmaps,
+                .format = other->materialmap->data.texture.format
             },
             .color = (Color) {
-                .r = other->materialmap.color.r,
-                .g = other->materialmap.color.g,
-                .b = other->materialmap.color.b,
-                .a = other->materialmap.color.a
+                .r = other->materialmap->data.color.r,
+                .g = other->materialmap->data.color.g,
+                .b = other->materialmap->data.color.b,
+                .a = other->materialmap->data.color.a
             },
-            .value = other->materialmap.value
+            .value = other->materialmap->data.value
         };
 
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
@@ -341,7 +405,8 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_texture_object *phpTexture = php_raylib_texture_fetch_object(texture);
         php_raylib_color_object *phpColor = php_raylib_color_fetch_object(color);
 
-        intern->materialmap = (MaterialMap) {
+        intern->materialmap = RL_MaterialMap_Create();
+        intern->materialmap->data = (MaterialMap) {
             .texture = (Texture) {
                 .id = 0,
                 .width = 0,
@@ -394,7 +459,7 @@ static zend_object *php_raylib_materialmap_clone(zend_object *old_object) /* {{{
 ZEND_BEGIN_ARG_INFO_EX(arginfo_materialmap__construct, 0, 0, 0)
     ZEND_ARG_OBJ_INFO(0, texture, raylib\\Texture, 1)
     ZEND_ARG_OBJ_INFO(0, color, raylib\\Color, 1)
-    ZEND_ARG_TYPE_MASK(0, value, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, value, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(MaterialMap, __construct)
 {
@@ -434,21 +499,21 @@ PHP_METHOD(MaterialMap, __construct)
     ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
     ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
 
-    intern->materialmap = (MaterialMap) {
+    intern->materialmap->data = (MaterialMap) {
         .texture = (Texture) {
-            .id = phpTexture->texture.id,
-            .width = phpTexture->texture.width,
-            .height = phpTexture->texture.height,
-            .mipmaps = phpTexture->texture.mipmaps,
-            .format = phpTexture->texture.format
+            .id = phpTexture->texture->data.id,
+            .width = phpTexture->texture->data.width,
+            .height = phpTexture->texture->data.height,
+            .mipmaps = phpTexture->texture->data.mipmaps,
+            .format = phpTexture->texture->data.format
         },
         .color = (Color) {
-            .r = phpColor->color.r,
-            .g = phpColor->color.g,
-            .b = phpColor->color.b,
-            .a = phpColor->color.a
+            .r = phpColor->color->data.r,
+            .g = phpColor->color->data.g,
+            .b = phpColor->color->data.b,
+            .a = phpColor->color->data.a
         },
-        .value = value
+        .value = (float) value
     };
 }
 
@@ -456,7 +521,10 @@ static zend_object * php_raylib_materialmap_get_texture(php_raylib_materialmap_o
 {
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&obj->texture);
 
+    phpTexture->texture->refCount++;
+
     GC_ADDREF(&phpTexture->std);
+
     return &phpTexture->std;
 }
 /* }}} */
@@ -465,14 +533,17 @@ static zend_object * php_raylib_materialmap_get_color(php_raylib_materialmap_obj
 {
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(&obj->color);
 
+    phpColor->color->refCount++;
+
     GC_ADDREF(&phpColor->std);
+
     return &phpColor->std;
 }
 /* }}} */
 
 static double php_raylib_materialmap_get_value(php_raylib_materialmap_object *obj) /* {{{ */
 {
-    return (double) obj->materialmap.value;
+    return (double) obj->materialmap->data.value;
 }
 /* }}} */
 
@@ -484,6 +555,9 @@ static int php_raylib_materialmap_set_texture(php_raylib_materialmap_object *obj
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_texture_object *rl_texture = Z_TEXTURE_OBJ_P(newval);
+    rl_texture->texture->refCount++;
 
     obj->texture = *newval;
 
@@ -500,6 +574,9 @@ static int php_raylib_materialmap_set_color(php_raylib_materialmap_object *obj, 
         return ret;
     }
 
+    php_raylib_color_object *rl_color = Z_COLOR_OBJ_P(newval);
+    rl_color->color->refCount++;
+
     obj->color = *newval;
 
     return ret;
@@ -511,11 +588,11 @@ static int php_raylib_materialmap_set_value(php_raylib_materialmap_object *obj, 
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->materialmap.value = 0;
+        obj->materialmap->data.value = 0;
         return ret;
     }
 
-    obj->materialmap.value = (float) zval_get_double(newval);
+    obj->materialmap->data.value = (float) zval_get_double(newval);
 
     return ret;
 }

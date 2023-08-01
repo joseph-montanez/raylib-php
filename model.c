@@ -50,6 +50,7 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "matrix.h"
 #include "mesh.h"
@@ -58,6 +59,85 @@ typedef struct tagMSG* LPMSG;
 #include "transform.h"
 
 #include "model.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MODEL_OBJECT_ID = 0;
+static unsigned char RL_MODEL_INIT = 0;
+static const unsigned int RL_MODEL_MAX_OBJECTS = 999999;
+
+char* RL_Model_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Model* RL_Model_Create() {
+    //-- Create the initial data structures
+    if (RL_MODEL_INIT == 0) {
+        RL_Model_Object_List = (struct RL_Model**) malloc(0);
+        RL_Model_Object_Map = hashmap_create();
+        RL_MODEL_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Model* object = (struct RL_Model*) malloc(sizeof(struct RL_Model));
+    object->id = RL_MODEL_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Model_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Model_Object_List = (struct RL_Model**) realloc(RL_Model_Object_List, RL_MODEL_OBJECT_ID * sizeof(struct RL_Model*));
+    RL_Model_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Model_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Model_Delete(struct RL_Model* object, int index) {
+    if (index < 0 || index >= RL_MODEL_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Model_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Model_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Model_Object_List[index], &RL_Model_Object_List[index + 1], (RL_MODEL_OBJECT_ID - index - 1) * sizeof(struct RL_Model *));
+
+    // Decrement the count and resize the array
+    RL_MODEL_OBJECT_ID--;
+    RL_Model_Object_List = (struct RL_Model **)realloc(RL_Model_Object_List, (RL_MODEL_OBJECT_ID) * sizeof(struct RL_Model *));
+}
+
+void RL_Model_Free(struct RL_Model* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Model PHP Custom Object
@@ -87,37 +167,6 @@ typedef int (*raylib_model_write_boneinfo_array_t)(php_raylib_model_object *obj,
 typedef HashTable * (*raylib_model_read_transform_array_t)(php_raylib_model_object *obj);
 typedef int (*raylib_model_write_transform_array_t)(php_raylib_model_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_model_update_intern(php_raylib_model_object *intern) {
-    php_raylib_matrix_object *transformObject = Z_MATRIX_OBJ_P(&intern->transform);
-    intern->model.transform = transformObject->matrix;
-
-    //TODO: Support for pointers and arrays;
-    //intern->model.meshes = intern->meshes->mesh;
-    //TODO: Support for pointers and arrays;
-    //intern->model.materials = intern->materials->material;
-    //TODO: Support for pointers and arrays;
-    //intern->model.bones = intern->bones->boneinfo;
-    //TODO: Support for pointers and arrays;
-    //intern->model.bindPose = intern->bindpose->transform;
-}
-
-void php_raylib_model_update_intern_reverse(php_raylib_model_object *intern) {
-    php_raylib_matrix_object *transformObject = Z_MATRIX_OBJ_P(&intern->transform);
-    transformObject->matrix = intern->model.transform;
-
-    //TODO: Support for pointers and arrays;
-    //intern->model.meshes = intern->meshes->mesh;
-    //TODO: Support for pointers and arrays;
-    //intern->model.materials = intern->materials->material;
-    //TODO: Support for pointers and arrays;
-    //intern->model.bones = intern->bones->boneinfo;
-    //TODO: Support for pointers and arrays;
-    //intern->model.bindPose = intern->bindpose->transform;
-}
 typedef struct _raylib_model_prop_handler {
     raylib_model_read_matrix_t read_matrix_func;
     raylib_model_write_matrix_t write_matrix_func;
@@ -361,6 +410,11 @@ void php_raylib_model_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_model_object *intern = php_raylib_model_fetch_object(object);
 
+    intern->model->refCount--;
+    if (intern->model->refCount < 1) {
+        RL_Model_Free(intern->model);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -400,28 +454,28 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
         // bindPose array not yet supported needs to generate a hash table!
         //php_raylib_transform_object *phpBindPose = php_raylib_transform_fetch_object(bindPose);
 
-        intern->model = (Model) {
+        intern->model->data = (Model) {
             .transform = (Matrix) {
-                .m0 = other->model.transform.m0,
-                .m1 = other->model.transform.m1,
-                .m2 = other->model.transform.m2,
-                .m3 = other->model.transform.m3,
-                .m4 = other->model.transform.m4,
-                .m5 = other->model.transform.m5,
-                .m6 = other->model.transform.m6,
-                .m7 = other->model.transform.m7,
-                .m8 = other->model.transform.m8,
-                .m9 = other->model.transform.m9,
-                .m10 = other->model.transform.m10,
-                .m11 = other->model.transform.m11,
-                .m12 = other->model.transform.m12,
-                .m13 = other->model.transform.m13,
-                .m14 = other->model.transform.m14,
-                .m15 = other->model.transform.m15
+                .m0 = other->model->data.transform.m0,
+                .m4 = other->model->data.transform.m4,
+                .m8 = other->model->data.transform.m8,
+                .m12 = other->model->data.transform.m12,
+                .m1 = other->model->data.transform.m1,
+                .m5 = other->model->data.transform.m5,
+                .m9 = other->model->data.transform.m9,
+                .m13 = other->model->data.transform.m13,
+                .m2 = other->model->data.transform.m2,
+                .m6 = other->model->data.transform.m6,
+                .m10 = other->model->data.transform.m10,
+                .m14 = other->model->data.transform.m14,
+                .m3 = other->model->data.transform.m3,
+                .m7 = other->model->data.transform.m7,
+                .m11 = other->model->data.transform.m11,
+                .m15 = other->model->data.transform.m15
             },
-            .meshCount = other->model.meshCount,
-            .materialCount = other->model.materialCount,
-            .boneCount = other->model.boneCount,
+            .meshCount = other->model->data.meshCount,
+            .materialCount = other->model->data.materialCount,
+            .boneCount = other->model->data.boneCount,
         };
 
         ZVAL_OBJ_COPY(&intern->transform, &phpTransform->std);
@@ -471,23 +525,24 @@ zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *orig)/*
         // bindPose array not yet supported needs to generate a hash table!
         //php_raylib_transform_object *phpBindPose = php_raylib_transform_fetch_object(bindPose);
 
-        intern->model = (Model) {
+        intern->model = RL_Model_Create();
+        intern->model->data = (Model) {
             .transform = (Matrix) {
                 .m0 = 0,
-                .m1 = 0,
-                .m2 = 0,
-                .m3 = 0,
                 .m4 = 0,
-                .m5 = 0,
-                .m6 = 0,
-                .m7 = 0,
                 .m8 = 0,
-                .m9 = 0,
-                .m10 = 0,
-                .m11 = 0,
                 .m12 = 0,
+                .m1 = 0,
+                .m5 = 0,
+                .m9 = 0,
                 .m13 = 0,
+                .m2 = 0,
+                .m6 = 0,
+                .m10 = 0,
                 .m14 = 0,
+                .m3 = 0,
+                .m7 = 0,
+                .m11 = 0,
                 .m15 = 0
             },
             .meshCount = 0,
@@ -553,12 +608,12 @@ static zend_object *php_raylib_model_clone(zend_object *old_object) /* {{{  */
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_model__construct, 0, 0, 0)
     ZEND_ARG_OBJ_INFO(0, transform, raylib\\Matrix, 1)
-    ZEND_ARG_TYPE_MASK(0, meshCount, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, materialCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, meshCount, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, materialCount, MAY_BE_LONG|MAY_BE_NULL, "0")
     ZEND_ARG_OBJ_INFO(0, meshes, raylib\\Mesh, 1)
     ZEND_ARG_OBJ_INFO(0, materials, raylib\\Material, 1)
-    ZEND_ARG_TYPE_MASK(0, meshMaterial, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, boneCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, meshMaterial, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, boneCount, MAY_BE_LONG|MAY_BE_NULL, "0")
     ZEND_ARG_OBJ_INFO(0, bones, raylib\\BoneInfo, 1)
     ZEND_ARG_OBJ_INFO(0, bindPose, raylib\\Transform, 1)
 ZEND_END_ARG_INFO()
@@ -570,20 +625,23 @@ static zend_object * php_raylib_model_get_transform(php_raylib_model_object *obj
 {
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(&obj->transform);
 
+    phpTransform->matrix->refCount++;
+
     GC_ADDREF(&phpTransform->std);
+
     return &phpTransform->std;
 }
 /* }}} */
 
 static zend_long php_raylib_model_get_meshcount(php_raylib_model_object *obj) /* {{{ */
 {
-    return (zend_long) obj->model.meshCount;
+    return (zend_long) obj->model->data.meshCount;
 }
 /* }}} */
 
 static zend_long php_raylib_model_get_materialcount(php_raylib_model_object *obj) /* {{{ */
 {
-    return (zend_long) obj->model.materialCount;
+    return (zend_long) obj->model->data.materialCount;
 }
 /* }}} */
 
@@ -607,7 +665,7 @@ static HashTable * php_raylib_model_get_meshmaterial(php_raylib_model_object *ob
 
 static zend_long php_raylib_model_get_bonecount(php_raylib_model_object *obj) /* {{{ */
 {
-    return (zend_long) obj->model.boneCount;
+    return (zend_long) obj->model->data.boneCount;
 }
 /* }}} */
 
@@ -632,6 +690,9 @@ static int php_raylib_model_set_transform(php_raylib_model_object *obj, zval *ne
         return ret;
     }
 
+    php_raylib_matrix_object *rl_matrix = Z_MATRIX_OBJ_P(newval);
+    rl_matrix->matrix->refCount++;
+
     obj->transform = *newval;
 
     return ret;
@@ -643,11 +704,11 @@ static int php_raylib_model_set_meshcount(php_raylib_model_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->model.meshCount = 0;
+        obj->model->data.meshCount = 0;
         return ret;
     }
 
-    obj->model.meshCount = (int) zval_get_long(newval);
+    obj->model->data.meshCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -658,11 +719,11 @@ static int php_raylib_model_set_materialcount(php_raylib_model_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->model.materialCount = 0;
+        obj->model->data.materialCount = 0;
         return ret;
     }
 
-    obj->model.materialCount = (int) zval_get_long(newval);
+    obj->model->data.materialCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -703,11 +764,11 @@ static int php_raylib_model_set_bonecount(php_raylib_model_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->model.boneCount = 0;
+        obj->model->data.boneCount = 0;
         return ret;
     }
 
-    obj->model.boneCount = (int) zval_get_long(newval);
+    obj->model->data.boneCount = (int) zval_get_long(newval);
 
     return ret;
 }

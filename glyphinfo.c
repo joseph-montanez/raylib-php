@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "image.h"
 
 #include "glyphinfo.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_GLYPHINFO_OBJECT_ID = 0;
+static unsigned char RL_GLYPHINFO_INIT = 0;
+static const unsigned int RL_GLYPHINFO_MAX_OBJECTS = 999999;
+
+char* RL_GlyphInfo_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_GlyphInfo* RL_GlyphInfo_Create() {
+    //-- Create the initial data structures
+    if (RL_GLYPHINFO_INIT == 0) {
+        RL_GlyphInfo_Object_List = (struct RL_GlyphInfo**) malloc(0);
+        RL_GlyphInfo_Object_Map = hashmap_create();
+        RL_GLYPHINFO_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_GlyphInfo* object = (struct RL_GlyphInfo*) malloc(sizeof(struct RL_GlyphInfo));
+    object->id = RL_GLYPHINFO_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_GlyphInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_GlyphInfo_Object_List = (struct RL_GlyphInfo**) realloc(RL_GlyphInfo_Object_List, RL_GLYPHINFO_OBJECT_ID * sizeof(struct RL_GlyphInfo*));
+    RL_GlyphInfo_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_GlyphInfo_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_GlyphInfo_Delete(struct RL_GlyphInfo* object, int index) {
+    if (index < 0 || index >= RL_GLYPHINFO_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_GlyphInfo_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_GlyphInfo_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_GlyphInfo_Object_List[index], &RL_GlyphInfo_Object_List[index + 1], (RL_GLYPHINFO_OBJECT_ID - index - 1) * sizeof(struct RL_GlyphInfo *));
+
+    // Decrement the count and resize the array
+    RL_GLYPHINFO_OBJECT_ID--;
+    RL_GlyphInfo_Object_List = (struct RL_GlyphInfo **)realloc(RL_GlyphInfo_Object_List, (RL_GLYPHINFO_OBJECT_ID) * sizeof(struct RL_GlyphInfo *));
+}
+
+void RL_GlyphInfo_Free(struct RL_GlyphInfo* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib GlyphInfo PHP Custom Object
@@ -68,21 +148,6 @@ typedef int (*raylib_glyphinfo_write_int_t)(php_raylib_glyphinfo_object *obj,  z
 typedef zend_object * (*raylib_glyphinfo_read_image_t)(php_raylib_glyphinfo_object *obj);
 typedef int (*raylib_glyphinfo_write_image_t)(php_raylib_glyphinfo_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_glyphinfo_update_intern(php_raylib_glyphinfo_object *intern) {
-    php_raylib_image_object *imageObject = Z_IMAGE_OBJ_P(&intern->image);
-    intern->glyphinfo.image = imageObject->image;
-
-}
-
-void php_raylib_glyphinfo_update_intern_reverse(php_raylib_glyphinfo_object *intern) {
-    php_raylib_image_object *imageObject = Z_IMAGE_OBJ_P(&intern->image);
-    imageObject->image = intern->glyphinfo.image;
-
-}
 typedef struct _raylib_glyphinfo_prop_handler {
     raylib_glyphinfo_read_int_t read_int_func;
     raylib_glyphinfo_write_int_t write_int_func;
@@ -267,6 +332,11 @@ void php_raylib_glyphinfo_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_glyphinfo_object *intern = php_raylib_glyphinfo_fetch_object(object);
 
+    intern->glyphinfo->refCount--;
+    if (intern->glyphinfo->refCount < 1) {
+        RL_GlyphInfo_Free(intern->glyphinfo);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -290,17 +360,17 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(&other->image);
 
 
-        intern->glyphinfo = (GlyphInfo) {
-            .value = other->glyphinfo.value,
-            .offsetX = other->glyphinfo.offsetX,
-            .offsetY = other->glyphinfo.offsetY,
-            .advanceX = other->glyphinfo.advanceX,
+        intern->glyphinfo->data = (GlyphInfo) {
+            .value = other->glyphinfo->data.value,
+            .offsetX = other->glyphinfo->data.offsetX,
+            .offsetY = other->glyphinfo->data.offsetY,
+            .advanceX = other->glyphinfo->data.advanceX,
             .image = (Image) {
-                .data = other->glyphinfo.image.data,
-                .width = other->glyphinfo.image.width,
-                .height = other->glyphinfo.image.height,
-                .mipmaps = other->glyphinfo.image.mipmaps,
-                .format = other->glyphinfo.image.format
+                .data = other->glyphinfo->data.image.data,
+                .width = other->glyphinfo->data.image.width,
+                .height = other->glyphinfo->data.image.height,
+                .mipmaps = other->glyphinfo->data.image.mipmaps,
+                .format = other->glyphinfo->data.image.format
             }
         };
 
@@ -311,7 +381,8 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
 
         php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
 
-        intern->glyphinfo = (GlyphInfo) {
+        intern->glyphinfo = RL_GlyphInfo_Create();
+        intern->glyphinfo->data = (GlyphInfo) {
             .value = 0,
             .offsetX = 0,
             .offsetY = 0,
@@ -357,10 +428,10 @@ static zend_object *php_raylib_glyphinfo_clone(zend_object *old_object) /* {{{  
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_glyphinfo__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, value, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, offsetX, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, offsetY, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, advanceX, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, value, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, offsetX, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, offsetY, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, advanceX, MAY_BE_LONG|MAY_BE_NULL, "0")
     ZEND_ARG_OBJ_INFO(0, image, raylib\\Image, 1)
 ZEND_END_ARG_INFO()
 PHP_METHOD(GlyphInfo, __construct)
@@ -415,42 +486,42 @@ PHP_METHOD(GlyphInfo, __construct)
 
     ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
 
-    intern->glyphinfo = (GlyphInfo) {
-        .value = value,
-        .offsetX = offsetX,
-        .offsetY = offsetY,
-        .advanceX = advanceX,
+    intern->glyphinfo->data = (GlyphInfo) {
+        .value = (int) value,
+        .offsetX = (int) offsetX,
+        .offsetY = (int) offsetY,
+        .advanceX = (int) advanceX,
         .image = (Image) {
-            .data = phpImage->image.data,
-            .width = phpImage->image.width,
-            .height = phpImage->image.height,
-            .mipmaps = phpImage->image.mipmaps,
-            .format = phpImage->image.format
+            .data = phpImage->image->data.data,
+            .width = phpImage->image->data.width,
+            .height = phpImage->image->data.height,
+            .mipmaps = phpImage->image->data.mipmaps,
+            .format = phpImage->image->data.format
         }
     };
 }
 
 static zend_long php_raylib_glyphinfo_get_value(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo.value;
+    return (zend_long) obj->glyphinfo->data.value;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_offsetx(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo.offsetX;
+    return (zend_long) obj->glyphinfo->data.offsetX;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_offsety(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo.offsetY;
+    return (zend_long) obj->glyphinfo->data.offsetY;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_advancex(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo.advanceX;
+    return (zend_long) obj->glyphinfo->data.advanceX;
 }
 /* }}} */
 
@@ -458,7 +529,10 @@ static zend_object * php_raylib_glyphinfo_get_image(php_raylib_glyphinfo_object 
 {
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(&obj->image);
 
+    phpImage->image->refCount++;
+
     GC_ADDREF(&phpImage->std);
+
     return &phpImage->std;
 }
 /* }}} */
@@ -468,11 +542,11 @@ static int php_raylib_glyphinfo_set_value(php_raylib_glyphinfo_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo.value = 0;
+        obj->glyphinfo->data.value = 0;
         return ret;
     }
 
-    obj->glyphinfo.value = (int) zval_get_long(newval);
+    obj->glyphinfo->data.value = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -483,11 +557,11 @@ static int php_raylib_glyphinfo_set_offsetx(php_raylib_glyphinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo.offsetX = 0;
+        obj->glyphinfo->data.offsetX = 0;
         return ret;
     }
 
-    obj->glyphinfo.offsetX = (int) zval_get_long(newval);
+    obj->glyphinfo->data.offsetX = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -498,11 +572,11 @@ static int php_raylib_glyphinfo_set_offsety(php_raylib_glyphinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo.offsetY = 0;
+        obj->glyphinfo->data.offsetY = 0;
         return ret;
     }
 
-    obj->glyphinfo.offsetY = (int) zval_get_long(newval);
+    obj->glyphinfo->data.offsetY = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -513,11 +587,11 @@ static int php_raylib_glyphinfo_set_advancex(php_raylib_glyphinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo.advanceX = 0;
+        obj->glyphinfo->data.advanceX = 0;
         return ret;
     }
 
-    obj->glyphinfo.advanceX = (int) zval_get_long(newval);
+    obj->glyphinfo->data.advanceX = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -531,6 +605,9 @@ static int php_raylib_glyphinfo_set_image(php_raylib_glyphinfo_object *obj, zval
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_image_object *rl_image = Z_IMAGE_OBJ_P(newval);
+    rl_image->image->refCount++;
 
     obj->image = *newval;
 

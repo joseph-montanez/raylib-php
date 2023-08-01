@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "texture.h"
 
 #include "rendertexture.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_RENDERTEXTURE_OBJECT_ID = 0;
+static unsigned char RL_RENDERTEXTURE_INIT = 0;
+static const unsigned int RL_RENDERTEXTURE_MAX_OBJECTS = 999999;
+
+char* RL_RenderTexture_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_RenderTexture* RL_RenderTexture_Create() {
+    //-- Create the initial data structures
+    if (RL_RENDERTEXTURE_INIT == 0) {
+        RL_RenderTexture_Object_List = (struct RL_RenderTexture**) malloc(0);
+        RL_RenderTexture_Object_Map = hashmap_create();
+        RL_RENDERTEXTURE_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_RenderTexture* object = (struct RL_RenderTexture*) malloc(sizeof(struct RL_RenderTexture));
+    object->id = RL_RENDERTEXTURE_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_RenderTexture_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_RenderTexture_Object_List = (struct RL_RenderTexture**) realloc(RL_RenderTexture_Object_List, RL_RENDERTEXTURE_OBJECT_ID * sizeof(struct RL_RenderTexture*));
+    RL_RenderTexture_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_RenderTexture_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_RenderTexture_Delete(struct RL_RenderTexture* object, int index) {
+    if (index < 0 || index >= RL_RENDERTEXTURE_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_RenderTexture_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_RenderTexture_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_RenderTexture_Object_List[index], &RL_RenderTexture_Object_List[index + 1], (RL_RENDERTEXTURE_OBJECT_ID - index - 1) * sizeof(struct RL_RenderTexture *));
+
+    // Decrement the count and resize the array
+    RL_RENDERTEXTURE_OBJECT_ID--;
+    RL_RenderTexture_Object_List = (struct RL_RenderTexture **)realloc(RL_RenderTexture_Object_List, (RL_RENDERTEXTURE_OBJECT_ID) * sizeof(struct RL_RenderTexture *));
+}
+
+void RL_RenderTexture_Free(struct RL_RenderTexture* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib RenderTexture PHP Custom Object
@@ -68,27 +148,6 @@ typedef int (*raylib_rendertexture_write_unsigned_int_t)(php_raylib_rendertextur
 typedef zend_object * (*raylib_rendertexture_read_texture_t)(php_raylib_rendertexture_object *obj);
 typedef int (*raylib_rendertexture_write_texture_t)(php_raylib_rendertexture_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern) {
-    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
-    intern->rendertexture.texture = textureObject->texture;
-
-    php_raylib_texture_object *depthObject = Z_TEXTURE_OBJ_P(&intern->depth);
-    intern->rendertexture.depth = depthObject->texture;
-
-}
-
-void php_raylib_rendertexture_update_intern_reverse(php_raylib_rendertexture_object *intern) {
-    php_raylib_texture_object *textureObject = Z_TEXTURE_OBJ_P(&intern->texture);
-    textureObject->texture = intern->rendertexture.texture;
-
-    php_raylib_texture_object *depthObject = Z_TEXTURE_OBJ_P(&intern->depth);
-    depthObject->texture = intern->rendertexture.depth;
-
-}
 typedef struct _raylib_rendertexture_prop_handler {
     raylib_rendertexture_read_unsigned_int_t read_unsigned_int_func;
     raylib_rendertexture_write_unsigned_int_t write_unsigned_int_func;
@@ -273,6 +332,11 @@ void php_raylib_rendertexture_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_rendertexture_object *intern = php_raylib_rendertexture_fetch_object(object);
 
+    intern->rendertexture->refCount--;
+    if (intern->rendertexture->refCount < 1) {
+        RL_RenderTexture_Free(intern->rendertexture);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -297,21 +361,21 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
         php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(&other->depth);
 
 
-        intern->rendertexture = (RenderTexture) {
-            .id = other->rendertexture.id,
+        intern->rendertexture->data = (RenderTexture) {
+            .id = other->rendertexture->data.id,
             .texture = (Texture) {
-                .id = other->rendertexture.texture.id,
-                .width = other->rendertexture.texture.width,
-                .height = other->rendertexture.texture.height,
-                .mipmaps = other->rendertexture.texture.mipmaps,
-                .format = other->rendertexture.texture.format
+                .id = other->rendertexture->data.texture.id,
+                .width = other->rendertexture->data.texture.width,
+                .height = other->rendertexture->data.texture.height,
+                .mipmaps = other->rendertexture->data.texture.mipmaps,
+                .format = other->rendertexture->data.texture.format
             },
             .depth = (Texture) {
-                .id = other->rendertexture.depth.id,
-                .width = other->rendertexture.depth.width,
-                .height = other->rendertexture.depth.height,
-                .mipmaps = other->rendertexture.depth.mipmaps,
-                .format = other->rendertexture.depth.format
+                .id = other->rendertexture->data.depth.id,
+                .width = other->rendertexture->data.depth.width,
+                .height = other->rendertexture->data.depth.height,
+                .mipmaps = other->rendertexture->data.depth.mipmaps,
+                .format = other->rendertexture->data.depth.format
             }
         };
 
@@ -326,7 +390,8 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
         php_raylib_texture_object *phpTexture = php_raylib_texture_fetch_object(texture);
         php_raylib_texture_object *phpDepth = php_raylib_texture_fetch_object(depth);
 
-        intern->rendertexture = (RenderTexture) {
+        intern->rendertexture = RL_RenderTexture_Create();
+        intern->rendertexture->data = (RenderTexture) {
             .id = 0,
             .texture = (Texture) {
                 .id = 0,
@@ -393,12 +458,12 @@ PHP_METHOD(RenderTexture, __construct)
 
 
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
-    intern->rendertexture = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1,(height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+    intern->rendertexture->data = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1,(height <= INT_MAX) ? (int) ((zend_long) height) : -1);
 }
 
 static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->rendertexture.id;
+    return (zend_long) obj->rendertexture->data.id;
 }
 /* }}} */
 
@@ -406,7 +471,10 @@ static zend_object * php_raylib_rendertexture_get_texture(php_raylib_rendertextu
 {
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(&obj->texture);
 
+    phpTexture->texture->refCount++;
+
     GC_ADDREF(&phpTexture->std);
+
     return &phpTexture->std;
 }
 /* }}} */
@@ -415,7 +483,10 @@ static zend_object * php_raylib_rendertexture_get_depth(php_raylib_rendertexture
 {
     php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(&obj->depth);
 
+    phpDepth->texture->refCount++;
+
     GC_ADDREF(&phpDepth->std);
+
     return &phpDepth->std;
 }
 /* }}} */
@@ -425,11 +496,11 @@ static int php_raylib_rendertexture_set_id(php_raylib_rendertexture_object *obj,
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rendertexture.id = 0;
+        obj->rendertexture->data.id = 0;
         return ret;
     }
 
-    obj->rendertexture.id = (unsigned int) zval_get_long(newval);
+    obj->rendertexture->data.id = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -443,6 +514,9 @@ static int php_raylib_rendertexture_set_texture(php_raylib_rendertexture_object 
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_texture_object *rl_texture = Z_TEXTURE_OBJ_P(newval);
+    rl_texture->texture->refCount++;
 
     obj->texture = *newval;
 
@@ -458,6 +532,9 @@ static int php_raylib_rendertexture_set_depth(php_raylib_rendertexture_object *o
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_texture_object *rl_texture = Z_TEXTURE_OBJ_P(newval);
+    rl_texture->texture->refCount++;
 
     obj->depth = *newval;
 

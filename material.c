@@ -50,11 +50,91 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "shader.h"
 #include "materialmap.h"
 
 #include "material.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MATERIAL_OBJECT_ID = 0;
+static unsigned char RL_MATERIAL_INIT = 0;
+static const unsigned int RL_MATERIAL_MAX_OBJECTS = 999999;
+
+char* RL_Material_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Material* RL_Material_Create() {
+    //-- Create the initial data structures
+    if (RL_MATERIAL_INIT == 0) {
+        RL_Material_Object_List = (struct RL_Material**) malloc(0);
+        RL_Material_Object_Map = hashmap_create();
+        RL_MATERIAL_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Material* object = (struct RL_Material*) malloc(sizeof(struct RL_Material));
+    object->id = RL_MATERIAL_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Material_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Material_Object_List = (struct RL_Material**) realloc(RL_Material_Object_List, RL_MATERIAL_OBJECT_ID * sizeof(struct RL_Material*));
+    RL_Material_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Material_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Material_Delete(struct RL_Material* object, int index) {
+    if (index < 0 || index >= RL_MATERIAL_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Material_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Material_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Material_Object_List[index], &RL_Material_Object_List[index + 1], (RL_MATERIAL_OBJECT_ID - index - 1) * sizeof(struct RL_Material *));
+
+    // Decrement the count and resize the array
+    RL_MATERIAL_OBJECT_ID--;
+    RL_Material_Object_List = (struct RL_Material **)realloc(RL_Material_Object_List, (RL_MATERIAL_OBJECT_ID) * sizeof(struct RL_Material *));
+}
+
+void RL_Material_Free(struct RL_Material* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Material PHP Custom Object
@@ -72,45 +152,6 @@ typedef int (*raylib_material_write_materialmap_array_t)(php_raylib_material_obj
 typedef HashTable * (*raylib_material_read_float_array_t)(php_raylib_material_object *obj);
 typedef int (*raylib_material_write_float_array_t)(php_raylib_material_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_material_update_intern(php_raylib_material_object *intern) {
-    php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
-    intern->material.shader = shaderObject->shader;
-
-    zval *maps_element;
-    int maps_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->maps), maps_element) {
-        ZVAL_DEREF(maps_element);
-        if ((Z_TYPE_P(maps_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(maps_element), php_raylib_materialmap_ce))) {
-            php_raylib_materialmap_object *materialmap_obj =  Z_MATERIALMAP_OBJ_P(maps_element);
-            intern->material.maps[maps_index] = materialmap_obj->materialmap;
-        }
-
-        maps_index++;
-    } ZEND_HASH_FOREACH_END();
-
-}
-
-void php_raylib_material_update_intern_reverse(php_raylib_material_object *intern) {
-    php_raylib_shader_object *shaderObject = Z_SHADER_OBJ_P(&intern->shader);
-    shaderObject->shader = intern->material.shader;
-
-    zval *maps_element;
-    int maps_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->maps), maps_element) {
-        ZVAL_DEREF(maps_element);
-        if ((Z_TYPE_P(maps_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(maps_element), php_raylib_materialmap_ce))) {
-            php_raylib_materialmap_object *materialmap_obj =  Z_MATERIALMAP_OBJ_P(maps_element);
-            intern->material.maps[maps_index] = materialmap_obj->materialmap;
-        }
-
-        maps_index++;
-    } ZEND_HASH_FOREACH_END();
-
-}
 typedef struct _raylib_material_prop_handler {
     raylib_material_read_shader_t read_shader_func;
     raylib_material_write_shader_t write_shader_func;
@@ -307,6 +348,11 @@ void php_raylib_material_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_material_object *intern = php_raylib_material_fetch_object(object);
 
+    intern->material->refCount--;
+    if (intern->material->refCount < 1) {
+        RL_Material_Free(intern->material);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -334,13 +380,13 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         // maps array not yet supported needs to generate a hash table!
         //php_raylib_materialmap_object *phpMaps = php_raylib_materialmap_fetch_object(maps);
 
-        intern->material = (Material) {
+        intern->material->data = (Material) {
             .shader = (Shader) {
-                .id = other->material.shader.id,
-                .locs = other->material.shader.locs
+                .id = other->material->data.shader.id,
+                .locs = other->material->data.shader.locs
             },
         };
-        memcpy(intern->material.params, other->material.params, sizeof intern->material.params);
+        memcpy(intern->material->data.params, other->material->data.params, sizeof intern->material->data.params);
 
         ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
 
@@ -359,7 +405,8 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         // maps array not yet supported needs to generate a hash table!
         //php_raylib_materialmap_object *phpMaps = php_raylib_materialmap_fetch_object(maps);
 
-        intern->material = (Material) {
+        intern->material = RL_Material_Create();
+        intern->material->data = (Material) {
             .shader = (Shader) {
                 .id = 0,
                 .locs = 0
@@ -407,7 +454,7 @@ static zend_object *php_raylib_material_clone(zend_object *old_object) /* {{{  *
 ZEND_BEGIN_ARG_INFO_EX(arginfo_material__construct, 0, 0, 0)
     ZEND_ARG_OBJ_INFO(0, shader, raylib\\Shader, 1)
     ZEND_ARG_OBJ_INFO(0, maps, raylib\\MaterialMap, 1)
-    ZEND_ARG_TYPE_MASK(0, params, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, params, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Material, __construct)
 {
@@ -417,7 +464,10 @@ static zend_object * php_raylib_material_get_shader(php_raylib_material_object *
 {
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(&obj->shader);
 
+    phpShader->shader->refCount++;
+
     GC_ADDREF(&phpShader->std);
+
     return &phpShader->std;
 }
 /* }}} */
@@ -442,6 +492,9 @@ static int php_raylib_material_set_shader(php_raylib_material_object *obj, zval 
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_shader_object *rl_shader = Z_SHADER_OBJ_P(newval);
+    rl_shader->shader->refCount++;
 
     obj->shader = *newval;
 

@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "filepathlist.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_FILEPATHLIST_OBJECT_ID = 0;
+static unsigned char RL_FILEPATHLIST_INIT = 0;
+static const unsigned int RL_FILEPATHLIST_MAX_OBJECTS = 999999;
+
+char* RL_FilePathList_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_FilePathList* RL_FilePathList_Create() {
+    //-- Create the initial data structures
+    if (RL_FILEPATHLIST_INIT == 0) {
+        RL_FilePathList_Object_List = (struct RL_FilePathList**) malloc(0);
+        RL_FilePathList_Object_Map = hashmap_create();
+        RL_FILEPATHLIST_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_FilePathList* object = (struct RL_FilePathList*) malloc(sizeof(struct RL_FilePathList));
+    object->id = RL_FILEPATHLIST_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_FilePathList_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_FilePathList_Object_List = (struct RL_FilePathList**) realloc(RL_FilePathList_Object_List, RL_FILEPATHLIST_OBJECT_ID * sizeof(struct RL_FilePathList*));
+    RL_FilePathList_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_FilePathList_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_FilePathList_Delete(struct RL_FilePathList* object, int index) {
+    if (index < 0 || index >= RL_FILEPATHLIST_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_FilePathList_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_FilePathList_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_FilePathList_Object_List[index], &RL_FilePathList_Object_List[index + 1], (RL_FILEPATHLIST_OBJECT_ID - index - 1) * sizeof(struct RL_FilePathList *));
+
+    // Decrement the count and resize the array
+    RL_FILEPATHLIST_OBJECT_ID--;
+    RL_FilePathList_Object_List = (struct RL_FilePathList **)realloc(RL_FilePathList_Object_List, (RL_FILEPATHLIST_OBJECT_ID) * sizeof(struct RL_FilePathList *));
+}
+
+void RL_FilePathList_Free(struct RL_FilePathList* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib FilePathList PHP Custom Object
@@ -67,15 +147,6 @@ typedef int (*raylib_filepathlist_write_unsigned_int_t)(php_raylib_filepathlist_
 typedef zend_string * (*raylib_filepathlist_read_char__t)(php_raylib_filepathlist_object *obj);
 typedef int (*raylib_filepathlist_write_char__t)(php_raylib_filepathlist_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_filepathlist_update_intern(php_raylib_filepathlist_object *intern) {
-}
-
-void php_raylib_filepathlist_update_intern_reverse(php_raylib_filepathlist_object *intern) {
-}
 typedef struct _raylib_filepathlist_prop_handler {
     raylib_filepathlist_read_unsigned_int_t read_unsigned_int_func;
     raylib_filepathlist_write_unsigned_int_t write_unsigned_int_func;
@@ -258,6 +329,11 @@ void php_raylib_filepathlist_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_filepathlist_object *intern = php_raylib_filepathlist_fetch_object(object);
 
+    intern->filepathlist->refCount--;
+    if (intern->filepathlist->refCount < 1) {
+        RL_FilePathList_Free(intern->filepathlist);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -278,13 +354,14 @@ zend_object * php_raylib_filepathlist_new_ex(zend_class_entry *ce, zend_object *
     if (orig) {
         php_raylib_filepathlist_object *other = php_raylib_filepathlist_fetch_object(orig);
 
-        intern->filepathlist = (FilePathList) {
-            .capacity = other->filepathlist.capacity,
-            .count = other->filepathlist.count,
-            .paths = other->filepathlist.paths
+        intern->filepathlist->data = (FilePathList) {
+            .capacity = other->filepathlist->data.capacity,
+            .count = other->filepathlist->data.count,
+            .paths = other->filepathlist->data.paths
         };
     } else {
-        intern->filepathlist = (FilePathList) {
+        intern->filepathlist = RL_FilePathList_Create();
+        intern->filepathlist->data = (FilePathList) {
             .capacity = 0,
             .count = 0,
             .paths = 0
@@ -320,9 +397,9 @@ static zend_object *php_raylib_filepathlist_clone(zend_object *old_object) /* {{
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_filepathlist__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, capacity, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, count, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, paths, IS_STRING, "")
+    ZEND_ARG_TYPE_MASK(0, capacity, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, count, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, paths, MAY_BE_STRING|MAY_BE_NULL, "")
 ZEND_END_ARG_INFO()
 PHP_METHOD(FilePathList, __construct)
 {
@@ -358,29 +435,29 @@ PHP_METHOD(FilePathList, __construct)
 
 
 
-    intern->filepathlist = (FilePathList) {
-        .capacity = capacity,
-        .count = count,
-        .paths = paths
+    intern->filepathlist->data = (FilePathList) {
+        .capacity = (unsigned int) capacity,
+        .count = (unsigned int) count,
+        .paths = (char **) paths
     };
 }
 
 static zend_long php_raylib_filepathlist_get_capacity(php_raylib_filepathlist_object *obj) /* {{{ */
 {
-    return (zend_long) obj->filepathlist.capacity;
+    return (zend_long) obj->filepathlist->data.capacity;
 }
 /* }}} */
 
 static zend_long php_raylib_filepathlist_get_count(php_raylib_filepathlist_object *obj) /* {{{ */
 {
-    return (zend_long) obj->filepathlist.count;
+    return (zend_long) obj->filepathlist->data.count;
 }
 /* }}} */
 
 static zend_string * php_raylib_filepathlist_get_paths(php_raylib_filepathlist_object *obj) /* {{{ */
 {
     zend_string *result_str;
-    result_str = zend_string_init(obj->filepathlist.paths, strlen(obj->filepathlist.paths), 1);
+    result_str = zend_string_init(obj->filepathlist->data.paths, strlen(obj->filepathlist->data.paths), 1);
     return result_str;
 }
 /* }}} */
@@ -390,11 +467,11 @@ static int php_raylib_filepathlist_set_capacity(php_raylib_filepathlist_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->filepathlist.capacity = 0;
+        obj->filepathlist->data.capacity = 0;
         return ret;
     }
 
-    obj->filepathlist.capacity = (unsigned int) zval_get_long(newval);
+    obj->filepathlist->data.capacity = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -405,11 +482,11 @@ static int php_raylib_filepathlist_set_count(php_raylib_filepathlist_object *obj
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->filepathlist.count = 0;
+        obj->filepathlist->data.count = 0;
         return ret;
     }
 
-    obj->filepathlist.count = (unsigned int) zval_get_long(newval);
+    obj->filepathlist->data.count = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -420,7 +497,7 @@ static int php_raylib_filepathlist_set_paths(php_raylib_filepathlist_object *obj
     int ret = SUCCESS;
 
     zend_string *str = zval_get_string(newval);
-    obj->filepathlist.paths = ZSTR_VAL(str);
+    obj->filepathlist->data.paths = ZSTR_VAL(str);
     zend_string_release_ex(str, 0);
 
     return ret;

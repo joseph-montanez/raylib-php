@@ -28,8 +28,8 @@ class Param
         $this->name = $paramInfo['name'];
         $this->type = (!$this->isPrimitive) ? str_replace(['const', ' '], '', $paramInfo['type']) : $paramInfo['type'];
         $this->isRef = $paramInfo['isRef'] ?? false;
-        $this->typeLower = trim(str_replace('*', '', strtolower($paramInfo['type'])));
-        $this->typeUpper = trim(str_replace('*', '', strtoupper($paramInfo['type'])));
+        $this->typeLower = trim(str_replace(['*', 'const'], '', strtolower($paramInfo['type'])));
+        $this->typeUpper = trim(str_replace(['*', 'const'], '', strtoupper($paramInfo['type'])));
         $this->typeUpperFirst = ucfirst($paramInfo['type']);
         $this->nameUpperFirst = ucfirst($paramInfo['name']);
         $this->nameLower = strtolower($paramInfo['name']);

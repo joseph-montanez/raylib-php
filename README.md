@@ -119,16 +119,31 @@ The PHP RayLib implementation has two glaring limitations.
 
 Windows is by far the hardest platform to support and build for. Please use the binaries for Windows instead unless you want to commit fixes to this repo.
 
-### MacOS & Linux
+### Linux
 
 #### Ubuntu 19.10+
 
     sudo apt-get install -y libx11-dev xorg-dev
 
+#### Build
+
+    phpize
+    ./configure
+    make
+
 #### Mac OS
 
-    brew install php@8.1
-    brew install raylib@4.2.0
+    brew install raylib@4.5.0
+
+Unfortunately, macOS Brew via `brew install php@8.2` installs the non thread safe (nts) version which if you want to use 
+parallels the multi-threaded extension for php, you will need to compile and install PHP manually.
+
+    git clone https://github.com/php/php-src.git
+    git checkout php-8.2.8
+    ./buildconf --force
+    ./configure --enable-zts --enable-debug --with-iconv=$(brew --prefix libiconv)
+    make
+    sudo make install
 
 #### Build
 

@@ -166,7 +166,11 @@ class ArgInfo
             && isset($this->typeMask)
             && isset($this->defaultValue)
         ) {
-            return sprintf("ZEND_ARG_TYPE_MASK(%s, %s, %s, %s)", $this->getPassByRef(), $this->name, $this->typeMask, $this->getDefaultValue());
+            $mask = [$this->typeMask];
+            if ($this->allowNull) {
+                $mask []= 'MAY_BE_NULL';
+            }
+            return sprintf("ZEND_ARG_TYPE_MASK(%s, %s, %s, %s)", $this->getPassByRef(), $this->name, implode('|', $mask), $this->getDefaultValue());
         } elseif (
                isset($this->passByRef)
             && isset($this->name)

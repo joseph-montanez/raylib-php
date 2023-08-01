@@ -50,11 +50,91 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "boneinfo.h"
 #include "transform.h"
 
 #include "modelanimation.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MODELANIMATION_OBJECT_ID = 0;
+static unsigned char RL_MODELANIMATION_INIT = 0;
+static const unsigned int RL_MODELANIMATION_MAX_OBJECTS = 999999;
+
+char* RL_ModelAnimation_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_ModelAnimation* RL_ModelAnimation_Create() {
+    //-- Create the initial data structures
+    if (RL_MODELANIMATION_INIT == 0) {
+        RL_ModelAnimation_Object_List = (struct RL_ModelAnimation**) malloc(0);
+        RL_ModelAnimation_Object_Map = hashmap_create();
+        RL_MODELANIMATION_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_ModelAnimation* object = (struct RL_ModelAnimation*) malloc(sizeof(struct RL_ModelAnimation));
+    object->id = RL_MODELANIMATION_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_ModelAnimation_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_ModelAnimation_Object_List = (struct RL_ModelAnimation**) realloc(RL_ModelAnimation_Object_List, RL_MODELANIMATION_OBJECT_ID * sizeof(struct RL_ModelAnimation*));
+    RL_ModelAnimation_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_ModelAnimation_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_ModelAnimation_Delete(struct RL_ModelAnimation* object, int index) {
+    if (index < 0 || index >= RL_MODELANIMATION_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_ModelAnimation_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_ModelAnimation_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_ModelAnimation_Object_List[index], &RL_ModelAnimation_Object_List[index + 1], (RL_MODELANIMATION_OBJECT_ID - index - 1) * sizeof(struct RL_ModelAnimation *));
+
+    // Decrement the count and resize the array
+    RL_MODELANIMATION_OBJECT_ID--;
+    RL_ModelAnimation_Object_List = (struct RL_ModelAnimation **)realloc(RL_ModelAnimation_Object_List, (RL_MODELANIMATION_OBJECT_ID) * sizeof(struct RL_ModelAnimation *));
+}
+
+void RL_ModelAnimation_Free(struct RL_ModelAnimation* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib ModelAnimation PHP Custom Object
@@ -72,23 +152,6 @@ typedef int (*raylib_modelanimation_write_boneinfo_array_t)(php_raylib_modelanim
 typedef HashTable * (*raylib_modelanimation_read_transform_array_t)(php_raylib_modelanimation_object *obj);
 typedef int (*raylib_modelanimation_write_transform_array_t)(php_raylib_modelanimation_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_modelanimation_update_intern(php_raylib_modelanimation_object *intern) {
-    //TODO: Support for pointers and arrays;
-    //intern->modelanimation.bones = intern->bones->boneinfo;
-    //TODO: Support for pointers and arrays;
-    //intern->modelanimation.framePoses = intern->frameposes->transform;
-}
-
-void php_raylib_modelanimation_update_intern_reverse(php_raylib_modelanimation_object *intern) {
-    //TODO: Support for pointers and arrays;
-    //intern->modelanimation.bones = intern->bones->boneinfo;
-    //TODO: Support for pointers and arrays;
-    //intern->modelanimation.framePoses = intern->frameposes->transform;
-}
 typedef struct _raylib_modelanimation_prop_handler {
     raylib_modelanimation_read_int_t read_int_func;
     raylib_modelanimation_write_int_t write_int_func;
@@ -285,6 +348,11 @@ void php_raylib_modelanimation_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_modelanimation_object *intern = php_raylib_modelanimation_fetch_object(object);
 
+    intern->modelanimation->refCount--;
+    if (intern->modelanimation->refCount < 1) {
+        RL_ModelAnimation_Free(intern->modelanimation);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -315,9 +383,9 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
         // framePoses array not yet supported needs to generate a hash table!
         //php_raylib_transform_object *phpFramePoses = php_raylib_transform_fetch_object(framePoses);
 
-        intern->modelanimation = (ModelAnimation) {
-            .boneCount = other->modelanimation.boneCount,
-            .frameCount = other->modelanimation.frameCount,
+        intern->modelanimation->data = (ModelAnimation) {
+            .boneCount = other->modelanimation->data.boneCount,
+            .frameCount = other->modelanimation->data.frameCount,
         };
 
         HashTable *bones_hash;
@@ -343,7 +411,8 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
         // framePoses array not yet supported needs to generate a hash table!
         //php_raylib_transform_object *phpFramePoses = php_raylib_transform_fetch_object(framePoses);
 
-        intern->modelanimation = (ModelAnimation) {
+        intern->modelanimation = RL_ModelAnimation_Create();
+        intern->modelanimation->data = (ModelAnimation) {
             .boneCount = 0,
             .frameCount = 0,
             // .bones is an array and not yet supported via constructor
@@ -390,8 +459,8 @@ static zend_object *php_raylib_modelanimation_clone(zend_object *old_object) /* 
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_modelanimation__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, boneCount, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, frameCount, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, boneCount, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, frameCount, MAY_BE_LONG|MAY_BE_NULL, "0")
     ZEND_ARG_OBJ_INFO(0, bones, raylib\\BoneInfo, 1)
     ZEND_ARG_OBJ_INFO(0, framePoses, raylib\\Transform, 1)
 ZEND_END_ARG_INFO()
@@ -401,13 +470,13 @@ PHP_METHOD(ModelAnimation, __construct)
 
 static zend_long php_raylib_modelanimation_get_bonecount(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    return (zend_long) obj->modelanimation.boneCount;
+    return (zend_long) obj->modelanimation->data.boneCount;
 }
 /* }}} */
 
 static zend_long php_raylib_modelanimation_get_framecount(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    return (zend_long) obj->modelanimation.frameCount;
+    return (zend_long) obj->modelanimation->data.frameCount;
 }
 /* }}} */
 
@@ -428,11 +497,11 @@ static int php_raylib_modelanimation_set_bonecount(php_raylib_modelanimation_obj
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->modelanimation.boneCount = 0;
+        obj->modelanimation->data.boneCount = 0;
         return ret;
     }
 
-    obj->modelanimation.boneCount = (int) zval_get_long(newval);
+    obj->modelanimation->data.boneCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -443,11 +512,11 @@ static int php_raylib_modelanimation_set_framecount(php_raylib_modelanimation_ob
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->modelanimation.frameCount = 0;
+        obj->modelanimation->data.frameCount = 0;
         return ret;
     }
 
-    obj->modelanimation.frameCount = (int) zval_get_long(newval);
+    obj->modelanimation->data.frameCount = (int) zval_get_long(newval);
 
     return ret;
 }

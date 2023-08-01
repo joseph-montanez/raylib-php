@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "vector3.h"
 
 #include "raycollision.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_RAYCOLLISION_OBJECT_ID = 0;
+static unsigned char RL_RAYCOLLISION_INIT = 0;
+static const unsigned int RL_RAYCOLLISION_MAX_OBJECTS = 999999;
+
+char* RL_RayCollision_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_RayCollision* RL_RayCollision_Create() {
+    //-- Create the initial data structures
+    if (RL_RAYCOLLISION_INIT == 0) {
+        RL_RayCollision_Object_List = (struct RL_RayCollision**) malloc(0);
+        RL_RayCollision_Object_Map = hashmap_create();
+        RL_RAYCOLLISION_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_RayCollision* object = (struct RL_RayCollision*) malloc(sizeof(struct RL_RayCollision));
+    object->id = RL_RAYCOLLISION_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_RayCollision_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_RayCollision_Object_List = (struct RL_RayCollision**) realloc(RL_RayCollision_Object_List, RL_RAYCOLLISION_OBJECT_ID * sizeof(struct RL_RayCollision*));
+    RL_RayCollision_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_RayCollision_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_RayCollision_Delete(struct RL_RayCollision* object, int index) {
+    if (index < 0 || index >= RL_RAYCOLLISION_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_RayCollision_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_RayCollision_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_RayCollision_Object_List[index], &RL_RayCollision_Object_List[index + 1], (RL_RAYCOLLISION_OBJECT_ID - index - 1) * sizeof(struct RL_RayCollision *));
+
+    // Decrement the count and resize the array
+    RL_RAYCOLLISION_OBJECT_ID--;
+    RL_RayCollision_Object_List = (struct RL_RayCollision **)realloc(RL_RayCollision_Object_List, (RL_RAYCOLLISION_OBJECT_ID) * sizeof(struct RL_RayCollision *));
+}
+
+void RL_RayCollision_Free(struct RL_RayCollision* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib RayCollision PHP Custom Object
@@ -71,27 +151,6 @@ typedef int (*raylib_raycollision_write_float_t)(php_raylib_raycollision_object 
 typedef zend_object * (*raylib_raycollision_read_vector3_t)(php_raylib_raycollision_object *obj);
 typedef int (*raylib_raycollision_write_vector3_t)(php_raylib_raycollision_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_raycollision_update_intern(php_raylib_raycollision_object *intern) {
-    php_raylib_vector3_object *pointObject = Z_VECTOR3_OBJ_P(&intern->point);
-    intern->raycollision.point = pointObject->vector3;
-
-    php_raylib_vector3_object *normalObject = Z_VECTOR3_OBJ_P(&intern->normal);
-    intern->raycollision.normal = normalObject->vector3;
-
-}
-
-void php_raylib_raycollision_update_intern_reverse(php_raylib_raycollision_object *intern) {
-    php_raylib_vector3_object *pointObject = Z_VECTOR3_OBJ_P(&intern->point);
-    pointObject->vector3 = intern->raycollision.point;
-
-    php_raylib_vector3_object *normalObject = Z_VECTOR3_OBJ_P(&intern->normal);
-    normalObject->vector3 = intern->raycollision.normal;
-
-}
 typedef struct _raylib_raycollision_prop_handler {
     raylib_raycollision_read_bool_t read_bool_func;
     raylib_raycollision_write_bool_t write_bool_func;
@@ -286,6 +345,11 @@ void php_raylib_raycollision_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_raycollision_object *intern = php_raylib_raycollision_fetch_object(object);
 
+    intern->raycollision->refCount--;
+    if (intern->raycollision->refCount < 1) {
+        RL_RayCollision_Free(intern->raycollision);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -310,18 +374,18 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
         php_raylib_vector3_object *phpNormal = Z_VECTOR3_OBJ_P(&other->normal);
 
 
-        intern->raycollision = (RayCollision) {
-            .hit = other->raycollision.hit,
-            .distance = other->raycollision.distance,
+        intern->raycollision->data = (RayCollision) {
+            .hit = other->raycollision->data.hit,
+            .distance = other->raycollision->data.distance,
             .point = (Vector3) {
-                .x = other->raycollision.point.x,
-                .y = other->raycollision.point.y,
-                .z = other->raycollision.point.z
+                .x = other->raycollision->data.point.x,
+                .y = other->raycollision->data.point.y,
+                .z = other->raycollision->data.point.z
             },
             .normal = (Vector3) {
-                .x = other->raycollision.normal.x,
-                .y = other->raycollision.normal.y,
-                .z = other->raycollision.normal.z
+                .x = other->raycollision->data.normal.x,
+                .y = other->raycollision->data.normal.y,
+                .z = other->raycollision->data.normal.z
             }
         };
 
@@ -336,7 +400,8 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
         php_raylib_vector3_object *phpPoint = php_raylib_vector3_fetch_object(point);
         php_raylib_vector3_object *phpNormal = php_raylib_vector3_fetch_object(normal);
 
-        intern->raycollision = (RayCollision) {
+        intern->raycollision = RL_RayCollision_Create();
+        intern->raycollision->data = (RayCollision) {
             .hit = 0,
             .distance = 0,
             .point = (Vector3) {
@@ -385,8 +450,8 @@ static zend_object *php_raylib_raycollision_clone(zend_object *old_object) /* {{
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_raycollision__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, hit, _IS_BOOL, "1")
-    ZEND_ARG_TYPE_MASK(0, distance, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, hit, MAY_BE_BOOL|MAY_BE_NULL, "1")
+    ZEND_ARG_TYPE_MASK(0, distance, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
     ZEND_ARG_OBJ_INFO(0, point, raylib\\Vector3, 1)
     ZEND_ARG_OBJ_INFO(0, normal, raylib\\Vector3, 1)
 ZEND_END_ARG_INFO()
@@ -436,31 +501,31 @@ PHP_METHOD(RayCollision, __construct)
     ZVAL_OBJ_COPY(&intern->point, &phpPoint->std);
     ZVAL_OBJ_COPY(&intern->normal, &phpNormal->std);
 
-    intern->raycollision = (RayCollision) {
-        .hit = hit,
-        .distance = distance,
+    intern->raycollision->data = (RayCollision) {
+        .hit = (bool) hit,
+        .distance = (float) distance,
         .point = (Vector3) {
-            .x = phpPoint->vector3.x,
-            .y = phpPoint->vector3.y,
-            .z = phpPoint->vector3.z
+            .x = phpPoint->vector3->data.x,
+            .y = phpPoint->vector3->data.y,
+            .z = phpPoint->vector3->data.z
         },
         .normal = (Vector3) {
-            .x = phpNormal->vector3.x,
-            .y = phpNormal->vector3.y,
-            .z = phpNormal->vector3.z
+            .x = phpNormal->vector3->data.x,
+            .y = phpNormal->vector3->data.y,
+            .z = phpNormal->vector3->data.z
         }
     };
 }
 
 static bool php_raylib_raycollision_get_hit(php_raylib_raycollision_object *obj) /* {{{ */
 {
-    return obj->raycollision.hit;
+    return obj->raycollision->data.hit;
 }
 /* }}} */
 
 static double php_raylib_raycollision_get_distance(php_raylib_raycollision_object *obj) /* {{{ */
 {
-    return (double) obj->raycollision.distance;
+    return (double) obj->raycollision->data.distance;
 }
 /* }}} */
 
@@ -468,7 +533,10 @@ static zend_object * php_raylib_raycollision_get_point(php_raylib_raycollision_o
 {
     php_raylib_vector3_object *phpPoint = Z_VECTOR3_OBJ_P(&obj->point);
 
+    phpPoint->vector3->refCount++;
+
     GC_ADDREF(&phpPoint->std);
+
     return &phpPoint->std;
 }
 /* }}} */
@@ -477,7 +545,10 @@ static zend_object * php_raylib_raycollision_get_normal(php_raylib_raycollision_
 {
     php_raylib_vector3_object *phpNormal = Z_VECTOR3_OBJ_P(&obj->normal);
 
+    phpNormal->vector3->refCount++;
+
     GC_ADDREF(&phpNormal->std);
+
     return &phpNormal->std;
 }
 /* }}} */
@@ -496,11 +567,11 @@ static int php_raylib_raycollision_set_distance(php_raylib_raycollision_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->raycollision.distance = 0;
+        obj->raycollision->data.distance = 0;
         return ret;
     }
 
-    obj->raycollision.distance = (float) zval_get_double(newval);
+    obj->raycollision->data.distance = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -514,6 +585,9 @@ static int php_raylib_raycollision_set_point(php_raylib_raycollision_object *obj
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->point = *newval;
 
@@ -529,6 +603,9 @@ static int php_raylib_raycollision_set_normal(php_raylib_raycollision_object *ob
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->normal = *newval;
 

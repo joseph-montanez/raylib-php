@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "vector3.h"
 
 #include "ray.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_RAY_OBJECT_ID = 0;
+static unsigned char RL_RAY_INIT = 0;
+static const unsigned int RL_RAY_MAX_OBJECTS = 999999;
+
+char* RL_Ray_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Ray* RL_Ray_Create() {
+    //-- Create the initial data structures
+    if (RL_RAY_INIT == 0) {
+        RL_Ray_Object_List = (struct RL_Ray**) malloc(0);
+        RL_Ray_Object_Map = hashmap_create();
+        RL_RAY_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Ray* object = (struct RL_Ray*) malloc(sizeof(struct RL_Ray));
+    object->id = RL_RAY_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Ray_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Ray_Object_List = (struct RL_Ray**) realloc(RL_Ray_Object_List, RL_RAY_OBJECT_ID * sizeof(struct RL_Ray*));
+    RL_Ray_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Ray_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Ray_Delete(struct RL_Ray* object, int index) {
+    if (index < 0 || index >= RL_RAY_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Ray_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Ray_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Ray_Object_List[index], &RL_Ray_Object_List[index + 1], (RL_RAY_OBJECT_ID - index - 1) * sizeof(struct RL_Ray *));
+
+    // Decrement the count and resize the array
+    RL_RAY_OBJECT_ID--;
+    RL_Ray_Object_List = (struct RL_Ray **)realloc(RL_Ray_Object_List, (RL_RAY_OBJECT_ID) * sizeof(struct RL_Ray *));
+}
+
+void RL_Ray_Free(struct RL_Ray* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Ray PHP Custom Object
@@ -65,27 +145,6 @@ static HashTable php_raylib_ray_prop_handlers;
 typedef zend_object * (*raylib_ray_read_vector3_t)(php_raylib_ray_object *obj);
 typedef int (*raylib_ray_write_vector3_t)(php_raylib_ray_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_ray_update_intern(php_raylib_ray_object *intern) {
-    php_raylib_vector3_object *positionObject = Z_VECTOR3_OBJ_P(&intern->position);
-    intern->ray.position = positionObject->vector3;
-
-    php_raylib_vector3_object *directionObject = Z_VECTOR3_OBJ_P(&intern->direction);
-    intern->ray.direction = directionObject->vector3;
-
-}
-
-void php_raylib_ray_update_intern_reverse(php_raylib_ray_object *intern) {
-    php_raylib_vector3_object *positionObject = Z_VECTOR3_OBJ_P(&intern->position);
-    positionObject->vector3 = intern->ray.position;
-
-    php_raylib_vector3_object *directionObject = Z_VECTOR3_OBJ_P(&intern->direction);
-    directionObject->vector3 = intern->ray.direction;
-
-}
 typedef struct _raylib_ray_prop_handler {
     raylib_ray_read_vector3_t read_vector3_func;
     raylib_ray_write_vector3_t write_vector3_func;
@@ -259,6 +318,11 @@ void php_raylib_ray_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_ray_object *intern = php_raylib_ray_fetch_object(object);
 
+    intern->ray->refCount--;
+    if (intern->ray->refCount < 1) {
+        RL_Ray_Free(intern->ray);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -283,16 +347,16 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
         php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(&other->direction);
 
 
-        intern->ray = (Ray) {
+        intern->ray->data = (Ray) {
             .position = (Vector3) {
-                .x = other->ray.position.x,
-                .y = other->ray.position.y,
-                .z = other->ray.position.z
+                .x = other->ray->data.position.x,
+                .y = other->ray->data.position.y,
+                .z = other->ray->data.position.z
             },
             .direction = (Vector3) {
-                .x = other->ray.direction.x,
-                .y = other->ray.direction.y,
-                .z = other->ray.direction.z
+                .x = other->ray->data.direction.x,
+                .y = other->ray->data.direction.y,
+                .z = other->ray->data.direction.z
             }
         };
 
@@ -307,7 +371,8 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
         php_raylib_vector3_object *phpPosition = php_raylib_vector3_fetch_object(position);
         php_raylib_vector3_object *phpDirection = php_raylib_vector3_fetch_object(direction);
 
-        intern->ray = (Ray) {
+        intern->ray = RL_Ray_Create();
+        intern->ray->data = (Ray) {
             .position = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -387,16 +452,16 @@ PHP_METHOD(Ray, __construct)
     ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
     ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
 
-    intern->ray = (Ray) {
+    intern->ray->data = (Ray) {
         .position = (Vector3) {
-            .x = phpPosition->vector3.x,
-            .y = phpPosition->vector3.y,
-            .z = phpPosition->vector3.z
+            .x = phpPosition->vector3->data.x,
+            .y = phpPosition->vector3->data.y,
+            .z = phpPosition->vector3->data.z
         },
         .direction = (Vector3) {
-            .x = phpDirection->vector3.x,
-            .y = phpDirection->vector3.y,
-            .z = phpDirection->vector3.z
+            .x = phpDirection->vector3->data.x,
+            .y = phpDirection->vector3->data.y,
+            .z = phpDirection->vector3->data.z
         }
     };
 }
@@ -405,7 +470,10 @@ static zend_object * php_raylib_ray_get_position(php_raylib_ray_object *obj) /* 
 {
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(&obj->position);
 
+    phpPosition->vector3->refCount++;
+
     GC_ADDREF(&phpPosition->std);
+
     return &phpPosition->std;
 }
 /* }}} */
@@ -414,7 +482,10 @@ static zend_object * php_raylib_ray_get_direction(php_raylib_ray_object *obj) /*
 {
     php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(&obj->direction);
 
+    phpDirection->vector3->refCount++;
+
     GC_ADDREF(&phpDirection->std);
+
     return &phpDirection->std;
 }
 /* }}} */
@@ -427,6 +498,9 @@ static int php_raylib_ray_set_position(php_raylib_ray_object *obj, zval *newval)
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->position = *newval;
 
@@ -442,6 +516,9 @@ static int php_raylib_ray_set_direction(php_raylib_ray_object *obj, zval *newval
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->direction = *newval;
 

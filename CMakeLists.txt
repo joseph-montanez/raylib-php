@@ -3,6 +3,14 @@ project(raylib C)
 
 set(CMAKE_C_STANDARD 11)
 
+include_directories(
+        external/php-src
+        external/php-src/main
+        external/php-src/Zend
+        external/php-src/TSRM
+        external/php-src/ext
+        /Volumes/External/opt/homebrew/Cellar/raylib/4.2.0/include
+)
 include_directories(. ../../main/ ../../../deps/include)
 
 add_executable(raylib
@@ -69,4 +77,4 @@ add_executable(raylib
         vrstereoconfig.c
         vrstereoconfig.h
         wave.c
-        wave.h)
+        wave.h include/hashmap.h include/hashmap.c)

@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "rectangle.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_RECTANGLE_OBJECT_ID = 0;
+static unsigned char RL_RECTANGLE_INIT = 0;
+static const unsigned int RL_RECTANGLE_MAX_OBJECTS = 999999;
+
+char* RL_Rectangle_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Rectangle* RL_Rectangle_Create() {
+    //-- Create the initial data structures
+    if (RL_RECTANGLE_INIT == 0) {
+        RL_Rectangle_Object_List = (struct RL_Rectangle**) malloc(0);
+        RL_Rectangle_Object_Map = hashmap_create();
+        RL_RECTANGLE_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Rectangle* object = (struct RL_Rectangle*) malloc(sizeof(struct RL_Rectangle));
+    object->id = RL_RECTANGLE_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Rectangle_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Rectangle_Object_List = (struct RL_Rectangle**) realloc(RL_Rectangle_Object_List, RL_RECTANGLE_OBJECT_ID * sizeof(struct RL_Rectangle*));
+    RL_Rectangle_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Rectangle_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Rectangle_Delete(struct RL_Rectangle* object, int index) {
+    if (index < 0 || index >= RL_RECTANGLE_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Rectangle_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Rectangle_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Rectangle_Object_List[index], &RL_Rectangle_Object_List[index + 1], (RL_RECTANGLE_OBJECT_ID - index - 1) * sizeof(struct RL_Rectangle *));
+
+    // Decrement the count and resize the array
+    RL_RECTANGLE_OBJECT_ID--;
+    RL_Rectangle_Object_List = (struct RL_Rectangle **)realloc(RL_Rectangle_Object_List, (RL_RECTANGLE_OBJECT_ID) * sizeof(struct RL_Rectangle *));
+}
+
+void RL_Rectangle_Free(struct RL_Rectangle* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Rectangle PHP Custom Object
@@ -64,15 +144,6 @@ static HashTable php_raylib_rectangle_prop_handlers;
 typedef double (*raylib_rectangle_read_float_t)(php_raylib_rectangle_object *obj);
 typedef int (*raylib_rectangle_write_float_t)(php_raylib_rectangle_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_rectangle_update_intern(php_raylib_rectangle_object *intern) {
-}
-
-void php_raylib_rectangle_update_intern_reverse(php_raylib_rectangle_object *intern) {
-}
 typedef struct _raylib_rectangle_prop_handler {
     raylib_rectangle_read_float_t read_float_func;
     raylib_rectangle_write_float_t write_float_func;
@@ -245,6 +316,11 @@ void php_raylib_rectangle_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_rectangle_object *intern = php_raylib_rectangle_fetch_object(object);
 
+    intern->rectangle->refCount--;
+    if (intern->rectangle->refCount < 1) {
+        RL_Rectangle_Free(intern->rectangle);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -265,14 +341,15 @@ zend_object * php_raylib_rectangle_new_ex(zend_class_entry *ce, zend_object *ori
     if (orig) {
         php_raylib_rectangle_object *other = php_raylib_rectangle_fetch_object(orig);
 
-        intern->rectangle = (Rectangle) {
-            .x = other->rectangle.x,
-            .y = other->rectangle.y,
-            .width = other->rectangle.width,
-            .height = other->rectangle.height
+        intern->rectangle->data = (Rectangle) {
+            .x = other->rectangle->data.x,
+            .y = other->rectangle->data.y,
+            .width = other->rectangle->data.width,
+            .height = other->rectangle->data.height
         };
     } else {
-        intern->rectangle = (Rectangle) {
+        intern->rectangle = RL_Rectangle_Create();
+        intern->rectangle->data = (Rectangle) {
             .x = 0,
             .y = 0,
             .width = 0,
@@ -309,10 +386,10 @@ static zend_object *php_raylib_rectangle_clone(zend_object *old_object) /* {{{  
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_rectangle__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, width, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, height, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, x, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, y, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, width, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, height, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Rectangle, __construct)
 {
@@ -356,35 +433,35 @@ PHP_METHOD(Rectangle, __construct)
 
 
 
-    intern->rectangle = (Rectangle) {
-        .x = x,
-        .y = y,
-        .width = width,
-        .height = height
+    intern->rectangle->data = (Rectangle) {
+        .x = (float) x,
+        .y = (float) y,
+        .width = (float) width,
+        .height = (float) height
     };
 }
 
 static double php_raylib_rectangle_get_x(php_raylib_rectangle_object *obj) /* {{{ */
 {
-    return (double) obj->rectangle.x;
+    return (double) obj->rectangle->data.x;
 }
 /* }}} */
 
 static double php_raylib_rectangle_get_y(php_raylib_rectangle_object *obj) /* {{{ */
 {
-    return (double) obj->rectangle.y;
+    return (double) obj->rectangle->data.y;
 }
 /* }}} */
 
 static double php_raylib_rectangle_get_width(php_raylib_rectangle_object *obj) /* {{{ */
 {
-    return (double) obj->rectangle.width;
+    return (double) obj->rectangle->data.width;
 }
 /* }}} */
 
 static double php_raylib_rectangle_get_height(php_raylib_rectangle_object *obj) /* {{{ */
 {
-    return (double) obj->rectangle.height;
+    return (double) obj->rectangle->data.height;
 }
 /* }}} */
 
@@ -393,11 +470,11 @@ static int php_raylib_rectangle_set_x(php_raylib_rectangle_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rectangle.x = 0;
+        obj->rectangle->data.x = 0;
         return ret;
     }
 
-    obj->rectangle.x = (float) zval_get_double(newval);
+    obj->rectangle->data.x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -408,11 +485,11 @@ static int php_raylib_rectangle_set_y(php_raylib_rectangle_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rectangle.y = 0;
+        obj->rectangle->data.y = 0;
         return ret;
     }
 
-    obj->rectangle.y = (float) zval_get_double(newval);
+    obj->rectangle->data.y = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -423,11 +500,11 @@ static int php_raylib_rectangle_set_width(php_raylib_rectangle_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rectangle.width = 0;
+        obj->rectangle->data.width = 0;
         return ret;
     }
 
-    obj->rectangle.width = (float) zval_get_double(newval);
+    obj->rectangle->data.width = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -438,11 +515,11 @@ static int php_raylib_rectangle_set_height(php_raylib_rectangle_object *obj, zva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rectangle.height = 0;
+        obj->rectangle->data.height = 0;
         return ret;
     }
 
-    obj->rectangle.height = (float) zval_get_double(newval);
+    obj->rectangle->data.height = (float) zval_get_double(newval);
 
     return ret;
 }

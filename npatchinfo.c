@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "rectangle.h"
 
 #include "npatchinfo.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_NPATCHINFO_OBJECT_ID = 0;
+static unsigned char RL_NPATCHINFO_INIT = 0;
+static const unsigned int RL_NPATCHINFO_MAX_OBJECTS = 999999;
+
+char* RL_NPatchInfo_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_NPatchInfo* RL_NPatchInfo_Create() {
+    //-- Create the initial data structures
+    if (RL_NPATCHINFO_INIT == 0) {
+        RL_NPatchInfo_Object_List = (struct RL_NPatchInfo**) malloc(0);
+        RL_NPatchInfo_Object_Map = hashmap_create();
+        RL_NPATCHINFO_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_NPatchInfo* object = (struct RL_NPatchInfo*) malloc(sizeof(struct RL_NPatchInfo));
+    object->id = RL_NPATCHINFO_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_NPatchInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_NPatchInfo_Object_List = (struct RL_NPatchInfo**) realloc(RL_NPatchInfo_Object_List, RL_NPATCHINFO_OBJECT_ID * sizeof(struct RL_NPatchInfo*));
+    RL_NPatchInfo_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_NPatchInfo_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_NPatchInfo_Delete(struct RL_NPatchInfo* object, int index) {
+    if (index < 0 || index >= RL_NPATCHINFO_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_NPatchInfo_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_NPatchInfo_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_NPatchInfo_Object_List[index], &RL_NPatchInfo_Object_List[index + 1], (RL_NPATCHINFO_OBJECT_ID - index - 1) * sizeof(struct RL_NPatchInfo *));
+
+    // Decrement the count and resize the array
+    RL_NPATCHINFO_OBJECT_ID--;
+    RL_NPatchInfo_Object_List = (struct RL_NPatchInfo **)realloc(RL_NPatchInfo_Object_List, (RL_NPATCHINFO_OBJECT_ID) * sizeof(struct RL_NPatchInfo *));
+}
+
+void RL_NPatchInfo_Free(struct RL_NPatchInfo* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib NPatchInfo PHP Custom Object
@@ -68,21 +148,6 @@ typedef int (*raylib_npatchinfo_write_rectangle_t)(php_raylib_npatchinfo_object 
 typedef zend_long (*raylib_npatchinfo_read_int_t)(php_raylib_npatchinfo_object *obj);
 typedef int (*raylib_npatchinfo_write_int_t)(php_raylib_npatchinfo_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_npatchinfo_update_intern(php_raylib_npatchinfo_object *intern) {
-    php_raylib_rectangle_object *sourceObject = Z_RECTANGLE_OBJ_P(&intern->source);
-    intern->npatchinfo.source = sourceObject->rectangle;
-
-}
-
-void php_raylib_npatchinfo_update_intern_reverse(php_raylib_npatchinfo_object *intern) {
-    php_raylib_rectangle_object *sourceObject = Z_RECTANGLE_OBJ_P(&intern->source);
-    sourceObject->rectangle = intern->npatchinfo.source;
-
-}
 typedef struct _raylib_npatchinfo_prop_handler {
     raylib_npatchinfo_read_rectangle_t read_rectangle_func;
     raylib_npatchinfo_write_rectangle_t write_rectangle_func;
@@ -267,6 +332,11 @@ void php_raylib_npatchinfo_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_npatchinfo_object *intern = php_raylib_npatchinfo_fetch_object(object);
 
+    intern->npatchinfo->refCount--;
+    if (intern->npatchinfo->refCount < 1) {
+        RL_NPatchInfo_Free(intern->npatchinfo);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -290,18 +360,18 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
         php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(&other->source);
 
 
-        intern->npatchinfo = (NPatchInfo) {
+        intern->npatchinfo->data = (NPatchInfo) {
             .source = (Rectangle) {
-                .x = other->npatchinfo.source.x,
-                .y = other->npatchinfo.source.y,
-                .width = other->npatchinfo.source.width,
-                .height = other->npatchinfo.source.height
+                .x = other->npatchinfo->data.source.x,
+                .y = other->npatchinfo->data.source.y,
+                .width = other->npatchinfo->data.source.width,
+                .height = other->npatchinfo->data.source.height
             },
-            .left = other->npatchinfo.left,
-            .top = other->npatchinfo.top,
-            .right = other->npatchinfo.right,
-            .bottom = other->npatchinfo.bottom,
-            .layout = other->npatchinfo.layout
+            .left = other->npatchinfo->data.left,
+            .top = other->npatchinfo->data.top,
+            .right = other->npatchinfo->data.right,
+            .bottom = other->npatchinfo->data.bottom,
+            .layout = other->npatchinfo->data.layout
         };
 
         ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
@@ -311,7 +381,8 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
 
         php_raylib_rectangle_object *phpSource = php_raylib_rectangle_fetch_object(source);
 
-        intern->npatchinfo = (NPatchInfo) {
+        intern->npatchinfo = RL_NPatchInfo_Create();
+        intern->npatchinfo->data = (NPatchInfo) {
             .source = (Rectangle) {
                 .x = 0,
                 .y = 0,
@@ -358,11 +429,11 @@ static zend_object *php_raylib_npatchinfo_clone(zend_object *old_object) /* {{{ 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_npatchinfo__construct, 0, 0, 0)
     ZEND_ARG_OBJ_INFO(0, source, raylib\\Rectangle, 1)
-    ZEND_ARG_TYPE_MASK(0, left, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, top, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, right, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, bottom, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, layout, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, left, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, top, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, right, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, bottom, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, layout, MAY_BE_LONG|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(NPatchInfo, __construct)
 {
@@ -424,18 +495,18 @@ PHP_METHOD(NPatchInfo, __construct)
 
     ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
 
-    intern->npatchinfo = (NPatchInfo) {
+    intern->npatchinfo->data = (NPatchInfo) {
         .source = (Rectangle) {
-            .x = phpSource->rectangle.x,
-            .y = phpSource->rectangle.y,
-            .width = phpSource->rectangle.width,
-            .height = phpSource->rectangle.height
+            .x = phpSource->rectangle->data.x,
+            .y = phpSource->rectangle->data.y,
+            .width = phpSource->rectangle->data.width,
+            .height = phpSource->rectangle->data.height
         },
-        .left = left,
-        .top = top,
-        .right = right,
-        .bottom = bottom,
-        .layout = layout
+        .left = (int) left,
+        .top = (int) top,
+        .right = (int) right,
+        .bottom = (int) bottom,
+        .layout = (int) layout
     };
 }
 
@@ -443,38 +514,41 @@ static zend_object * php_raylib_npatchinfo_get_source(php_raylib_npatchinfo_obje
 {
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(&obj->source);
 
+    phpSource->rectangle->refCount++;
+
     GC_ADDREF(&phpSource->std);
+
     return &phpSource->std;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_left(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.left;
+    return (zend_long) obj->npatchinfo->data.left;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_top(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.top;
+    return (zend_long) obj->npatchinfo->data.top;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_right(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.right;
+    return (zend_long) obj->npatchinfo->data.right;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_bottom(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.bottom;
+    return (zend_long) obj->npatchinfo->data.bottom;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_layout(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo.layout;
+    return (zend_long) obj->npatchinfo->data.layout;
 }
 /* }}} */
 
@@ -487,6 +561,9 @@ static int php_raylib_npatchinfo_set_source(php_raylib_npatchinfo_object *obj, z
         return ret;
     }
 
+    php_raylib_rectangle_object *rl_rectangle = Z_RECTANGLE_OBJ_P(newval);
+    rl_rectangle->rectangle->refCount++;
+
     obj->source = *newval;
 
     return ret;
@@ -498,11 +575,11 @@ static int php_raylib_npatchinfo_set_left(php_raylib_npatchinfo_object *obj, zva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo.left = 0;
+        obj->npatchinfo->data.left = 0;
         return ret;
     }
 
-    obj->npatchinfo.left = (int) zval_get_long(newval);
+    obj->npatchinfo->data.left = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -513,11 +590,11 @@ static int php_raylib_npatchinfo_set_top(php_raylib_npatchinfo_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo.top = 0;
+        obj->npatchinfo->data.top = 0;
         return ret;
     }
 
-    obj->npatchinfo.top = (int) zval_get_long(newval);
+    obj->npatchinfo->data.top = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -528,11 +605,11 @@ static int php_raylib_npatchinfo_set_right(php_raylib_npatchinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo.right = 0;
+        obj->npatchinfo->data.right = 0;
         return ret;
     }
 
-    obj->npatchinfo.right = (int) zval_get_long(newval);
+    obj->npatchinfo->data.right = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -543,11 +620,11 @@ static int php_raylib_npatchinfo_set_bottom(php_raylib_npatchinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo.bottom = 0;
+        obj->npatchinfo->data.bottom = 0;
         return ret;
     }
 
-    obj->npatchinfo.bottom = (int) zval_get_long(newval);
+    obj->npatchinfo->data.bottom = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -558,11 +635,11 @@ static int php_raylib_npatchinfo_set_layout(php_raylib_npatchinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo.layout = 0;
+        obj->npatchinfo->data.layout = 0;
         return ret;
     }
 
-    obj->npatchinfo.layout = (int) zval_get_long(newval);
+    obj->npatchinfo->data.layout = (int) zval_get_long(newval);
 
     return ret;
 }

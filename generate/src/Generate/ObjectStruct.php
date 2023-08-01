@@ -12,7 +12,7 @@ class ObjectStruct
     public function generate(array $structsByType, Struct $struct, array $input): array
     {
         $input[] = 'typedef struct _php_raylib_' . $struct->nameLower . '_object {';
-        $input[] = '    ' . $struct->name . ' ' . $struct->nameLower . ';';
+        $input[] = '    struct RL_' . $struct->name . ' *' . $struct->nameLower . ';';
         $input[] = '    HashTable *prop_handler;';
 
         //-- External Object Fields

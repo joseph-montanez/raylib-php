@@ -50,11 +50,91 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "vector3.h"
 #include "vector4.h"
 
 #include "transform.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_TRANSFORM_OBJECT_ID = 0;
+static unsigned char RL_TRANSFORM_INIT = 0;
+static const unsigned int RL_TRANSFORM_MAX_OBJECTS = 999999;
+
+char* RL_Transform_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Transform* RL_Transform_Create() {
+    //-- Create the initial data structures
+    if (RL_TRANSFORM_INIT == 0) {
+        RL_Transform_Object_List = (struct RL_Transform**) malloc(0);
+        RL_Transform_Object_Map = hashmap_create();
+        RL_TRANSFORM_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Transform* object = (struct RL_Transform*) malloc(sizeof(struct RL_Transform));
+    object->id = RL_TRANSFORM_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Transform_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Transform_Object_List = (struct RL_Transform**) realloc(RL_Transform_Object_List, RL_TRANSFORM_OBJECT_ID * sizeof(struct RL_Transform*));
+    RL_Transform_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Transform_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Transform_Delete(struct RL_Transform* object, int index) {
+    if (index < 0 || index >= RL_TRANSFORM_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Transform_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Transform_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Transform_Object_List[index], &RL_Transform_Object_List[index + 1], (RL_TRANSFORM_OBJECT_ID - index - 1) * sizeof(struct RL_Transform *));
+
+    // Decrement the count and resize the array
+    RL_TRANSFORM_OBJECT_ID--;
+    RL_Transform_Object_List = (struct RL_Transform **)realloc(RL_Transform_Object_List, (RL_TRANSFORM_OBJECT_ID) * sizeof(struct RL_Transform *));
+}
+
+void RL_Transform_Free(struct RL_Transform* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Transform PHP Custom Object
@@ -69,33 +149,6 @@ typedef int (*raylib_transform_write_vector3_t)(php_raylib_transform_object *obj
 typedef zend_object * (*raylib_transform_read_vector4_t)(php_raylib_transform_object *obj);
 typedef int (*raylib_transform_write_vector4_t)(php_raylib_transform_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_transform_update_intern(php_raylib_transform_object *intern) {
-    php_raylib_vector3_object *translationObject = Z_VECTOR3_OBJ_P(&intern->translation);
-    intern->transform.translation = translationObject->vector3;
-
-    php_raylib_vector4_object *rotationObject = Z_VECTOR4_OBJ_P(&intern->rotation);
-    intern->transform.rotation = rotationObject->vector4;
-
-    php_raylib_vector3_object *scaleObject = Z_VECTOR3_OBJ_P(&intern->scale);
-    intern->transform.scale = scaleObject->vector3;
-
-}
-
-void php_raylib_transform_update_intern_reverse(php_raylib_transform_object *intern) {
-    php_raylib_vector3_object *translationObject = Z_VECTOR3_OBJ_P(&intern->translation);
-    translationObject->vector3 = intern->transform.translation;
-
-    php_raylib_vector4_object *rotationObject = Z_VECTOR4_OBJ_P(&intern->rotation);
-    rotationObject->vector4 = intern->transform.rotation;
-
-    php_raylib_vector3_object *scaleObject = Z_VECTOR3_OBJ_P(&intern->scale);
-    scaleObject->vector3 = intern->transform.scale;
-
-}
 typedef struct _raylib_transform_prop_handler {
     raylib_transform_read_vector3_t read_vector3_func;
     raylib_transform_write_vector3_t write_vector3_func;
@@ -281,6 +334,11 @@ void php_raylib_transform_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_transform_object *intern = php_raylib_transform_fetch_object(object);
 
+    intern->transform->refCount--;
+    if (intern->transform->refCount < 1) {
+        RL_Transform_Free(intern->transform);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -306,22 +364,22 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(&other->scale);
 
 
-        intern->transform = (Transform) {
+        intern->transform->data = (Transform) {
             .translation = (Vector3) {
-                .x = other->transform.translation.x,
-                .y = other->transform.translation.y,
-                .z = other->transform.translation.z
+                .x = other->transform->data.translation.x,
+                .y = other->transform->data.translation.y,
+                .z = other->transform->data.translation.z
             },
             .rotation = (Vector4) {
-                .x = other->transform.rotation.x,
-                .y = other->transform.rotation.y,
-                .z = other->transform.rotation.z,
-                .w = other->transform.rotation.w
+                .x = other->transform->data.rotation.x,
+                .y = other->transform->data.rotation.y,
+                .z = other->transform->data.rotation.z,
+                .w = other->transform->data.rotation.w
             },
             .scale = (Vector3) {
-                .x = other->transform.scale.x,
-                .y = other->transform.scale.y,
-                .z = other->transform.scale.z
+                .x = other->transform->data.scale.x,
+                .y = other->transform->data.scale.y,
+                .z = other->transform->data.scale.z
             }
         };
 
@@ -340,7 +398,8 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_vector4_object *phpRotation = php_raylib_vector4_fetch_object(rotation);
         php_raylib_vector3_object *phpScale = php_raylib_vector3_fetch_object(scale);
 
-        intern->transform = (Transform) {
+        intern->transform = RL_Transform_Create();
+        intern->transform->data = (Transform) {
             .translation = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -439,22 +498,22 @@ PHP_METHOD(Transform, __construct)
     ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
     ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
 
-    intern->transform = (Transform) {
+    intern->transform->data = (Transform) {
         .translation = (Vector3) {
-            .x = phpTranslation->vector3.x,
-            .y = phpTranslation->vector3.y,
-            .z = phpTranslation->vector3.z
+            .x = phpTranslation->vector3->data.x,
+            .y = phpTranslation->vector3->data.y,
+            .z = phpTranslation->vector3->data.z
         },
         .rotation = (Vector4) {
-            .x = phpRotation->vector4.x,
-            .y = phpRotation->vector4.y,
-            .z = phpRotation->vector4.z,
-            .w = phpRotation->vector4.w
+            .x = phpRotation->vector4->data.x,
+            .y = phpRotation->vector4->data.y,
+            .z = phpRotation->vector4->data.z,
+            .w = phpRotation->vector4->data.w
         },
         .scale = (Vector3) {
-            .x = phpScale->vector3.x,
-            .y = phpScale->vector3.y,
-            .z = phpScale->vector3.z
+            .x = phpScale->vector3->data.x,
+            .y = phpScale->vector3->data.y,
+            .z = phpScale->vector3->data.z
         }
     };
 }
@@ -463,7 +522,10 @@ static zend_object * php_raylib_transform_get_translation(php_raylib_transform_o
 {
     php_raylib_vector3_object *phpTranslation = Z_VECTOR3_OBJ_P(&obj->translation);
 
+    phpTranslation->vector3->refCount++;
+
     GC_ADDREF(&phpTranslation->std);
+
     return &phpTranslation->std;
 }
 /* }}} */
@@ -472,7 +534,10 @@ static zend_object * php_raylib_transform_get_rotation(php_raylib_transform_obje
 {
     php_raylib_vector4_object *phpRotation = Z_VECTOR4_OBJ_P(&obj->rotation);
 
+    phpRotation->vector4->refCount++;
+
     GC_ADDREF(&phpRotation->std);
+
     return &phpRotation->std;
 }
 /* }}} */
@@ -481,7 +546,10 @@ static zend_object * php_raylib_transform_get_scale(php_raylib_transform_object 
 {
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(&obj->scale);
 
+    phpScale->vector3->refCount++;
+
     GC_ADDREF(&phpScale->std);
+
     return &phpScale->std;
 }
 /* }}} */
@@ -494,6 +562,9 @@ static int php_raylib_transform_set_translation(php_raylib_transform_object *obj
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->translation = *newval;
 
@@ -510,6 +581,9 @@ static int php_raylib_transform_set_rotation(php_raylib_transform_object *obj, z
         return ret;
     }
 
+    php_raylib_vector4_object *rl_vector4 = Z_VECTOR4_OBJ_P(newval);
+    rl_vector4->vector4->refCount++;
+
     obj->rotation = *newval;
 
     return ret;
@@ -524,6 +598,9 @@ static int php_raylib_transform_set_scale(php_raylib_transform_object *obj, zval
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->scale = *newval;
 

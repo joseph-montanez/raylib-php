@@ -1,6 +1,7 @@
 #ifndef PHP_RAYLIB_VRDEVICEINFO_H
 #define PHP_RAYLIB_VRDEVICEINFO_H
 
+#include "include/hashmap.h"
 
 extern zend_class_entry * php_raylib_vrdeviceinfo_ce;
 
@@ -14,8 +15,24 @@ extern zend_object * php_raylib_vrdeviceinfo_new_ex(zend_class_entry *ce, zend_o
 
 extern zend_object_handlers php_raylib_vrdeviceinfo_object_handlers;
 
+struct RL_VrDeviceInfo {
+    unsigned int id;
+    char *guid;
+    VrDeviceInfo data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_VrDeviceInfo **RL_VrDeviceInfo_Object_List;
+static hashmap *RL_VrDeviceInfo_Object_Map;
+
+char* RL_VrDeviceInfo_Hash_Id(char *str, size_t size);
+struct RL_VrDeviceInfo* RL_VrDeviceInfo_Create();
+void RL_VrDeviceInfo_Delete(struct RL_VrDeviceInfo* object, int index);
+void RL_VrDeviceInfo_Free(struct RL_VrDeviceInfo* object);
+
 typedef struct _php_raylib_vrdeviceinfo_object {
-    VrDeviceInfo vrdeviceinfo;
+    struct RL_VrDeviceInfo *vrdeviceinfo;
     HashTable *prop_handler;
     zend_object std;
 } php_raylib_vrdeviceinfo_object;
@@ -27,8 +44,5 @@ static inline php_raylib_vrdeviceinfo_object *php_raylib_vrdeviceinfo_fetch_obje
 #define Z_VRDEVICEINFO_OBJ_P(zv) php_raylib_vrdeviceinfo_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_vrdeviceinfo_update_intern(php_raylib_vrdeviceinfo_object *intern);
-extern void php_raylib_vrdeviceinfo_update_intern_reverse(php_raylib_vrdeviceinfo_object *intern);
 
 #endif //PHP_RAYLIB_VRDEVICEINFO_H

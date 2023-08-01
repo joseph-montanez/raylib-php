@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "matrix.h"
 
 #include "vrstereoconfig.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_VRSTEREOCONFIG_OBJECT_ID = 0;
+static unsigned char RL_VRSTEREOCONFIG_INIT = 0;
+static const unsigned int RL_VRSTEREOCONFIG_MAX_OBJECTS = 999999;
+
+char* RL_VrStereoConfig_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_VrStereoConfig* RL_VrStereoConfig_Create() {
+    //-- Create the initial data structures
+    if (RL_VRSTEREOCONFIG_INIT == 0) {
+        RL_VrStereoConfig_Object_List = (struct RL_VrStereoConfig**) malloc(0);
+        RL_VrStereoConfig_Object_Map = hashmap_create();
+        RL_VRSTEREOCONFIG_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_VrStereoConfig* object = (struct RL_VrStereoConfig*) malloc(sizeof(struct RL_VrStereoConfig));
+    object->id = RL_VRSTEREOCONFIG_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_VrStereoConfig_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_VrStereoConfig_Object_List = (struct RL_VrStereoConfig**) realloc(RL_VrStereoConfig_Object_List, RL_VRSTEREOCONFIG_OBJECT_ID * sizeof(struct RL_VrStereoConfig*));
+    RL_VrStereoConfig_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_VrStereoConfig_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_VrStereoConfig_Delete(struct RL_VrStereoConfig* object, int index) {
+    if (index < 0 || index >= RL_VRSTEREOCONFIG_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_VrStereoConfig_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_VrStereoConfig_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_VrStereoConfig_Object_List[index], &RL_VrStereoConfig_Object_List[index + 1], (RL_VRSTEREOCONFIG_OBJECT_ID - index - 1) * sizeof(struct RL_VrStereoConfig *));
+
+    // Decrement the count and resize the array
+    RL_VRSTEREOCONFIG_OBJECT_ID--;
+    RL_VrStereoConfig_Object_List = (struct RL_VrStereoConfig **)realloc(RL_VrStereoConfig_Object_List, (RL_VRSTEREOCONFIG_OBJECT_ID) * sizeof(struct RL_VrStereoConfig *));
+}
+
+void RL_VrStereoConfig_Free(struct RL_VrStereoConfig* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib VrStereoConfig PHP Custom Object
@@ -68,63 +148,6 @@ typedef int (*raylib_vrstereoconfig_write_matrix_array_t)(php_raylib_vrstereocon
 typedef HashTable * (*raylib_vrstereoconfig_read_float_array_t)(php_raylib_vrstereoconfig_object *obj);
 typedef int (*raylib_vrstereoconfig_write_float_array_t)(php_raylib_vrstereoconfig_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_vrstereoconfig_update_intern(php_raylib_vrstereoconfig_object *intern) {
-    zval *projection_element;
-    int projection_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->projection), projection_element) {
-        ZVAL_DEREF(projection_element);
-        if ((Z_TYPE_P(projection_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(projection_element), php_raylib_matrix_ce))) {
-            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(projection_element);
-            intern->vrstereoconfig.projection[projection_index] = matrix_obj->matrix;
-        }
-
-        projection_index++;
-    } ZEND_HASH_FOREACH_END();
-
-    zval *viewoffset_element;
-    int viewoffset_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->viewoffset), viewoffset_element) {
-        ZVAL_DEREF(viewoffset_element);
-        if ((Z_TYPE_P(viewoffset_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(viewoffset_element), php_raylib_matrix_ce))) {
-            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(viewoffset_element);
-            intern->vrstereoconfig.viewOffset[viewoffset_index] = matrix_obj->matrix;
-        }
-
-        viewoffset_index++;
-    } ZEND_HASH_FOREACH_END();
-
-}
-
-void php_raylib_vrstereoconfig_update_intern_reverse(php_raylib_vrstereoconfig_object *intern) {
-    zval *projection_element;
-    int projection_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->projection), projection_element) {
-        ZVAL_DEREF(projection_element);
-        if ((Z_TYPE_P(projection_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(projection_element), php_raylib_matrix_ce))) {
-            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(projection_element);
-            intern->vrstereoconfig.projection[projection_index] = matrix_obj->matrix;
-        }
-
-        projection_index++;
-    } ZEND_HASH_FOREACH_END();
-
-    zval *viewoffset_element;
-    int viewoffset_index;
-    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(&intern->viewoffset), viewoffset_element) {
-        ZVAL_DEREF(viewoffset_element);
-        if ((Z_TYPE_P(viewoffset_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(viewoffset_element), php_raylib_matrix_ce))) {
-            php_raylib_matrix_object *matrix_obj =  Z_MATRIX_OBJ_P(viewoffset_element);
-            intern->vrstereoconfig.viewOffset[viewoffset_index] = matrix_obj->matrix;
-        }
-
-        viewoffset_index++;
-    } ZEND_HASH_FOREACH_END();
-
-}
 typedef struct _raylib_vrstereoconfig_prop_handler {
     raylib_vrstereoconfig_read_matrix_array_t read_matrix_array_func;
     raylib_vrstereoconfig_write_matrix_array_t write_matrix_array_func;
@@ -309,6 +332,11 @@ void php_raylib_vrstereoconfig_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_vrstereoconfig_object *intern = php_raylib_vrstereoconfig_fetch_object(object);
 
+    intern->vrstereoconfig->refCount--;
+    if (intern->vrstereoconfig->refCount < 1) {
+        RL_VrStereoConfig_Free(intern->vrstereoconfig);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -339,14 +367,14 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
         // viewOffset array not yet supported needs to generate a hash table!
         //php_raylib_matrix_object *phpViewOffset = php_raylib_matrix_fetch_object(viewOffset);
 
-        intern->vrstereoconfig = (VrStereoConfig) { 0 };
+        intern->vrstereoconfig = RL_VrStereoConfig_Create();
 
-        memcpy(intern->vrstereoconfig.leftLensCenter, other->vrstereoconfig.leftLensCenter, sizeof intern->vrstereoconfig.leftLensCenter);
-        memcpy(intern->vrstereoconfig.rightLensCenter, other->vrstereoconfig.rightLensCenter, sizeof intern->vrstereoconfig.rightLensCenter);
-        memcpy(intern->vrstereoconfig.leftScreenCenter, other->vrstereoconfig.leftScreenCenter, sizeof intern->vrstereoconfig.leftScreenCenter);
-        memcpy(intern->vrstereoconfig.rightScreenCenter, other->vrstereoconfig.rightScreenCenter, sizeof intern->vrstereoconfig.rightScreenCenter);
-        memcpy(intern->vrstereoconfig.scale, other->vrstereoconfig.scale, sizeof intern->vrstereoconfig.scale);
-        memcpy(intern->vrstereoconfig.scaleIn, other->vrstereoconfig.scaleIn, sizeof intern->vrstereoconfig.scaleIn);
+        memcpy(intern->vrstereoconfig->data.leftLensCenter, other->vrstereoconfig->data.leftLensCenter, sizeof intern->vrstereoconfig->data.leftLensCenter);
+        memcpy(intern->vrstereoconfig->data.rightLensCenter, other->vrstereoconfig->data.rightLensCenter, sizeof intern->vrstereoconfig->data.rightLensCenter);
+        memcpy(intern->vrstereoconfig->data.leftScreenCenter, other->vrstereoconfig->data.leftScreenCenter, sizeof intern->vrstereoconfig->data.leftScreenCenter);
+        memcpy(intern->vrstereoconfig->data.rightScreenCenter, other->vrstereoconfig->data.rightScreenCenter, sizeof intern->vrstereoconfig->data.rightScreenCenter);
+        memcpy(intern->vrstereoconfig->data.scale, other->vrstereoconfig->data.scale, sizeof intern->vrstereoconfig->data.scale);
+        memcpy(intern->vrstereoconfig->data.scaleIn, other->vrstereoconfig->data.scaleIn, sizeof intern->vrstereoconfig->data.scaleIn);
 
         HashTable *projection_hash;
         ALLOC_HASHTABLE(projection_hash);
@@ -371,7 +399,8 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
         // viewOffset array not yet supported needs to generate a hash table!
         //php_raylib_matrix_object *phpViewOffset = php_raylib_matrix_fetch_object(viewOffset);
 
-        intern->vrstereoconfig = (VrStereoConfig) {
+        intern->vrstereoconfig = RL_VrStereoConfig_Create();
+        intern->vrstereoconfig->data = (VrStereoConfig) {
             // .projection is an array and not yet supported via constructor
             // .viewOffset is an array and not yet supported via constructor
             .leftLensCenter = 0,

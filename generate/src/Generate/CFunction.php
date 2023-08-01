@@ -95,7 +95,7 @@ class CFunction
                     } else {
                         $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
                         $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
-                        $input[] = strtr('            [nameLower]_array[[nameLower]_index] = [typeLower]_obj->[typeLower];', $tr);
+                        $input[] = strtr('            [nameLower]_array[[nameLower]_index] = [typeLower]_obj->[typeLower]->data;', $tr);
                         $input[] = strtr('        }', $tr);
                     }
                     $input[] = strtr('', $tr);
@@ -103,9 +103,6 @@ class CFunction
                     $input[] = strtr('    } ZEND_HASH_FOREACH_END();', $tr);
                 } else {
                     $input[] = sprintf("    php_raylib_%s_object *php%s = Z_%s_OBJ_P(%s);", $param->typeLower, $param->nameUpperFirst, $param->typeUpper, $param->name);
-                    //-- Update the camera property internal props
-                    // This is not optimal, but will do for now...
-                    $input[] = strtr('    php_raylib_[typeLower]_update_intern(php[nameUpperFirst]);', $tr);
                 }
             } elseif (in_array($param->type, [
                 'const char *',
@@ -158,7 +155,7 @@ class CFunction
                 if ($param->isArray) {
                     $fnParams[] = strtr("[nameLower]_array", $tr);
                 } else {
-                    $fnParams[] = sprintf("%sphp%s->%s", $param->isRef ? '&' : '', $param->nameUpperFirst, $param->typeLower);
+                    $fnParams[] = sprintf("%sphp%s->%s->data", $param->isRef ? '&' : '', $param->nameUpperFirst, $param->typeLower);
                 }
             } else {
             }
@@ -215,7 +212,7 @@ class CFunction
                 $input[] = sprintf("    %s originalResult = %s(%s);", $function->returnType, $function->name, implode(', ', $fnParams));
                 $input[] = sprintf("    zend_object *result = php_raylib_%s_new_ex(php_raylib_%s_ce, NULL);", $function->returnTypeLower, $function->returnTypeLower);
                 $input[] = sprintf("    php_raylib_%s_object *phpResult = php_raylib_%s_fetch_object(result);", $function->returnTypeLower, $function->returnTypeLower);
-                $input[] = sprintf("    phpResult->%s = originalResult;", $function->returnTypeLower);
+                $input[] = sprintf("    phpResult->%s->data = originalResult;", $function->returnTypeLower);
                 $input[] = '';
                 $input[] = sprintf("    RETURN_OBJ(&phpResult->std);", $function->name, implode(', ', $fnParams));
             }
@@ -223,13 +220,6 @@ class CFunction
             $input[] = '    ' . $function->name . '(' . implode(', ', $fnParams) . ');';
             $input[] = '';
 
-            // Check for references to write back to php object.
-            foreach ($function->params as $param) {
-                $tr = $param->getTr();
-                if ($param->isRef && !$param->isPrimitive) {
-                    $input[] = strtr('    php_raylib_[typeLower]_update_intern_reverse(php[nameUpperFirst]);', $tr);
-                }
-            }
         }
 
         $input[] = '}';

@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "audiostream.h"
 
 #include "music.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MUSIC_OBJECT_ID = 0;
+static unsigned char RL_MUSIC_INIT = 0;
+static const unsigned int RL_MUSIC_MAX_OBJECTS = 999999;
+
+char* RL_Music_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Music* RL_Music_Create() {
+    //-- Create the initial data structures
+    if (RL_MUSIC_INIT == 0) {
+        RL_Music_Object_List = (struct RL_Music**) malloc(0);
+        RL_Music_Object_Map = hashmap_create();
+        RL_MUSIC_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Music* object = (struct RL_Music*) malloc(sizeof(struct RL_Music));
+    object->id = RL_MUSIC_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Music_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Music_Object_List = (struct RL_Music**) realloc(RL_Music_Object_List, RL_MUSIC_OBJECT_ID * sizeof(struct RL_Music*));
+    RL_Music_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Music_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Music_Delete(struct RL_Music* object, int index) {
+    if (index < 0 || index >= RL_MUSIC_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Music_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Music_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Music_Object_List[index], &RL_Music_Object_List[index + 1], (RL_MUSIC_OBJECT_ID - index - 1) * sizeof(struct RL_Music *));
+
+    // Decrement the count and resize the array
+    RL_MUSIC_OBJECT_ID--;
+    RL_Music_Object_List = (struct RL_Music **)realloc(RL_Music_Object_List, (RL_MUSIC_OBJECT_ID) * sizeof(struct RL_Music *));
+}
+
+void RL_Music_Free(struct RL_Music* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Music PHP Custom Object
@@ -77,21 +157,6 @@ typedef int (*raylib_music_write_int_t)(php_raylib_music_object *obj,  zval *val
 typedef HashTable * (*raylib_music_read_void_array_t)(php_raylib_music_object *obj);
 typedef int (*raylib_music_write_void_array_t)(php_raylib_music_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_music_update_intern(php_raylib_music_object *intern) {
-    php_raylib_audiostream_object *streamObject = Z_AUDIOSTREAM_OBJ_P(&intern->stream);
-    intern->music.stream = streamObject->audiostream;
-
-}
-
-void php_raylib_music_update_intern_reverse(php_raylib_music_object *intern) {
-    php_raylib_audiostream_object *streamObject = Z_AUDIOSTREAM_OBJ_P(&intern->stream);
-    streamObject->audiostream = intern->music.stream;
-
-}
 typedef struct _raylib_music_prop_handler {
     raylib_music_read_audiostream_t read_audiostream_func;
     raylib_music_write_audiostream_t write_audiostream_func;
@@ -307,6 +372,11 @@ void php_raylib_music_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_music_object *intern = php_raylib_music_fetch_object(object);
 
+    intern->music->refCount--;
+    if (intern->music->refCount < 1) {
+        RL_Music_Free(intern->music);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -330,17 +400,17 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
         php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&other->stream);
 
 
-        intern->music = (Music) {
+        intern->music->data = (Music) {
             .stream = (AudioStream) {
-                .buffer = other->music.stream.buffer,
-                .processor = other->music.stream.processor,
-                .sampleRate = other->music.stream.sampleRate,
-                .sampleSize = other->music.stream.sampleSize,
-                .channels = other->music.stream.channels
+                .buffer = other->music->data.stream.buffer,
+                .processor = other->music->data.stream.processor,
+                .sampleRate = other->music->data.stream.sampleRate,
+                .sampleSize = other->music->data.stream.sampleSize,
+                .channels = other->music->data.stream.channels
             },
-            .frameCount = other->music.frameCount,
-            .looping = other->music.looping,
-            .ctxType = other->music.ctxType,
+            .frameCount = other->music->data.frameCount,
+            .looping = other->music->data.looping,
+            .ctxType = other->music->data.ctxType,
         };
 
         ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
@@ -350,7 +420,8 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
 
         php_raylib_audiostream_object *phpStream = php_raylib_audiostream_fetch_object(stream);
 
-        intern->music = (Music) {
+        intern->music = RL_Music_Create();
+        intern->music->data = (Music) {
             .stream = (AudioStream) {
                 .buffer = 0,
                 .processor = 0,
@@ -406,26 +477,29 @@ static zend_object * php_raylib_music_get_stream(php_raylib_music_object *obj) /
 {
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&obj->stream);
 
+    phpStream->audiostream->refCount++;
+
     GC_ADDREF(&phpStream->std);
+
     return &phpStream->std;
 }
 /* }}} */
 
 static zend_long php_raylib_music_get_framecount(php_raylib_music_object *obj) /* {{{ */
 {
-    return (zend_long) obj->music.frameCount;
+    return (zend_long) obj->music->data.frameCount;
 }
 /* }}} */
 
 static bool php_raylib_music_get_looping(php_raylib_music_object *obj) /* {{{ */
 {
-    return obj->music.looping;
+    return obj->music->data.looping;
 }
 /* }}} */
 
 static zend_long php_raylib_music_get_ctxtype(php_raylib_music_object *obj) /* {{{ */
 {
-    return (zend_long) obj->music.ctxType;
+    return (zend_long) obj->music->data.ctxType;
 }
 /* }}} */
 
@@ -444,6 +518,9 @@ static int php_raylib_music_set_stream(php_raylib_music_object *obj, zval *newva
         return ret;
     }
 
+    php_raylib_audiostream_object *rl_audiostream = Z_AUDIOSTREAM_OBJ_P(newval);
+    rl_audiostream->audiostream->refCount++;
+
     obj->stream = *newval;
 
     return ret;
@@ -455,11 +532,11 @@ static int php_raylib_music_set_framecount(php_raylib_music_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->music.frameCount = 0;
+        obj->music->data.frameCount = 0;
         return ret;
     }
 
-    obj->music.frameCount = (unsigned int) zval_get_long(newval);
+    obj->music->data.frameCount = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -479,11 +556,11 @@ static int php_raylib_music_set_ctxtype(php_raylib_music_object *obj, zval *newv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->music.ctxType = 0;
+        obj->music->data.ctxType = 0;
         return ret;
     }
 
-    obj->music.ctxType = (int) zval_get_long(newval);
+    obj->music->data.ctxType = (int) zval_get_long(newval);
 
     return ret;
 }

@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "vector2.h"
 
 #include "camera2d.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_CAMERA2D_OBJECT_ID = 0;
+static unsigned char RL_CAMERA2D_INIT = 0;
+static const unsigned int RL_CAMERA2D_MAX_OBJECTS = 999999;
+
+char* RL_Camera2D_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Camera2D* RL_Camera2D_Create() {
+    //-- Create the initial data structures
+    if (RL_CAMERA2D_INIT == 0) {
+        RL_Camera2D_Object_List = (struct RL_Camera2D**) malloc(0);
+        RL_Camera2D_Object_Map = hashmap_create();
+        RL_CAMERA2D_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Camera2D* object = (struct RL_Camera2D*) malloc(sizeof(struct RL_Camera2D));
+    object->id = RL_CAMERA2D_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Camera2D_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Camera2D_Object_List = (struct RL_Camera2D**) realloc(RL_Camera2D_Object_List, RL_CAMERA2D_OBJECT_ID * sizeof(struct RL_Camera2D*));
+    RL_Camera2D_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Camera2D_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Camera2D_Delete(struct RL_Camera2D* object, int index) {
+    if (index < 0 || index >= RL_CAMERA2D_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Camera2D_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Camera2D_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Camera2D_Object_List[index], &RL_Camera2D_Object_List[index + 1], (RL_CAMERA2D_OBJECT_ID - index - 1) * sizeof(struct RL_Camera2D *));
+
+    // Decrement the count and resize the array
+    RL_CAMERA2D_OBJECT_ID--;
+    RL_Camera2D_Object_List = (struct RL_Camera2D **)realloc(RL_Camera2D_Object_List, (RL_CAMERA2D_OBJECT_ID) * sizeof(struct RL_Camera2D *));
+}
+
+void RL_Camera2D_Free(struct RL_Camera2D* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Camera2D PHP Custom Object
@@ -68,27 +148,6 @@ typedef int (*raylib_camera2d_write_vector2_t)(php_raylib_camera2d_object *obj, 
 typedef double (*raylib_camera2d_read_float_t)(php_raylib_camera2d_object *obj);
 typedef int (*raylib_camera2d_write_float_t)(php_raylib_camera2d_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_camera2d_update_intern(php_raylib_camera2d_object *intern) {
-    php_raylib_vector2_object *offsetObject = Z_VECTOR2_OBJ_P(&intern->offset);
-    intern->camera2d.offset = offsetObject->vector2;
-
-    php_raylib_vector2_object *targetObject = Z_VECTOR2_OBJ_P(&intern->target);
-    intern->camera2d.target = targetObject->vector2;
-
-}
-
-void php_raylib_camera2d_update_intern_reverse(php_raylib_camera2d_object *intern) {
-    php_raylib_vector2_object *offsetObject = Z_VECTOR2_OBJ_P(&intern->offset);
-    offsetObject->vector2 = intern->camera2d.offset;
-
-    php_raylib_vector2_object *targetObject = Z_VECTOR2_OBJ_P(&intern->target);
-    targetObject->vector2 = intern->camera2d.target;
-
-}
 typedef struct _raylib_camera2d_prop_handler {
     raylib_camera2d_read_vector2_t read_vector2_func;
     raylib_camera2d_write_vector2_t write_vector2_func;
@@ -273,6 +332,11 @@ void php_raylib_camera2d_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_camera2d_object *intern = php_raylib_camera2d_fetch_object(object);
 
+    intern->camera2d->refCount--;
+    if (intern->camera2d->refCount < 1) {
+        RL_Camera2D_Free(intern->camera2d);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -297,17 +361,17 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(&other->target);
 
 
-        intern->camera2d = (Camera2D) {
+        intern->camera2d->data = (Camera2D) {
             .offset = (Vector2) {
-                .x = other->camera2d.offset.x,
-                .y = other->camera2d.offset.y
+                .x = other->camera2d->data.offset.x,
+                .y = other->camera2d->data.offset.y
             },
             .target = (Vector2) {
-                .x = other->camera2d.target.x,
-                .y = other->camera2d.target.y
+                .x = other->camera2d->data.target.x,
+                .y = other->camera2d->data.target.y
             },
-            .rotation = other->camera2d.rotation,
-            .zoom = other->camera2d.zoom
+            .rotation = other->camera2d->data.rotation,
+            .zoom = other->camera2d->data.zoom
         };
 
         ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
@@ -321,7 +385,8 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector2_object *phpOffset = php_raylib_vector2_fetch_object(offset);
         php_raylib_vector2_object *phpTarget = php_raylib_vector2_fetch_object(target);
 
-        intern->camera2d = (Camera2D) {
+        intern->camera2d = RL_Camera2D_Create();
+        intern->camera2d->data = (Camera2D) {
             .offset = (Vector2) {
                 .x = 0,
                 .y = 0
@@ -370,8 +435,8 @@ static zend_object *php_raylib_camera2d_clone(zend_object *old_object) /* {{{  *
 ZEND_BEGIN_ARG_INFO_EX(arginfo_camera2d__construct, 0, 0, 0)
     ZEND_ARG_OBJ_INFO(0, offset, raylib\\Vector2, 1)
     ZEND_ARG_OBJ_INFO(0, target, raylib\\Vector2, 1)
-    ZEND_ARG_TYPE_MASK(0, rotation, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, zoom, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, rotation, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, zoom, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Camera2D, __construct)
 {
@@ -419,17 +484,17 @@ PHP_METHOD(Camera2D, __construct)
     ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
     ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
 
-    intern->camera2d = (Camera2D) {
+    intern->camera2d->data = (Camera2D) {
         .offset = (Vector2) {
-            .x = phpOffset->vector2.x,
-            .y = phpOffset->vector2.y
+            .x = phpOffset->vector2->data.x,
+            .y = phpOffset->vector2->data.y
         },
         .target = (Vector2) {
-            .x = phpTarget->vector2.x,
-            .y = phpTarget->vector2.y
+            .x = phpTarget->vector2->data.x,
+            .y = phpTarget->vector2->data.y
         },
-        .rotation = rotation,
-        .zoom = zoom
+        .rotation = (float) rotation,
+        .zoom = (float) zoom
     };
 }
 
@@ -437,7 +502,10 @@ static zend_object * php_raylib_camera2d_get_offset(php_raylib_camera2d_object *
 {
     php_raylib_vector2_object *phpOffset = Z_VECTOR2_OBJ_P(&obj->offset);
 
+    phpOffset->vector2->refCount++;
+
     GC_ADDREF(&phpOffset->std);
+
     return &phpOffset->std;
 }
 /* }}} */
@@ -446,20 +514,23 @@ static zend_object * php_raylib_camera2d_get_target(php_raylib_camera2d_object *
 {
     php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(&obj->target);
 
+    phpTarget->vector2->refCount++;
+
     GC_ADDREF(&phpTarget->std);
+
     return &phpTarget->std;
 }
 /* }}} */
 
 static double php_raylib_camera2d_get_rotation(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    return (double) obj->camera2d.rotation;
+    return (double) obj->camera2d->data.rotation;
 }
 /* }}} */
 
 static double php_raylib_camera2d_get_zoom(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    return (double) obj->camera2d.zoom;
+    return (double) obj->camera2d->data.zoom;
 }
 /* }}} */
 
@@ -471,6 +542,9 @@ static int php_raylib_camera2d_set_offset(php_raylib_camera2d_object *obj, zval 
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector2_object *rl_vector2 = Z_VECTOR2_OBJ_P(newval);
+    rl_vector2->vector2->refCount++;
 
     obj->offset = *newval;
 
@@ -487,6 +561,9 @@ static int php_raylib_camera2d_set_target(php_raylib_camera2d_object *obj, zval 
         return ret;
     }
 
+    php_raylib_vector2_object *rl_vector2 = Z_VECTOR2_OBJ_P(newval);
+    rl_vector2->vector2->refCount++;
+
     obj->target = *newval;
 
     return ret;
@@ -498,11 +575,11 @@ static int php_raylib_camera2d_set_rotation(php_raylib_camera2d_object *obj, zva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera2d.rotation = 0;
+        obj->camera2d->data.rotation = 0;
         return ret;
     }
 
-    obj->camera2d.rotation = (float) zval_get_double(newval);
+    obj->camera2d->data.rotation = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -513,11 +590,11 @@ static int php_raylib_camera2d_set_zoom(php_raylib_camera2d_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera2d.zoom = 0;
+        obj->camera2d->data.zoom = 0;
         return ret;
     }
 
-    obj->camera2d.zoom = (float) zval_get_double(newval);
+    obj->camera2d->data.zoom = (float) zval_get_double(newval);
 
     return ret;
 }

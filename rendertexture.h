@@ -1,7 +1,7 @@
 #ifndef PHP_RAYLIB_RENDERTEXTURE_H
 #define PHP_RAYLIB_RENDERTEXTURE_H
 
-#include "texture.h"
+#include "include/hashmap.h"
 #include "texture.h"
 
 extern zend_class_entry * php_raylib_rendertexture_ce;
@@ -17,8 +17,24 @@ extern zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_
 
 extern zend_object_handlers php_raylib_rendertexture_object_handlers;
 
+struct RL_RenderTexture {
+    unsigned int id;
+    char *guid;
+    RenderTexture data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_RenderTexture **RL_RenderTexture_Object_List;
+static hashmap *RL_RenderTexture_Object_Map;
+
+char* RL_RenderTexture_Hash_Id(char *str, size_t size);
+struct RL_RenderTexture* RL_RenderTexture_Create();
+void RL_RenderTexture_Delete(struct RL_RenderTexture* object, int index);
+void RL_RenderTexture_Free(struct RL_RenderTexture* object);
+
 typedef struct _php_raylib_rendertexture_object {
-    RenderTexture rendertexture;
+    struct RL_RenderTexture *rendertexture;
     HashTable *prop_handler;
     zval texture;
     zval depth;
@@ -32,8 +48,5 @@ static inline php_raylib_rendertexture_object *php_raylib_rendertexture_fetch_ob
 #define Z_RENDERTEXTURE_OBJ_P(zv) php_raylib_rendertexture_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_rendertexture_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_rendertexture_update_intern(php_raylib_rendertexture_object *intern);
-extern void php_raylib_rendertexture_update_intern_reverse(php_raylib_rendertexture_object *intern);
 
 #endif //PHP_RAYLIB_RENDERTEXTURE_H

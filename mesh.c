@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "mesh.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_MESH_OBJECT_ID = 0;
+static unsigned char RL_MESH_INIT = 0;
+static const unsigned int RL_MESH_MAX_OBJECTS = 999999;
+
+char* RL_Mesh_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Mesh* RL_Mesh_Create() {
+    //-- Create the initial data structures
+    if (RL_MESH_INIT == 0) {
+        RL_Mesh_Object_List = (struct RL_Mesh**) malloc(0);
+        RL_Mesh_Object_Map = hashmap_create();
+        RL_MESH_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Mesh* object = (struct RL_Mesh*) malloc(sizeof(struct RL_Mesh));
+    object->id = RL_MESH_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Mesh_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Mesh_Object_List = (struct RL_Mesh**) realloc(RL_Mesh_Object_List, RL_MESH_OBJECT_ID * sizeof(struct RL_Mesh*));
+    RL_Mesh_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Mesh_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Mesh_Delete(struct RL_Mesh* object, int index) {
+    if (index < 0 || index >= RL_MESH_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Mesh_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Mesh_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Mesh_Object_List[index], &RL_Mesh_Object_List[index + 1], (RL_MESH_OBJECT_ID - index - 1) * sizeof(struct RL_Mesh *));
+
+    // Decrement the count and resize the array
+    RL_MESH_OBJECT_ID--;
+    RL_Mesh_Object_List = (struct RL_Mesh **)realloc(RL_Mesh_Object_List, (RL_MESH_OBJECT_ID) * sizeof(struct RL_Mesh *));
+}
+
+void RL_Mesh_Free(struct RL_Mesh* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Mesh PHP Custom Object
@@ -79,15 +159,6 @@ typedef int (*raylib_mesh_write_unsigned_int_t)(php_raylib_mesh_object *obj,  zv
 typedef HashTable * (*raylib_mesh_read_unsigned_int_array_t)(php_raylib_mesh_object *obj);
 typedef int (*raylib_mesh_write_unsigned_int_array_t)(php_raylib_mesh_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_mesh_update_intern(php_raylib_mesh_object *intern) {
-}
-
-void php_raylib_mesh_update_intern_reverse(php_raylib_mesh_object *intern) {
-}
 typedef struct _raylib_mesh_prop_handler {
     raylib_mesh_read_int_t read_int_func;
     raylib_mesh_write_int_t write_int_func;
@@ -315,6 +386,11 @@ void php_raylib_mesh_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_mesh_object *intern = php_raylib_mesh_fetch_object(object);
 
+    intern->mesh->refCount--;
+    if (intern->mesh->refCount < 1) {
+        RL_Mesh_Free(intern->mesh);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -335,13 +411,14 @@ zend_object * php_raylib_mesh_new_ex(zend_class_entry *ce, zend_object *orig)/* 
     if (orig) {
         php_raylib_mesh_object *other = php_raylib_mesh_fetch_object(orig);
 
-        intern->mesh = (Mesh) {
-            .vertexCount = other->mesh.vertexCount,
-            .triangleCount = other->mesh.triangleCount,
-            .vaoId = other->mesh.vaoId,
+        intern->mesh->data = (Mesh) {
+            .vertexCount = other->mesh->data.vertexCount,
+            .triangleCount = other->mesh->data.triangleCount,
+            .vaoId = other->mesh->data.vaoId,
         };
     } else {
-        intern->mesh = (Mesh) {
+        intern->mesh = RL_Mesh_Create();
+        intern->mesh->data = (Mesh) {
             .vertexCount = 0,
             .triangleCount = 0,
             .vertices = 0,
@@ -389,21 +466,21 @@ static zend_object *php_raylib_mesh_clone(zend_object *old_object) /* {{{  */
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mesh__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, vertexCount, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, triangleCount, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, vertices, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, texcoords, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, texcoords2, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, normals, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, tangents, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, colors, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, indices, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, animVertices, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, animNormals, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, boneIds, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, boneWeights, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, vaoId, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, vboId, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, vertexCount, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, triangleCount, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, vertices, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, texcoords, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, texcoords2, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, normals, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, tangents, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, colors, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, indices, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, animVertices, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, animNormals, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, boneIds, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, boneWeights, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, vaoId, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, vboId, MAY_BE_LONG|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Mesh, __construct)
 {
@@ -411,13 +488,13 @@ PHP_METHOD(Mesh, __construct)
 
 static zend_long php_raylib_mesh_get_vertexcount(php_raylib_mesh_object *obj) /* {{{ */
 {
-    return (zend_long) obj->mesh.vertexCount;
+    return (zend_long) obj->mesh->data.vertexCount;
 }
 /* }}} */
 
 static zend_long php_raylib_mesh_get_trianglecount(php_raylib_mesh_object *obj) /* {{{ */
 {
-    return (zend_long) obj->mesh.triangleCount;
+    return (zend_long) obj->mesh->data.triangleCount;
 }
 /* }}} */
 
@@ -489,7 +566,7 @@ static HashTable * php_raylib_mesh_get_boneweights(php_raylib_mesh_object *obj) 
 
 static zend_long php_raylib_mesh_get_vaoid(php_raylib_mesh_object *obj) /* {{{ */
 {
-    return (zend_long) obj->mesh.vaoId;
+    return (zend_long) obj->mesh->data.vaoId;
 }
 /* }}} */
 
@@ -504,11 +581,11 @@ static int php_raylib_mesh_set_vertexcount(php_raylib_mesh_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->mesh.vertexCount = 0;
+        obj->mesh->data.vertexCount = 0;
         return ret;
     }
 
-    obj->mesh.vertexCount = (int) zval_get_long(newval);
+    obj->mesh->data.vertexCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -519,11 +596,11 @@ static int php_raylib_mesh_set_trianglecount(php_raylib_mesh_object *obj, zval *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->mesh.triangleCount = 0;
+        obj->mesh->data.triangleCount = 0;
         return ret;
     }
 
-    obj->mesh.triangleCount = (int) zval_get_long(newval);
+    obj->mesh->data.triangleCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -644,11 +721,11 @@ static int php_raylib_mesh_set_vaoid(php_raylib_mesh_object *obj, zval *newval) 
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->mesh.vaoId = 0;
+        obj->mesh->data.vaoId = 0;
         return ret;
     }
 
-    obj->mesh.vaoId = (unsigned int) zval_get_long(newval);
+    obj->mesh->data.vaoId = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

@@ -55,8 +55,7 @@ class ObjectNewEx
             $input[] = '';
         }
 
-
-        $input[] = '        intern->' . $struct->nameLower . ' = (' . $struct->name . ') {';
+        $input[] = '        intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
 
         $hasFields = false;
         foreach ($struct->fields as $i => $field) {
@@ -67,6 +66,7 @@ class ObjectNewEx
 //                    $input[] = '            // .' . $field->name . ' is an array and not yet supported via constructor';
                 } else {
                     $hasFields = true;
+
                     $input[] = '            .' . $field->name . ' = (' . $field->type . ') {';
 
                     $subStruct = $structsByType[$field->typePlain];
@@ -75,7 +75,7 @@ class ObjectNewEx
                         $delimiter2 = $n + 1 >= $subStruct->totalFields ? '' : ',';
 //                        $ref = $subField->isArray ? '->' : '.';
                         $ref = '.';
-                        $input[] = '                .' . $subField->name . ' = other->' . $struct->nameLower . '.' . $field->name . $ref . $subField->name . $delimiter2;
+                        $input[] = '                .' . $subField->name . ' = other->' . $struct->nameLower . '->data.' . $field->name . $ref . $subField->name . $delimiter2;
                     }
                     $input[] = '            }' . $delimiter;
                 }
@@ -84,7 +84,7 @@ class ObjectNewEx
                     //-- This is ignored for now as `memcpy` is used below to copy fields over
                 } else {
                     $hasFields = true;
-                    $input[] = '            .' . $field->name . ' = other->' . $struct->nameLower . '.' . $field->name . $delimiter;
+                    $input[] = '            .' . $field->name . ' = other->' . $struct->nameLower . '->data.' . $field->name . $delimiter;
                 }
             }
         }
@@ -93,17 +93,17 @@ class ObjectNewEx
             array_pop($input);
             array_pop($input);
 
-            $input[] = '        intern->' . $struct->nameLower . ' = (' . $struct->name . ') { 0 };';
+            $input[] = '        intern->' . $struct->nameLower . ' = RL_' . $struct->name . '_Create();';
             $input[] = '';
         }
 
 
         foreach ($struct->fields as $i => $field) {
             if ($field->isPrimitive && str_starts_with($field->type, 'char') && $field->isArray && $field->arrayCountNumber > 0) {
-                $input[] = '        strncpy(intern->' . $struct->nameLower . '.' . $field->name . ', other->' . $struct->nameLower . '.' . $field->name . ', ' . $field->arrayCountNumber . ');';
+                $input[] = '        strncpy(intern->' . $struct->nameLower . '->data.' . $field->name . ', other->' . $struct->nameLower . '->data.' . $field->name . ', ' . $field->arrayCountNumber . ');';
             }
             elseif ($field->isPrimitive && $field->isArray && $field->arrayCountNumber > 0) {
-                $input[] = '        memcpy(intern->' . $struct->nameLower . '.' . $field->name . ', other->' . $struct->nameLower . '.' . $field->name . ', sizeof intern->' . $struct->nameLower . '.' . $field->name . ');';
+                $input[] = '        memcpy(intern->' . $struct->nameLower . '->data.' . $field->name . ', other->' . $struct->nameLower . '->data.' . $field->name . ', sizeof intern->' . $struct->nameLower . '->data.' . $field->name . ');';
             }
         }
 
@@ -152,7 +152,8 @@ class ObjectNewEx
             $input[] = '';
         }
 
-        $input[] = '        intern->' . $struct->nameLower . ' = (' . $struct->name . ') {';
+        $input[] = '        intern->' . $struct->nameLower . ' = RL_' . $struct->name . '_Create();';
+        $input[] = '        intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
 
         foreach ($struct->fields as $i => $field) {
             $delimiter = $i + 1 >= $struct->totalFields ? '' : ',';

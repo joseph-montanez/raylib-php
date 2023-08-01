@@ -62,7 +62,9 @@ for ($i = 0; $i < MAX_COLUMNS; $i++)
 
 }
 
-SetCameraMode($camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
+$cameraMode = CAMERA_FIRST_PERSON;
+
+DisableCursor();
 
 SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
 //--------------------------------------------------------------------------------------
@@ -72,12 +74,13 @@ $size = new Vector2(32.0, 32.0);
 $position = new Vector3(-16.0, 2.5, 0.0);
 $position1 = new Vector3(16.0, 2.5, 0.0);
 $position2 = new Vector3(0.0, 2.5, 16.0);
+
 // Main game loop
 while (!WindowShouldClose())                // Detect window close button or ESC key
 {
     // Update
     //----------------------------------------------------------------------------------
-    UpdateCamera($camera);                  // Update camera
+    UpdateCamera($camera, $cameraMode);                  // Update camera
     //----------------------------------------------------------------------------------
 
     // Draw

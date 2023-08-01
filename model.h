@@ -1,6 +1,7 @@
 #ifndef PHP_RAYLIB_MODEL_H
 #define PHP_RAYLIB_MODEL_H
 
+#include "include/hashmap.h"
 #include "matrix.h"
 #include "mesh.h"
 #include "material.h"
@@ -28,8 +29,24 @@ extern zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_model_object_handlers;
 
+struct RL_Model {
+    unsigned int id;
+    char *guid;
+    Model data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_Model **RL_Model_Object_List;
+static hashmap *RL_Model_Object_Map;
+
+char* RL_Model_Hash_Id(char *str, size_t size);
+struct RL_Model* RL_Model_Create();
+void RL_Model_Delete(struct RL_Model* object, int index);
+void RL_Model_Free(struct RL_Model* object);
+
 typedef struct _php_raylib_model_object {
-    Model model;
+    struct RL_Model *model;
     HashTable *prop_handler;
     zval transform;
     zval meshes;
@@ -46,8 +63,5 @@ static inline php_raylib_model_object *php_raylib_model_fetch_object(zend_object
 #define Z_MODEL_OBJ_P(zv) php_raylib_model_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_model_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_model_update_intern(php_raylib_model_object *intern);
-extern void php_raylib_model_update_intern_reverse(php_raylib_model_object *intern);
 
 #endif //PHP_RAYLIB_MODEL_H

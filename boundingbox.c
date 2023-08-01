@@ -50,10 +50,90 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 #include "vector3.h"
 
 #include "boundingbox.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_BOUNDINGBOX_OBJECT_ID = 0;
+static unsigned char RL_BOUNDINGBOX_INIT = 0;
+static const unsigned int RL_BOUNDINGBOX_MAX_OBJECTS = 999999;
+
+char* RL_BoundingBox_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_BoundingBox* RL_BoundingBox_Create() {
+    //-- Create the initial data structures
+    if (RL_BOUNDINGBOX_INIT == 0) {
+        RL_BoundingBox_Object_List = (struct RL_BoundingBox**) malloc(0);
+        RL_BoundingBox_Object_Map = hashmap_create();
+        RL_BOUNDINGBOX_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_BoundingBox* object = (struct RL_BoundingBox*) malloc(sizeof(struct RL_BoundingBox));
+    object->id = RL_BOUNDINGBOX_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_BoundingBox_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_BoundingBox_Object_List = (struct RL_BoundingBox**) realloc(RL_BoundingBox_Object_List, RL_BOUNDINGBOX_OBJECT_ID * sizeof(struct RL_BoundingBox*));
+    RL_BoundingBox_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_BoundingBox_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_BoundingBox_Delete(struct RL_BoundingBox* object, int index) {
+    if (index < 0 || index >= RL_BOUNDINGBOX_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_BoundingBox_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_BoundingBox_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_BoundingBox_Object_List[index], &RL_BoundingBox_Object_List[index + 1], (RL_BOUNDINGBOX_OBJECT_ID - index - 1) * sizeof(struct RL_BoundingBox *));
+
+    // Decrement the count and resize the array
+    RL_BOUNDINGBOX_OBJECT_ID--;
+    RL_BoundingBox_Object_List = (struct RL_BoundingBox **)realloc(RL_BoundingBox_Object_List, (RL_BOUNDINGBOX_OBJECT_ID) * sizeof(struct RL_BoundingBox *));
+}
+
+void RL_BoundingBox_Free(struct RL_BoundingBox* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib BoundingBox PHP Custom Object
@@ -65,27 +145,6 @@ static HashTable php_raylib_boundingbox_prop_handlers;
 typedef zend_object * (*raylib_boundingbox_read_vector3_t)(php_raylib_boundingbox_object *obj);
 typedef int (*raylib_boundingbox_write_vector3_t)(php_raylib_boundingbox_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_boundingbox_update_intern(php_raylib_boundingbox_object *intern) {
-    php_raylib_vector3_object *minObject = Z_VECTOR3_OBJ_P(&intern->min);
-    intern->boundingbox.min = minObject->vector3;
-
-    php_raylib_vector3_object *maxObject = Z_VECTOR3_OBJ_P(&intern->max);
-    intern->boundingbox.max = maxObject->vector3;
-
-}
-
-void php_raylib_boundingbox_update_intern_reverse(php_raylib_boundingbox_object *intern) {
-    php_raylib_vector3_object *minObject = Z_VECTOR3_OBJ_P(&intern->min);
-    minObject->vector3 = intern->boundingbox.min;
-
-    php_raylib_vector3_object *maxObject = Z_VECTOR3_OBJ_P(&intern->max);
-    maxObject->vector3 = intern->boundingbox.max;
-
-}
 typedef struct _raylib_boundingbox_prop_handler {
     raylib_boundingbox_read_vector3_t read_vector3_func;
     raylib_boundingbox_write_vector3_t write_vector3_func;
@@ -259,6 +318,11 @@ void php_raylib_boundingbox_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_boundingbox_object *intern = php_raylib_boundingbox_fetch_object(object);
 
+    intern->boundingbox->refCount--;
+    if (intern->boundingbox->refCount < 1) {
+        RL_BoundingBox_Free(intern->boundingbox);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -283,16 +347,16 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(&other->max);
 
 
-        intern->boundingbox = (BoundingBox) {
+        intern->boundingbox->data = (BoundingBox) {
             .min = (Vector3) {
-                .x = other->boundingbox.min.x,
-                .y = other->boundingbox.min.y,
-                .z = other->boundingbox.min.z
+                .x = other->boundingbox->data.min.x,
+                .y = other->boundingbox->data.min.y,
+                .z = other->boundingbox->data.min.z
             },
             .max = (Vector3) {
-                .x = other->boundingbox.max.x,
-                .y = other->boundingbox.max.y,
-                .z = other->boundingbox.max.z
+                .x = other->boundingbox->data.max.x,
+                .y = other->boundingbox->data.max.y,
+                .z = other->boundingbox->data.max.z
             }
         };
 
@@ -307,7 +371,8 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_vector3_object *phpMin = php_raylib_vector3_fetch_object(min);
         php_raylib_vector3_object *phpMax = php_raylib_vector3_fetch_object(max);
 
-        intern->boundingbox = (BoundingBox) {
+        intern->boundingbox = RL_BoundingBox_Create();
+        intern->boundingbox->data = (BoundingBox) {
             .min = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -387,16 +452,16 @@ PHP_METHOD(BoundingBox, __construct)
     ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
     ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
 
-    intern->boundingbox = (BoundingBox) {
+    intern->boundingbox->data = (BoundingBox) {
         .min = (Vector3) {
-            .x = phpMin->vector3.x,
-            .y = phpMin->vector3.y,
-            .z = phpMin->vector3.z
+            .x = phpMin->vector3->data.x,
+            .y = phpMin->vector3->data.y,
+            .z = phpMin->vector3->data.z
         },
         .max = (Vector3) {
-            .x = phpMax->vector3.x,
-            .y = phpMax->vector3.y,
-            .z = phpMax->vector3.z
+            .x = phpMax->vector3->data.x,
+            .y = phpMax->vector3->data.y,
+            .z = phpMax->vector3->data.z
         }
     };
 }
@@ -405,7 +470,10 @@ static zend_object * php_raylib_boundingbox_get_min(php_raylib_boundingbox_objec
 {
     php_raylib_vector3_object *phpMin = Z_VECTOR3_OBJ_P(&obj->min);
 
+    phpMin->vector3->refCount++;
+
     GC_ADDREF(&phpMin->std);
+
     return &phpMin->std;
 }
 /* }}} */
@@ -414,7 +482,10 @@ static zend_object * php_raylib_boundingbox_get_max(php_raylib_boundingbox_objec
 {
     php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(&obj->max);
 
+    phpMax->vector3->refCount++;
+
     GC_ADDREF(&phpMax->std);
+
     return &phpMax->std;
 }
 /* }}} */
@@ -427,6 +498,9 @@ static int php_raylib_boundingbox_set_min(php_raylib_boundingbox_object *obj, zv
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->min = *newval;
 
@@ -442,6 +516,9 @@ static int php_raylib_boundingbox_set_max(php_raylib_boundingbox_object *obj, zv
         // Cannot set this to null...
         return ret;
     }
+
+    php_raylib_vector3_object *rl_vector3 = Z_VECTOR3_OBJ_P(newval);
+    rl_vector3->vector3->refCount++;
 
     obj->max = *newval;
 

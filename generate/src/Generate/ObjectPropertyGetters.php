@@ -31,25 +31,28 @@ class ObjectPropertyGetters
                     } else {
                         $input[] = '    php_raylib_' . $field->typePlainLower . '_object *php' . ucfirst($field->name) . ' = Z_' . $field->typePlainUpper . '_OBJ_P(&obj->' . $field->nameLower . ');';
                         $input[] = '';
+                        $input[] = '    php' . ucfirst($field->name) . '->' . $field->typePlainLower . '->refCount++;';
+                        $input[] = '';
                         $input[] = '    GC_ADDREF(&php' . ucfirst($field->name) . '->std);';
+                        $input[] = '';
                         $input[] = '    return &php' . ucfirst($field->name) . '->std;';
                     }
                     break;
                 case 'double';
-                    $input[] = '    return (double) obj->' . $struct->nameLower . '.' . $field->name . ';';
+                    $input[] = '    return (double) obj->' . $struct->nameLower . '->data.' . $field->name . ';';
                     break;
                 case 'bool';
-                    $input[] = '    return obj->' . $struct->nameLower . '.' . $field->name . ';';
+                    $input[] = '    return obj->' . $struct->nameLower . '->data.' . $field->name . ';';
                     break;
                 case 'zend_long';
-                    $input[] = '    return (zend_long) obj->' . $struct->nameLower . '.' . $field->name . ';';
+                    $input[] = '    return (zend_long) obj->' . $struct->nameLower . '->data.' . $field->name . ';';
                     break;
                 case 'zend_string *';
                     $input[] = '    zend_string *result_str;';
                     if ($field->arrayCountNumber) {
-                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '.' . $field->name . ', ' . $field->arrayCountNumber . ', 1);';
+                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '->data.' . $field->name . ', ' . $field->arrayCountNumber . ', 1);';
                     } else {
-                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '.' . $field->name . ', strlen(obj->' . $struct->nameLower . '.' . $field->name . '), 1);';
+                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '->data.' . $field->name . ', strlen(obj->' . $struct->nameLower . '->data.' . $field->name . '), 1);';
                     }
                     $input[] = '    return result_str;';
                     break;

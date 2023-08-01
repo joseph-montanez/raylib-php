@@ -47,4 +47,6 @@ SetTargetFPS(60);                           // Set our game to run at 60 frames-
 
 UpdateCamera($camera);
 
+unset($camera);
+
 echo "Done!\n";

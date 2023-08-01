@@ -57,13 +57,13 @@ class ObjectConstructor
                     ->name($field->name);
                 if ($field->isPrimitive) {
                     if (Helper::isFloat($field->type)) {
-                        $argInfo->typeMask('IS_DOUBLE')->defaultValue(0.00);
+                        $argInfo->typeMask('MAY_BE_DOUBLE')->defaultValue(0.00);
                     } elseif (Helper::isInt($field->type)) {
-                        $argInfo->typeMask('IS_LONG')->defaultValue(0);
+                        $argInfo->typeMask('MAY_BE_LONG')->defaultValue(0);
                     } elseif (Helper::isString($field->type)) {
-                        $argInfo->typeMask('IS_STRING')->defaultValue('');
+                        $argInfo->typeMask('MAY_BE_STRING')->defaultValue('');
                     } elseif (Helper::isBool($field->type)) {
-                        $argInfo->typeMask('_IS_BOOL')->defaultValue(1);
+                        $argInfo->typeMask('MAY_BE_BOOL')->defaultValue(1);
                     }
                 } else {
                     $argInfo->className('raylib\\\\' . $field->typePlain);
@@ -100,11 +100,12 @@ class ObjectConstructor
             $input[] = '';
             $input[] = '';
             $input[] = '    php_raylib_' . $struct->nameLower . '_object *intern = Z_' . $struct->nameUpper . '_OBJ_P(ZEND_THIS);';
-            $input[] = '    intern->' . $struct->nameLower . ' = ' . $constructorFn->name . '(' . implode(',', (new CFunction())->buildParams($constructorFn)) . ');';
+            $input[] = '    intern->' . $struct->nameLower . '->data = ' . $constructorFn->name . '(' . implode(',', (new CFunction())->buildParams($constructorFn)) . ');';
         } else {
             foreach ($struct->fields as $field) {
                 if ($field->isPrimitive) {
-                    $zParam = new ZParam($field->name, $field->type, $field->isArray, $field->getTr(), $field->isRef ?? false);
+                    $tr = $field->getTr();
+                    $zParam = new ZParam($field->name, $field->type, $field->isArray, $tr, $field->isRef ?? false);
                     $input = array_merge($input, $zParam->buildVariables('    '));
 
                     if ($field->name === 'colors') {
@@ -189,7 +190,7 @@ class ObjectConstructor
             }
             $input[] = '';
 
-            $input[] = '    intern->' . $struct->nameLower . ' = (' . $struct->name . ') {';
+            $input[] = '    intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
 
             foreach ($struct->fields as $i => $field) {
                 $delimiter = $i + 1 >= $struct->totalFields ? '' : ',';
@@ -204,12 +205,12 @@ class ObjectConstructor
 
                         foreach ($subStruct->fields as $n => $subField) {
                             $delimiter2 = $n + 1 >= $subStruct->totalFields ? '' : ',';
-                            $input[] = '            .' . $subField->name . ' = php' . ucfirst($field->name) . '->' . $field->typePlainLower . '.' . $subField->name . $delimiter2;
+                            $input[] = '            .' . $subField->name . ' = php' . ucfirst($field->name) . '->' . $field->typePlainLower . '->data.' . $subField->name . $delimiter2;
                         }
                         $input[] = '        }' . $delimiter;
                     }
                 } else {
-                    $input[] = '        .' . $field->name . ' = ' . $field->name . $delimiter;
+                    $input[] = '        .' . $field->name . ' = ('. $field->type .') ' . $field->name . $delimiter;
                 }
             }
             $input[] = '    };';

@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "vector2.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_VECTOR2_OBJECT_ID = 0;
+static unsigned char RL_VECTOR2_INIT = 0;
+static const unsigned int RL_VECTOR2_MAX_OBJECTS = 999999;
+
+char* RL_Vector2_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Vector2* RL_Vector2_Create() {
+    //-- Create the initial data structures
+    if (RL_VECTOR2_INIT == 0) {
+        RL_Vector2_Object_List = (struct RL_Vector2**) malloc(0);
+        RL_Vector2_Object_Map = hashmap_create();
+        RL_VECTOR2_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Vector2* object = (struct RL_Vector2*) malloc(sizeof(struct RL_Vector2));
+    object->id = RL_VECTOR2_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Vector2_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Vector2_Object_List = (struct RL_Vector2**) realloc(RL_Vector2_Object_List, RL_VECTOR2_OBJECT_ID * sizeof(struct RL_Vector2*));
+    RL_Vector2_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Vector2_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Vector2_Delete(struct RL_Vector2* object, int index) {
+    if (index < 0 || index >= RL_VECTOR2_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Vector2_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Vector2_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Vector2_Object_List[index], &RL_Vector2_Object_List[index + 1], (RL_VECTOR2_OBJECT_ID - index - 1) * sizeof(struct RL_Vector2 *));
+
+    // Decrement the count and resize the array
+    RL_VECTOR2_OBJECT_ID--;
+    RL_Vector2_Object_List = (struct RL_Vector2 **)realloc(RL_Vector2_Object_List, (RL_VECTOR2_OBJECT_ID) * sizeof(struct RL_Vector2 *));
+}
+
+void RL_Vector2_Free(struct RL_Vector2* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Vector2 PHP Custom Object
@@ -64,15 +144,6 @@ static HashTable php_raylib_vector2_prop_handlers;
 typedef double (*raylib_vector2_read_float_t)(php_raylib_vector2_object *obj);
 typedef int (*raylib_vector2_write_float_t)(php_raylib_vector2_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_vector2_update_intern(php_raylib_vector2_object *intern) {
-}
-
-void php_raylib_vector2_update_intern_reverse(php_raylib_vector2_object *intern) {
-}
 typedef struct _raylib_vector2_prop_handler {
     raylib_vector2_read_float_t read_float_func;
     raylib_vector2_write_float_t write_float_func;
@@ -245,6 +316,11 @@ void php_raylib_vector2_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_vector2_object *intern = php_raylib_vector2_fetch_object(object);
 
+    intern->vector2->refCount--;
+    if (intern->vector2->refCount < 1) {
+        RL_Vector2_Free(intern->vector2);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -265,12 +341,13 @@ zend_object * php_raylib_vector2_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_vector2_object *other = php_raylib_vector2_fetch_object(orig);
 
-        intern->vector2 = (Vector2) {
-            .x = other->vector2.x,
-            .y = other->vector2.y
+        intern->vector2->data = (Vector2) {
+            .x = other->vector2->data.x,
+            .y = other->vector2->data.y
         };
     } else {
-        intern->vector2 = (Vector2) {
+        intern->vector2 = RL_Vector2_Create();
+        intern->vector2->data = (Vector2) {
             .x = 0,
             .y = 0
         };
@@ -305,8 +382,8 @@ static zend_object *php_raylib_vector2_clone(zend_object *old_object) /* {{{  */
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_vector2__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, x, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, y, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Vector2, __construct)
 {
@@ -334,21 +411,21 @@ PHP_METHOD(Vector2, __construct)
 
 
 
-    intern->vector2 = (Vector2) {
-        .x = x,
-        .y = y
+    intern->vector2->data = (Vector2) {
+        .x = (float) x,
+        .y = (float) y
     };
 }
 
 static double php_raylib_vector2_get_x(php_raylib_vector2_object *obj) /* {{{ */
 {
-    return (double) obj->vector2.x;
+    return (double) obj->vector2->data.x;
 }
 /* }}} */
 
 static double php_raylib_vector2_get_y(php_raylib_vector2_object *obj) /* {{{ */
 {
-    return (double) obj->vector2.y;
+    return (double) obj->vector2->data.y;
 }
 /* }}} */
 
@@ -357,11 +434,11 @@ static int php_raylib_vector2_set_x(php_raylib_vector2_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector2.x = 0;
+        obj->vector2->data.x = 0;
         return ret;
     }
 
-    obj->vector2.x = (float) zval_get_double(newval);
+    obj->vector2->data.x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -372,11 +449,11 @@ static int php_raylib_vector2_set_y(php_raylib_vector2_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector2.y = 0;
+        obj->vector2->data.y = 0;
         return ret;
     }
 
-    obj->vector2.y = (float) zval_get_double(newval);
+    obj->vector2->data.y = (float) zval_get_double(newval);
 
     return ret;
 }

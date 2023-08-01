@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "image.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_IMAGE_OBJECT_ID = 0;
+static unsigned char RL_IMAGE_INIT = 0;
+static const unsigned int RL_IMAGE_MAX_OBJECTS = 999999;
+
+char* RL_Image_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Image* RL_Image_Create() {
+    //-- Create the initial data structures
+    if (RL_IMAGE_INIT == 0) {
+        RL_Image_Object_List = (struct RL_Image**) malloc(0);
+        RL_Image_Object_Map = hashmap_create();
+        RL_IMAGE_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Image* object = (struct RL_Image*) malloc(sizeof(struct RL_Image));
+    object->id = RL_IMAGE_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Image_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Image_Object_List = (struct RL_Image**) realloc(RL_Image_Object_List, RL_IMAGE_OBJECT_ID * sizeof(struct RL_Image*));
+    RL_Image_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Image_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Image_Delete(struct RL_Image* object, int index) {
+    if (index < 0 || index >= RL_IMAGE_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Image_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Image_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Image_Object_List[index], &RL_Image_Object_List[index + 1], (RL_IMAGE_OBJECT_ID - index - 1) * sizeof(struct RL_Image *));
+
+    // Decrement the count and resize the array
+    RL_IMAGE_OBJECT_ID--;
+    RL_Image_Object_List = (struct RL_Image **)realloc(RL_Image_Object_List, (RL_IMAGE_OBJECT_ID) * sizeof(struct RL_Image *));
+}
+
+void RL_Image_Free(struct RL_Image* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Image PHP Custom Object
@@ -67,15 +147,6 @@ typedef int (*raylib_image_write_void_array_t)(php_raylib_image_object *obj,  zv
 typedef zend_long (*raylib_image_read_int_t)(php_raylib_image_object *obj);
 typedef int (*raylib_image_write_int_t)(php_raylib_image_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_image_update_intern(php_raylib_image_object *intern) {
-}
-
-void php_raylib_image_update_intern_reverse(php_raylib_image_object *intern) {
-}
 typedef struct _raylib_image_prop_handler {
     raylib_image_read_void_array_t read_void_array_func;
     raylib_image_write_void_array_t write_void_array_func;
@@ -258,6 +329,11 @@ void php_raylib_image_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_image_object *intern = php_raylib_image_fetch_object(object);
 
+    intern->image->refCount--;
+    if (intern->image->refCount < 1) {
+        RL_Image_Free(intern->image);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -278,14 +354,15 @@ zend_object * php_raylib_image_new_ex(zend_class_entry *ce, zend_object *orig)/*
     if (orig) {
         php_raylib_image_object *other = php_raylib_image_fetch_object(orig);
 
-        intern->image = (Image) {
-            .width = other->image.width,
-            .height = other->image.height,
-            .mipmaps = other->image.mipmaps,
-            .format = other->image.format
+        intern->image->data = (Image) {
+            .width = other->image->data.width,
+            .height = other->image->data.height,
+            .mipmaps = other->image->data.mipmaps,
+            .format = other->image->data.format
         };
     } else {
-        intern->image = (Image) {
+        intern->image = RL_Image_Create();
+        intern->image->data = (Image) {
             .data = 0,
             .width = 0,
             .height = 0,
@@ -335,7 +412,7 @@ PHP_METHOD(Image, __construct)
 
 
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
-    intern->image = LoadImage(fileName->val);
+    intern->image->data = LoadImage(fileName->val);
 }
 
 static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{{ */
@@ -346,25 +423,25 @@ static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{
 
 static zend_long php_raylib_image_get_width(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image.width;
+    return (zend_long) obj->image->data.width;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_height(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image.height;
+    return (zend_long) obj->image->data.height;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_mipmaps(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image.mipmaps;
+    return (zend_long) obj->image->data.mipmaps;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_format(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image.format;
+    return (zend_long) obj->image->data.format;
 }
 /* }}} */
 
@@ -383,11 +460,11 @@ static int php_raylib_image_set_width(php_raylib_image_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image.width = 0;
+        obj->image->data.width = 0;
         return ret;
     }
 
-    obj->image.width = (int) zval_get_long(newval);
+    obj->image->data.width = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -398,11 +475,11 @@ static int php_raylib_image_set_height(php_raylib_image_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image.height = 0;
+        obj->image->data.height = 0;
         return ret;
     }
 
-    obj->image.height = (int) zval_get_long(newval);
+    obj->image->data.height = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -413,11 +490,11 @@ static int php_raylib_image_set_mipmaps(php_raylib_image_object *obj, zval *newv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image.mipmaps = 0;
+        obj->image->data.mipmaps = 0;
         return ret;
     }
 
-    obj->image.mipmaps = (int) zval_get_long(newval);
+    obj->image->data.mipmaps = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -428,11 +505,11 @@ static int php_raylib_image_set_format(php_raylib_image_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image.format = 0;
+        obj->image->data.format = 0;
         return ret;
     }
 
-    obj->image.format = (int) zval_get_long(newval);
+    obj->image->data.format = (int) zval_get_long(newval);
 
     return ret;
 }

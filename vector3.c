@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "vector3.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_VECTOR3_OBJECT_ID = 0;
+static unsigned char RL_VECTOR3_INIT = 0;
+static const unsigned int RL_VECTOR3_MAX_OBJECTS = 999999;
+
+char* RL_Vector3_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Vector3* RL_Vector3_Create() {
+    //-- Create the initial data structures
+    if (RL_VECTOR3_INIT == 0) {
+        RL_Vector3_Object_List = (struct RL_Vector3**) malloc(0);
+        RL_Vector3_Object_Map = hashmap_create();
+        RL_VECTOR3_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Vector3* object = (struct RL_Vector3*) malloc(sizeof(struct RL_Vector3));
+    object->id = RL_VECTOR3_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Vector3_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Vector3_Object_List = (struct RL_Vector3**) realloc(RL_Vector3_Object_List, RL_VECTOR3_OBJECT_ID * sizeof(struct RL_Vector3*));
+    RL_Vector3_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Vector3_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Vector3_Delete(struct RL_Vector3* object, int index) {
+    if (index < 0 || index >= RL_VECTOR3_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Vector3_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Vector3_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Vector3_Object_List[index], &RL_Vector3_Object_List[index + 1], (RL_VECTOR3_OBJECT_ID - index - 1) * sizeof(struct RL_Vector3 *));
+
+    // Decrement the count and resize the array
+    RL_VECTOR3_OBJECT_ID--;
+    RL_Vector3_Object_List = (struct RL_Vector3 **)realloc(RL_Vector3_Object_List, (RL_VECTOR3_OBJECT_ID) * sizeof(struct RL_Vector3 *));
+}
+
+void RL_Vector3_Free(struct RL_Vector3* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Vector3 PHP Custom Object
@@ -64,15 +144,6 @@ static HashTable php_raylib_vector3_prop_handlers;
 typedef double (*raylib_vector3_read_float_t)(php_raylib_vector3_object *obj);
 typedef int (*raylib_vector3_write_float_t)(php_raylib_vector3_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_vector3_update_intern(php_raylib_vector3_object *intern) {
-}
-
-void php_raylib_vector3_update_intern_reverse(php_raylib_vector3_object *intern) {
-}
 typedef struct _raylib_vector3_prop_handler {
     raylib_vector3_read_float_t read_float_func;
     raylib_vector3_write_float_t write_float_func;
@@ -245,6 +316,11 @@ void php_raylib_vector3_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_vector3_object *intern = php_raylib_vector3_fetch_object(object);
 
+    intern->vector3->refCount--;
+    if (intern->vector3->refCount < 1) {
+        RL_Vector3_Free(intern->vector3);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -265,13 +341,14 @@ zend_object * php_raylib_vector3_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_vector3_object *other = php_raylib_vector3_fetch_object(orig);
 
-        intern->vector3 = (Vector3) {
-            .x = other->vector3.x,
-            .y = other->vector3.y,
-            .z = other->vector3.z
+        intern->vector3->data = (Vector3) {
+            .x = other->vector3->data.x,
+            .y = other->vector3->data.y,
+            .z = other->vector3->data.z
         };
     } else {
-        intern->vector3 = (Vector3) {
+        intern->vector3 = RL_Vector3_Create();
+        intern->vector3->data = (Vector3) {
             .x = 0,
             .y = 0,
             .z = 0
@@ -307,9 +384,9 @@ static zend_object *php_raylib_vector3_clone(zend_object *old_object) /* {{{  */
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_vector3__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, x, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, y, IS_DOUBLE, "0")
-    ZEND_ARG_TYPE_MASK(0, z, IS_DOUBLE, "0")
+    ZEND_ARG_TYPE_MASK(0, x, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, y, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, z, MAY_BE_DOUBLE|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Vector3, __construct)
 {
@@ -345,28 +422,28 @@ PHP_METHOD(Vector3, __construct)
 
 
 
-    intern->vector3 = (Vector3) {
-        .x = x,
-        .y = y,
-        .z = z
+    intern->vector3->data = (Vector3) {
+        .x = (float) x,
+        .y = (float) y,
+        .z = (float) z
     };
 }
 
 static double php_raylib_vector3_get_x(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3.x;
+    return (double) obj->vector3->data.x;
 }
 /* }}} */
 
 static double php_raylib_vector3_get_y(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3.y;
+    return (double) obj->vector3->data.y;
 }
 /* }}} */
 
 static double php_raylib_vector3_get_z(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3.z;
+    return (double) obj->vector3->data.z;
 }
 /* }}} */
 
@@ -375,11 +452,11 @@ static int php_raylib_vector3_set_x(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3.x = 0;
+        obj->vector3->data.x = 0;
         return ret;
     }
 
-    obj->vector3.x = (float) zval_get_double(newval);
+    obj->vector3->data.x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -390,11 +467,11 @@ static int php_raylib_vector3_set_y(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3.y = 0;
+        obj->vector3->data.y = 0;
         return ret;
     }
 
-    obj->vector3.y = (float) zval_get_double(newval);
+    obj->vector3->data.y = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -405,11 +482,11 @@ static int php_raylib_vector3_set_z(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3.z = 0;
+        obj->vector3->data.z = 0;
         return ret;
     }
 
-    obj->vector3.z = (float) zval_get_double(newval);
+    obj->vector3->data.z = (float) zval_get_double(newval);
 
     return ret;
 }

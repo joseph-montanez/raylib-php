@@ -15,14 +15,17 @@
     }
   },
   "require": {
+    "php": "^8.1"
   },
   "scripts": {
     "generate-c-code": "php main.php",
     "files_test": "php -dextension=../modules/raylib.so examples/core/test.php",
     "core_2d_camera": "php -dextension=../modules/raylib.so examples/core/core_2d_camera.php",
-    "core_3d_camera_first_person": "php -dextension=../modules/raylib.so examples/core/core_3d_camera_first_person.php",
+    "core_3d_camera_first_person": "/usr/local/bin/php -dextension=../modules/raylib.so examples/core/core_3d_camera_first_person.php",
     "textures_background_scrolling": "php -dextension=../modules/raylib.so examples/textures/textures_background_scrolling.php",
     "audio_module_playing": "php -dextension=../modules/raylib.so examples/audio/audio_module_playing.php",
-    "models_billboard": "php -dextension=../modules/raylib.so examples/models/models_billboard.php"
+    "audio_sound_loading": "php -dextension=../modules/raylib.so examples/audio/audio_sound_loading.php",
+    "models_billboard": "php -dextension=../modules/raylib.so examples/models/models_billboard.php",
+    "models_box_collisions": "php -dextension=../modules/raylib.so examples/models/models_box_collisions.php"
   }
 }

@@ -1,7 +1,7 @@
 #ifndef PHP_RAYLIB_RAY_H
 #define PHP_RAYLIB_RAY_H
 
-#include "vector3.h"
+#include "include/hashmap.h"
 #include "vector3.h"
 
 extern zend_class_entry * php_raylib_ray_ce;
@@ -17,8 +17,24 @@ extern zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *or
 
 extern zend_object_handlers php_raylib_ray_object_handlers;
 
+struct RL_Ray {
+    unsigned int id;
+    char *guid;
+    Ray data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_Ray **RL_Ray_Object_List;
+static hashmap *RL_Ray_Object_Map;
+
+char* RL_Ray_Hash_Id(char *str, size_t size);
+struct RL_Ray* RL_Ray_Create();
+void RL_Ray_Delete(struct RL_Ray* object, int index);
+void RL_Ray_Free(struct RL_Ray* object);
+
 typedef struct _php_raylib_ray_object {
-    Ray ray;
+    struct RL_Ray *ray;
     HashTable *prop_handler;
     zval position;
     zval direction;
@@ -32,8 +48,5 @@ static inline php_raylib_ray_object *php_raylib_ray_fetch_object(zend_object *ob
 #define Z_RAY_OBJ_P(zv) php_raylib_ray_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_ray_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_ray_update_intern(php_raylib_ray_object *intern);
-extern void php_raylib_ray_update_intern_reverse(php_raylib_ray_object *intern);
 
 #endif //PHP_RAYLIB_RAY_H

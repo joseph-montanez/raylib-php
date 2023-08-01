@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "shader.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_SHADER_OBJECT_ID = 0;
+static unsigned char RL_SHADER_INIT = 0;
+static const unsigned int RL_SHADER_MAX_OBJECTS = 999999;
+
+char* RL_Shader_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_Shader* RL_Shader_Create() {
+    //-- Create the initial data structures
+    if (RL_SHADER_INIT == 0) {
+        RL_Shader_Object_List = (struct RL_Shader**) malloc(0);
+        RL_Shader_Object_Map = hashmap_create();
+        RL_SHADER_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_Shader* object = (struct RL_Shader*) malloc(sizeof(struct RL_Shader));
+    object->id = RL_SHADER_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_Shader_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_Shader_Object_List = (struct RL_Shader**) realloc(RL_Shader_Object_List, RL_SHADER_OBJECT_ID * sizeof(struct RL_Shader*));
+    RL_Shader_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_Shader_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_Shader_Delete(struct RL_Shader* object, int index) {
+    if (index < 0 || index >= RL_SHADER_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_Shader_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_Shader_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_Shader_Object_List[index], &RL_Shader_Object_List[index + 1], (RL_SHADER_OBJECT_ID - index - 1) * sizeof(struct RL_Shader *));
+
+    // Decrement the count and resize the array
+    RL_SHADER_OBJECT_ID--;
+    RL_Shader_Object_List = (struct RL_Shader **)realloc(RL_Shader_Object_List, (RL_SHADER_OBJECT_ID) * sizeof(struct RL_Shader *));
+}
+
+void RL_Shader_Free(struct RL_Shader* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib Shader PHP Custom Object
@@ -67,15 +147,6 @@ typedef int (*raylib_shader_write_unsigned_int_t)(php_raylib_shader_object *obj,
 typedef HashTable * (*raylib_shader_read_int_array_t)(php_raylib_shader_object *obj);
 typedef int (*raylib_shader_write_int_array_t)(php_raylib_shader_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_shader_update_intern(php_raylib_shader_object *intern) {
-}
-
-void php_raylib_shader_update_intern_reverse(php_raylib_shader_object *intern) {
-}
 typedef struct _raylib_shader_prop_handler {
     raylib_shader_read_unsigned_int_t read_unsigned_int_func;
     raylib_shader_write_unsigned_int_t write_unsigned_int_func;
@@ -259,6 +330,11 @@ void php_raylib_shader_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_shader_object *intern = php_raylib_shader_fetch_object(object);
 
+    intern->shader->refCount--;
+    if (intern->shader->refCount < 1) {
+        RL_Shader_Free(intern->shader);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -279,11 +355,12 @@ zend_object * php_raylib_shader_new_ex(zend_class_entry *ce, zend_object *orig)/
     if (orig) {
         php_raylib_shader_object *other = php_raylib_shader_fetch_object(orig);
 
-        intern->shader = (Shader) {
-            .id = other->shader.id,
+        intern->shader->data = (Shader) {
+            .id = other->shader->data.id,
         };
     } else {
-        intern->shader = (Shader) {
+        intern->shader = RL_Shader_Create();
+        intern->shader->data = (Shader) {
             .id = 0,
             .locs = 0
         };
@@ -318,8 +395,8 @@ static zend_object *php_raylib_shader_clone(zend_object *old_object) /* {{{  */
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_shader__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, id, IS_LONG, "0")
-    ZEND_ARG_TYPE_MASK(0, locs, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, id, MAY_BE_LONG|MAY_BE_NULL, "0")
+    ZEND_ARG_TYPE_MASK(0, locs, MAY_BE_LONG|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(Shader, __construct)
 {
@@ -327,7 +404,7 @@ PHP_METHOD(Shader, __construct)
 
 static zend_long php_raylib_shader_get_id(php_raylib_shader_object *obj) /* {{{ */
 {
-    return (zend_long) obj->shader.id;
+    return (zend_long) obj->shader->data.id;
 }
 /* }}} */
 
@@ -342,11 +419,11 @@ static int php_raylib_shader_set_id(php_raylib_shader_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->shader.id = 0;
+        obj->shader->data.id = 0;
         return ret;
     }
 
-    obj->shader.id = (unsigned int) zval_get_long(newval);
+    obj->shader->data.id = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

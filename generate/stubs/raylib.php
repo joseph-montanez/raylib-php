@@ -30,20 +30,20 @@ namespace raylib {
 namespace raylib {
     class Matrix {
         public float $m0;
-        public float $m1;
-        public float $m2;
-        public float $m3;
         public float $m4;
-        public float $m5;
-        public float $m6;
-        public float $m7;
         public float $m8;
-        public float $m9;
-        public float $m10;
-        public float $m11;
         public float $m12;
+        public float $m1;
+        public float $m5;
+        public float $m9;
         public float $m13;
+        public float $m2;
+        public float $m6;
+        public float $m10;
         public float $m14;
+        public float $m3;
+        public float $m7;
+        public float $m11;
         public float $m15;
         public function __construct() { }
     }
@@ -697,6 +697,7 @@ namespace raylib\BlendMode {
     const BLEND_SUBTRACT_COLORS = 4;
     const BLEND_ALPHA_PREMULTIPLY = 5;
     const BLEND_CUSTOM = 6;
+    const BLEND_CUSTOM_SEPARATE = 7;
 }
 
 namespace raylib\Gesture {
@@ -859,12 +860,21 @@ function MinimizeWindow(): void {  }
 function RestoreWindow(): void {  }
 
 /*
- * Set icon for window (only PLATFORM_DESKTOP)
+ * Set icon for window (single image, RGBA 32bit, only PLATFORM_DESKTOP)
  *
  * @param \raylib\Image $image
  *
  */
 function SetWindowIcon(\raylib\Image $image): void {  }
+
+/*
+ * Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
+ *
+ * @param \raylib\Image $images
+ * @param int $count
+ *
+ */
+function SetWindowIcons(\raylib\Image $images, int $count): void {  }
 
 /*
  * Set title for window (only PLATFORM_DESKTOP)
@@ -1250,6 +1260,14 @@ function LoadShader(string $vsFileName, string $fsFileName): \raylib\Shader { re
 function LoadShaderFromMemory(string $vsCode, string $fsCode): \raylib\Shader { return new \raylib\Shader; }
 
 /*
+ * Check if a shader is ready
+ *
+ * @param \raylib\Shader $shader
+ *
+ */
+function IsShaderReady(\raylib\Shader $shader): bool { return false; }
+
+/*
  * Get shader uniform location
  *
  * @param \raylib\Shader $shader
@@ -1439,12 +1457,12 @@ function OpenURL(string $url): void {  }
 /*
  * Export data to code (.h), returns true on success
  *
- * @param string $data
+ * @param array $data
  * @param int $size
  * @param string $fileName
  *
  */
-function ExportDataAsCode(string $data, int $size, string $fileName): bool { return false; }
+function ExportDataAsCode(array $data, int $size, string $fileName): bool { return false; }
 
 /*
  * Unload file text data allocated by LoadFileText()
@@ -1903,58 +1921,24 @@ function GetGesturePinchVector(): \raylib\Vector2 { return new \raylib\Vector2; 
 function GetGesturePinchAngle(): float { return 0.00; }
 
 /*
- * Set camera mode (multiple camera modes available)
- *
- * @param \raylib\Camera3D $camera
- * @param int $mode
- *
- */
-function SetCameraMode(\raylib\Camera3D $camera, int $mode): void {  }
-
-/*
  * Update camera position for selected mode
  *
  * @param & $camera
+ * @param int $mode
  *
  */
-function UpdateCamera(& $camera): void {  }
+function UpdateCamera(& $camera, int $mode): void {  }
 
 /*
- * Set camera pan key to combine with mouse movement (free camera)
+ * Update camera movement/rotation
  *
- * @param int $keyPan
- *
- */
-function SetCameraPanControl(int $keyPan): void {  }
-
-/*
- * Set camera alt key to combine with mouse movement (free camera)
- *
- * @param int $keyAlt
+ * @param & $camera
+ * @param \raylib\Vector3 $movement
+ * @param \raylib\Vector3 $rotation
+ * @param float $zoom
  *
  */
-function SetCameraAltControl(int $keyAlt): void {  }
-
-/*
- * Set camera smooth zoom key to combine with mouse (free camera)
- *
- * @param int $keySmoothZoom
- *
- */
-function SetCameraSmoothZoomControl(int $keySmoothZoom): void {  }
-
-/*
- * Set camera move controls (1st person and 3rd person cameras)
- *
- * @param int $keyFront
- * @param int $keyBack
- * @param int $keyRight
- * @param int $keyLeft
- * @param int $keyUp
- * @param int $keyDown
- *
- */
-function SetCameraMoveControls(int $keyFront, int $keyBack, int $keyRight, int $keyLeft, int $keyUp, int $keyDown): void {  }
+function UpdateCameraPro(& $camera, \raylib\Vector3 $movement, \raylib\Vector3 $rotation, float $zoom): void {  }
 
 /*
  * Set texture and rectangle to be used on shapes drawing
@@ -2450,6 +2434,16 @@ function CheckCollisionPointCircle(\raylib\Vector2 $point, \raylib\Vector2 $cent
 function CheckCollisionPointTriangle(\raylib\Vector2 $point, \raylib\Vector2 $p1, \raylib\Vector2 $p2, \raylib\Vector2 $p3): bool { return false; }
 
 /*
+ * Check if point is within a polygon described by array of vertices
+ *
+ * @param \raylib\Vector2 $point
+ * @param \raylib\Vector2 $points
+ * @param int $pointCount
+ *
+ */
+function CheckCollisionPointPoly(\raylib\Vector2 $point, \raylib\Vector2 $points, int $pointCount): bool { return false; }
+
+/*
  * Check the collision between two lines defined by two points each, returns collision point by reference
  *
  * @param \raylib\Vector2 $startPos1
@@ -2534,6 +2528,14 @@ function LoadImageFromTexture(\raylib\Texture $texture): \raylib\Image { return 
  *
  */
 function LoadImageFromScreen(): \raylib\Image { return new \raylib\Image; }
+
+/*
+ * Check if an image is ready
+ *
+ * @param \raylib\Image $image
+ *
+ */
+function IsImageReady(\raylib\Image $image): bool { return false; }
 
 /*
  * Unload image from CPU memory (RAM)
@@ -2629,6 +2631,18 @@ function GenImageChecked(int $width, int $height, int $checksX, int $checksY, \r
 function GenImageWhiteNoise(int $width, int $height, float $factor): \raylib\Image { return new \raylib\Image; }
 
 /*
+ * Generate image: perlin noise
+ *
+ * @param int $width
+ * @param int $height
+ * @param int $offsetX
+ * @param int $offsetY
+ * @param float $scale
+ *
+ */
+function GenImagePerlinNoise(int $width, int $height, int $offsetX, int $offsetY, float $scale): \raylib\Image { return new \raylib\Image; }
+
+/*
  * Generate image: cellular algorithm, bigger tileSize means bigger cells
  *
  * @param int $width
@@ -2637,6 +2651,16 @@ function GenImageWhiteNoise(int $width, int $height, float $factor): \raylib\Ima
  *
  */
 function GenImageCellular(int $width, int $height, int $tileSize): \raylib\Image { return new \raylib\Image; }
+
+/*
+ * Generate image: grayscale image from text data
+ *
+ * @param int $width
+ * @param int $height
+ * @param string $text
+ *
+ */
+function GenImageText(int $width, int $height, string $text): \raylib\Image { return new \raylib\Image; }
 
 /*
  * Create an image duplicate (useful for transformations)
@@ -2739,6 +2763,15 @@ function ImageAlphaMask(& $image, \raylib\Image $alphaMask): void {  }
  *
  */
 function ImageAlphaPremultiply(& $image): void {  }
+
+/*
+ * Apply Gaussian blur using a box blur approximation
+ *
+ * @param & $image
+ * @param int $blurSize
+ *
+ */
+function ImageBlurGaussian(& $image, int $blurSize): void {  }
 
 /*
  * Resize image (Bicubic scaling algorithm)
@@ -2968,7 +3001,7 @@ function ImageDrawLine(& $dst, int $startPosX, int $startPosY, int $endPosX, int
 function ImageDrawLineV(& $dst, \raylib\Vector2 $start, \raylib\Vector2 $end, \raylib\Color $color): void {  }
 
 /*
- * Draw circle within an image
+ * Draw a filled circle within an image
  *
  * @param & $dst
  * @param int $centerX
@@ -2989,6 +3022,29 @@ function ImageDrawCircle(& $dst, int $centerX, int $centerY, int $radius, \rayli
  *
  */
 function ImageDrawCircleV(& $dst, \raylib\Vector2 $center, int $radius, \raylib\Color $color): void {  }
+
+/*
+ * Draw circle outline within an image
+ *
+ * @param & $dst
+ * @param int $centerX
+ * @param int $centerY
+ * @param int $radius
+ * @param \raylib\Color $color
+ *
+ */
+function ImageDrawCircleLines(& $dst, int $centerX, int $centerY, int $radius, \raylib\Color $color): void {  }
+
+/*
+ * Draw circle outline within an image (Vector version)
+ *
+ * @param & $dst
+ * @param \raylib\Vector2 $center
+ * @param int $radius
+ * @param \raylib\Color $color
+ *
+ */
+function ImageDrawCircleLinesV(& $dst, \raylib\Vector2 $center, int $radius, \raylib\Color $color): void {  }
 
 /*
  * Draw rectangle within an image
@@ -3109,12 +3165,28 @@ function LoadTextureCubemap(\raylib\Image $image, int $layout): \raylib\Texture 
 function LoadRenderTexture(int $width, int $height): \raylib\RenderTexture { return new \raylib\RenderTexture; }
 
 /*
+ * Check if a texture is ready
+ *
+ * @param \raylib\Texture $texture
+ *
+ */
+function IsTextureReady(\raylib\Texture $texture): bool { return false; }
+
+/*
  * Unload texture from GPU memory (VRAM)
  *
  * @param \raylib\Texture $texture
  *
  */
 function UnloadTexture(\raylib\Texture $texture): void {  }
+
+/*
+ * Check if a render texture is ready
+ *
+ * @param \raylib\RenderTexture $target
+ *
+ */
+function IsRenderTextureReady(\raylib\RenderTexture $target): bool { return false; }
 
 /*
  * Unload render texture from GPU memory (VRAM)
@@ -3195,32 +3267,6 @@ function DrawTextureEx(\raylib\Texture $texture, \raylib\Vector2 $position, floa
 function DrawTextureRec(\raylib\Texture $texture, \raylib\Rectangle $source, \raylib\Vector2 $position, \raylib\Color $tint): void {  }
 
 /*
- * Draw texture quad with tiling and offset parameters
- *
- * @param \raylib\Texture $texture
- * @param \raylib\Vector2 $tiling
- * @param \raylib\Vector2 $offset
- * @param \raylib\Rectangle $quad
- * @param \raylib\Color $tint
- *
- */
-function DrawTextureQuad(\raylib\Texture $texture, \raylib\Vector2 $tiling, \raylib\Vector2 $offset, \raylib\Rectangle $quad, \raylib\Color $tint): void {  }
-
-/*
- * Draw part of a texture (defined by a rectangle) with rotation and scale tiled into dest.
- *
- * @param \raylib\Texture $texture
- * @param \raylib\Rectangle $source
- * @param \raylib\Rectangle $dest
- * @param \raylib\Vector2 $origin
- * @param float $rotation
- * @param float $scale
- * @param \raylib\Color $tint
- *
- */
-function DrawTextureTiled(\raylib\Texture $texture, \raylib\Rectangle $source, \raylib\Rectangle $dest, \raylib\Vector2 $origin, float $rotation, float $scale, \raylib\Color $tint): void {  }
-
-/*
  * Draw a part of a texture defined by a rectangle with 'pro' parameters
  *
  * @param \raylib\Texture $texture
@@ -3245,19 +3291,6 @@ function DrawTexturePro(\raylib\Texture $texture, \raylib\Rectangle $source, \ra
  *
  */
 function DrawTextureNPatch(\raylib\Texture $texture, \raylib\NPatchInfo $nPatchInfo, \raylib\Rectangle $dest, \raylib\Vector2 $origin, float $rotation, \raylib\Color $tint): void {  }
-
-/*
- * Draw a textured polygon
- *
- * @param \raylib\Texture $texture
- * @param \raylib\Vector2 $center
- * @param \raylib\Vector2 $points
- * @param \raylib\Vector2 $texcoords
- * @param int $pointCount
- * @param \raylib\Color $tint
- *
- */
-function DrawTexturePoly(\raylib\Texture $texture, \raylib\Vector2 $center, \raylib\Vector2 $points, \raylib\Vector2 $texcoords, int $pointCount, \raylib\Color $tint): void {  }
 
 /*
  * Get color with alpha applied, alpha goes from 0.0f to 1.0f
@@ -3309,6 +3342,33 @@ function ColorToHSV(\raylib\Color $color): \raylib\Vector3 { return new \raylib\
  *
  */
 function ColorFromHSV(float $hue, float $saturation, float $value): \raylib\Color { return new \raylib\Color; }
+
+/*
+ * Get color multiplied with another color
+ *
+ * @param \raylib\Color $color
+ * @param \raylib\Color $tint
+ *
+ */
+function ColorTint(\raylib\Color $color, \raylib\Color $tint): \raylib\Color { return new \raylib\Color; }
+
+/*
+ * Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
+ *
+ * @param \raylib\Color $color
+ * @param float $factor
+ *
+ */
+function ColorBrightness(\raylib\Color $color, float $factor): \raylib\Color { return new \raylib\Color; }
+
+/*
+ * Get color with contrast correction, contrast values between -1.0f and 1.0f
+ *
+ * @param \raylib\Color $color
+ * @param float $contrast
+ *
+ */
+function ColorContrast(\raylib\Color $color, float $contrast): \raylib\Color { return new \raylib\Color; }
 
 /*
  * Get color with alpha applied, alpha goes from 0.0f to 1.0f
@@ -3395,6 +3455,14 @@ function LoadFontFromImage(\raylib\Image $image, \raylib\Color $key, int $firstC
  *
  */
 function LoadFontFromMemory(string $fileType, array $fileData, int $dataSize, int $fontSize, array $fontChars, int $glyphCount): \raylib\Font { return new \raylib\Font; }
+
+/*
+ * Check if a font is ready
+ *
+ * @param \raylib\Font $font
+ *
+ */
+function IsFontReady(\raylib\Font $font): bool { return false; }
 
 /*
  * Unload font chars info data (RAM)
@@ -3545,6 +3613,14 @@ function GetGlyphInfo(\raylib\Font $font, int $codepoint): \raylib\GlyphInfo { r
 function GetGlyphAtlasRec(\raylib\Font $font, int $codepoint): \raylib\Rectangle { return new \raylib\Rectangle; }
 
 /*
+ * Unload UTF-8 text encoded from codepoints array
+ *
+ * @param string $text
+ *
+ */
+function UnloadUTF8(string $text): void {  }
+
+/*
  * Unload codepoints data from memory
  *
  * @param array $codepoints
@@ -3564,10 +3640,28 @@ function GetCodepointCount(string $text): int { return 0; }
  * Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
  *
  * @param string $text
- * @param array $bytesProcessed
+ * @param array $codepointSize
  *
  */
-function GetCodepoint(string $text, array $bytesProcessed): int { return 0; }
+function GetCodepoint(string $text, array $codepointSize): int { return 0; }
+
+/*
+ * Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+ *
+ * @param string $text
+ * @param array $codepointSize
+ *
+ */
+function GetCodepointNext(string $text, array $codepointSize): int { return 0; }
+
+/*
+ * Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+ *
+ * @param string $text
+ * @param array $codepointSize
+ *
+ */
+function GetCodepointPrevious(string $text, array $codepointSize): int { return 0; }
 
 /*
  * Copy one string to another, returns bytes copied
@@ -3719,33 +3813,6 @@ function DrawCubeWires(\raylib\Vector3 $position, float $width, float $height, f
 function DrawCubeWiresV(\raylib\Vector3 $position, \raylib\Vector3 $size, \raylib\Color $color): void {  }
 
 /*
- * Draw cube textured
- *
- * @param \raylib\Texture $texture
- * @param \raylib\Vector3 $position
- * @param float $width
- * @param float $height
- * @param float $length
- * @param \raylib\Color $color
- *
- */
-function DrawCubeTexture(\raylib\Texture $texture, \raylib\Vector3 $position, float $width, float $height, float $length, \raylib\Color $color): void {  }
-
-/*
- * Draw cube with a region of a texture
- *
- * @param \raylib\Texture $texture
- * @param \raylib\Rectangle $source
- * @param \raylib\Vector3 $position
- * @param float $width
- * @param float $height
- * @param float $length
- * @param \raylib\Color $color
- *
- */
-function DrawCubeTextureRec(\raylib\Texture $texture, \raylib\Rectangle $source, \raylib\Vector3 $position, float $width, float $height, float $length, \raylib\Color $color): void {  }
-
-/*
  * Draw sphere
  *
  * @param \raylib\Vector3 $centerPos
@@ -3832,6 +3899,32 @@ function DrawCylinderWires(\raylib\Vector3 $position, float $radiusTop, float $r
 function DrawCylinderWiresEx(\raylib\Vector3 $startPos, \raylib\Vector3 $endPos, float $startRadius, float $endRadius, int $sides, \raylib\Color $color): void {  }
 
 /*
+ * Draw a capsule with the center of its sphere caps at startPos and endPos
+ *
+ * @param \raylib\Vector3 $startPos
+ * @param \raylib\Vector3 $endPos
+ * @param float $radius
+ * @param int $slices
+ * @param int $rings
+ * @param \raylib\Color $color
+ *
+ */
+function DrawCapsule(\raylib\Vector3 $startPos, \raylib\Vector3 $endPos, float $radius, int $slices, int $rings, \raylib\Color $color): void {  }
+
+/*
+ * Draw capsule wireframe with the center of its sphere caps at startPos and endPos
+ *
+ * @param \raylib\Vector3 $startPos
+ * @param \raylib\Vector3 $endPos
+ * @param float $radius
+ * @param int $slices
+ * @param int $rings
+ * @param \raylib\Color $color
+ *
+ */
+function DrawCapsuleWires(\raylib\Vector3 $startPos, \raylib\Vector3 $endPos, float $radius, int $slices, int $rings, \raylib\Color $color): void {  }
+
+/*
  * Draw a plane XZ
  *
  * @param \raylib\Vector3 $centerPos
@@ -3876,20 +3969,20 @@ function LoadModel(string $fileName): \raylib\Model { return new \raylib\Model; 
 function LoadModelFromMesh(\raylib\Mesh $mesh): \raylib\Model { return new \raylib\Model; }
 
 /*
+ * Check if a model is ready
+ *
+ * @param \raylib\Model $model
+ *
+ */
+function IsModelReady(\raylib\Model $model): bool { return false; }
+
+/*
  * Unload model (including meshes) from memory (RAM and/or VRAM)
  *
  * @param \raylib\Model $model
  *
  */
 function UnloadModel(\raylib\Model $model): void {  }
-
-/*
- * Unload model (but not meshes) from memory (RAM and/or VRAM)
- *
- * @param \raylib\Model $model
- *
- */
-function UnloadModelKeepMeshes(\raylib\Model $model): void {  }
 
 /*
  * Compute model bounding box limits (considers all meshes)
@@ -4178,6 +4271,14 @@ function GenMeshCubicmap(\raylib\Image $cubicmap, \raylib\Vector3 $cubeSize): \r
 function LoadMaterialDefault(): \raylib\Material { return new \raylib\Material; }
 
 /*
+ * Check if a material is ready
+ *
+ * @param \raylib\Material $material
+ *
+ */
+function IsMaterialReady(\raylib\Material $material): bool { return false; }
+
+/*
  * Unload material from GPU memory (VRAM)
  *
  * @param \raylib\Material $material
@@ -4371,6 +4472,14 @@ function LoadWave(string $fileName): \raylib\Wave { return new \raylib\Wave; }
 function LoadWaveFromMemory(string $fileType, array $fileData, int $dataSize): \raylib\Wave { return new \raylib\Wave; }
 
 /*
+ * Checks if wave data is ready
+ *
+ * @param \raylib\Wave $wave
+ *
+ */
+function IsWaveReady(\raylib\Wave $wave): bool { return false; }
+
+/*
  * Load sound from file
  *
  * @param string $fileName
@@ -4385,6 +4494,14 @@ function LoadSound(string $fileName): \raylib\Sound { return new \raylib\Sound; 
  *
  */
 function LoadSoundFromWave(\raylib\Wave $wave): \raylib\Sound { return new \raylib\Sound; }
+
+/*
+ * Checks if a sound is ready
+ *
+ * @param \raylib\Sound $sound
+ *
+ */
+function IsSoundReady(\raylib\Sound $sound): bool { return false; }
 
 /*
  * Unload wave data
@@ -4451,28 +4568,6 @@ function PauseSound(\raylib\Sound $sound): void {  }
  *
  */
 function ResumeSound(\raylib\Sound $sound): void {  }
-
-/*
- * Play a sound (using multichannel buffer pool)
- *
- * @param \raylib\Sound $sound
- *
- */
-function PlaySoundMulti(\raylib\Sound $sound): void {  }
-
-/*
- * Stop any sound playing (using multichannel buffer pool)
- *
- *
- */
-function StopSoundMulti(): void {  }
-
-/*
- * Get number of sounds playing in the multichannel
- *
- *
- */
-function GetSoundsPlaying(): int { return 0; }
 
 /*
  * Check if a sound is currently playing
@@ -4563,6 +4658,14 @@ function LoadMusicStream(string $fileName): \raylib\Music { return new \raylib\M
  *
  */
 function LoadMusicStreamFromMemory(string $fileType, array $data, int $dataSize): \raylib\Music { return new \raylib\Music; }
+
+/*
+ * Checks if a music stream is ready
+ *
+ * @param \raylib\Music $music
+ *
+ */
+function IsMusicReady(\raylib\Music $music): bool { return false; }
 
 /*
  * Unload music stream
@@ -4681,6 +4784,14 @@ function GetMusicTimePlayed(\raylib\Music $music): float { return 0.00; }
  *
  */
 function LoadAudioStream(int $sampleRate, int $sampleSize, int $channels): \raylib\AudioStream { return new \raylib\AudioStream; }
+
+/*
+ * Checks if an audio stream is ready
+ *
+ * @param \raylib\AudioStream $stream
+ *
+ */
+function IsAudioStreamReady(\raylib\AudioStream $stream): bool { return false; }
 
 /*
  * Unload audio stream and free memory

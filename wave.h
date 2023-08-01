@@ -1,6 +1,7 @@
 #ifndef PHP_RAYLIB_WAVE_H
 #define PHP_RAYLIB_WAVE_H
 
+#include "include/hashmap.h"
 
 extern zend_class_entry * php_raylib_wave_ce;
 
@@ -14,8 +15,24 @@ extern zend_object * php_raylib_wave_new_ex(zend_class_entry *ce, zend_object *o
 
 extern zend_object_handlers php_raylib_wave_object_handlers;
 
+struct RL_Wave {
+    unsigned int id;
+    char *guid;
+    Wave data;
+    unsigned refCount;
+    unsigned char deleted;
+};
+
+static struct RL_Wave **RL_Wave_Object_List;
+static hashmap *RL_Wave_Object_Map;
+
+char* RL_Wave_Hash_Id(char *str, size_t size);
+struct RL_Wave* RL_Wave_Create();
+void RL_Wave_Delete(struct RL_Wave* object, int index);
+void RL_Wave_Free(struct RL_Wave* object);
+
 typedef struct _php_raylib_wave_object {
-    Wave wave;
+    struct RL_Wave *wave;
     HashTable *prop_handler;
     zend_object std;
 } php_raylib_wave_object;
@@ -27,8 +44,5 @@ static inline php_raylib_wave_object *php_raylib_wave_fetch_object(zend_object *
 #define Z_WAVE_OBJ_P(zv) php_raylib_wave_fetch_object(Z_OBJ_P(zv));
 
 void php_raylib_wave_startup(INIT_FUNC_ARGS);
-
-extern void php_raylib_wave_update_intern(php_raylib_wave_object *intern);
-extern void php_raylib_wave_update_intern_reverse(php_raylib_wave_object *intern);
 
 #endif //PHP_RAYLIB_WAVE_H

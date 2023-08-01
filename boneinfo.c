@@ -50,9 +50,89 @@ typedef struct tagMSG* LPMSG;
 #undef LOG_DEBUG
 
 #include "raylib.h"
+#include "include/hashmap.h"
 
 
 #include "boneinfo.h"
+
+//-- Custom RayLib Struct Containers
+static unsigned int RL_BONEINFO_OBJECT_ID = 0;
+static unsigned char RL_BONEINFO_INIT = 0;
+static const unsigned int RL_BONEINFO_MAX_OBJECTS = 999999;
+
+char* RL_BoneInfo_Hash_Id(char *str, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int charset_size = sizeof(charset) - 1;
+    for (size_t i = 0; i < size - 1; i++) {
+#ifdef PHP_WIN32
+        // On Windows, use CryptGenRandom to generate random bytes
+        HCRYPTPROV hCryptProv;
+        if (!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+            fprintf(stderr, "CryptAcquireContext failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        if (!CryptGenRandom(hCryptProv, 1, (BYTE *)&str[i])) {
+            fprintf(stderr, "CryptGenRandom failed (%lu)\n", GetLastError());
+            return NULL;
+        }
+        CryptReleaseContext(hCryptProv, 0);
+#else
+        // On other platforms, use arc4random to generate random bytes
+        str[i] = charset[arc4random_uniform(charset_size)];
+#endif
+    }
+    str[size-1] = '\0';
+    return str;
+}
+
+struct RL_BoneInfo* RL_BoneInfo_Create() {
+    //-- Create the initial data structures
+    if (RL_BONEINFO_INIT == 0) {
+        RL_BoneInfo_Object_List = (struct RL_BoneInfo**) malloc(0);
+        RL_BoneInfo_Object_Map = hashmap_create();
+        RL_BONEINFO_INIT = 1;
+    }
+
+    //-- Create the container object
+    struct RL_BoneInfo* object = (struct RL_BoneInfo*) malloc(sizeof(struct RL_BoneInfo));
+    object->id = RL_BONEINFO_OBJECT_ID++;
+    object->guid = calloc(33, sizeof(char));
+    object->guid = RL_BoneInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->refCount = 1;
+    object->deleted = 0;
+
+    //-- Push to the dynamic array list
+    RL_BoneInfo_Object_List = (struct RL_BoneInfo**) realloc(RL_BoneInfo_Object_List, RL_BONEINFO_OBJECT_ID * sizeof(struct RL_BoneInfo*));
+    RL_BoneInfo_Object_List[object->id] = object;
+
+    //-- Add to hashmap
+    hashmap_set(RL_BoneInfo_Object_Map, object->guid, sizeof(object->guid) - 1, object);
+
+    return object;
+}
+
+void RL_BoneInfo_Delete(struct RL_BoneInfo* object, int index) {
+    if (index < 0 || index >= RL_BONEINFO_OBJECT_ID) {
+        // Error: invalid index
+        return;
+    }
+
+    hashmap_remove(RL_BoneInfo_Object_Map, object->guid, sizeof(object->guid) -1);
+
+    // Free the memory for the element being deleted
+    free(RL_BoneInfo_Object_List[index]);
+
+    // Shift the remaining elements over by one
+    memmove(&RL_BoneInfo_Object_List[index], &RL_BoneInfo_Object_List[index + 1], (RL_BONEINFO_OBJECT_ID - index - 1) * sizeof(struct RL_BoneInfo *));
+
+    // Decrement the count and resize the array
+    RL_BONEINFO_OBJECT_ID--;
+    RL_BoneInfo_Object_List = (struct RL_BoneInfo **)realloc(RL_BoneInfo_Object_List, (RL_BONEINFO_OBJECT_ID) * sizeof(struct RL_BoneInfo *));
+}
+
+void RL_BoneInfo_Free(struct RL_BoneInfo* object) {
+    free(object);
+}
 
 //------------------------------------------------------------------------------------------------------
 //-- raylib BoneInfo PHP Custom Object
@@ -67,15 +147,6 @@ typedef int (*raylib_boneinfo_write_char_array_t)(php_raylib_boneinfo_object *ob
 typedef zend_long (*raylib_boneinfo_read_int_t)(php_raylib_boneinfo_object *obj);
 typedef int (*raylib_boneinfo_write_int_t)(php_raylib_boneinfo_object *obj,  zval *value);
 
-/**
- * This is used to update internal object references
- * @param intern
- */
-void php_raylib_boneinfo_update_intern(php_raylib_boneinfo_object *intern) {
-}
-
-void php_raylib_boneinfo_update_intern_reverse(php_raylib_boneinfo_object *intern) {
-}
 typedef struct _raylib_boneinfo_prop_handler {
     raylib_boneinfo_read_char_array_t read_char_array_func;
     raylib_boneinfo_write_char_array_t write_char_array_func;
@@ -258,6 +329,11 @@ void php_raylib_boneinfo_free_storage(zend_object *object)/* {{{ */
 {
     php_raylib_boneinfo_object *intern = php_raylib_boneinfo_fetch_object(object);
 
+    intern->boneinfo->refCount--;
+    if (intern->boneinfo->refCount < 1) {
+        RL_BoneInfo_Free(intern->boneinfo);
+    }
+
     zend_object_std_dtor(&intern->std);
 }
 /* }}} */
@@ -278,12 +354,13 @@ zend_object * php_raylib_boneinfo_new_ex(zend_class_entry *ce, zend_object *orig
     if (orig) {
         php_raylib_boneinfo_object *other = php_raylib_boneinfo_fetch_object(orig);
 
-        intern->boneinfo = (BoneInfo) {
-            .parent = other->boneinfo.parent
+        intern->boneinfo->data = (BoneInfo) {
+            .parent = other->boneinfo->data.parent
         };
-        strncpy(intern->boneinfo.name, other->boneinfo.name, 32);
+        strncpy(intern->boneinfo->data.name, other->boneinfo->data.name, 32);
     } else {
-        intern->boneinfo = (BoneInfo) {
+        intern->boneinfo = RL_BoneInfo_Create();
+        intern->boneinfo->data = (BoneInfo) {
             .name = 0,
             .parent = 0
         };
@@ -318,8 +395,8 @@ static zend_object *php_raylib_boneinfo_clone(zend_object *old_object) /* {{{  *
 
 // PHP object handling
 ZEND_BEGIN_ARG_INFO_EX(arginfo_boneinfo__construct, 0, 0, 0)
-    ZEND_ARG_TYPE_MASK(0, name, IS_STRING, "")
-    ZEND_ARG_TYPE_MASK(0, parent, IS_LONG, "0")
+    ZEND_ARG_TYPE_MASK(0, name, MAY_BE_STRING|MAY_BE_NULL, "")
+    ZEND_ARG_TYPE_MASK(0, parent, MAY_BE_LONG|MAY_BE_NULL, "0")
 ZEND_END_ARG_INFO()
 PHP_METHOD(BoneInfo, __construct)
 {
@@ -328,14 +405,14 @@ PHP_METHOD(BoneInfo, __construct)
 static zend_string * php_raylib_boneinfo_get_name(php_raylib_boneinfo_object *obj) /* {{{ */
 {
     zend_string *result_str;
-    result_str = zend_string_init(obj->boneinfo.name, 32, 1);
+    result_str = zend_string_init(obj->boneinfo->data.name, 32, 1);
     return result_str;
 }
 /* }}} */
 
 static zend_long php_raylib_boneinfo_get_parent(php_raylib_boneinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->boneinfo.parent;
+    return (zend_long) obj->boneinfo->data.parent;
 }
 /* }}} */
 
@@ -344,7 +421,7 @@ static int php_raylib_boneinfo_set_name(php_raylib_boneinfo_object *obj, zval *n
     int ret = SUCCESS;
 
     zend_string *str = zval_get_string(newval);
-    strncpy(obj->boneinfo.name, ZSTR_VAL(str), 32);
+    strncpy(obj->boneinfo->data.name, ZSTR_VAL(str), 32);
     zend_string_release_ex(str, 0);
 
     return ret;
@@ -356,11 +433,11 @@ static int php_raylib_boneinfo_set_parent(php_raylib_boneinfo_object *obj, zval 
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->boneinfo.parent = 0;
+        obj->boneinfo->data.parent = 0;
         return ret;
     }
 
-    obj->boneinfo.parent = (int) zval_get_long(newval);
+    obj->boneinfo->data.parent = (int) zval_get_long(newval);
 
     return ret;
 }

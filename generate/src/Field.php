@@ -35,8 +35,8 @@ class Field
         $parts      = explode('[', $this->name);
         $this->name = array_shift($parts);
 
-        $this->nameLower        = strtolower($this->name);
-        $this->nameUpper        = strtoupper($this->name);
+        $this->nameLower        = str_replace('const', '', strtolower($this->name));
+        $this->nameUpper        = str_replace('CONST', '', strtoupper($this->name));
         $this->description      = $description;
         $this->isArray          = $isArray;
         $this->arrayCountField  = $arrayCountField;
@@ -45,7 +45,7 @@ class Field
         $this->isPointer        = Helper::isPointer($this->type);
         $this->isPrimitive      = Helper::isPrimitive($this->type);
 
-        $this->typePlain = str_replace(['*', ' '], '', $this->type);
+        $this->typePlain = str_replace(['*', 'const', ' '], '', $this->type);
         $parts           = explode('[', $this->typePlain);
         $this->typePlain = array_shift($parts);
 
@@ -60,7 +60,7 @@ class Field
         return [
             '[type]'         => $this->type,
             '[typeNonConst]' => trim(str_replace('const', '', $this->type)),
-            '[typeNoStar]'   => trim(str_replace('*', '', $this->type)),
+            '[typeNoStar]'   => trim(str_replace(['const', '*'], '', $this->type)),
             '[typeLower]'    => $this->typePlainLower,
             '[typeUpper]'    => $this->typePlainUpper,
             '[name]'         => $this->name,
