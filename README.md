@@ -1,10 +1,10 @@
 # raylib-php
 
-PHP 8.x bindings for RayLib, a simple and easy-to-use library to learn video games programming (www.raylib.com)
+PHP 8.x bindings for RayLib, a simple and easy-to-use library to learn video g
 
 This is currently a work-in-progress and bindings are not complete and are likely to change.
 
-- raylib.h - See [Not yet implemented](#Not_Yet_Implemented)
+- raylib.h - See [Not yet implemented](#not-yet-implemented)
 - raymath.h - TODO Extra mathy stuff
 - raygui.h - TODO API for drawing GUI
 - physac.h - TODO More complex collision detection, more than built-in collision detection
@@ -85,7 +85,7 @@ Classes and method calls are available via a stub repository. Its contains all t
 
 Install via composer:
 
-    composer require --dev joseph-montanez/raylib-php-stub
+    composer require joseph-montanez/raylib-php-stub
 
 More information on the stubs can be found here at the repository [RayLib-PHP-Stubs](https://github.com/joseph-montanez/RayLib-PHP-Stubs)
 
