@@ -1,0 +1,31 @@
+{
+  "name": "joseph_montanez/raylib_api_parser",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "joseph",
+      "email": "sutabi@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Raylib\\Parser\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.1"
+  },
+  "scripts": {
+    "generate-c-code": "php main.php",
+    "files_test": "php -dextension=../modules/raylib.so examples/core/test.php",
+    "core_2d_camera": "php -dextension=../modules/raylib.so examples/core/core_2d_camera.php",
+    "core_3d_camera_first_person": "/usr/local/bin/php -dextension=../modules/raylib.so examples/core/core_3d_camera_first_person.php",
+    "textures_background_scrolling": "php -dextension=../modules/raylib.so examples/textures/textures_background_scrolling.php",
+    "audio_module_playing": "php -dextension=../modules/raylib.so examples/audio/audio_module_playing.php",
+    "audio_sound_loading": "php -dextension=../modules/raylib.so examples/audio/audio_sound_loading.php",
+    "models_billboard": "php -dextension=../modules/raylib.so examples/models/models_billboard.php",
+    "models_box_collisions": "php -dextension=../modules/raylib.so examples/models/models_box_collisions.php"
+  }
+}

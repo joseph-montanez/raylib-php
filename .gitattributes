@@ -1,0 +1,20 @@
+# Set the default behavior for all files.
+* text=auto
+* -crlf
+
+# Normalized and converts to
+# native line endings on checkout.
+*.c text eol=lf
+*.h text eol=lf
+*.php text eol=lf
+*.json text eol=lf
+
+# Convert to CRLF line endings on checkout.
+*.sln text eol=crlf
+
+# Convert to LF line endings on checkout.
+*.sh text eol=lf
+
+# Binary files.
+*.png binary
+*.jpg binary

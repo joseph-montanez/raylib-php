@@ -30,47 +30,53 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "raylib-texture.h"
+#include "texture.h"
 
 extern zend_module_entry raylib_module_entry;
 #define phpext_raylib_ptr &raylib_module_entry
 
 #define PHP_RAYLIB_VERSION "2.0.0"
 
-zend_class_entry *php_raylib_vector4_ce;
-zend_class_entry *php_raylib_vector3_ce;
 zend_class_entry *php_raylib_vector2_ce;
-zend_class_entry *php_raylib_ray_ce;
+zend_class_entry *php_raylib_vector3_ce;
+zend_class_entry *php_raylib_vector4_ce;
 zend_class_entry *php_raylib_matrix_ce;
+zend_class_entry *php_raylib_color_ce;
 zend_class_entry *php_raylib_rectangle_ce;
 zend_class_entry *php_raylib_image_ce;
 zend_class_entry *php_raylib_texture_ce;
-zend_class_entry *php_raylib_window_ce;
-zend_class_entry *php_raylib_cursor_ce;
-zend_class_entry *php_raylib_text_ce;
-zend_class_entry *php_raylib_draw_ce;
 zend_class_entry *php_raylib_rendertexture_ce;
+zend_class_entry *php_raylib_npatchinfo_ce;
+zend_class_entry *php_raylib_glyphinfo_ce;
+zend_class_entry *php_raylib_font_ce;
 zend_class_entry *php_raylib_camera3d_ce;
 zend_class_entry *php_raylib_camera2d_ce;
-zend_class_entry *php_raylib_timming_ce;
-zend_class_entry *php_raylib_font_ce;
-zend_class_entry *php_raylib_key_ce;
-zend_class_entry *php_raylib_mouse_ce;
-zend_class_entry *php_raylib_gamepad_ce;
-zend_class_entry *php_raylib_color_ce;
-zend_class_entry *php_raylib_collision_ce;
+zend_class_entry *php_raylib_mesh_ce;
+zend_class_entry *php_raylib_shader_ce;
+zend_class_entry *php_raylib_materialmap_ce;
+zend_class_entry *php_raylib_material_ce;
+zend_class_entry *php_raylib_transform_ce;
+zend_class_entry *php_raylib_boneinfo_ce;
+zend_class_entry *php_raylib_model_ce;
+zend_class_entry *php_raylib_modelanimation_ce;
+zend_class_entry *php_raylib_ray_ce;
+zend_class_entry *php_raylib_raycollision_ce;
+zend_class_entry *php_raylib_boundingbox_ce;
 zend_class_entry *php_raylib_wave_ce;
-zend_class_entry *php_raylib_audio_ce;
-zend_class_entry *php_raylib_npatchinfo_ce;
-zend_class_entry *php_raylib_glyphInfo_ce;
+zend_class_entry *php_raylib_audiostream_ce;
+zend_class_entry *php_raylib_sound_ce;
+zend_class_entry *php_raylib_music_ce;
+zend_class_entry *php_raylib_vrdeviceinfo_ce;
+zend_class_entry *php_raylib_vrstereoconfig_ce;
+zend_class_entry *php_raylib_filepathlist_ce;
 
 
 #ifdef PHP_WIN32
-#	define PHP_RAYLIB_API __declspec(dllexport)
+#    define PHP_RAYLIB_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_RAYLIB_API __attribute__ ((visibility("default")))
+#    define PHP_RAYLIB_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_RAYLIB_API
+#    define PHP_RAYLIB_API
 #endif
 
 #ifdef ZTS
@@ -78,12 +84,12 @@ zend_class_entry *php_raylib_glyphInfo_ce;
 #endif
 
 /*
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:
+      Declare any global variables you may need between the BEGIN
+    and END macros here:
 
 ZEND_BEGIN_MODULE_GLOBALS(raylib)
-	zend_long  global_value;
-	char *global_string;
+    zend_long  global_value;
+    char *global_string;
 ZEND_END_MODULE_GLOBALS(raylib)
 */
 
@@ -97,7 +103,7 @@ ZEND_END_MODULE_GLOBALS(raylib)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
 
-#endif	/* PHP_RAYLIB_H */
+#endif    /* PHP_RAYLIB_H */
 
 
 /*

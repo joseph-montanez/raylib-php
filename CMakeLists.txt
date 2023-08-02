@@ -1,22 +1,80 @@
-cmake_minimum_required(VERSION 3.8)
-project(raylib)
+cmake_minimum_required(VERSION 3.21)
+project(raylib C)
 
-add_custom_target(makefile COMMAND phpize && ./configure -enable-debug  && make
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+set(CMAKE_C_STANDARD 11)
 
-add_custom_target(build COMMAND make WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+include_directories(
+        external/php-src
+        external/php-src/main
+        external/php-src/Zend
+        external/php-src/TSRM
+        external/php-src/ext
+        /Volumes/External/opt/homebrew/Cellar/raylib/4.2.0/include
+)
+include_directories(. ../../main/ ../../../deps/include)
 
-add_custom_target(clean-build COMMAND phpize --clean)
-
-set(SOURCE_FILES raylib.c raylib-vector4.c raylib-vector4.h raylib-vector3.c raylib-vector3.h raylib-vector2.c raylib-vector2.h raylib-texture.c raylib-image.c raylib-texture.h raylib-image.h raylib-utils.c raylib-utils.h raylib-window.c raylib-window.h raylib-cursor.c raylib-cursor.h raylib-draw.c raylib-draw.h raylib-timming.c raylib-timming.h raylib-rendertexture.c raylib-rendertexture.h raylib-camera3d.c raylib-camera3d.h raylib-camera2d.c raylib-camera2d.h raylib-font.c raylib-font.h raylib-text.c raylib-text.h raylib-key.c raylib-key.h raylib-mouse.c raylib-mouse.h raylib-collision.c raylib-collision.h raylib-color.c raylib-color.h raylib-rectangle.c raylib-rectangle.h raylib-ray.c raylib-ray.h)
-
-set(PHP_SOURCE /usr/local/include/php/)
-include_directories(${PHP_SOURCE}/main)
-include_directories(${PHP_SOURCE}/Zend)
-include_directories(${PHP_SOURCE}/sapi)
-include_directories(${PHP_SOURCE}/pear)
-include_directories(${PHP_SOURCE}/TSRM)
-include_directories(${PHP_SOURCE})
-include_directories(${PROJECT_SOURCE_DIR})
-
-add_executable(raylib ${SOURCE_FILES})
+add_executable(raylib
+        audiostream.c
+        audiostream.h
+        boneinfo.c
+        boneinfo.h
+        boundingbox.c
+        boundingbox.h
+        camera2d.c
+        camera2d.h
+        camera3d.c
+        camera3d.h
+        color.c
+        color.h
+        font.c
+        font.h
+        glyphinfo.c
+        glyphinfo.h
+        image.c
+        image.h
+        material.c
+        material.h
+        materialmap.c
+        materialmap.h
+        matrix.c
+        matrix.h
+        mesh.c
+        mesh.h
+        model.c
+        model.h
+        modelanimation.c
+        modelanimation.h
+        music.c
+        music.h
+        npatchinfo.c
+        npatchinfo.h
+        php_raylib.h
+        ray.c
+        ray.h
+        raycollision.c
+        raycollision.h
+        raylib.c
+        rectangle.c
+        rectangle.h
+        rendertexture.c
+        rendertexture.h
+        shader.c
+        shader.h
+        sound.c
+        sound.h
+        texture.c
+        texture.h
+        transform.c
+        transform.h
+        vector2.c
+        vector2.h
+        vector3.c
+        vector3.h
+        vector4.c
+        vector4.h
+        vrdeviceinfo.c
+        vrdeviceinfo.h
+        vrstereoconfig.c
+        vrstereoconfig.h
+        wave.c
+        wave.h include/hashmap.h include/hashmap.c)
