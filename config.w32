@@ -7,7 +7,7 @@ if (PHP_RAYLIB != "no") {
     raylib_lib_paths = PHP_PHP_BUILD + "\\lib;.\\lib";
     raylib_include_paths = PHP_PHP_BUILD + "\\include;" + PHP_PHP_BUILD + "\\include\\GLFW;.\\include\\GLFW;.\\include";
 
-    raylib_check_lib = CHECK_LIB("raylib_static.lib", "raylib", raylib_lib_paths);
+    raylib_check_lib = CHECK_LIB("raylib.lib", "raylib", raylib_lib_paths);
     raylib_check_header = CHECK_HEADER_ADD_INCLUDE("raylib.h", "CFLAGS_RAYLIB", raylib_include_paths);
     glfw_check_lib = CHECK_LIB("glfw3.lib", "raylib", raylib_lib_paths);
     glfw_check_header = CHECK_HEADER_ADD_INCLUDE("glfw3.h", "CFLAGS_RAYLIB", raylib_include_paths);
@@ -22,7 +22,7 @@ if (PHP_RAYLIB != "no") {
         glfw_check_header2
         ) {
 
-        ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");
+        ADD_FLAG("LIBS_CLI", "raylib.lib glfw3.lib");
 
         ADD_FLAG("LIBS_RAYLIB", "kernel32.lib user32.lib gdi32.lib winmm.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib")
 

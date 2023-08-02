@@ -104,6 +104,7 @@ class Parser
             ])) {
                 $function->unsupported = true;
             }
+
             $functionObjs[]                   = $function;
             $functionsByType[$function->name] = $function;
         }
@@ -955,6 +956,8 @@ class Parser
             $cFiles[$struct->nameLower . '.c'] = 1;
             $hFiles[$struct->nameLower . '.h'] = 1;
         }
+        $cFileName['includes\\\\hashmap.c'] = 1;
+        $cFileName['includes\\\\hashmap.h'] = 1;
         $cFiles = array_keys($cFiles);
         $hFiles = array_keys($hFiles);
 
@@ -968,7 +971,7 @@ class Parser
         $input[] = '    raylib_lib_paths = PHP_PHP_BUILD + "\\\\lib;.\\\\lib";';
         $input[] = '    raylib_include_paths = PHP_PHP_BUILD + "\\\\include;" + PHP_PHP_BUILD + "\\\\include\\\\GLFW;.\\\\include\\\\GLFW;.\\\\include";';
         $input[] = '';
-        $input[] = '    raylib_check_lib = CHECK_LIB("raylib_static.lib", "raylib", raylib_lib_paths);';
+        $input[] = '    raylib_check_lib = CHECK_LIB("raylib.lib", "raylib", raylib_lib_paths);';
         $input[] = '    raylib_check_header = CHECK_HEADER_ADD_INCLUDE("raylib.h", "CFLAGS_RAYLIB", raylib_include_paths);';
         $input[] = '    glfw_check_lib = CHECK_LIB("glfw3.lib", "raylib", raylib_lib_paths);';
         $input[] = '    glfw_check_header = CHECK_HEADER_ADD_INCLUDE("glfw3.h", "CFLAGS_RAYLIB", raylib_include_paths);';
@@ -983,7 +986,7 @@ class Parser
         $input[] = '        glfw_check_header2';
         $input[] = '        ) {';
         $input[] = '';
-        $input[] = '        ADD_FLAG("LIBS_CLI", "raylib_static.lib glfw3.lib");';
+        $input[] = '        ADD_FLAG("LIBS_CLI", "raylib.lib glfw3.lib");';
         $input[] = '';
         $input[] = '        ADD_FLAG("LIBS_RAYLIB", "kernel32.lib user32.lib gdi32.lib winmm.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib")';
         $input[] = '';

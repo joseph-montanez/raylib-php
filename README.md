@@ -153,7 +153,7 @@ parallels the multi-threaded extension for php, you will need to compile and ins
 
 ### Windows
 
-Windows requires compiling with PHP sources (Currently Visual Studio 2017 needed), you will still get a .dll in the end.
+Windows requires compiling with PHP sources (Currently Visual Studio 2019 needed), you will still get a .dll in the end.
 
 You will need to also compile RayLib as well. At the time writing I am using Visual Studio 2019 compiler, since PHP 8 requires this. Once compiled paste the following files:
 
@@ -161,39 +161,39 @@ You will need to also compile RayLib as well. At the time writing I am using Vis
 
 **Static Libs**
 
-    C:\src\raylib-2.6.0\cmake-build-debug\src\external\glfw\src\glfw3.lib -> C:\php-sdk\phpmaster\vc15\x64\deps\lib\glfw3.lib
-    C:\src\raylib-2.6.0\cmake-build-debug\src\raylib.lib -> C:\php-sdk\phpmaster\vc15\x64\deps\lib\raylib_static.lib
+    C:\src\raylib-4.5.0\projects\VS2022\build\raylib\bin\x64\raylib.lib -> C:\php-sdk\phpdev\vc16\x64\deps\lib\raylib.lib
 
 **GLFW Includes**
 
-    C:\src\raylib-2.6.0\cmake-build-debug\src\external\glfw\src\glfw_config.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\GLFW\glfw_config.h
-    C:\src\raylib-2.6.0\src\external\glfw\include\GLFW\glfw3.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\GLFW\glfw3.h
-    C:\src\raylib-2.6.0\src\external\glfw\include\GLFW\glfw3native.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\GLFW\glfw3native.h
+    C:\src\raylib-4.5.0\src\external\glfw\include\GLFW\glfw3.h -> C:\php-sdk\phpmaster\vc16\x64\deps\include\GLFW\glfw3.h
+    C:\src\raylib-4.5.0\src\external\glfw\include\GLFW\glfw3native.h -> C:\php-sdk\phpmaster\vc16\x64\deps\include\GLFW\glfw3native.h
 
 **RayLib Includes**
 
-    C:\src\raylib-2.6.0\cmake-build-debug\src\raudio.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raudio.h
-    C:\src\raylib-2.6.0\cmake-build-debug\src\raylib.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raylib.h
-    C:\src\raylib-2.6.0\cmake-build-debug\src\raymath.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raymath.h
-    C:\src\raylib-2.6.0\cmake-build-debug\src\rlgl.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\rlgl.h
+    C:\src\raylib-4.5.0\cmake-build-debug\src\raudio.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raudio.h
+    C:\src\raylib-4.5.0\cmake-build-debug\src\raylib.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raylib.h
+    C:\src\raylib-4.5.0\cmake-build-debug\src\raymath.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\raymath.h
+    C:\src\raylib-4.5.0\cmake-build-debug\src\rlgl.h -> C:\php-sdk\phpmaster\vc15\x64\deps\include\rlgl.h
 
 Once you have PHP & Raylib setup you can then compile the extension
 
-    %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     cd C:/php-sdk
     phpsdk-vs16-x64.bat
-    cd phpmaster\vc15\x64\php-src
-    cls && buildconf --force && configure --disable-all --enable-cli --with-raylib && nmake
+    cd phpdev\vs16\x64\raylib-php
+    ..\php-8.2.8-devel-vs16-x64-ts\phpize.bat
+    configure
+    nmake
 
 ## How To Run raylib PHP Extension
 
 ### MacOS & Linux
 
-    php -dextension=modules/raylib.so examples/textures/textures_image_loading.php
+    php -dextension=modules/raylib.so examples/textures/textures_image_loading.phpÏ
 
 ### Windows
 
-    php.exe -dextension=modules/php7raylib-2.0.0-dev.dll examples/textures/textures_image_loading.php
+    php-win.exe -dextension=x64/Release_TS/php_raylib.dll examples/textures/textures_image_loading.php
 
 
 ## Not Yet Implemented
