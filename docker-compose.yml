@@ -24,3 +24,11 @@ services:
     stdin_open: true
     tty: true
     command: bash build.sh
+  php_raylib_php83:
+    build: php-docker-versions/php-8.3
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www/
+    stdin_open: true
+    tty: true
+    command: bash build.sh
