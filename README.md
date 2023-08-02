@@ -141,7 +141,7 @@ parallels the multi-threaded extension for php, you will need to compile and ins
     git clone https://github.com/php/php-src.git
     git checkout php-8.2.8
     ./buildconf --force
-    ./configure --enable-zts --enable-debug --with-iconv=$(brew --prefix libiconv)
+    ./configure --enable-zts --with-iconv=$(brew --prefix libiconv) --enable-opcache
     make
     sudo make install
 

@@ -931,6 +931,7 @@ class Parser
         foreach ($structs as $struct) {
             $files['' . $struct->nameLower . '.c'] = 1;
         }
+        $files['include/hashmap.c'] = 1;
 
         $input[] = '  PHP_NEW_EXTENSION(raylib, ' . implode(' ', array_keys($files)) . ', $ext_shared,)';
         $input[] = 'fi';
