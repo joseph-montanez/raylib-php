@@ -362,6 +362,7 @@ zend_object * php_raylib_shader_new_ex(zend_class_entry *ce, zend_object *orig)/
         intern->shader->data = (Shader) {
             .id = other->shader->data.id,
         };
+        memcpy(intern->shader->data.locs, other->shader->data.locs, sizeof intern->shader->data.locs);
     } else {
         intern->shader = RL_Shader_Create();
         intern->shader->data = (Shader) {
@@ -414,7 +415,22 @@ static zend_long php_raylib_shader_get_id(php_raylib_shader_object *obj) /* {{{ 
 
 static HashTable * php_raylib_shader_get_locs(php_raylib_shader_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like int * is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zLocs;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zLocs, 32);
+
+    // populate the array with int
+    for (i = 0; i < 32; i++) {
+        add_next_index_double(&zLocs, obj->shader->data.locs[i]);
+    }
+
+    return Z_ARRVAL_P(&zLocs);
 }
 /* }}} */
 

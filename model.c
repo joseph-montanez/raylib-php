@@ -610,16 +610,8 @@ static zend_object *php_raylib_model_clone(zend_object *old_object) /* {{{  */
 /* }}} */
 
 // PHP object handling
-ZEND_BEGIN_ARG_INFO_EX(arginfo_model__construct, 0, 0, 0)
-    ZEND_ARG_OBJ_INFO(0, transform, raylib\\Matrix, 1)
-    ZEND_ARG_TYPE_MASK(0, meshCount, MAY_BE_LONG|MAY_BE_NULL, "0")
-    ZEND_ARG_TYPE_MASK(0, materialCount, MAY_BE_LONG|MAY_BE_NULL, "0")
-    ZEND_ARG_OBJ_INFO(0, meshes, raylib\\Mesh, 1)
-    ZEND_ARG_OBJ_INFO(0, materials, raylib\\Material, 1)
-    ZEND_ARG_TYPE_MASK(0, meshMaterial, MAY_BE_LONG|MAY_BE_NULL, "0")
-    ZEND_ARG_TYPE_MASK(0, boneCount, MAY_BE_LONG|MAY_BE_NULL, "0")
-    ZEND_ARG_OBJ_INFO(0, bones, raylib\\BoneInfo, 1)
-    ZEND_ARG_OBJ_INFO(0, bindPose, raylib\\Transform, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_model__construct, 0, 0, 1)
+    ZEND_ARG_INFO(0, fileName)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Model, __construct)
 {
@@ -651,19 +643,34 @@ static zend_long php_raylib_model_get_materialcount(php_raylib_model_object *obj
 
 static HashTable * php_raylib_model_get_meshes(php_raylib_model_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->meshes);
 }
 /* }}} */
 
 static HashTable * php_raylib_model_get_materials(php_raylib_model_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->materials);
 }
 /* }}} */
 
 static HashTable * php_raylib_model_get_meshmaterial(php_raylib_model_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like int * is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zMeshMaterial;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zMeshMaterial, obj->model->data.materialCount);
+
+    // populate the array with int
+    for (i = 0; i < obj->model->data.materialCount; i++) {
+        add_next_index_double(&zMeshMaterial, obj->model->data.meshMaterial[i]);
+    }
+
+    return Z_ARRVAL_P(&zMeshMaterial);
 }
 /* }}} */
 
@@ -675,13 +682,13 @@ static zend_long php_raylib_model_get_bonecount(php_raylib_model_object *obj) /*
 
 static HashTable * php_raylib_model_get_bones(php_raylib_model_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->bones);
 }
 /* }}} */
 
 static HashTable * php_raylib_model_get_bindpose(php_raylib_model_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->bindpose);
 }
 /* }}} */
 

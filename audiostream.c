@@ -462,7 +462,7 @@ PHP_METHOD(AudioStream, __construct)
 
 static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    //return Z_ARRVAL_P(&obj->buffer);
 }
 /* }}} */
 

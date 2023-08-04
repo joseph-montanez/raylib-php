@@ -890,9 +890,7 @@
         {
           "type": "unsigned int *",
           "name": "vboId",
-          "description": "OpenGL Vertex Buffer Objects id (default vertex data)",
-          "isArray": true,
-          "arrayCountField": "vertexCount"
+          "description": "OpenGL Vertex Buffer Objects id (default vertex data)"
         }
       ]
     },
@@ -910,7 +908,7 @@
           "name": "locs",
           "description": "Shader locations array (RL_MAX_SHADER_LOCATIONS)",
           "isArray": true,
-          "arrayCountCount": 32
+          "arrayCountNumber": 32
         }
       ]
     },
@@ -1002,6 +1000,7 @@
     {
       "name": "Model",
       "description": "Model, meshes, materials and animation data",
+      "constructorFunction": "LoadModel",
       "fields": [
         {
           "type": "Matrix",
@@ -1063,6 +1062,7 @@
     {
       "name": "ModelAnimation",
       "description": "ModelAnimation",
+      "constructorFunction": "LoadModelAnimation",
       "fields": [
         {
           "type": "int",
@@ -10056,6 +10056,7 @@
       "name": "LoadModelAnimations",
       "description": "Load model animations from file",
       "returnType": "ModelAnimation *",
+      "isArray": true,
       "params": [
         {
           "type": "const char *",

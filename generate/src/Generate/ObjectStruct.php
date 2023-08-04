@@ -33,6 +33,14 @@ class ObjectStruct
                 $input[] = '    zval ' . $field->nameLower . ';';
             }
         }
+
+        foreach ($struct->fields as $field) {
+            if ($field->isPrimitive && $field->isArray) {
+                $input[] = '    // Cannot support primitive data structure like ' . $field->type . ' (an array) as zval';
+                $input[] = '    // zval ' . $field->nameLower . ';';
+            }
+        }
+
         //-- zend_object MUST be at the end of the struct to work correctly
         $input[] = '    zend_object std;';
         $input[] = '} php_raylib_' . $struct->nameLower . '_object;';

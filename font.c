@@ -549,13 +549,13 @@ static zend_object * php_raylib_font_get_texture(php_raylib_font_object *obj) /*
 
 static HashTable * php_raylib_font_get_recs(php_raylib_font_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->recs);
 }
 /* }}} */
 
 static HashTable * php_raylib_font_get_glyphs(php_raylib_font_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->glyphs);
 }
 /* }}} */
 

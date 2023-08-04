@@ -34,6 +34,8 @@ void RL_Wave_Free(struct RL_Wave* object);
 typedef struct _php_raylib_wave_object {
     struct RL_Wave *wave;
     HashTable *prop_handler;
+    // Cannot support primitive data structure like void * (an array) as zval
+    // zval data;
     zend_object std;
 } php_raylib_wave_object;
 

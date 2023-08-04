@@ -23,6 +23,7 @@ class Func
     public bool $returnIsPrimitive;
     public bool $unsupported = false;
     public string $returnArrayCountField;
+    public string $manualCFile;
 
 
     /**
@@ -56,5 +57,6 @@ class Func
         $this->returnIsArray         = $functionInfo['isArray'] ?? Helper::isArray($this->returnType);
         $this->returnArrayCountField = $functionInfo['arrayCountField'] ?? '';
         $this->returnIsPrimitive     = Helper::isPrimitive($this->returnType);
+        $this->manualCFile           = '';
     }
 }

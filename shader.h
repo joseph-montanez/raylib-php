@@ -34,6 +34,8 @@ void RL_Shader_Free(struct RL_Shader* object);
 typedef struct _php_raylib_shader_object {
     struct RL_Shader *shader;
     HashTable *prop_handler;
+    // Cannot support primitive data structure like int * (an array) as zval
+    // zval locs;
     zend_object std;
 } php_raylib_shader_object;
 

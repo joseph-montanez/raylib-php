@@ -34,6 +34,8 @@ void RL_BoneInfo_Free(struct RL_BoneInfo* object);
 typedef struct _php_raylib_boneinfo_object {
     struct RL_BoneInfo *boneinfo;
     HashTable *prop_handler;
+    // Cannot support primitive data structure like char (an array) as zval
+    // zval name;
     zend_object std;
 } php_raylib_boneinfo_object;
 

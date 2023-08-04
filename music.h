@@ -37,6 +37,8 @@ typedef struct _php_raylib_music_object {
     struct RL_Music *music;
     HashTable *prop_handler;
     zval stream;
+    // Cannot support primitive data structure like void * (an array) as zval
+    // zval ctxdata;
     zend_object std;
 } php_raylib_music_object;
 

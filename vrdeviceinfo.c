@@ -495,13 +495,43 @@ static double php_raylib_vrdeviceinfo_get_interpupillarydistance(php_raylib_vrde
 
 static HashTable * php_raylib_vrdeviceinfo_get_lensdistortionvalues(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zLensDistortionValues;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zLensDistortionValues, 4);
+
+    // populate the array with float
+    for (i = 0; i < 4; i++) {
+        add_next_index_double(&zLensDistortionValues, obj->vrdeviceinfo->data.lensDistortionValues[i]);
+    }
+
+    return Z_ARRVAL_P(&zLensDistortionValues);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrdeviceinfo_get_chromaabcorrection(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zChromaAbCorrection;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zChromaAbCorrection, 4);
+
+    // populate the array with float
+    for (i = 0; i < 4; i++) {
+        add_next_index_double(&zChromaAbCorrection, obj->vrdeviceinfo->data.chromaAbCorrection[i]);
+    }
+
+    return Z_ARRVAL_P(&zChromaAbCorrection);
 }
 /* }}} */
 

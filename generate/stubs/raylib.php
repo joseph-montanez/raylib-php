@@ -4307,6 +4307,15 @@ function SetMaterialTexture(& $material, int $mapType, \raylib\Texture $texture)
 function SetModelMeshMaterial(& $model, int $meshId, int $materialId): void {  }
 
 /*
+ * Load model animations from file
+ *
+ * @param string $fileName
+ * @param array $animCount
+ *
+ */
+function LoadModelAnimations(string $fileName, array $animCount): \raylib\ModelAnimation { return new \raylib\ModelAnimation; }
+
+/*
  * Update model animation pose
  *
  * @param \raylib\Model $model

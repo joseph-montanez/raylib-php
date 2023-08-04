@@ -18,12 +18,20 @@ class CFunction
             || strstr($function->returnType, '*') !== false) {
             if ($function->returnType === 'char **') {
 
+            } elseif ($function->name === 'LoadModelAnimations') {
+                $function->manualCFile = __DIR__ . '/../../manual/LoadModelAnimations.c';
             } else {
                 $function->unsupported = true;
                 echo "Skipping " . $function->name . "\n";
                 return $input;
             }
         }
+
+        if (is_file($function->manualCFile)) {
+            $input []= file_get_contents($function->manualCFile) . "\n";
+            return $input;
+        }
+
         $params = [];
         /** @var \Raylib\Parser\Param $param */
         foreach ($function->params as $param) {

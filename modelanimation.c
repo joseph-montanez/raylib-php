@@ -486,13 +486,13 @@ static zend_long php_raylib_modelanimation_get_framecount(php_raylib_modelanimat
 
 static HashTable * php_raylib_modelanimation_get_bones(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->bones);
 }
 /* }}} */
 
 static HashTable * php_raylib_modelanimation_get_frameposes(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->frameposes);
 }
 /* }}} */
 

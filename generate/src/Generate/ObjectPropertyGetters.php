@@ -58,7 +58,42 @@ class ObjectPropertyGetters
                     break;
                 case 'HashTable *';
                     // Should be easier to implement a hash table for floats and ints :)
-                    $input[] = '    //TODO: Not yet supported';
+                    if ($field->type === 'void *') {
+                        $input[] = '    // TODO';
+                        break;
+                    }
+                    if ($field->isPrimitive) {
+                        $input[] = '    // Direct access to c primitives like ' . $field->type . ' is not possible with';
+                        $input[] = '    // PHP arrays, need to copy on the fly';
+                        $input[] = '';
+
+                        $input[] = '    // Create zval to hold array';
+                        $input[] = '    zval z' . ucfirst($field->name) . ';';
+                        $input[] = '    unsigned int i;';
+                        $input[] = '';
+
+                        $input[] = '    // Initialize Array';
+                        if ($field->arrayCountNumber) {
+                            $input[] = '    array_init_size(&z' . ucfirst($field->name) . ', ' . $field->arrayCountNumber . ');';
+                        } else {
+                            $input[] = '    array_init_size(&z' . ucfirst($field->name) . ', obj->' . $struct->nameLower . '->data.' . $field->arrayCountField . ');';
+                        }
+                        $input[] = '';
+
+                        $input[] = '    // populate the array with ' . $field->typePlain;
+                        if ($field->arrayCountNumber) {
+                            $input[] = '    for (i = 0; i < ' . $field->arrayCountNumber . '; i++) {';
+                        } else {
+                            $input[] = '    for (i = 0; i < obj->' . $struct->nameLower . '->data.' . $field->arrayCountField . '; i++) {';
+                        }
+                        $input[] = '        add_next_index_double(&z' . ucfirst($field->name) . ', obj->' . $struct->nameLower . '->data.' . $field->name . '[i]);';
+                        $input[] = '    }';
+                        $input[] = '';
+
+                        $input[] = '    return Z_ARRVAL_P(&z' . ucfirst($field->name) . ');';
+                    } else {
+                        $input[] = '    return Z_ARRVAL_P(&obj->' . $field->nameLower . ');';
+                    }
                     break;
             }
 

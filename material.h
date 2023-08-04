@@ -41,6 +41,8 @@ typedef struct _php_raylib_material_object {
     HashTable *prop_handler;
     zval shader;
     zval maps;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval params;
     zend_object std;
 } php_raylib_material_object;
 

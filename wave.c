@@ -440,7 +440,7 @@ static zend_long php_raylib_wave_get_channels(php_raylib_wave_object *obj) /* {{
 
 static HashTable * php_raylib_wave_get_data(php_raylib_wave_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // TODO
 }
 /* }}} */
 

@@ -27,6 +27,7 @@
     "audio_module_playing": "php -dextension=../modules/raylib.so examples/audio/audio_module_playing.php",
     "audio_sound_loading": "php -dextension=../modules/raylib.so examples/audio/audio_sound_loading.php",
     "models_billboard": "php -dextension=../modules/raylib.so examples/models/models_billboard.php",
+    "models_animation": "php -dextension=../modules/raylib.so examples/models/models_animation.php",
     "models_box_collisions": "php -dextension=../modules/raylib.so examples/models/models_box_collisions.php"
   }
 }

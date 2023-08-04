@@ -421,7 +421,7 @@ PHP_METHOD(Image, __construct)
 
 static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // TODO
 }
 /* }}} */
 

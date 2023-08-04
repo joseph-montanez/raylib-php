@@ -2,26 +2,28 @@
 *
 *   raylib [models] example - Load 3d model with animations and play them
 *
-*   This example has been created using raylib 2.5 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example originally created with raylib 2.5, last time updated with raylib 3.5
 *
 *   Example contributed by Culacant (@culacant) and reviewed by Ramon Santamaria (@raysan5)
 *
-*   Copyright (c) 2019 Culacant (@culacant) and Ramon Santamaria (@raysan5)
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2019-2023 Culacant (@culacant) and Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************
 *
-* To export a model from blender, make sure it is not posed, the vertices need to be in the
-* same position as they would be in edit mode.
-* and that the scale of your models is set to 0. Scaling can be done from the export menu.
+*   NOTE: To export a model from blender, make sure it is not posed, the vertices need to be
+*         in the same position as they would be in edit mode and the scale of your models is
+*         set to 0. Scaling can be done from the export menu.
 *
 ********************************************************************************************/
 
 #include "raylib.h"
 
-#include <stdlib.h>
-
-
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
 int main(void)
 {
     // Initialization
@@ -50,8 +52,7 @@ int main(void)
     ModelAnimation *anims = LoadModelAnimations("resources/models/iqm/guyanim.iqm", &animsCount);
     int animFrameCounter = 0;
 
-    SetCameraMode(camera, CAMERA_FREE); // Set free camera mode
-
+    DisableCursor();                    // Catch cursor
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        UpdateCamera(&camera);
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
         // Play animation when spacebar is held down
         if (IsKeyDown(KEY_SPACE))
@@ -99,15 +100,11 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadTexture(texture);     // Unload texture
+    UnloadTexture(texture);                     // Unload texture
+    UnloadModelAnimations(anims, animsCount);   // Unload model animations data
+    UnloadModel(model);                         // Unload model
 
-    // Unload model animations data
-    for (unsigned int i = 0; i < animsCount; i++) UnloadModelAnimation(anims[i]);
-    RL_FREE(anims);
-
-    UnloadModel(model);         // Unload model
-
-    CloseWindow();              // Close window and OpenGL context
+    CloseWindow();                  // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;

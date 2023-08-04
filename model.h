@@ -53,6 +53,8 @@ typedef struct _php_raylib_model_object {
     zval materials;
     zval bones;
     zval bindpose;
+    // Cannot support primitive data structure like int * (an array) as zval
+    // zval meshmaterial;
     zend_object std;
 } php_raylib_model_object;
 

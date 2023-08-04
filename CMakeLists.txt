@@ -77,4 +77,5 @@ add_executable(raylib
         vrstereoconfig.c
         vrstereoconfig.h
         wave.c
-        wave.h include/hashmap.h include/hashmap.c)
+        wave.h include/hashmap.h include/hashmap.c
+        generate/manual/LoadModelAnimations.c)

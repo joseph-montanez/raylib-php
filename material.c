@@ -478,13 +478,28 @@ static zend_object * php_raylib_material_get_shader(php_raylib_material_object *
 
 static HashTable * php_raylib_material_get_maps(php_raylib_material_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->maps);
 }
 /* }}} */
 
 static HashTable * php_raylib_material_get_params(php_raylib_material_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zParams;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zParams, 4);
+
+    // populate the array with float
+    for (i = 0; i < 4; i++) {
+        add_next_index_double(&zParams, obj->material->data.params[i]);
+    }
+
+    return Z_ARRVAL_P(&zParams);
 }
 /* }}} */
 

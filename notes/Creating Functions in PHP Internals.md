@@ -52,7 +52,7 @@ SetCameraPanControl($value);
 echo $value; // 23
 ```
 
-In this function, this is explictly overriding the parameter. This is normally called an **out** variable. Its used to return mutliple values. Circling back to the Zend API, if you take that example and want to write it in C, then the following would be defined.
+In this function, this is explicitly overriding the parameter. This is normally called an **out** variable. Its used to return mutliple values. Circling back to the Zend API, if you take that example and want to write it in C, then the following would be defined.
 
 ```c
 ZEND_BEGIN_ARG_INFO_EX(arginfo_SetCameraPanControl, 0, 1, 1)

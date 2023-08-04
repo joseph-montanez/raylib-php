@@ -39,6 +39,18 @@ typedef struct _php_raylib_vrstereoconfig_object {
     HashTable *prop_handler;
     zval projection;
     zval viewoffset;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval leftlenscenter;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval rightlenscenter;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval leftscreencenter;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval rightscreencenter;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval scale;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval scalein;
     zend_object std;
 } php_raylib_vrstereoconfig_object;
 

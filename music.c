@@ -509,7 +509,7 @@ static zend_long php_raylib_music_get_ctxtype(php_raylib_music_object *obj) /* {
 
 static HashTable * php_raylib_music_get_ctxdata(php_raylib_music_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // TODO
 }
 /* }}} */
 

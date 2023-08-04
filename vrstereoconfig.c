@@ -463,49 +463,139 @@ PHP_METHOD(VrStereoConfig, __construct)
 
 static HashTable * php_raylib_vrstereoconfig_get_projection(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->projection);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_viewoffset(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    return Z_ARRVAL_P(&obj->viewoffset);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_leftlenscenter(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zLeftLensCenter;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zLeftLensCenter, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zLeftLensCenter, obj->vrstereoconfig->data.leftLensCenter[i]);
+    }
+
+    return Z_ARRVAL_P(&zLeftLensCenter);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_rightlenscenter(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zRightLensCenter;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zRightLensCenter, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zRightLensCenter, obj->vrstereoconfig->data.rightLensCenter[i]);
+    }
+
+    return Z_ARRVAL_P(&zRightLensCenter);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_leftscreencenter(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zLeftScreenCenter;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zLeftScreenCenter, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zLeftScreenCenter, obj->vrstereoconfig->data.leftScreenCenter[i]);
+    }
+
+    return Z_ARRVAL_P(&zLeftScreenCenter);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_rightscreencenter(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zRightScreenCenter;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zRightScreenCenter, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zRightScreenCenter, obj->vrstereoconfig->data.rightScreenCenter[i]);
+    }
+
+    return Z_ARRVAL_P(&zRightScreenCenter);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_scale(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zScale;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zScale, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zScale, obj->vrstereoconfig->data.scale[i]);
+    }
+
+    return Z_ARRVAL_P(&zScale);
 }
 /* }}} */
 
 static HashTable * php_raylib_vrstereoconfig_get_scalein(php_raylib_vrstereoconfig_object *obj) /* {{{ */
 {
-    //TODO: Not yet supported
+    // Direct access to c primitives like float is not possible with
+    // PHP arrays, need to copy on the fly
+
+    // Create zval to hold array
+    zval zScaleIn;
+    unsigned int i;
+
+    // Initialize Array
+    array_init_size(&zScaleIn, 2);
+
+    // populate the array with float
+    for (i = 0; i < 2; i++) {
+        add_next_index_double(&zScaleIn, obj->vrstereoconfig->data.scaleIn[i]);
+    }
+
+    return Z_ARRVAL_P(&zScaleIn);
 }
 /* }}} */
 

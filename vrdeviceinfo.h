@@ -34,6 +34,10 @@ void RL_VrDeviceInfo_Free(struct RL_VrDeviceInfo* object);
 typedef struct _php_raylib_vrdeviceinfo_object {
     struct RL_VrDeviceInfo *vrdeviceinfo;
     HashTable *prop_handler;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval lensdistortionvalues;
+    // Cannot support primitive data structure like float (an array) as zval
+    // zval chromaabcorrection;
     zend_object std;
 } php_raylib_vrdeviceinfo_object;
 

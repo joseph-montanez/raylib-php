@@ -34,6 +34,8 @@ void RL_Image_Free(struct RL_Image* object);
 typedef struct _php_raylib_image_object {
     struct RL_Image *image;
     HashTable *prop_handler;
+    // Cannot support primitive data structure like void * (an array) as zval
+    // zval data;
     zend_object std;
 } php_raylib_image_object;
 
