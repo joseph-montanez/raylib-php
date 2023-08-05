@@ -100,7 +100,7 @@ class ObjectConstructor
             $input[] = '';
             $input[] = '';
             $input[] = '    php_raylib_' . $struct->nameLower . '_object *intern = Z_' . $struct->nameUpper . '_OBJ_P(ZEND_THIS);';
-            $input[] = '    intern->' . $struct->nameLower . '->data = ' . $constructorFn->name . '(' . implode(',', (new CFunction())->buildParams($constructorFn)) . ');';
+            $input[] = '    *php_raylib_' . $struct->nameLower . '_fetch_data(intern) = ' . $constructorFn->name . '(' . implode(',', (new CFunction())->buildParams($constructorFn)) . ');';
         } else {
             foreach ($struct->fields as $field) {
                 if ($field->isPrimitive) {
@@ -190,7 +190,7 @@ class ObjectConstructor
             }
             $input[] = '';
 
-            $input[] = '    intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
+            $input[] = '    *php_raylib_' . $struct->nameLower . '_fetch_data(intern) = (' . $struct->name . ') {';
 
             foreach ($struct->fields as $i => $field) {
                 $delimiter = $i + 1 >= $struct->totalFields ? '' : ',';
@@ -205,7 +205,7 @@ class ObjectConstructor
 
                         foreach ($subStruct->fields as $n => $subField) {
                             $delimiter2 = $n + 1 >= $subStruct->totalFields ? '' : ',';
-                            $input[] = '            .' . $subField->name . ' = php' . ucfirst($field->name) . '->' . $field->typePlainLower . '->data.' . $subField->name . $delimiter2;
+                            $input[] = '            .' . $subField->name . ' = php_raylib_' . $field->typePlainLower . '_fetch_data(php' . ucfirst($field->name) . ')->' . $subField->name . $delimiter2;
                         }
                         $input[] = '        }' . $delimiter;
                     }

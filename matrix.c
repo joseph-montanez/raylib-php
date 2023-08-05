@@ -102,6 +102,8 @@ struct RL_Matrix* RL_Matrix_Create() {
     object->id = RL_MATRIX_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Matrix_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Matrix) {};
+    object->type = RL_MATRIX_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -345,27 +347,27 @@ zend_object * php_raylib_matrix_new_ex(zend_class_entry *ce, zend_object *orig)/
     if (orig) {
         php_raylib_matrix_object *other = php_raylib_matrix_fetch_object(orig);
 
-        intern->matrix->data = (Matrix) {
-            .m0 = other->matrix->data.m0,
-            .m4 = other->matrix->data.m4,
-            .m8 = other->matrix->data.m8,
-            .m12 = other->matrix->data.m12,
-            .m1 = other->matrix->data.m1,
-            .m5 = other->matrix->data.m5,
-            .m9 = other->matrix->data.m9,
-            .m13 = other->matrix->data.m13,
-            .m2 = other->matrix->data.m2,
-            .m6 = other->matrix->data.m6,
-            .m10 = other->matrix->data.m10,
-            .m14 = other->matrix->data.m14,
-            .m3 = other->matrix->data.m3,
-            .m7 = other->matrix->data.m7,
-            .m11 = other->matrix->data.m11,
-            .m15 = other->matrix->data.m15
+        *php_raylib_matrix_fetch_data(intern) = (Matrix) {
+            .m0 = php_raylib_matrix_fetch_data(other)->m0,
+            .m4 = php_raylib_matrix_fetch_data(other)->m4,
+            .m8 = php_raylib_matrix_fetch_data(other)->m8,
+            .m12 = php_raylib_matrix_fetch_data(other)->m12,
+            .m1 = php_raylib_matrix_fetch_data(other)->m1,
+            .m5 = php_raylib_matrix_fetch_data(other)->m5,
+            .m9 = php_raylib_matrix_fetch_data(other)->m9,
+            .m13 = php_raylib_matrix_fetch_data(other)->m13,
+            .m2 = php_raylib_matrix_fetch_data(other)->m2,
+            .m6 = php_raylib_matrix_fetch_data(other)->m6,
+            .m10 = php_raylib_matrix_fetch_data(other)->m10,
+            .m14 = php_raylib_matrix_fetch_data(other)->m14,
+            .m3 = php_raylib_matrix_fetch_data(other)->m3,
+            .m7 = php_raylib_matrix_fetch_data(other)->m7,
+            .m11 = php_raylib_matrix_fetch_data(other)->m11,
+            .m15 = php_raylib_matrix_fetch_data(other)->m15
         };
     } else {
         intern->matrix = RL_Matrix_Create();
-        intern->matrix->data = (Matrix) {
+        *php_raylib_matrix_fetch_data(intern) = (Matrix) {
             .m0 = 0,
             .m4 = 0,
             .m8 = 0,
@@ -569,7 +571,7 @@ PHP_METHOD(Matrix, __construct)
 
 
 
-    intern->matrix->data = (Matrix) {
+    *php_raylib_matrix_fetch_data(intern) = (Matrix) {
         .m0 = (float) m0,
         .m4 = (float) m4,
         .m8 = (float) m8,
@@ -591,97 +593,97 @@ PHP_METHOD(Matrix, __construct)
 
 static double php_raylib_matrix_get_m0(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m0;
+    return (double) php_raylib_matrix_fetch_data(obj)->m0;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m4(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m4;
+    return (double) php_raylib_matrix_fetch_data(obj)->m4;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m8(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m8;
+    return (double) php_raylib_matrix_fetch_data(obj)->m8;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m12(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m12;
+    return (double) php_raylib_matrix_fetch_data(obj)->m12;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m1(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m1;
+    return (double) php_raylib_matrix_fetch_data(obj)->m1;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m5(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m5;
+    return (double) php_raylib_matrix_fetch_data(obj)->m5;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m9(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m9;
+    return (double) php_raylib_matrix_fetch_data(obj)->m9;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m13(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m13;
+    return (double) php_raylib_matrix_fetch_data(obj)->m13;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m2(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m2;
+    return (double) php_raylib_matrix_fetch_data(obj)->m2;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m6(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m6;
+    return (double) php_raylib_matrix_fetch_data(obj)->m6;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m10(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m10;
+    return (double) php_raylib_matrix_fetch_data(obj)->m10;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m14(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m14;
+    return (double) php_raylib_matrix_fetch_data(obj)->m14;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m3(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m3;
+    return (double) php_raylib_matrix_fetch_data(obj)->m3;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m7(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m7;
+    return (double) php_raylib_matrix_fetch_data(obj)->m7;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m11(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m11;
+    return (double) php_raylib_matrix_fetch_data(obj)->m11;
 }
 /* }}} */
 
 static double php_raylib_matrix_get_m15(php_raylib_matrix_object *obj) /* {{{ */
 {
-    return (double) obj->matrix->data.m15;
+    return (double) php_raylib_matrix_fetch_data(obj)->m15;
 }
 /* }}} */
 
@@ -690,11 +692,11 @@ static int php_raylib_matrix_set_m0(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m0 = 0;
+        php_raylib_matrix_fetch_data(obj)->m0 = 0;
         return ret;
     }
 
-    obj->matrix->data.m0 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m0 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -705,11 +707,11 @@ static int php_raylib_matrix_set_m4(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m4 = 0;
+        php_raylib_matrix_fetch_data(obj)->m4 = 0;
         return ret;
     }
 
-    obj->matrix->data.m4 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m4 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -720,11 +722,11 @@ static int php_raylib_matrix_set_m8(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m8 = 0;
+        php_raylib_matrix_fetch_data(obj)->m8 = 0;
         return ret;
     }
 
-    obj->matrix->data.m8 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m8 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -735,11 +737,11 @@ static int php_raylib_matrix_set_m12(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m12 = 0;
+        php_raylib_matrix_fetch_data(obj)->m12 = 0;
         return ret;
     }
 
-    obj->matrix->data.m12 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m12 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -750,11 +752,11 @@ static int php_raylib_matrix_set_m1(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m1 = 0;
+        php_raylib_matrix_fetch_data(obj)->m1 = 0;
         return ret;
     }
 
-    obj->matrix->data.m1 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m1 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -765,11 +767,11 @@ static int php_raylib_matrix_set_m5(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m5 = 0;
+        php_raylib_matrix_fetch_data(obj)->m5 = 0;
         return ret;
     }
 
-    obj->matrix->data.m5 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m5 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -780,11 +782,11 @@ static int php_raylib_matrix_set_m9(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m9 = 0;
+        php_raylib_matrix_fetch_data(obj)->m9 = 0;
         return ret;
     }
 
-    obj->matrix->data.m9 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m9 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -795,11 +797,11 @@ static int php_raylib_matrix_set_m13(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m13 = 0;
+        php_raylib_matrix_fetch_data(obj)->m13 = 0;
         return ret;
     }
 
-    obj->matrix->data.m13 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m13 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -810,11 +812,11 @@ static int php_raylib_matrix_set_m2(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m2 = 0;
+        php_raylib_matrix_fetch_data(obj)->m2 = 0;
         return ret;
     }
 
-    obj->matrix->data.m2 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m2 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -825,11 +827,11 @@ static int php_raylib_matrix_set_m6(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m6 = 0;
+        php_raylib_matrix_fetch_data(obj)->m6 = 0;
         return ret;
     }
 
-    obj->matrix->data.m6 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m6 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -840,11 +842,11 @@ static int php_raylib_matrix_set_m10(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m10 = 0;
+        php_raylib_matrix_fetch_data(obj)->m10 = 0;
         return ret;
     }
 
-    obj->matrix->data.m10 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m10 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -855,11 +857,11 @@ static int php_raylib_matrix_set_m14(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m14 = 0;
+        php_raylib_matrix_fetch_data(obj)->m14 = 0;
         return ret;
     }
 
-    obj->matrix->data.m14 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m14 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -870,11 +872,11 @@ static int php_raylib_matrix_set_m3(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m3 = 0;
+        php_raylib_matrix_fetch_data(obj)->m3 = 0;
         return ret;
     }
 
-    obj->matrix->data.m3 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m3 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -885,11 +887,11 @@ static int php_raylib_matrix_set_m7(php_raylib_matrix_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m7 = 0;
+        php_raylib_matrix_fetch_data(obj)->m7 = 0;
         return ret;
     }
 
-    obj->matrix->data.m7 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m7 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -900,11 +902,11 @@ static int php_raylib_matrix_set_m11(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m11 = 0;
+        php_raylib_matrix_fetch_data(obj)->m11 = 0;
         return ret;
     }
 
-    obj->matrix->data.m11 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m11 = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -915,11 +917,11 @@ static int php_raylib_matrix_set_m15(php_raylib_matrix_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->matrix->data.m15 = 0;
+        php_raylib_matrix_fetch_data(obj)->m15 = 0;
         return ret;
     }
 
-    obj->matrix->data.m15 = (float) zval_get_double(newval);
+    php_raylib_matrix_fetch_data(obj)->m15 = (float) zval_get_double(newval);
 
     return ret;
 }

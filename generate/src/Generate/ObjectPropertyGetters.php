@@ -39,20 +39,20 @@ class ObjectPropertyGetters
                     }
                     break;
                 case 'double';
-                    $input[] = '    return (double) obj->' . $struct->nameLower . '->data.' . $field->name . ';';
+                    $input[] = '    return (double) php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ';';
                     break;
                 case 'bool';
-                    $input[] = '    return obj->' . $struct->nameLower . '->data.' . $field->name . ';';
+                    $input[] = '    return php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ';';
                     break;
                 case 'zend_long';
-                    $input[] = '    return (zend_long) obj->' . $struct->nameLower . '->data.' . $field->name . ';';
+                    $input[] = '    return (zend_long) php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ';';
                     break;
                 case 'zend_string *';
                     $input[] = '    zend_string *result_str;';
                     if ($field->arrayCountNumber) {
-                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '->data.' . $field->name . ', ' . $field->arrayCountNumber . ', 1);';
+                        $input[] = '    result_str = zend_string_init(php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ', ' . $field->arrayCountNumber . ', 1);';
                     } else {
-                        $input[] = '    result_str = zend_string_init(obj->' . $struct->nameLower . '->data.' . $field->name . ', strlen(obj->' . $struct->nameLower . '->data.' . $field->name . '), 1);';
+                        $input[] = '    result_str = zend_string_init(php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ', strlen(php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . '), 1);';
                     }
                     $input[] = '    return result_str;';
                     break;
@@ -70,13 +70,14 @@ class ObjectPropertyGetters
                         $input[] = '    // Create zval to hold array';
                         $input[] = '    zval z' . ucfirst($field->name) . ';';
                         $input[] = '    unsigned int i;';
+                        $input[] = '    ' . $struct->name. ' *objectData = php_raylib_' . $struct->nameLower . '_fetch_data(obj);';
                         $input[] = '';
 
                         $input[] = '    // Initialize Array';
                         if ($field->arrayCountNumber) {
                             $input[] = '    array_init_size(&z' . ucfirst($field->name) . ', ' . $field->arrayCountNumber . ');';
                         } else {
-                            $input[] = '    array_init_size(&z' . ucfirst($field->name) . ', obj->' . $struct->nameLower . '->data.' . $field->arrayCountField . ');';
+                            $input[] = '    array_init_size(&z' . ucfirst($field->name) . ', objectData->' . $field->arrayCountField . ');';
                         }
                         $input[] = '';
 
@@ -84,9 +85,12 @@ class ObjectPropertyGetters
                         if ($field->arrayCountNumber) {
                             $input[] = '    for (i = 0; i < ' . $field->arrayCountNumber . '; i++) {';
                         } else {
-                            $input[] = '    for (i = 0; i < obj->' . $struct->nameLower . '->data.' . $field->arrayCountField . '; i++) {';
+                            $input[] = '    for (i = 0; i < objectData->' . $field->arrayCountField . '; i++) {';
                         }
-                        $input[] = '        add_next_index_double(&z' . ucfirst($field->name) . ', obj->' . $struct->nameLower . '->data.' . $field->name . '[i]);';
+
+                        $input[] = '        if (objectData != NULL && objectData->' . $field->name . ' != NULL) {';
+                        $input[] = '            add_next_index_double(&z' . ucfirst($field->name) . ', objectData->' . $field->name . '[i]);';
+                        $input[] = '        }';
                         $input[] = '    }';
                         $input[] = '';
 

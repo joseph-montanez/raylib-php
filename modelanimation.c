@@ -104,6 +104,8 @@ struct RL_ModelAnimation* RL_ModelAnimation_Create() {
     object->id = RL_MODELANIMATION_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_ModelAnimation_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( ModelAnimation) {};
+    object->type = RL_MODELANIMATION_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -387,9 +389,9 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
         // framePoses array not yet supported needs to generate a hash table!
         //php_raylib_transform_object *phpFramePoses = php_raylib_transform_fetch_object(framePoses);
 
-        intern->modelanimation->data = (ModelAnimation) {
-            .boneCount = other->modelanimation->data.boneCount,
-            .frameCount = other->modelanimation->data.frameCount,
+        *php_raylib_modelanimation_fetch_data(intern) = (ModelAnimation) {
+            .boneCount = php_raylib_modelanimation_fetch_data(other)->boneCount,
+            .frameCount = php_raylib_modelanimation_fetch_data(other)->frameCount,
         };
 
         HashTable *bones_hash;
@@ -416,7 +418,7 @@ zend_object * php_raylib_modelanimation_new_ex(zend_class_entry *ce, zend_object
         //php_raylib_transform_object *phpFramePoses = php_raylib_transform_fetch_object(framePoses);
 
         intern->modelanimation = RL_ModelAnimation_Create();
-        intern->modelanimation->data = (ModelAnimation) {
+        *php_raylib_modelanimation_fetch_data(intern) = (ModelAnimation) {
             .boneCount = 0,
             .frameCount = 0,
             // .bones is an array and not yet supported via constructor
@@ -474,13 +476,13 @@ PHP_METHOD(ModelAnimation, __construct)
 
 static zend_long php_raylib_modelanimation_get_bonecount(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    return (zend_long) obj->modelanimation->data.boneCount;
+    return (zend_long) php_raylib_modelanimation_fetch_data(obj)->boneCount;
 }
 /* }}} */
 
 static zend_long php_raylib_modelanimation_get_framecount(php_raylib_modelanimation_object *obj) /* {{{ */
 {
-    return (zend_long) obj->modelanimation->data.frameCount;
+    return (zend_long) php_raylib_modelanimation_fetch_data(obj)->frameCount;
 }
 /* }}} */
 
@@ -501,11 +503,11 @@ static int php_raylib_modelanimation_set_bonecount(php_raylib_modelanimation_obj
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->modelanimation->data.boneCount = 0;
+        php_raylib_modelanimation_fetch_data(obj)->boneCount = 0;
         return ret;
     }
 
-    obj->modelanimation->data.boneCount = (int) zval_get_long(newval);
+    php_raylib_modelanimation_fetch_data(obj)->boneCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -516,11 +518,11 @@ static int php_raylib_modelanimation_set_framecount(php_raylib_modelanimation_ob
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->modelanimation->data.frameCount = 0;
+        php_raylib_modelanimation_fetch_data(obj)->frameCount = 0;
         return ret;
     }
 
-    obj->modelanimation->data.frameCount = (int) zval_get_long(newval);
+    php_raylib_modelanimation_fetch_data(obj)->frameCount = (int) zval_get_long(newval);
 
     return ret;
 }

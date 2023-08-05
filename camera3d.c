@@ -103,6 +103,8 @@ struct RL_Camera3D* RL_Camera3D_Create() {
     object->id = RL_CAMERA3D_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Camera3D_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Camera3D) {};
+    object->type = RL_CAMERA3D_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -380,24 +382,24 @@ zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector3_object *phpUp = Z_VECTOR3_OBJ_P(&other->up);
 
 
-        intern->camera3d->data = (Camera3D) {
+        *php_raylib_camera3d_fetch_data(intern) = (Camera3D) {
             .position = (Vector3) {
-                .x = other->camera3d->data.position.x,
-                .y = other->camera3d->data.position.y,
-                .z = other->camera3d->data.position.z
+                .x = php_raylib_camera3d_fetch_data(other)->position.x,
+                .y = php_raylib_camera3d_fetch_data(other)->position.y,
+                .z = php_raylib_camera3d_fetch_data(other)->position.z
             },
             .target = (Vector3) {
-                .x = other->camera3d->data.target.x,
-                .y = other->camera3d->data.target.y,
-                .z = other->camera3d->data.target.z
+                .x = php_raylib_camera3d_fetch_data(other)->target.x,
+                .y = php_raylib_camera3d_fetch_data(other)->target.y,
+                .z = php_raylib_camera3d_fetch_data(other)->target.z
             },
             .up = (Vector3) {
-                .x = other->camera3d->data.up.x,
-                .y = other->camera3d->data.up.y,
-                .z = other->camera3d->data.up.z
+                .x = php_raylib_camera3d_fetch_data(other)->up.x,
+                .y = php_raylib_camera3d_fetch_data(other)->up.y,
+                .z = php_raylib_camera3d_fetch_data(other)->up.z
             },
-            .fovy = other->camera3d->data.fovy,
-            .projection = other->camera3d->data.projection
+            .fovy = php_raylib_camera3d_fetch_data(other)->fovy,
+            .projection = php_raylib_camera3d_fetch_data(other)->projection
         };
 
         ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
@@ -416,7 +418,7 @@ zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector3_object *phpUp = php_raylib_vector3_fetch_object(up);
 
         intern->camera3d = RL_Camera3D_Create();
-        intern->camera3d->data = (Camera3D) {
+        *php_raylib_camera3d_fetch_data(intern) = (Camera3D) {
             .position = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -534,21 +536,21 @@ PHP_METHOD(Camera3D, __construct)
     ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
     ZVAL_OBJ_COPY(&intern->up, &phpUp->std);
 
-    intern->camera3d->data = (Camera3D) {
+    *php_raylib_camera3d_fetch_data(intern) = (Camera3D) {
         .position = (Vector3) {
-            .x = phpPosition->vector3->data.x,
-            .y = phpPosition->vector3->data.y,
-            .z = phpPosition->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpPosition)->x,
+            .y = php_raylib_vector3_fetch_data(phpPosition)->y,
+            .z = php_raylib_vector3_fetch_data(phpPosition)->z
         },
         .target = (Vector3) {
-            .x = phpTarget->vector3->data.x,
-            .y = phpTarget->vector3->data.y,
-            .z = phpTarget->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpTarget)->x,
+            .y = php_raylib_vector3_fetch_data(phpTarget)->y,
+            .z = php_raylib_vector3_fetch_data(phpTarget)->z
         },
         .up = (Vector3) {
-            .x = phpUp->vector3->data.x,
-            .y = phpUp->vector3->data.y,
-            .z = phpUp->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpUp)->x,
+            .y = php_raylib_vector3_fetch_data(phpUp)->y,
+            .z = php_raylib_vector3_fetch_data(phpUp)->z
         },
         .fovy = (float) fovy,
         .projection = (int) projection
@@ -593,13 +595,13 @@ static zend_object * php_raylib_camera3d_get_up(php_raylib_camera3d_object *obj)
 
 static double php_raylib_camera3d_get_fovy(php_raylib_camera3d_object *obj) /* {{{ */
 {
-    return (double) obj->camera3d->data.fovy;
+    return (double) php_raylib_camera3d_fetch_data(obj)->fovy;
 }
 /* }}} */
 
 static zend_long php_raylib_camera3d_get_projection(php_raylib_camera3d_object *obj) /* {{{ */
 {
-    return (zend_long) obj->camera3d->data.projection;
+    return (zend_long) php_raylib_camera3d_fetch_data(obj)->projection;
 }
 /* }}} */
 
@@ -662,11 +664,11 @@ static int php_raylib_camera3d_set_fovy(php_raylib_camera3d_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera3d->data.fovy = 0;
+        php_raylib_camera3d_fetch_data(obj)->fovy = 0;
         return ret;
     }
 
-    obj->camera3d->data.fovy = (float) zval_get_double(newval);
+    php_raylib_camera3d_fetch_data(obj)->fovy = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -677,11 +679,11 @@ static int php_raylib_camera3d_set_projection(php_raylib_camera3d_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera3d->data.projection = 0;
+        php_raylib_camera3d_fetch_data(obj)->projection = 0;
         return ret;
     }
 
-    obj->camera3d->data.projection = (int) zval_get_long(newval);
+    php_raylib_camera3d_fetch_data(obj)->projection = (int) zval_get_long(newval);
 
     return ret;
 }

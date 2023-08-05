@@ -19,10 +19,21 @@ extern zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_obje
 
 extern zend_object_handlers php_raylib_transform_object_handlers;
 
+typedef enum {
+    RL_TRANSFORM_IS_POINTER,
+    RL_TRANSFORM_IS_VALUE
+} RLTransformDataType;
+
+typedef union {
+    Transform *p;
+    Transform v;
+} TransformUnion;
+
 struct RL_Transform {
     unsigned int id;
     char *guid;
-    Transform data;
+    TransformUnion data;
+    RLTransformDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -46,6 +57,17 @@ typedef struct _php_raylib_transform_object {
 
 static inline php_raylib_transform_object *php_raylib_transform_fetch_object(zend_object *obj) {
     return (php_raylib_transform_object *)((char *)obj - XtOffsetOf(php_raylib_transform_object, std));
+}
+
+static inline Transform *php_raylib_transform_fetch_data(php_raylib_transform_object *obj) {
+    Transform *my_transform;
+    if (obj->transform->type == RL_TRANSFORM_IS_POINTER) {
+        my_transform = obj->transform->data.p;
+    } else {
+        my_transform = &obj->transform->data.v;
+    }
+
+    return my_transform;
 }
 
 #define Z_TRANSFORM_OBJ_P(zv) php_raylib_transform_fetch_object(Z_OBJ_P(zv));

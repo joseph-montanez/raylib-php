@@ -104,6 +104,8 @@ struct RL_Transform* RL_Transform_Create() {
     object->id = RL_TRANSFORM_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Transform_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Transform) {};
+    object->type = RL_TRANSFORM_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -368,22 +370,22 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(&other->scale);
 
 
-        intern->transform->data = (Transform) {
+        *php_raylib_transform_fetch_data(intern) = (Transform) {
             .translation = (Vector3) {
-                .x = other->transform->data.translation.x,
-                .y = other->transform->data.translation.y,
-                .z = other->transform->data.translation.z
+                .x = php_raylib_transform_fetch_data(other)->translation.x,
+                .y = php_raylib_transform_fetch_data(other)->translation.y,
+                .z = php_raylib_transform_fetch_data(other)->translation.z
             },
             .rotation = (Vector4) {
-                .x = other->transform->data.rotation.x,
-                .y = other->transform->data.rotation.y,
-                .z = other->transform->data.rotation.z,
-                .w = other->transform->data.rotation.w
+                .x = php_raylib_transform_fetch_data(other)->rotation.x,
+                .y = php_raylib_transform_fetch_data(other)->rotation.y,
+                .z = php_raylib_transform_fetch_data(other)->rotation.z,
+                .w = php_raylib_transform_fetch_data(other)->rotation.w
             },
             .scale = (Vector3) {
-                .x = other->transform->data.scale.x,
-                .y = other->transform->data.scale.y,
-                .z = other->transform->data.scale.z
+                .x = php_raylib_transform_fetch_data(other)->scale.x,
+                .y = php_raylib_transform_fetch_data(other)->scale.y,
+                .z = php_raylib_transform_fetch_data(other)->scale.z
             }
         };
 
@@ -403,7 +405,7 @@ zend_object * php_raylib_transform_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_vector3_object *phpScale = php_raylib_vector3_fetch_object(scale);
 
         intern->transform = RL_Transform_Create();
-        intern->transform->data = (Transform) {
+        *php_raylib_transform_fetch_data(intern) = (Transform) {
             .translation = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -502,22 +504,22 @@ PHP_METHOD(Transform, __construct)
     ZVAL_OBJ_COPY(&intern->rotation, &phpRotation->std);
     ZVAL_OBJ_COPY(&intern->scale, &phpScale->std);
 
-    intern->transform->data = (Transform) {
+    *php_raylib_transform_fetch_data(intern) = (Transform) {
         .translation = (Vector3) {
-            .x = phpTranslation->vector3->data.x,
-            .y = phpTranslation->vector3->data.y,
-            .z = phpTranslation->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpTranslation)->x,
+            .y = php_raylib_vector3_fetch_data(phpTranslation)->y,
+            .z = php_raylib_vector3_fetch_data(phpTranslation)->z
         },
         .rotation = (Vector4) {
-            .x = phpRotation->vector4->data.x,
-            .y = phpRotation->vector4->data.y,
-            .z = phpRotation->vector4->data.z,
-            .w = phpRotation->vector4->data.w
+            .x = php_raylib_vector4_fetch_data(phpRotation)->x,
+            .y = php_raylib_vector4_fetch_data(phpRotation)->y,
+            .z = php_raylib_vector4_fetch_data(phpRotation)->z,
+            .w = php_raylib_vector4_fetch_data(phpRotation)->w
         },
         .scale = (Vector3) {
-            .x = phpScale->vector3->data.x,
-            .y = phpScale->vector3->data.y,
-            .z = phpScale->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpScale)->x,
+            .y = php_raylib_vector3_fetch_data(phpScale)->y,
+            .z = php_raylib_vector3_fetch_data(phpScale)->z
         }
     };
 }

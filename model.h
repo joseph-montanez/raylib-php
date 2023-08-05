@@ -29,10 +29,21 @@ extern zend_object * php_raylib_model_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_model_object_handlers;
 
+typedef enum {
+    RL_MODEL_IS_POINTER,
+    RL_MODEL_IS_VALUE
+} RLModelDataType;
+
+typedef union {
+    Model *p;
+    Model v;
+} ModelUnion;
+
 struct RL_Model {
     unsigned int id;
     char *guid;
-    Model data;
+    ModelUnion data;
+    RLModelDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -60,6 +71,17 @@ typedef struct _php_raylib_model_object {
 
 static inline php_raylib_model_object *php_raylib_model_fetch_object(zend_object *obj) {
     return (php_raylib_model_object *)((char *)obj - XtOffsetOf(php_raylib_model_object, std));
+}
+
+static inline Model *php_raylib_model_fetch_data(php_raylib_model_object *obj) {
+    Model *my_model;
+    if (obj->model->type == RL_MODEL_IS_POINTER) {
+        my_model = obj->model->data.p;
+    } else {
+        my_model = &obj->model->data.v;
+    }
+
+    return my_model;
 }
 
 #define Z_MODEL_OBJ_P(zv) php_raylib_model_fetch_object(Z_OBJ_P(zv));

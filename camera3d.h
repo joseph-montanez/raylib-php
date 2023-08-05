@@ -17,10 +17,21 @@ extern zend_object * php_raylib_camera3d_new_ex(zend_class_entry *ce, zend_objec
 
 extern zend_object_handlers php_raylib_camera3d_object_handlers;
 
+typedef enum {
+    RL_CAMERA3D_IS_POINTER,
+    RL_CAMERA3D_IS_VALUE
+} RLCamera3DDataType;
+
+typedef union {
+    Camera3D *p;
+    Camera3D v;
+} Camera3DUnion;
+
 struct RL_Camera3D {
     unsigned int id;
     char *guid;
-    Camera3D data;
+    Camera3DUnion data;
+    RLCamera3DDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -44,6 +55,17 @@ typedef struct _php_raylib_camera3d_object {
 
 static inline php_raylib_camera3d_object *php_raylib_camera3d_fetch_object(zend_object *obj) {
     return (php_raylib_camera3d_object *)((char *)obj - XtOffsetOf(php_raylib_camera3d_object, std));
+}
+
+static inline Camera3D *php_raylib_camera3d_fetch_data(php_raylib_camera3d_object *obj) {
+    Camera3D *my_camera3d;
+    if (obj->camera3d->type == RL_CAMERA3D_IS_POINTER) {
+        my_camera3d = obj->camera3d->data.p;
+    } else {
+        my_camera3d = &obj->camera3d->data.v;
+    }
+
+    return my_camera3d;
 }
 
 #define Z_CAMERA3D_OBJ_P(zv) php_raylib_camera3d_fetch_object(Z_OBJ_P(zv));

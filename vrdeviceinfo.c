@@ -102,6 +102,8 @@ struct RL_VrDeviceInfo* RL_VrDeviceInfo_Create() {
     object->id = RL_VRDEVICEINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_VrDeviceInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( VrDeviceInfo) {};
+    object->type = RL_VRDEVICEINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -373,21 +375,21 @@ zend_object * php_raylib_vrdeviceinfo_new_ex(zend_class_entry *ce, zend_object *
     if (orig) {
         php_raylib_vrdeviceinfo_object *other = php_raylib_vrdeviceinfo_fetch_object(orig);
 
-        intern->vrdeviceinfo->data = (VrDeviceInfo) {
-            .hResolution = other->vrdeviceinfo->data.hResolution,
-            .vResolution = other->vrdeviceinfo->data.vResolution,
-            .hScreenSize = other->vrdeviceinfo->data.hScreenSize,
-            .vScreenSize = other->vrdeviceinfo->data.vScreenSize,
-            .vScreenCenter = other->vrdeviceinfo->data.vScreenCenter,
-            .eyeToScreenDistance = other->vrdeviceinfo->data.eyeToScreenDistance,
-            .lensSeparationDistance = other->vrdeviceinfo->data.lensSeparationDistance,
-            .interpupillaryDistance = other->vrdeviceinfo->data.interpupillaryDistance,
+        *php_raylib_vrdeviceinfo_fetch_data(intern) = (VrDeviceInfo) {
+            .hResolution = php_raylib_vrdeviceinfo_fetch_data(other)->hResolution,
+            .vResolution = php_raylib_vrdeviceinfo_fetch_data(other)->vResolution,
+            .hScreenSize = php_raylib_vrdeviceinfo_fetch_data(other)->hScreenSize,
+            .vScreenSize = php_raylib_vrdeviceinfo_fetch_data(other)->vScreenSize,
+            .vScreenCenter = php_raylib_vrdeviceinfo_fetch_data(other)->vScreenCenter,
+            .eyeToScreenDistance = php_raylib_vrdeviceinfo_fetch_data(other)->eyeToScreenDistance,
+            .lensSeparationDistance = php_raylib_vrdeviceinfo_fetch_data(other)->lensSeparationDistance,
+            .interpupillaryDistance = php_raylib_vrdeviceinfo_fetch_data(other)->interpupillaryDistance,
         };
-        memcpy(intern->vrdeviceinfo->data.lensDistortionValues, other->vrdeviceinfo->data.lensDistortionValues, sizeof intern->vrdeviceinfo->data.lensDistortionValues);
-        memcpy(intern->vrdeviceinfo->data.chromaAbCorrection, other->vrdeviceinfo->data.chromaAbCorrection, sizeof intern->vrdeviceinfo->data.chromaAbCorrection);
+        memcpy(php_raylib_vrdeviceinfo_fetch_data(intern)->lensDistortionValues, php_raylib_vrdeviceinfo_fetch_data(other)->lensDistortionValues, sizeof(float) * 4);
+        memcpy(php_raylib_vrdeviceinfo_fetch_data(intern)->chromaAbCorrection, php_raylib_vrdeviceinfo_fetch_data(other)->chromaAbCorrection, sizeof(float) * 4);
     } else {
         intern->vrdeviceinfo = RL_VrDeviceInfo_Create();
-        intern->vrdeviceinfo->data = (VrDeviceInfo) {
+        *php_raylib_vrdeviceinfo_fetch_data(intern) = (VrDeviceInfo) {
             .hResolution = 0,
             .vResolution = 0,
             .hScreenSize = 0,
@@ -447,49 +449,49 @@ PHP_METHOD(VrDeviceInfo, __construct)
 
 static zend_long php_raylib_vrdeviceinfo_get_hresolution(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->vrdeviceinfo->data.hResolution;
+    return (zend_long) php_raylib_vrdeviceinfo_fetch_data(obj)->hResolution;
 }
 /* }}} */
 
 static zend_long php_raylib_vrdeviceinfo_get_vresolution(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->vrdeviceinfo->data.vResolution;
+    return (zend_long) php_raylib_vrdeviceinfo_fetch_data(obj)->vResolution;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_hscreensize(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.hScreenSize;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->hScreenSize;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_vscreensize(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.vScreenSize;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenSize;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_vscreencenter(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.vScreenCenter;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenCenter;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_eyetoscreendistance(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.eyeToScreenDistance;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->eyeToScreenDistance;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_lensseparationdistance(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.lensSeparationDistance;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->lensSeparationDistance;
 }
 /* }}} */
 
 static double php_raylib_vrdeviceinfo_get_interpupillarydistance(php_raylib_vrdeviceinfo_object *obj) /* {{{ */
 {
-    return (double) obj->vrdeviceinfo->data.interpupillaryDistance;
+    return (double) php_raylib_vrdeviceinfo_fetch_data(obj)->interpupillaryDistance;
 }
 /* }}} */
 
@@ -501,13 +503,16 @@ static HashTable * php_raylib_vrdeviceinfo_get_lensdistortionvalues(php_raylib_v
     // Create zval to hold array
     zval zLensDistortionValues;
     unsigned int i;
+    VrDeviceInfo *objectData = php_raylib_vrdeviceinfo_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zLensDistortionValues, 4);
 
     // populate the array with float
     for (i = 0; i < 4; i++) {
-        add_next_index_double(&zLensDistortionValues, obj->vrdeviceinfo->data.lensDistortionValues[i]);
+        if (objectData != NULL && objectData->lensDistortionValues != NULL) {
+            add_next_index_double(&zLensDistortionValues, objectData->lensDistortionValues[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zLensDistortionValues);
@@ -522,13 +527,16 @@ static HashTable * php_raylib_vrdeviceinfo_get_chromaabcorrection(php_raylib_vrd
     // Create zval to hold array
     zval zChromaAbCorrection;
     unsigned int i;
+    VrDeviceInfo *objectData = php_raylib_vrdeviceinfo_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zChromaAbCorrection, 4);
 
     // populate the array with float
     for (i = 0; i < 4; i++) {
-        add_next_index_double(&zChromaAbCorrection, obj->vrdeviceinfo->data.chromaAbCorrection[i]);
+        if (objectData != NULL && objectData->chromaAbCorrection != NULL) {
+            add_next_index_double(&zChromaAbCorrection, objectData->chromaAbCorrection[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zChromaAbCorrection);
@@ -540,11 +548,11 @@ static int php_raylib_vrdeviceinfo_set_hresolution(php_raylib_vrdeviceinfo_objec
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.hResolution = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->hResolution = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.hResolution = (int) zval_get_long(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->hResolution = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -555,11 +563,11 @@ static int php_raylib_vrdeviceinfo_set_vresolution(php_raylib_vrdeviceinfo_objec
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.vResolution = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->vResolution = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.vResolution = (int) zval_get_long(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->vResolution = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -570,11 +578,11 @@ static int php_raylib_vrdeviceinfo_set_hscreensize(php_raylib_vrdeviceinfo_objec
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.hScreenSize = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->hScreenSize = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.hScreenSize = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->hScreenSize = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -585,11 +593,11 @@ static int php_raylib_vrdeviceinfo_set_vscreensize(php_raylib_vrdeviceinfo_objec
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.vScreenSize = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenSize = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.vScreenSize = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenSize = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -600,11 +608,11 @@ static int php_raylib_vrdeviceinfo_set_vscreencenter(php_raylib_vrdeviceinfo_obj
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.vScreenCenter = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenCenter = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.vScreenCenter = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->vScreenCenter = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -615,11 +623,11 @@ static int php_raylib_vrdeviceinfo_set_eyetoscreendistance(php_raylib_vrdevicein
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.eyeToScreenDistance = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->eyeToScreenDistance = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.eyeToScreenDistance = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->eyeToScreenDistance = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -630,11 +638,11 @@ static int php_raylib_vrdeviceinfo_set_lensseparationdistance(php_raylib_vrdevic
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.lensSeparationDistance = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->lensSeparationDistance = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.lensSeparationDistance = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->lensSeparationDistance = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -645,11 +653,11 @@ static int php_raylib_vrdeviceinfo_set_interpupillarydistance(php_raylib_vrdevic
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vrdeviceinfo->data.interpupillaryDistance = 0;
+        php_raylib_vrdeviceinfo_fetch_data(obj)->interpupillaryDistance = 0;
         return ret;
     }
 
-    obj->vrdeviceinfo->data.interpupillaryDistance = (float) zval_get_double(newval);
+    php_raylib_vrdeviceinfo_fetch_data(obj)->interpupillaryDistance = (float) zval_get_double(newval);
 
     return ret;
 }

@@ -9,7 +9,7 @@ include_directories(
         external/php-src/Zend
         external/php-src/TSRM
         external/php-src/ext
-        /Volumes/External/opt/homebrew/Cellar/raylib/4.2.0/include
+        /Volumes/External/opt/homebrew/Cellar/raylib/4.5.0/include
 )
 include_directories(. ../../main/ ../../../deps/include)
 

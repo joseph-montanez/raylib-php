@@ -15,10 +15,21 @@ extern zend_object * php_raylib_rectangle_new_ex(zend_class_entry *ce, zend_obje
 
 extern zend_object_handlers php_raylib_rectangle_object_handlers;
 
+typedef enum {
+    RL_RECTANGLE_IS_POINTER,
+    RL_RECTANGLE_IS_VALUE
+} RLRectangleDataType;
+
+typedef union {
+    Rectangle *p;
+    Rectangle v;
+} RectangleUnion;
+
 struct RL_Rectangle {
     unsigned int id;
     char *guid;
-    Rectangle data;
+    RectangleUnion data;
+    RLRectangleDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -39,6 +50,17 @@ typedef struct _php_raylib_rectangle_object {
 
 static inline php_raylib_rectangle_object *php_raylib_rectangle_fetch_object(zend_object *obj) {
     return (php_raylib_rectangle_object *)((char *)obj - XtOffsetOf(php_raylib_rectangle_object, std));
+}
+
+static inline Rectangle *php_raylib_rectangle_fetch_data(php_raylib_rectangle_object *obj) {
+    Rectangle *my_rectangle;
+    if (obj->rectangle->type == RL_RECTANGLE_IS_POINTER) {
+        my_rectangle = obj->rectangle->data.p;
+    } else {
+        my_rectangle = &obj->rectangle->data.v;
+    }
+
+    return my_rectangle;
 }
 
 #define Z_RECTANGLE_OBJ_P(zv) php_raylib_rectangle_fetch_object(Z_OBJ_P(zv));

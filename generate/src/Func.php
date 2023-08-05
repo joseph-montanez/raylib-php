@@ -21,13 +21,23 @@ class Func
     public int $paramCount;
     public bool $returnIsArray;
     public bool $returnIsPrimitive;
+    public bool $isConstructor;
     public bool $unsupported = false;
     public string $returnArrayCountField;
     public string $manualCFile;
 
 
     /**
-     * @param array{name:string,description:string,returnType:string,params:array,rename:string|null} $functionInfo
+     * @param array{
+     *     name:string,
+     *     description:string,
+     *     returnType:string,
+     *     params:array,
+     *     rename:string|null,
+     *     isArray:bool|null,
+     *     isConstructor:bool|null,
+     *     arrayCountField:string|null
+     * } $functionInfo
      */
     #[Pure] public function __construct(array $aliases, array $functionInfo)
     {
@@ -56,6 +66,7 @@ class Func
 
         $this->returnIsArray         = $functionInfo['isArray'] ?? Helper::isArray($this->returnType);
         $this->returnArrayCountField = $functionInfo['arrayCountField'] ?? '';
+        $this->isConstructor         = $functionInfo['isConstructor'] ?? '';
         $this->returnIsPrimitive     = Helper::isPrimitive($this->returnType);
         $this->manualCFile           = '';
     }

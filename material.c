@@ -104,6 +104,8 @@ struct RL_Material* RL_Material_Create() {
     object->id = RL_MATERIAL_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Material_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Material) {};
+    object->type = RL_MATERIAL_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -384,13 +386,13 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         // maps array not yet supported needs to generate a hash table!
         //php_raylib_materialmap_object *phpMaps = php_raylib_materialmap_fetch_object(maps);
 
-        intern->material->data = (Material) {
+        *php_raylib_material_fetch_data(intern) = (Material) {
             .shader = (Shader) {
-                .id = other->material->data.shader.id,
-                .locs = other->material->data.shader.locs
+                .id = php_raylib_material_fetch_data(other)->shader.id,
+                .locs = php_raylib_material_fetch_data(other)->shader.locs
             },
         };
-        memcpy(intern->material->data.params, other->material->data.params, sizeof intern->material->data.params);
+        memcpy(php_raylib_material_fetch_data(intern)->params, php_raylib_material_fetch_data(other)->params, sizeof(float) * 4);
 
         ZVAL_OBJ_COPY(&intern->shader, &phpShader->std);
 
@@ -410,7 +412,7 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
         //php_raylib_materialmap_object *phpMaps = php_raylib_materialmap_fetch_object(maps);
 
         intern->material = RL_Material_Create();
-        intern->material->data = (Material) {
+        *php_raylib_material_fetch_data(intern) = (Material) {
             .shader = (Shader) {
                 .id = 0,
                 .locs = 0
@@ -490,13 +492,16 @@ static HashTable * php_raylib_material_get_params(php_raylib_material_object *ob
     // Create zval to hold array
     zval zParams;
     unsigned int i;
+    Material *objectData = php_raylib_material_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zParams, 4);
 
     // populate the array with float
     for (i = 0; i < 4; i++) {
-        add_next_index_double(&zParams, obj->material->data.params[i]);
+        if (objectData != NULL && objectData->params != NULL) {
+            add_next_index_double(&zParams, objectData->params[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zParams);

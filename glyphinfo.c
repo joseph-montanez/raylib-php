@@ -103,6 +103,8 @@ struct RL_GlyphInfo* RL_GlyphInfo_Create() {
     object->id = RL_GLYPHINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_GlyphInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( GlyphInfo) {};
+    object->type = RL_GLYPHINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -364,17 +366,17 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(&other->image);
 
 
-        intern->glyphinfo->data = (GlyphInfo) {
-            .value = other->glyphinfo->data.value,
-            .offsetX = other->glyphinfo->data.offsetX,
-            .offsetY = other->glyphinfo->data.offsetY,
-            .advanceX = other->glyphinfo->data.advanceX,
+        *php_raylib_glyphinfo_fetch_data(intern) = (GlyphInfo) {
+            .value = php_raylib_glyphinfo_fetch_data(other)->value,
+            .offsetX = php_raylib_glyphinfo_fetch_data(other)->offsetX,
+            .offsetY = php_raylib_glyphinfo_fetch_data(other)->offsetY,
+            .advanceX = php_raylib_glyphinfo_fetch_data(other)->advanceX,
             .image = (Image) {
-                .data = other->glyphinfo->data.image.data,
-                .width = other->glyphinfo->data.image.width,
-                .height = other->glyphinfo->data.image.height,
-                .mipmaps = other->glyphinfo->data.image.mipmaps,
-                .format = other->glyphinfo->data.image.format
+                .data = php_raylib_glyphinfo_fetch_data(other)->image.data,
+                .width = php_raylib_glyphinfo_fetch_data(other)->image.width,
+                .height = php_raylib_glyphinfo_fetch_data(other)->image.height,
+                .mipmaps = php_raylib_glyphinfo_fetch_data(other)->image.mipmaps,
+                .format = php_raylib_glyphinfo_fetch_data(other)->image.format
             }
         };
 
@@ -386,7 +388,7 @@ zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_object *ori
         php_raylib_image_object *phpImage = php_raylib_image_fetch_object(image);
 
         intern->glyphinfo = RL_GlyphInfo_Create();
-        intern->glyphinfo->data = (GlyphInfo) {
+        *php_raylib_glyphinfo_fetch_data(intern) = (GlyphInfo) {
             .value = 0,
             .offsetX = 0,
             .offsetY = 0,
@@ -490,42 +492,42 @@ PHP_METHOD(GlyphInfo, __construct)
 
     ZVAL_OBJ_COPY(&intern->image, &phpImage->std);
 
-    intern->glyphinfo->data = (GlyphInfo) {
+    *php_raylib_glyphinfo_fetch_data(intern) = (GlyphInfo) {
         .value = (int) value,
         .offsetX = (int) offsetX,
         .offsetY = (int) offsetY,
         .advanceX = (int) advanceX,
         .image = (Image) {
-            .data = phpImage->image->data.data,
-            .width = phpImage->image->data.width,
-            .height = phpImage->image->data.height,
-            .mipmaps = phpImage->image->data.mipmaps,
-            .format = phpImage->image->data.format
+            .data = php_raylib_image_fetch_data(phpImage)->data,
+            .width = php_raylib_image_fetch_data(phpImage)->width,
+            .height = php_raylib_image_fetch_data(phpImage)->height,
+            .mipmaps = php_raylib_image_fetch_data(phpImage)->mipmaps,
+            .format = php_raylib_image_fetch_data(phpImage)->format
         }
     };
 }
 
 static zend_long php_raylib_glyphinfo_get_value(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo->data.value;
+    return (zend_long) php_raylib_glyphinfo_fetch_data(obj)->value;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_offsetx(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo->data.offsetX;
+    return (zend_long) php_raylib_glyphinfo_fetch_data(obj)->offsetX;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_offsety(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo->data.offsetY;
+    return (zend_long) php_raylib_glyphinfo_fetch_data(obj)->offsetY;
 }
 /* }}} */
 
 static zend_long php_raylib_glyphinfo_get_advancex(php_raylib_glyphinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->glyphinfo->data.advanceX;
+    return (zend_long) php_raylib_glyphinfo_fetch_data(obj)->advanceX;
 }
 /* }}} */
 
@@ -546,11 +548,11 @@ static int php_raylib_glyphinfo_set_value(php_raylib_glyphinfo_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo->data.value = 0;
+        php_raylib_glyphinfo_fetch_data(obj)->value = 0;
         return ret;
     }
 
-    obj->glyphinfo->data.value = (int) zval_get_long(newval);
+    php_raylib_glyphinfo_fetch_data(obj)->value = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -561,11 +563,11 @@ static int php_raylib_glyphinfo_set_offsetx(php_raylib_glyphinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo->data.offsetX = 0;
+        php_raylib_glyphinfo_fetch_data(obj)->offsetX = 0;
         return ret;
     }
 
-    obj->glyphinfo->data.offsetX = (int) zval_get_long(newval);
+    php_raylib_glyphinfo_fetch_data(obj)->offsetX = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -576,11 +578,11 @@ static int php_raylib_glyphinfo_set_offsety(php_raylib_glyphinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo->data.offsetY = 0;
+        php_raylib_glyphinfo_fetch_data(obj)->offsetY = 0;
         return ret;
     }
 
-    obj->glyphinfo->data.offsetY = (int) zval_get_long(newval);
+    php_raylib_glyphinfo_fetch_data(obj)->offsetY = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -591,11 +593,11 @@ static int php_raylib_glyphinfo_set_advancex(php_raylib_glyphinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->glyphinfo->data.advanceX = 0;
+        php_raylib_glyphinfo_fetch_data(obj)->advanceX = 0;
         return ret;
     }
 
-    obj->glyphinfo->data.advanceX = (int) zval_get_long(newval);
+    php_raylib_glyphinfo_fetch_data(obj)->advanceX = (int) zval_get_long(newval);
 
     return ret;
 }

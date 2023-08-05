@@ -103,6 +103,8 @@ struct RL_VrStereoConfig* RL_VrStereoConfig_Create() {
     object->id = RL_VRSTEREOCONFIG_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_VrStereoConfig_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( VrStereoConfig) {};
+    object->type = RL_VRSTEREOCONFIG_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -373,12 +375,12 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
 
         intern->vrstereoconfig = RL_VrStereoConfig_Create();
 
-        memcpy(intern->vrstereoconfig->data.leftLensCenter, other->vrstereoconfig->data.leftLensCenter, sizeof intern->vrstereoconfig->data.leftLensCenter);
-        memcpy(intern->vrstereoconfig->data.rightLensCenter, other->vrstereoconfig->data.rightLensCenter, sizeof intern->vrstereoconfig->data.rightLensCenter);
-        memcpy(intern->vrstereoconfig->data.leftScreenCenter, other->vrstereoconfig->data.leftScreenCenter, sizeof intern->vrstereoconfig->data.leftScreenCenter);
-        memcpy(intern->vrstereoconfig->data.rightScreenCenter, other->vrstereoconfig->data.rightScreenCenter, sizeof intern->vrstereoconfig->data.rightScreenCenter);
-        memcpy(intern->vrstereoconfig->data.scale, other->vrstereoconfig->data.scale, sizeof intern->vrstereoconfig->data.scale);
-        memcpy(intern->vrstereoconfig->data.scaleIn, other->vrstereoconfig->data.scaleIn, sizeof intern->vrstereoconfig->data.scaleIn);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->leftLensCenter, php_raylib_vrstereoconfig_fetch_data(other)->leftLensCenter, sizeof(float) * 2);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->rightLensCenter, php_raylib_vrstereoconfig_fetch_data(other)->rightLensCenter, sizeof(float) * 2);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->leftScreenCenter, php_raylib_vrstereoconfig_fetch_data(other)->leftScreenCenter, sizeof(float) * 2);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->rightScreenCenter, php_raylib_vrstereoconfig_fetch_data(other)->rightScreenCenter, sizeof(float) * 2);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->scale, php_raylib_vrstereoconfig_fetch_data(other)->scale, sizeof(float) * 2);
+        memcpy(php_raylib_vrstereoconfig_fetch_data(intern)->scaleIn, php_raylib_vrstereoconfig_fetch_data(other)->scaleIn, sizeof(float) * 2);
 
         HashTable *projection_hash;
         ALLOC_HASHTABLE(projection_hash);
@@ -404,7 +406,7 @@ zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend_object
         //php_raylib_matrix_object *phpViewOffset = php_raylib_matrix_fetch_object(viewOffset);
 
         intern->vrstereoconfig = RL_VrStereoConfig_Create();
-        intern->vrstereoconfig->data = (VrStereoConfig) {
+        *php_raylib_vrstereoconfig_fetch_data(intern) = (VrStereoConfig) {
             // .projection is an array and not yet supported via constructor
             // .viewOffset is an array and not yet supported via constructor
             .leftLensCenter = 0,
@@ -481,13 +483,16 @@ static HashTable * php_raylib_vrstereoconfig_get_leftlenscenter(php_raylib_vrste
     // Create zval to hold array
     zval zLeftLensCenter;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zLeftLensCenter, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zLeftLensCenter, obj->vrstereoconfig->data.leftLensCenter[i]);
+        if (objectData != NULL && objectData->leftLensCenter != NULL) {
+            add_next_index_double(&zLeftLensCenter, objectData->leftLensCenter[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zLeftLensCenter);
@@ -502,13 +507,16 @@ static HashTable * php_raylib_vrstereoconfig_get_rightlenscenter(php_raylib_vrst
     // Create zval to hold array
     zval zRightLensCenter;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zRightLensCenter, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zRightLensCenter, obj->vrstereoconfig->data.rightLensCenter[i]);
+        if (objectData != NULL && objectData->rightLensCenter != NULL) {
+            add_next_index_double(&zRightLensCenter, objectData->rightLensCenter[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zRightLensCenter);
@@ -523,13 +531,16 @@ static HashTable * php_raylib_vrstereoconfig_get_leftscreencenter(php_raylib_vrs
     // Create zval to hold array
     zval zLeftScreenCenter;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zLeftScreenCenter, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zLeftScreenCenter, obj->vrstereoconfig->data.leftScreenCenter[i]);
+        if (objectData != NULL && objectData->leftScreenCenter != NULL) {
+            add_next_index_double(&zLeftScreenCenter, objectData->leftScreenCenter[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zLeftScreenCenter);
@@ -544,13 +555,16 @@ static HashTable * php_raylib_vrstereoconfig_get_rightscreencenter(php_raylib_vr
     // Create zval to hold array
     zval zRightScreenCenter;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zRightScreenCenter, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zRightScreenCenter, obj->vrstereoconfig->data.rightScreenCenter[i]);
+        if (objectData != NULL && objectData->rightScreenCenter != NULL) {
+            add_next_index_double(&zRightScreenCenter, objectData->rightScreenCenter[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zRightScreenCenter);
@@ -565,13 +579,16 @@ static HashTable * php_raylib_vrstereoconfig_get_scale(php_raylib_vrstereoconfig
     // Create zval to hold array
     zval zScale;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zScale, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zScale, obj->vrstereoconfig->data.scale[i]);
+        if (objectData != NULL && objectData->scale != NULL) {
+            add_next_index_double(&zScale, objectData->scale[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zScale);
@@ -586,13 +603,16 @@ static HashTable * php_raylib_vrstereoconfig_get_scalein(php_raylib_vrstereoconf
     // Create zval to hold array
     zval zScaleIn;
     unsigned int i;
+    VrStereoConfig *objectData = php_raylib_vrstereoconfig_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zScaleIn, 2);
 
     // populate the array with float
     for (i = 0; i < 2; i++) {
-        add_next_index_double(&zScaleIn, obj->vrstereoconfig->data.scaleIn[i]);
+        if (objectData != NULL && objectData->scaleIn != NULL) {
+            add_next_index_double(&zScaleIn, objectData->scaleIn[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zScaleIn);

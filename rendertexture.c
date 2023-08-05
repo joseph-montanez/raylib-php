@@ -103,6 +103,8 @@ struct RL_RenderTexture* RL_RenderTexture_Create() {
     object->id = RL_RENDERTEXTURE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_RenderTexture_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( RenderTexture) {};
+    object->type = RL_RENDERTEXTURE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -365,21 +367,21 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
         php_raylib_texture_object *phpDepth = Z_TEXTURE_OBJ_P(&other->depth);
 
 
-        intern->rendertexture->data = (RenderTexture) {
-            .id = other->rendertexture->data.id,
+        *php_raylib_rendertexture_fetch_data(intern) = (RenderTexture) {
+            .id = php_raylib_rendertexture_fetch_data(other)->id,
             .texture = (Texture) {
-                .id = other->rendertexture->data.texture.id,
-                .width = other->rendertexture->data.texture.width,
-                .height = other->rendertexture->data.texture.height,
-                .mipmaps = other->rendertexture->data.texture.mipmaps,
-                .format = other->rendertexture->data.texture.format
+                .id = php_raylib_rendertexture_fetch_data(other)->texture.id,
+                .width = php_raylib_rendertexture_fetch_data(other)->texture.width,
+                .height = php_raylib_rendertexture_fetch_data(other)->texture.height,
+                .mipmaps = php_raylib_rendertexture_fetch_data(other)->texture.mipmaps,
+                .format = php_raylib_rendertexture_fetch_data(other)->texture.format
             },
             .depth = (Texture) {
-                .id = other->rendertexture->data.depth.id,
-                .width = other->rendertexture->data.depth.width,
-                .height = other->rendertexture->data.depth.height,
-                .mipmaps = other->rendertexture->data.depth.mipmaps,
-                .format = other->rendertexture->data.depth.format
+                .id = php_raylib_rendertexture_fetch_data(other)->depth.id,
+                .width = php_raylib_rendertexture_fetch_data(other)->depth.width,
+                .height = php_raylib_rendertexture_fetch_data(other)->depth.height,
+                .mipmaps = php_raylib_rendertexture_fetch_data(other)->depth.mipmaps,
+                .format = php_raylib_rendertexture_fetch_data(other)->depth.format
             }
         };
 
@@ -395,7 +397,7 @@ zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_object 
         php_raylib_texture_object *phpDepth = php_raylib_texture_fetch_object(depth);
 
         intern->rendertexture = RL_RenderTexture_Create();
-        intern->rendertexture->data = (RenderTexture) {
+        *php_raylib_rendertexture_fetch_data(intern) = (RenderTexture) {
             .id = 0,
             .texture = (Texture) {
                 .id = 0,
@@ -462,12 +464,12 @@ PHP_METHOD(RenderTexture, __construct)
 
 
     php_raylib_rendertexture_object *intern = Z_RENDERTEXTURE_OBJ_P(ZEND_THIS);
-    intern->rendertexture->data = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1,(height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+    *php_raylib_rendertexture_fetch_data(intern) = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1,(height <= INT_MAX) ? (int) ((zend_long) height) : -1);
 }
 
 static zend_long php_raylib_rendertexture_get_id(php_raylib_rendertexture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->rendertexture->data.id;
+    return (zend_long) php_raylib_rendertexture_fetch_data(obj)->id;
 }
 /* }}} */
 
@@ -500,11 +502,11 @@ static int php_raylib_rendertexture_set_id(php_raylib_rendertexture_object *obj,
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->rendertexture->data.id = 0;
+        php_raylib_rendertexture_fetch_data(obj)->id = 0;
         return ret;
     }
 
-    obj->rendertexture->data.id = (unsigned int) zval_get_long(newval);
+    php_raylib_rendertexture_fetch_data(obj)->id = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

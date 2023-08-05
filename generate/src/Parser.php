@@ -230,7 +230,7 @@ class Parser
             if ($function->unsupported) {
                 continue;
             }
-            $input = (new CFunction())->gerenate($function, $input);
+            $input = (new CFunction())->gerenate($function, $input, $structs);
         }
 
 
@@ -448,6 +448,19 @@ class Parser
         $input[] = '}';
         $input[] = '';
 
+        $input[] = 'static inline ' . $struct->name . ' *php_raylib_' . $struct->nameLower . '_fetch_data(php_raylib_' . $struct->nameLower . '_object *obj) {';
+        $input[] = '    ' . $struct->name . ' *my_' . $struct->nameLower . ';';
+        $input[] = '    if (obj->' . $struct->nameLower . '->type == RL_' . $struct->nameUpper . '_IS_POINTER) {';
+        $input[] = '        my_' . $struct->nameLower . ' = obj->' . $struct->nameLower . '->data.p;';
+        $input[] = '    } else {';
+        $input[] = '        my_' . $struct->nameLower . ' = &obj->' . $struct->nameLower . '->data.v;';
+        $input[] = '    }';
+        $input[] = '';
+        $input[] = '    return my_' . $struct->nameLower . ';';
+        $input[] = '}';
+        $input[] = '';
+
+
         $input[] = '#define Z_' . $struct->nameUpper . '_OBJ_P(zv) php_raylib_' . $struct->nameLower . '_fetch_object(Z_OBJ_P(zv));';
         $input[] = '';
 
@@ -561,6 +574,8 @@ class Parser
         $input[] = '    object->guid = RL_' . $struct->name . '_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID';
         // Or list this?
         // RL_Vector3_Hash_Id(object->guid, 33); // Generate hash ID
+        $input[] = '    object->data.v = ( ' . $struct->name . ') {};';
+        $input[] = '    object->type = RL_' . $struct->nameUpper . '_IS_VALUE;';
         $input[] = '    object->refCount = 1;';
         $input[] = '    object->deleted = 0;';
         $input[] = '';

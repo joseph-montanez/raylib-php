@@ -17,10 +17,21 @@ extern zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_obj
 
 extern zend_object_handlers php_raylib_npatchinfo_object_handlers;
 
+typedef enum {
+    RL_NPATCHINFO_IS_POINTER,
+    RL_NPATCHINFO_IS_VALUE
+} RLNPatchInfoDataType;
+
+typedef union {
+    NPatchInfo *p;
+    NPatchInfo v;
+} NPatchInfoUnion;
+
 struct RL_NPatchInfo {
     unsigned int id;
     char *guid;
-    NPatchInfo data;
+    NPatchInfoUnion data;
+    RLNPatchInfoDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -42,6 +53,17 @@ typedef struct _php_raylib_npatchinfo_object {
 
 static inline php_raylib_npatchinfo_object *php_raylib_npatchinfo_fetch_object(zend_object *obj) {
     return (php_raylib_npatchinfo_object *)((char *)obj - XtOffsetOf(php_raylib_npatchinfo_object, std));
+}
+
+static inline NPatchInfo *php_raylib_npatchinfo_fetch_data(php_raylib_npatchinfo_object *obj) {
+    NPatchInfo *my_npatchinfo;
+    if (obj->npatchinfo->type == RL_NPATCHINFO_IS_POINTER) {
+        my_npatchinfo = obj->npatchinfo->data.p;
+    } else {
+        my_npatchinfo = &obj->npatchinfo->data.v;
+    }
+
+    return my_npatchinfo;
 }
 
 #define Z_NPATCHINFO_OBJ_P(zv) php_raylib_npatchinfo_fetch_object(Z_OBJ_P(zv));

@@ -17,10 +17,21 @@ extern zend_object * php_raylib_rendertexture_new_ex(zend_class_entry *ce, zend_
 
 extern zend_object_handlers php_raylib_rendertexture_object_handlers;
 
+typedef enum {
+    RL_RENDERTEXTURE_IS_POINTER,
+    RL_RENDERTEXTURE_IS_VALUE
+} RLRenderTextureDataType;
+
+typedef union {
+    RenderTexture *p;
+    RenderTexture v;
+} RenderTextureUnion;
+
 struct RL_RenderTexture {
     unsigned int id;
     char *guid;
-    RenderTexture data;
+    RenderTextureUnion data;
+    RLRenderTextureDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -43,6 +54,17 @@ typedef struct _php_raylib_rendertexture_object {
 
 static inline php_raylib_rendertexture_object *php_raylib_rendertexture_fetch_object(zend_object *obj) {
     return (php_raylib_rendertexture_object *)((char *)obj - XtOffsetOf(php_raylib_rendertexture_object, std));
+}
+
+static inline RenderTexture *php_raylib_rendertexture_fetch_data(php_raylib_rendertexture_object *obj) {
+    RenderTexture *my_rendertexture;
+    if (obj->rendertexture->type == RL_RENDERTEXTURE_IS_POINTER) {
+        my_rendertexture = obj->rendertexture->data.p;
+    } else {
+        my_rendertexture = &obj->rendertexture->data.v;
+    }
+
+    return my_rendertexture;
 }
 
 #define Z_RENDERTEXTURE_OBJ_P(zv) php_raylib_rendertexture_fetch_object(Z_OBJ_P(zv));

@@ -18,10 +18,21 @@ extern zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_ob
 
 extern zend_object_handlers php_raylib_audiostream_object_handlers;
 
+typedef enum {
+    RL_AUDIOSTREAM_IS_POINTER,
+    RL_AUDIOSTREAM_IS_VALUE
+} RLAudioStreamDataType;
+
+typedef union {
+    AudioStream *p;
+    AudioStream v;
+} AudioStreamUnion;
+
 struct RL_AudioStream {
     unsigned int id;
     char *guid;
-    AudioStream data;
+    AudioStreamUnion data;
+    RLAudioStreamDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -45,6 +56,17 @@ typedef struct _php_raylib_audiostream_object {
 
 static inline php_raylib_audiostream_object *php_raylib_audiostream_fetch_object(zend_object *obj) {
     return (php_raylib_audiostream_object *)((char *)obj - XtOffsetOf(php_raylib_audiostream_object, std));
+}
+
+static inline AudioStream *php_raylib_audiostream_fetch_data(php_raylib_audiostream_object *obj) {
+    AudioStream *my_audiostream;
+    if (obj->audiostream->type == RL_AUDIOSTREAM_IS_POINTER) {
+        my_audiostream = obj->audiostream->data.p;
+    } else {
+        my_audiostream = &obj->audiostream->data.v;
+    }
+
+    return my_audiostream;
 }
 
 #define Z_AUDIOSTREAM_OBJ_P(zv) php_raylib_audiostream_fetch_object(Z_OBJ_P(zv));

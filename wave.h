@@ -15,10 +15,21 @@ extern zend_object * php_raylib_wave_new_ex(zend_class_entry *ce, zend_object *o
 
 extern zend_object_handlers php_raylib_wave_object_handlers;
 
+typedef enum {
+    RL_WAVE_IS_POINTER,
+    RL_WAVE_IS_VALUE
+} RLWaveDataType;
+
+typedef union {
+    Wave *p;
+    Wave v;
+} WaveUnion;
+
 struct RL_Wave {
     unsigned int id;
     char *guid;
-    Wave data;
+    WaveUnion data;
+    RLWaveDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -41,6 +52,17 @@ typedef struct _php_raylib_wave_object {
 
 static inline php_raylib_wave_object *php_raylib_wave_fetch_object(zend_object *obj) {
     return (php_raylib_wave_object *)((char *)obj - XtOffsetOf(php_raylib_wave_object, std));
+}
+
+static inline Wave *php_raylib_wave_fetch_data(php_raylib_wave_object *obj) {
+    Wave *my_wave;
+    if (obj->wave->type == RL_WAVE_IS_POINTER) {
+        my_wave = obj->wave->data.p;
+    } else {
+        my_wave = &obj->wave->data.v;
+    }
+
+    return my_wave;
 }
 
 #define Z_WAVE_OBJ_P(zv) php_raylib_wave_fetch_object(Z_OBJ_P(zv));

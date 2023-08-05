@@ -378,7 +378,7 @@ PHP_FUNCTION(SetWindowIcon)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    SetWindowIcon(phpImage->image->data);
+    SetWindowIcon(*php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -408,7 +408,7 @@ PHP_FUNCTION(SetWindowIcons)
         ZVAL_DEREF(images_element);
         if ((Z_TYPE_P(images_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(images_element), php_raylib_image_ce))) {
             php_raylib_image_object *image_obj =  Z_IMAGE_OBJ_P(images_element);
-            images_array[images_index] = image_obj->image->data;
+            images_array[images_index] = *php_raylib_image_fetch_data(image_obj);
         }
 
         images_index++;
@@ -582,7 +582,9 @@ PHP_FUNCTION(GetMonitorPosition)
     Vector2 originalResult = GetMonitorPosition((monitor <= INT_MAX) ? (int) ((zend_long) monitor) : -1);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -684,7 +686,9 @@ PHP_FUNCTION(GetWindowPosition)
     Vector2 originalResult = GetWindowPosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -701,7 +705,9 @@ PHP_FUNCTION(GetWindowScaleDPI)
     Vector2 originalResult = GetWindowScaleDPI();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -885,7 +891,7 @@ PHP_FUNCTION(ClearBackground)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ClearBackground(phpColor->color->data);
+    ClearBackground(*php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -930,7 +936,7 @@ PHP_FUNCTION(BeginMode2D)
 
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
 
-    BeginMode2D(phpCamera->camera2d->data);
+    BeginMode2D(*php_raylib_camera2d_fetch_data(phpCamera));
 
 }
 
@@ -962,7 +968,7 @@ PHP_FUNCTION(BeginMode3D)
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    BeginMode3D(phpCamera->camera3d->data);
+    BeginMode3D(*php_raylib_camera3d_fetch_data(phpCamera));
 
 }
 
@@ -994,7 +1000,7 @@ PHP_FUNCTION(BeginTextureMode)
 
     php_raylib_rendertexture_object *phpTarget = Z_RENDERTEXTURE_OBJ_P(target);
 
-    BeginTextureMode(phpTarget->rendertexture->data);
+    BeginTextureMode(*php_raylib_rendertexture_fetch_data(phpTarget));
 
 }
 
@@ -1026,7 +1032,7 @@ PHP_FUNCTION(BeginShaderMode)
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
 
-    BeginShaderMode(phpShader->shader->data);
+    BeginShaderMode(*php_raylib_shader_fetch_data(phpShader));
 
 }
 
@@ -1129,7 +1135,7 @@ PHP_FUNCTION(BeginVrStereoMode)
 
     php_raylib_vrstereoconfig_object *phpConfig = Z_VRSTEREOCONFIG_OBJ_P(config);
 
-    BeginVrStereoMode(phpConfig->vrstereoconfig->data);
+    BeginVrStereoMode(*php_raylib_vrstereoconfig_fetch_data(phpConfig));
 
 }
 
@@ -1161,10 +1167,12 @@ PHP_FUNCTION(LoadVrStereoConfig)
 
     php_raylib_vrdeviceinfo_object *phpDevice = Z_VRDEVICEINFO_OBJ_P(device);
 
-    VrStereoConfig originalResult = LoadVrStereoConfig(phpDevice->vrdeviceinfo->data);
+    VrStereoConfig originalResult = LoadVrStereoConfig(*php_raylib_vrdeviceinfo_fetch_data(phpDevice));
     zend_object *result = php_raylib_vrstereoconfig_new_ex(php_raylib_vrstereoconfig_ce, NULL);
     php_raylib_vrstereoconfig_object *phpResult = php_raylib_vrstereoconfig_fetch_object(result);
-    phpResult->vrstereoconfig->data = originalResult;
+    VrStereoConfig *vrstereoconfigData = php_raylib_vrstereoconfig_fetch_data(phpResult);
+    // Dereference vrstereoconfigData for assignment back to object
+    *vrstereoconfigData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1184,7 +1192,7 @@ PHP_FUNCTION(UnloadVrStereoConfig)
 
     php_raylib_vrstereoconfig_object *phpConfig = Z_VRSTEREOCONFIG_OBJ_P(config);
 
-    UnloadVrStereoConfig(phpConfig->vrstereoconfig->data);
+    UnloadVrStereoConfig(*php_raylib_vrstereoconfig_fetch_data(phpConfig));
 
 }
 
@@ -1208,7 +1216,9 @@ PHP_FUNCTION(LoadShader)
     Shader originalResult = LoadShader(vsFileName->val, fsFileName->val);
     zend_object *result = php_raylib_shader_new_ex(php_raylib_shader_ce, NULL);
     php_raylib_shader_object *phpResult = php_raylib_shader_fetch_object(result);
-    phpResult->shader->data = originalResult;
+    Shader *shaderData = php_raylib_shader_fetch_data(phpResult);
+    // Dereference shaderData for assignment back to object
+    *shaderData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1233,7 +1243,9 @@ PHP_FUNCTION(LoadShaderFromMemory)
     Shader originalResult = LoadShaderFromMemory(vsCode->val, fsCode->val);
     zend_object *result = php_raylib_shader_new_ex(php_raylib_shader_ce, NULL);
     php_raylib_shader_object *phpResult = php_raylib_shader_fetch_object(result);
-    phpResult->shader->data = originalResult;
+    Shader *shaderData = php_raylib_shader_fetch_data(phpResult);
+    // Dereference shaderData for assignment back to object
+    *shaderData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1253,7 +1265,7 @@ PHP_FUNCTION(IsShaderReady)
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
 
-    RETURN_BOOL(IsShaderReady(phpShader->shader->data));
+    RETURN_BOOL(IsShaderReady(*php_raylib_shader_fetch_data(phpShader)));
 }
 
 // Get shader uniform location
@@ -1274,7 +1286,7 @@ PHP_FUNCTION(GetShaderLocation)
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
 
-    RETURN_LONG(GetShaderLocation(phpShader->shader->data, uniformName->val));
+    RETURN_LONG(GetShaderLocation(*php_raylib_shader_fetch_data(phpShader), uniformName->val));
 }
 
 // Get shader attribute location
@@ -1295,7 +1307,7 @@ PHP_FUNCTION(GetShaderLocationAttrib)
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
 
-    RETURN_LONG(GetShaderLocationAttrib(phpShader->shader->data, attribName->val));
+    RETURN_LONG(GetShaderLocationAttrib(*php_raylib_shader_fetch_data(phpShader), attribName->val));
 }
 
 // Set shader uniform value (matrix 4x4)
@@ -1320,7 +1332,7 @@ PHP_FUNCTION(SetShaderValueMatrix)
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
     php_raylib_matrix_object *phpMat = Z_MATRIX_OBJ_P(mat);
 
-    SetShaderValueMatrix(phpShader->shader->data, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpMat->matrix->data);
+    SetShaderValueMatrix(*php_raylib_shader_fetch_data(phpShader), (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, *php_raylib_matrix_fetch_data(phpMat));
 
 }
 
@@ -1346,7 +1358,7 @@ PHP_FUNCTION(SetShaderValueTexture)
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    SetShaderValueTexture(phpShader->shader->data, (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, phpTexture->texture->data);
+    SetShaderValueTexture(*php_raylib_shader_fetch_data(phpShader), (locIndex <= INT_MAX) ? (int) ((zend_long) locIndex) : -1, *php_raylib_texture_fetch_data(phpTexture));
 
 }
 
@@ -1365,7 +1377,7 @@ PHP_FUNCTION(UnloadShader)
 
     php_raylib_shader_object *phpShader = Z_SHADER_OBJ_P(shader);
 
-    UnloadShader(phpShader->shader->data);
+    UnloadShader(*php_raylib_shader_fetch_data(phpShader));
 
 }
 
@@ -1388,10 +1400,12 @@ PHP_FUNCTION(GetMouseRay)
     php_raylib_vector2_object *phpMousePosition = Z_VECTOR2_OBJ_P(mousePosition);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    Ray originalResult = GetMouseRay(phpMousePosition->vector2->data, phpCamera->camera3d->data);
+    Ray originalResult = GetMouseRay(*php_raylib_vector2_fetch_data(phpMousePosition), *php_raylib_camera3d_fetch_data(phpCamera));
     zend_object *result = php_raylib_ray_new_ex(php_raylib_ray_ce, NULL);
     php_raylib_ray_object *phpResult = php_raylib_ray_fetch_object(result);
-    phpResult->ray->data = originalResult;
+    Ray *rayData = php_raylib_ray_fetch_data(phpResult);
+    // Dereference rayData for assignment back to object
+    *rayData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1411,10 +1425,12 @@ PHP_FUNCTION(GetCameraMatrix)
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    Matrix originalResult = GetCameraMatrix(phpCamera->camera3d->data);
+    Matrix originalResult = GetCameraMatrix(*php_raylib_camera3d_fetch_data(phpCamera));
     zend_object *result = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
     php_raylib_matrix_object *phpResult = php_raylib_matrix_fetch_object(result);
-    phpResult->matrix->data = originalResult;
+    Matrix *matrixData = php_raylib_matrix_fetch_data(phpResult);
+    // Dereference matrixData for assignment back to object
+    *matrixData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1434,10 +1450,12 @@ PHP_FUNCTION(GetCameraMatrix2D)
 
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
 
-    Matrix originalResult = GetCameraMatrix2D(phpCamera->camera2d->data);
+    Matrix originalResult = GetCameraMatrix2D(*php_raylib_camera2d_fetch_data(phpCamera));
     zend_object *result = php_raylib_matrix_new_ex(php_raylib_matrix_ce, NULL);
     php_raylib_matrix_object *phpResult = php_raylib_matrix_fetch_object(result);
-    phpResult->matrix->data = originalResult;
+    Matrix *matrixData = php_raylib_matrix_fetch_data(phpResult);
+    // Dereference matrixData for assignment back to object
+    *matrixData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1461,10 +1479,12 @@ PHP_FUNCTION(GetWorldToScreen)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    Vector2 originalResult = GetWorldToScreen(phpPosition->vector3->data, phpCamera->camera3d->data);
+    Vector2 originalResult = GetWorldToScreen(*php_raylib_vector3_fetch_data(phpPosition), *php_raylib_camera3d_fetch_data(phpCamera));
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1488,10 +1508,12 @@ PHP_FUNCTION(GetScreenToWorld2D)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
 
-    Vector2 originalResult = GetScreenToWorld2D(phpPosition->vector2->data, phpCamera->camera2d->data);
+    Vector2 originalResult = GetScreenToWorld2D(*php_raylib_vector2_fetch_data(phpPosition), *php_raylib_camera2d_fetch_data(phpCamera));
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1521,10 +1543,12 @@ PHP_FUNCTION(GetWorldToScreenEx)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    Vector2 originalResult = GetWorldToScreenEx(phpPosition->vector3->data, phpCamera->camera3d->data, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
+    Vector2 originalResult = GetWorldToScreenEx(*php_raylib_vector3_fetch_data(phpPosition), *php_raylib_camera3d_fetch_data(phpCamera), (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1548,10 +1572,12 @@ PHP_FUNCTION(GetWorldToScreen2D)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_camera2d_object *phpCamera = Z_CAMERA2D_OBJ_P(camera);
 
-    Vector2 originalResult = GetWorldToScreen2D(phpPosition->vector2->data, phpCamera->camera2d->data);
+    Vector2 originalResult = GetWorldToScreen2D(*php_raylib_vector2_fetch_data(phpPosition), *php_raylib_camera2d_fetch_data(phpCamera));
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1917,7 +1943,9 @@ PHP_FUNCTION(LoadDirectoryFiles)
     FilePathList originalResult = LoadDirectoryFiles(dirPath->val);
     zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
     php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
-    phpResult->filepathlist->data = originalResult;
+    FilePathList *filepathlistData = php_raylib_filepathlist_fetch_data(phpResult);
+    // Dereference filepathlistData for assignment back to object
+    *filepathlistData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1945,7 +1973,9 @@ PHP_FUNCTION(LoadDirectoryFilesEx)
     FilePathList originalResult = LoadDirectoryFilesEx(basePath->val, filter->val, scanSubdirs);
     zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
     php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
-    phpResult->filepathlist->data = originalResult;
+    FilePathList *filepathlistData = php_raylib_filepathlist_fetch_data(phpResult);
+    // Dereference filepathlistData for assignment back to object
+    *filepathlistData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -1965,7 +1995,7 @@ PHP_FUNCTION(UnloadDirectoryFiles)
 
     php_raylib_filepathlist_object *phpFiles = Z_FILEPATHLIST_OBJ_P(files);
 
-    UnloadDirectoryFiles(phpFiles->filepathlist->data);
+    UnloadDirectoryFiles(*php_raylib_filepathlist_fetch_data(phpFiles));
 
 }
 
@@ -1993,7 +2023,9 @@ PHP_FUNCTION(LoadDroppedFiles)
     FilePathList originalResult = LoadDroppedFiles();
     zend_object *result = php_raylib_filepathlist_new_ex(php_raylib_filepathlist_ce, NULL);
     php_raylib_filepathlist_object *phpResult = php_raylib_filepathlist_fetch_object(result);
-    phpResult->filepathlist->data = originalResult;
+    FilePathList *filepathlistData = php_raylib_filepathlist_fetch_data(phpResult);
+    // Dereference filepathlistData for assignment back to object
+    *filepathlistData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2013,7 +2045,7 @@ PHP_FUNCTION(UnloadDroppedFiles)
 
     php_raylib_filepathlist_object *phpFiles = Z_FILEPATHLIST_OBJ_P(files);
 
-    UnloadDroppedFiles(phpFiles->filepathlist->data);
+    UnloadDroppedFiles(*php_raylib_filepathlist_fetch_data(phpFiles));
 
 }
 
@@ -2411,7 +2443,9 @@ PHP_FUNCTION(GetMousePosition)
     Vector2 originalResult = GetMousePosition();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2428,7 +2462,9 @@ PHP_FUNCTION(GetMouseDelta)
     Vector2 originalResult = GetMouseDelta();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2520,7 +2556,9 @@ PHP_FUNCTION(GetMouseWheelMoveV)
     Vector2 originalResult = GetMouseWheelMoveV();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2584,7 +2622,9 @@ PHP_FUNCTION(GetTouchPosition)
     Vector2 originalResult = GetTouchPosition((index <= INT_MAX) ? (int) ((zend_long) index) : -1);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2689,7 +2729,9 @@ PHP_FUNCTION(GetGestureDragVector)
     Vector2 originalResult = GetGestureDragVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2718,7 +2760,9 @@ PHP_FUNCTION(GetGesturePinchVector)
     Vector2 originalResult = GetGesturePinchVector();
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -2753,7 +2797,7 @@ PHP_FUNCTION(UpdateCamera)
 
     php_raylib_camera3d_object *phpCamera = Z_CAMERA3D_OBJ_P(camera);
 
-    UpdateCamera(&phpCamera->camera3d->data, (mode <= INT_MAX) ? (int) ((zend_long) mode) : -1);
+    UpdateCamera(php_raylib_camera3d_fetch_data(phpCamera), (mode <= INT_MAX) ? (int) ((zend_long) mode) : -1);
 
 }
 
@@ -2783,7 +2827,7 @@ PHP_FUNCTION(UpdateCameraPro)
     php_raylib_vector3_object *phpMovement = Z_VECTOR3_OBJ_P(movement);
     php_raylib_vector3_object *phpRotation = Z_VECTOR3_OBJ_P(rotation);
 
-    UpdateCameraPro(&phpCamera->camera3d->data, phpMovement->vector3->data, phpRotation->vector3->data, (float) zoom);
+    UpdateCameraPro(php_raylib_camera3d_fetch_data(phpCamera), *php_raylib_vector3_fetch_data(phpMovement), *php_raylib_vector3_fetch_data(phpRotation), (float) zoom);
 
 }
 
@@ -2806,7 +2850,7 @@ PHP_FUNCTION(SetShapesTexture)
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
     php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(source);
 
-    SetShapesTexture(phpTexture->texture->data, phpSource->rectangle->data);
+    SetShapesTexture(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_rectangle_fetch_data(phpSource));
 
 }
 
@@ -2831,7 +2875,7 @@ PHP_FUNCTION(DrawPixel)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPixel((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color->data);
+    DrawPixel((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -2854,7 +2898,7 @@ PHP_FUNCTION(DrawPixelV)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPixelV(phpPosition->vector2->data, phpColor->color->data);
+    DrawPixelV(*php_raylib_vector2_fetch_data(phpPosition), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -2885,7 +2929,7 @@ PHP_FUNCTION(DrawLine)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLine((startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color->data);
+    DrawLine((startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -2912,7 +2956,7 @@ PHP_FUNCTION(DrawLineV)
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineV(phpStartPos->vector2->data, phpEndPos->vector2->data, phpColor->color->data);
+    DrawLineV(*php_raylib_vector2_fetch_data(phpStartPos), *php_raylib_vector2_fetch_data(phpEndPos), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -2942,7 +2986,7 @@ PHP_FUNCTION(DrawLineEx)
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineEx(phpStartPos->vector2->data, phpEndPos->vector2->data, (float) thick, phpColor->color->data);
+    DrawLineEx(*php_raylib_vector2_fetch_data(phpStartPos), *php_raylib_vector2_fetch_data(phpEndPos), (float) thick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -2972,7 +3016,7 @@ PHP_FUNCTION(DrawLineBezier)
     php_raylib_vector2_object *phpEndPos = Z_VECTOR2_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineBezier(phpStartPos->vector2->data, phpEndPos->vector2->data, (float) thick, phpColor->color->data);
+    DrawLineBezier(*php_raylib_vector2_fetch_data(phpStartPos), *php_raylib_vector2_fetch_data(phpEndPos), (float) thick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3006,7 +3050,7 @@ PHP_FUNCTION(DrawLineBezierQuad)
     php_raylib_vector2_object *phpControlPos = Z_VECTOR2_OBJ_P(controlPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineBezierQuad(phpStartPos->vector2->data, phpEndPos->vector2->data, phpControlPos->vector2->data, (float) thick, phpColor->color->data);
+    DrawLineBezierQuad(*php_raylib_vector2_fetch_data(phpStartPos), *php_raylib_vector2_fetch_data(phpEndPos), *php_raylib_vector2_fetch_data(phpControlPos), (float) thick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3044,7 +3088,7 @@ PHP_FUNCTION(DrawLineBezierCubic)
     php_raylib_vector2_object *phpEndControlPos = Z_VECTOR2_OBJ_P(endControlPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineBezierCubic(phpStartPos->vector2->data, phpEndPos->vector2->data, phpStartControlPos->vector2->data, phpEndControlPos->vector2->data, (float) thick, phpColor->color->data);
+    DrawLineBezierCubic(*php_raylib_vector2_fetch_data(phpStartPos), *php_raylib_vector2_fetch_data(phpEndPos), *php_raylib_vector2_fetch_data(phpStartControlPos), *php_raylib_vector2_fetch_data(phpEndControlPos), (float) thick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3077,14 +3121,14 @@ PHP_FUNCTION(DrawLineStrip)
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
             php_raylib_vector2_object *vector2_obj =  Z_VECTOR2_OBJ_P(points_element);
-            points_array[points_index] = vector2_obj->vector2->data;
+            points_array[points_index] = *php_raylib_vector2_fetch_data(vector2_obj);
         }
 
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLineStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color->data);
+    DrawLineStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3112,7 +3156,7 @@ PHP_FUNCTION(DrawCircle)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircle((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color->data);
+    DrawCircle((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3147,7 +3191,7 @@ PHP_FUNCTION(DrawCircleSector)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircleSector(phpCenter->vector2->data, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color->data);
+    DrawCircleSector(*php_raylib_vector2_fetch_data(phpCenter), (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3182,7 +3226,7 @@ PHP_FUNCTION(DrawCircleSectorLines)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircleSectorLines(phpCenter->vector2->data, (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color->data);
+    DrawCircleSectorLines(*php_raylib_vector2_fetch_data(phpCenter), (float) radius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3214,7 +3258,7 @@ PHP_FUNCTION(DrawCircleGradient)
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
 
-    DrawCircleGradient((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor1->color->data, phpColor2->color->data);
+    DrawCircleGradient((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, *php_raylib_color_fetch_data(phpColor1), *php_raylib_color_fetch_data(phpColor2));
 
 }
 
@@ -3240,7 +3284,7 @@ PHP_FUNCTION(DrawCircleV)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircleV(phpCenter->vector2->data, (float) radius, phpColor->color->data);
+    DrawCircleV(*php_raylib_vector2_fetch_data(phpCenter), (float) radius, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3268,7 +3312,7 @@ PHP_FUNCTION(DrawCircleLines)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircleLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, phpColor->color->data);
+    DrawCircleLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radius, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3299,7 +3343,7 @@ PHP_FUNCTION(DrawEllipse)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawEllipse((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color->data);
+    DrawEllipse((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3330,7 +3374,7 @@ PHP_FUNCTION(DrawEllipseLines)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawEllipseLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, phpColor->color->data);
+    DrawEllipseLines((centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (float) radiusH, (float) radiusV, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3368,7 +3412,7 @@ PHP_FUNCTION(DrawRing)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRing(phpCenter->vector2->data, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color->data);
+    DrawRing(*php_raylib_vector2_fetch_data(phpCenter), (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3406,7 +3450,7 @@ PHP_FUNCTION(DrawRingLines)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRingLines(phpCenter->vector2->data, (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color->data);
+    DrawRingLines(*php_raylib_vector2_fetch_data(phpCenter), (float) innerRadius, (float) outerRadius, (float) startAngle, (float) endAngle, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3437,7 +3481,7 @@ PHP_FUNCTION(DrawRectangle)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangle((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color->data);
+    DrawRectangle((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3464,7 +3508,7 @@ PHP_FUNCTION(DrawRectangleV)
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleV(phpPosition->vector2->data, phpSize->vector2->data, phpColor->color->data);
+    DrawRectangleV(*php_raylib_vector2_fetch_data(phpPosition), *php_raylib_vector2_fetch_data(phpSize), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3487,7 +3531,7 @@ PHP_FUNCTION(DrawRectangleRec)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleRec(phpRec->rectangle->data, phpColor->color->data);
+    DrawRectangleRec(*php_raylib_rectangle_fetch_data(phpRec), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3517,7 +3561,7 @@ PHP_FUNCTION(DrawRectanglePro)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectanglePro(phpRec->rectangle->data, phpOrigin->vector2->data, (float) rotation, phpColor->color->data);
+    DrawRectanglePro(*php_raylib_rectangle_fetch_data(phpRec), *php_raylib_vector2_fetch_data(phpOrigin), (float) rotation, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3552,7 +3596,7 @@ PHP_FUNCTION(DrawRectangleGradientV)
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
 
-    DrawRectangleGradientV((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color->data, phpColor2->color->data);
+    DrawRectangleGradientV((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor1), *php_raylib_color_fetch_data(phpColor2));
 
 }
 
@@ -3587,7 +3631,7 @@ PHP_FUNCTION(DrawRectangleGradientH)
     php_raylib_color_object *phpColor1 = Z_COLOR_OBJ_P(color1);
     php_raylib_color_object *phpColor2 = Z_COLOR_OBJ_P(color2);
 
-    DrawRectangleGradientH((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor1->color->data, phpColor2->color->data);
+    DrawRectangleGradientH((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor1), *php_raylib_color_fetch_data(phpColor2));
 
 }
 
@@ -3622,7 +3666,7 @@ PHP_FUNCTION(DrawRectangleGradientEx)
     php_raylib_color_object *phpCol3 = Z_COLOR_OBJ_P(col3);
     php_raylib_color_object *phpCol4 = Z_COLOR_OBJ_P(col4);
 
-    DrawRectangleGradientEx(phpRec->rectangle->data, phpCol1->color->data, phpCol2->color->data, phpCol3->color->data, phpCol4->color->data);
+    DrawRectangleGradientEx(*php_raylib_rectangle_fetch_data(phpRec), *php_raylib_color_fetch_data(phpCol1), *php_raylib_color_fetch_data(phpCol2), *php_raylib_color_fetch_data(phpCol3), *php_raylib_color_fetch_data(phpCol4));
 
 }
 
@@ -3653,7 +3697,7 @@ PHP_FUNCTION(DrawRectangleLines)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleLines((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color->data);
+    DrawRectangleLines((posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3679,7 +3723,7 @@ PHP_FUNCTION(DrawRectangleLinesEx)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleLinesEx(phpRec->rectangle->data, (float) lineThick, phpColor->color->data);
+    DrawRectangleLinesEx(*php_raylib_rectangle_fetch_data(phpRec), (float) lineThick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3708,7 +3752,7 @@ PHP_FUNCTION(DrawRectangleRounded)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleRounded(phpRec->rectangle->data, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, phpColor->color->data);
+    DrawRectangleRounded(*php_raylib_rectangle_fetch_data(phpRec), (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3740,7 +3784,7 @@ PHP_FUNCTION(DrawRectangleRoundedLines)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRectangleRoundedLines(phpRec->rectangle->data, (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, (float) lineThick, phpColor->color->data);
+    DrawRectangleRoundedLines(*php_raylib_rectangle_fetch_data(phpRec), (float) roundness, (segments <= INT_MAX) ? (int) ((zend_long) segments) : -1, (float) lineThick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3771,7 +3815,7 @@ PHP_FUNCTION(DrawTriangle)
     php_raylib_vector2_object *phpV3 = Z_VECTOR2_OBJ_P(v3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangle(phpV1->vector2->data, phpV2->vector2->data, phpV3->vector2->data, phpColor->color->data);
+    DrawTriangle(*php_raylib_vector2_fetch_data(phpV1), *php_raylib_vector2_fetch_data(phpV2), *php_raylib_vector2_fetch_data(phpV3), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3802,7 +3846,7 @@ PHP_FUNCTION(DrawTriangleLines)
     php_raylib_vector2_object *phpV3 = Z_VECTOR2_OBJ_P(v3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangleLines(phpV1->vector2->data, phpV2->vector2->data, phpV3->vector2->data, phpColor->color->data);
+    DrawTriangleLines(*php_raylib_vector2_fetch_data(phpV1), *php_raylib_vector2_fetch_data(phpV2), *php_raylib_vector2_fetch_data(phpV3), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3835,14 +3879,14 @@ PHP_FUNCTION(DrawTriangleFan)
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
             php_raylib_vector2_object *vector2_obj =  Z_VECTOR2_OBJ_P(points_element);
-            points_array[points_index] = vector2_obj->vector2->data;
+            points_array[points_index] = *php_raylib_vector2_fetch_data(vector2_obj);
         }
 
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangleFan(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color->data);
+    DrawTriangleFan(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3875,14 +3919,14 @@ PHP_FUNCTION(DrawTriangleStrip)
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
             php_raylib_vector2_object *vector2_obj =  Z_VECTOR2_OBJ_P(points_element);
-            points_array[points_index] = vector2_obj->vector2->data;
+            points_array[points_index] = *php_raylib_vector2_fetch_data(vector2_obj);
         }
 
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangleStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color->data);
+    DrawTriangleStrip(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3914,7 +3958,7 @@ PHP_FUNCTION(DrawPoly)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPoly(phpCenter->vector2->data, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color->data);
+    DrawPoly(*php_raylib_vector2_fetch_data(phpCenter), (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3946,7 +3990,7 @@ PHP_FUNCTION(DrawPolyLines)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPolyLines(phpCenter->vector2->data, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, phpColor->color->data);
+    DrawPolyLines(*php_raylib_vector2_fetch_data(phpCenter), (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -3981,7 +4025,7 @@ PHP_FUNCTION(DrawPolyLinesEx)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPolyLinesEx(phpCenter->vector2->data, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, (float) lineThick, phpColor->color->data);
+    DrawPolyLinesEx(*php_raylib_vector2_fetch_data(phpCenter), (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius, (float) rotation, (float) lineThick, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -4004,7 +4048,7 @@ PHP_FUNCTION(CheckCollisionRecs)
     php_raylib_rectangle_object *phpRec1 = Z_RECTANGLE_OBJ_P(rec1);
     php_raylib_rectangle_object *phpRec2 = Z_RECTANGLE_OBJ_P(rec2);
 
-    RETURN_BOOL(CheckCollisionRecs(phpRec1->rectangle->data, phpRec2->rectangle->data));
+    RETURN_BOOL(CheckCollisionRecs(*php_raylib_rectangle_fetch_data(phpRec1), *php_raylib_rectangle_fetch_data(phpRec2)));
 }
 
 // Check collision between two circles
@@ -4032,7 +4076,7 @@ PHP_FUNCTION(CheckCollisionCircles)
     php_raylib_vector2_object *phpCenter1 = Z_VECTOR2_OBJ_P(center1);
     php_raylib_vector2_object *phpCenter2 = Z_VECTOR2_OBJ_P(center2);
 
-    RETURN_BOOL(CheckCollisionCircles(phpCenter1->vector2->data, (float) radius1, phpCenter2->vector2->data, (float) radius2));
+    RETURN_BOOL(CheckCollisionCircles(*php_raylib_vector2_fetch_data(phpCenter1), (float) radius1, *php_raylib_vector2_fetch_data(phpCenter2), (float) radius2));
 }
 
 // Check collision between circle and rectangle
@@ -4057,7 +4101,7 @@ PHP_FUNCTION(CheckCollisionCircleRec)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
 
-    RETURN_BOOL(CheckCollisionCircleRec(phpCenter->vector2->data, (float) radius, phpRec->rectangle->data));
+    RETURN_BOOL(CheckCollisionCircleRec(*php_raylib_vector2_fetch_data(phpCenter), (float) radius, *php_raylib_rectangle_fetch_data(phpRec)));
 }
 
 // Check if point is inside rectangle
@@ -4079,7 +4123,7 @@ PHP_FUNCTION(CheckCollisionPointRec)
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
 
-    RETURN_BOOL(CheckCollisionPointRec(phpPoint->vector2->data, phpRec->rectangle->data));
+    RETURN_BOOL(CheckCollisionPointRec(*php_raylib_vector2_fetch_data(phpPoint), *php_raylib_rectangle_fetch_data(phpRec)));
 }
 
 // Check if point is inside circle
@@ -4104,7 +4148,7 @@ PHP_FUNCTION(CheckCollisionPointCircle)
     php_raylib_vector2_object *phpPoint = Z_VECTOR2_OBJ_P(point);
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
 
-    RETURN_BOOL(CheckCollisionPointCircle(phpPoint->vector2->data, phpCenter->vector2->data, (float) radius));
+    RETURN_BOOL(CheckCollisionPointCircle(*php_raylib_vector2_fetch_data(phpPoint), *php_raylib_vector2_fetch_data(phpCenter), (float) radius));
 }
 
 // Check if point is inside a triangle
@@ -4134,7 +4178,7 @@ PHP_FUNCTION(CheckCollisionPointTriangle)
     php_raylib_vector2_object *phpP2 = Z_VECTOR2_OBJ_P(p2);
     php_raylib_vector2_object *phpP3 = Z_VECTOR2_OBJ_P(p3);
 
-    RETURN_BOOL(CheckCollisionPointTriangle(phpPoint->vector2->data, phpP1->vector2->data, phpP2->vector2->data, phpP3->vector2->data));
+    RETURN_BOOL(CheckCollisionPointTriangle(*php_raylib_vector2_fetch_data(phpPoint), *php_raylib_vector2_fetch_data(phpP1), *php_raylib_vector2_fetch_data(phpP2), *php_raylib_vector2_fetch_data(phpP3)));
 }
 
 // Check if point is within a polygon described by array of vertices
@@ -4167,13 +4211,13 @@ PHP_FUNCTION(CheckCollisionPointPoly)
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector2_ce))) {
             php_raylib_vector2_object *vector2_obj =  Z_VECTOR2_OBJ_P(points_element);
-            points_array[points_index] = vector2_obj->vector2->data;
+            points_array[points_index] = *php_raylib_vector2_fetch_data(vector2_obj);
         }
 
         points_index++;
     } ZEND_HASH_FOREACH_END();
 
-    RETURN_BOOL(CheckCollisionPointPoly(phpPoint->vector2->data, points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1));
+    RETURN_BOOL(CheckCollisionPointPoly(*php_raylib_vector2_fetch_data(phpPoint), points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1));
 }
 
 // Check the collision between two lines defined by two points each, returns collision point by reference
@@ -4207,7 +4251,7 @@ PHP_FUNCTION(CheckCollisionLines)
     php_raylib_vector2_object *phpEndPos2 = Z_VECTOR2_OBJ_P(endPos2);
     php_raylib_vector2_object *phpCollisionPoint = Z_VECTOR2_OBJ_P(collisionPoint);
 
-    RETURN_BOOL(CheckCollisionLines(phpStartPos1->vector2->data, phpEndPos1->vector2->data, phpStartPos2->vector2->data, phpEndPos2->vector2->data, &phpCollisionPoint->vector2->data));
+    RETURN_BOOL(CheckCollisionLines(*php_raylib_vector2_fetch_data(phpStartPos1), *php_raylib_vector2_fetch_data(phpEndPos1), *php_raylib_vector2_fetch_data(phpStartPos2), *php_raylib_vector2_fetch_data(phpEndPos2), php_raylib_vector2_fetch_data(phpCollisionPoint)));
 }
 
 // Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
@@ -4236,7 +4280,7 @@ PHP_FUNCTION(CheckCollisionPointLine)
     php_raylib_vector2_object *phpP1 = Z_VECTOR2_OBJ_P(p1);
     php_raylib_vector2_object *phpP2 = Z_VECTOR2_OBJ_P(p2);
 
-    RETURN_BOOL(CheckCollisionPointLine(phpPoint->vector2->data, phpP1->vector2->data, phpP2->vector2->data, (threshold <= INT_MAX) ? (int) ((zend_long) threshold) : -1));
+    RETURN_BOOL(CheckCollisionPointLine(*php_raylib_vector2_fetch_data(phpPoint), *php_raylib_vector2_fetch_data(phpP1), *php_raylib_vector2_fetch_data(phpP2), (threshold <= INT_MAX) ? (int) ((zend_long) threshold) : -1));
 }
 
 // Get collision rectangle for two rectangles collision
@@ -4258,10 +4302,12 @@ PHP_FUNCTION(GetCollisionRec)
     php_raylib_rectangle_object *phpRec1 = Z_RECTANGLE_OBJ_P(rec1);
     php_raylib_rectangle_object *phpRec2 = Z_RECTANGLE_OBJ_P(rec2);
 
-    Rectangle originalResult = GetCollisionRec(phpRec1->rectangle->data, phpRec2->rectangle->data);
+    Rectangle originalResult = GetCollisionRec(*php_raylib_rectangle_fetch_data(phpRec1), *php_raylib_rectangle_fetch_data(phpRec2));
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
     php_raylib_rectangle_object *phpResult = php_raylib_rectangle_fetch_object(result);
-    phpResult->rectangle->data = originalResult;
+    Rectangle *rectangleData = php_raylib_rectangle_fetch_data(phpResult);
+    // Dereference rectangleData for assignment back to object
+    *rectangleData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4283,7 +4329,9 @@ PHP_FUNCTION(LoadImage)
     Image originalResult = LoadImage(fileName->val);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4317,7 +4365,9 @@ PHP_FUNCTION(LoadImageRaw)
     Image originalResult = LoadImageRaw(fileName->val, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (format <= INT_MAX) ? (int) ((zend_long) format) : -1, (headerSize <= INT_MAX) ? (int) ((zend_long) headerSize) : -1);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4356,7 +4406,9 @@ PHP_FUNCTION(LoadImageAnim)
     Image originalResult = LoadImageAnim(fileName->val, frames_array);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4398,7 +4450,9 @@ PHP_FUNCTION(LoadImageFromMemory)
     Image originalResult = LoadImageFromMemory(fileType->val, filedata_array, (dataSize <= INT_MAX) ? (int) ((zend_long) dataSize) : -1);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4418,10 +4472,12 @@ PHP_FUNCTION(LoadImageFromTexture)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    Image originalResult = LoadImageFromTexture(phpTexture->texture->data);
+    Image originalResult = LoadImageFromTexture(*php_raylib_texture_fetch_data(phpTexture));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4438,7 +4494,9 @@ PHP_FUNCTION(LoadImageFromScreen)
     Image originalResult = LoadImageFromScreen();
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4458,7 +4516,7 @@ PHP_FUNCTION(IsImageReady)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    RETURN_BOOL(IsImageReady(phpImage->image->data));
+    RETURN_BOOL(IsImageReady(*php_raylib_image_fetch_data(phpImage)));
 }
 
 // Unload image from CPU memory (RAM)
@@ -4476,7 +4534,7 @@ PHP_FUNCTION(UnloadImage)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    UnloadImage(phpImage->image->data);
+    UnloadImage(*php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -4498,7 +4556,7 @@ PHP_FUNCTION(ExportImage)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    RETURN_BOOL(ExportImage(phpImage->image->data, fileName->val));
+    RETURN_BOOL(ExportImage(*php_raylib_image_fetch_data(phpImage), fileName->val));
 }
 
 // Export image as code file defining an array of bytes, returns true on success
@@ -4519,7 +4577,7 @@ PHP_FUNCTION(ExportImageAsCode)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    RETURN_BOOL(ExportImageAsCode(phpImage->image->data, fileName->val));
+    RETURN_BOOL(ExportImageAsCode(*php_raylib_image_fetch_data(phpImage), fileName->val));
 }
 
 // Generate image: plain color
@@ -4543,10 +4601,12 @@ PHP_FUNCTION(GenImageColor)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Image originalResult = GenImageColor((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color->data);
+    Image originalResult = GenImageColor((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4576,10 +4636,12 @@ PHP_FUNCTION(GenImageGradientV)
     php_raylib_color_object *phpTop = Z_COLOR_OBJ_P(top);
     php_raylib_color_object *phpBottom = Z_COLOR_OBJ_P(bottom);
 
-    Image originalResult = GenImageGradientV((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpTop->color->data, phpBottom->color->data);
+    Image originalResult = GenImageGradientV((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpTop), *php_raylib_color_fetch_data(phpBottom));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4609,10 +4671,12 @@ PHP_FUNCTION(GenImageGradientH)
     php_raylib_color_object *phpLeft = Z_COLOR_OBJ_P(left);
     php_raylib_color_object *phpRight = Z_COLOR_OBJ_P(right);
 
-    Image originalResult = GenImageGradientH((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpLeft->color->data, phpRight->color->data);
+    Image originalResult = GenImageGradientH((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpLeft), *php_raylib_color_fetch_data(phpRight));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4645,10 +4709,12 @@ PHP_FUNCTION(GenImageGradientRadial)
     php_raylib_color_object *phpInner = Z_COLOR_OBJ_P(inner);
     php_raylib_color_object *phpOuter = Z_COLOR_OBJ_P(outer);
 
-    Image originalResult = GenImageGradientRadial((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (float) density, phpInner->color->data, phpOuter->color->data);
+    Image originalResult = GenImageGradientRadial((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (float) density, *php_raylib_color_fetch_data(phpInner), *php_raylib_color_fetch_data(phpOuter));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4684,10 +4750,12 @@ PHP_FUNCTION(GenImageChecked)
     php_raylib_color_object *phpCol1 = Z_COLOR_OBJ_P(col1);
     php_raylib_color_object *phpCol2 = Z_COLOR_OBJ_P(col2);
 
-    Image originalResult = GenImageChecked((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (checksX <= INT_MAX) ? (int) ((zend_long) checksX) : -1, (checksY <= INT_MAX) ? (int) ((zend_long) checksY) : -1, phpCol1->color->data, phpCol2->color->data);
+    Image originalResult = GenImageChecked((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (checksX <= INT_MAX) ? (int) ((zend_long) checksX) : -1, (checksY <= INT_MAX) ? (int) ((zend_long) checksY) : -1, *php_raylib_color_fetch_data(phpCol1), *php_raylib_color_fetch_data(phpCol2));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4715,7 +4783,9 @@ PHP_FUNCTION(GenImageWhiteNoise)
     Image originalResult = GenImageWhiteNoise((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (float) factor);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4749,7 +4819,9 @@ PHP_FUNCTION(GenImagePerlinNoise)
     Image originalResult = GenImagePerlinNoise((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1, (float) scale);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4777,7 +4849,9 @@ PHP_FUNCTION(GenImageCellular)
     Image originalResult = GenImageCellular((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, (tileSize <= INT_MAX) ? (int) ((zend_long) tileSize) : -1);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4805,7 +4879,9 @@ PHP_FUNCTION(GenImageText)
     Image originalResult = GenImageText((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, text->val);
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4825,10 +4901,12 @@ PHP_FUNCTION(rlImageCopy)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    Image originalResult = ImageCopy(phpImage->image->data);
+    Image originalResult = ImageCopy(*php_raylib_image_fetch_data(phpImage));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4852,10 +4930,12 @@ PHP_FUNCTION(ImageFromImage)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
 
-    Image originalResult = ImageFromImage(phpImage->image->data, phpRec->rectangle->data);
+    Image originalResult = ImageFromImage(*php_raylib_image_fetch_data(phpImage), *php_raylib_rectangle_fetch_data(phpRec));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4881,10 +4961,12 @@ PHP_FUNCTION(ImageText)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Image originalResult = ImageText(text->val, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color->data);
+    Image originalResult = ImageText(text->val, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, *php_raylib_color_fetch_data(phpColor));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4917,10 +4999,12 @@ PHP_FUNCTION(ImageTextEx)
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    Image originalResult = ImageTextEx(phpFont->font->data, text->val, (float) fontSize, (float) spacing, phpTint->color->data);
+    Image originalResult = ImageTextEx(*php_raylib_font_fetch_data(phpFont), text->val, (float) fontSize, (float) spacing, *php_raylib_color_fetch_data(phpTint));
     zend_object *result = php_raylib_image_new_ex(php_raylib_image_ce, NULL);
     php_raylib_image_object *phpResult = php_raylib_image_fetch_object(result);
-    phpResult->image->data = originalResult;
+    Image *imageData = php_raylib_image_fetch_data(phpResult);
+    // Dereference imageData for assignment back to object
+    *imageData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -4943,7 +5027,7 @@ PHP_FUNCTION(ImageFormat)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageFormat(&phpImage->image->data, (newFormat <= INT_MAX) ? (int) ((zend_long) newFormat) : -1);
+    ImageFormat(php_raylib_image_fetch_data(phpImage), (newFormat <= INT_MAX) ? (int) ((zend_long) newFormat) : -1);
 
 }
 
@@ -4966,7 +5050,7 @@ PHP_FUNCTION(ImageToPOT)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_color_object *phpFill = Z_COLOR_OBJ_P(fill);
 
-    ImageToPOT(&phpImage->image->data, phpFill->color->data);
+    ImageToPOT(php_raylib_image_fetch_data(phpImage), *php_raylib_color_fetch_data(phpFill));
 
 }
 
@@ -4989,7 +5073,7 @@ PHP_FUNCTION(rlImageCrop)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_rectangle_object *phpCrop = Z_RECTANGLE_OBJ_P(crop);
 
-    ImageCrop(&phpImage->image->data, phpCrop->rectangle->data);
+    ImageCrop(php_raylib_image_fetch_data(phpImage), *php_raylib_rectangle_fetch_data(phpCrop));
 
 }
 
@@ -5011,7 +5095,7 @@ PHP_FUNCTION(ImageAlphaCrop)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageAlphaCrop(&phpImage->image->data, (float) threshold);
+    ImageAlphaCrop(php_raylib_image_fetch_data(phpImage), (float) threshold);
 
 }
 
@@ -5037,7 +5121,7 @@ PHP_FUNCTION(ImageAlphaClear)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageAlphaClear(&phpImage->image->data, phpColor->color->data, (float) threshold);
+    ImageAlphaClear(php_raylib_image_fetch_data(phpImage), *php_raylib_color_fetch_data(phpColor), (float) threshold);
 
 }
 
@@ -5060,7 +5144,7 @@ PHP_FUNCTION(ImageAlphaMask)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_image_object *phpAlphaMask = Z_IMAGE_OBJ_P(alphaMask);
 
-    ImageAlphaMask(&phpImage->image->data, phpAlphaMask->image->data);
+    ImageAlphaMask(php_raylib_image_fetch_data(phpImage), *php_raylib_image_fetch_data(phpAlphaMask));
 
 }
 
@@ -5079,7 +5163,7 @@ PHP_FUNCTION(ImageAlphaPremultiply)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageAlphaPremultiply(&phpImage->image->data);
+    ImageAlphaPremultiply(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5101,7 +5185,7 @@ PHP_FUNCTION(ImageBlurGaussian)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageBlurGaussian(&phpImage->image->data, (blurSize <= INT_MAX) ? (int) ((zend_long) blurSize) : -1);
+    ImageBlurGaussian(php_raylib_image_fetch_data(phpImage), (blurSize <= INT_MAX) ? (int) ((zend_long) blurSize) : -1);
 
 }
 
@@ -5126,7 +5210,7 @@ PHP_FUNCTION(ImageResize)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageResize(&phpImage->image->data, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
+    ImageResize(php_raylib_image_fetch_data(phpImage), (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
 
 }
 
@@ -5151,7 +5235,7 @@ PHP_FUNCTION(ImageResizeNN)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageResizeNN(&phpImage->image->data, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
+    ImageResizeNN(php_raylib_image_fetch_data(phpImage), (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1);
 
 }
 
@@ -5186,7 +5270,7 @@ PHP_FUNCTION(ImageResizeCanvas)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_color_object *phpFill = Z_COLOR_OBJ_P(fill);
 
-    ImageResizeCanvas(&phpImage->image->data, (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1, (offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1, phpFill->color->data);
+    ImageResizeCanvas(php_raylib_image_fetch_data(phpImage), (newWidth <= INT_MAX) ? (int) ((zend_long) newWidth) : -1, (newHeight <= INT_MAX) ? (int) ((zend_long) newHeight) : -1, (offsetX <= INT_MAX) ? (int) ((zend_long) offsetX) : -1, (offsetY <= INT_MAX) ? (int) ((zend_long) offsetY) : -1, *php_raylib_color_fetch_data(phpFill));
 
 }
 
@@ -5205,7 +5289,7 @@ PHP_FUNCTION(ImageMipmaps)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageMipmaps(&phpImage->image->data);
+    ImageMipmaps(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5236,7 +5320,7 @@ PHP_FUNCTION(ImageDither)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageDither(&phpImage->image->data, (rBpp <= INT_MAX) ? (int) ((zend_long) rBpp) : -1, (gBpp <= INT_MAX) ? (int) ((zend_long) gBpp) : -1, (bBpp <= INT_MAX) ? (int) ((zend_long) bBpp) : -1, (aBpp <= INT_MAX) ? (int) ((zend_long) aBpp) : -1);
+    ImageDither(php_raylib_image_fetch_data(phpImage), (rBpp <= INT_MAX) ? (int) ((zend_long) rBpp) : -1, (gBpp <= INT_MAX) ? (int) ((zend_long) gBpp) : -1, (bBpp <= INT_MAX) ? (int) ((zend_long) bBpp) : -1, (aBpp <= INT_MAX) ? (int) ((zend_long) aBpp) : -1);
 
 }
 
@@ -5255,7 +5339,7 @@ PHP_FUNCTION(ImageFlipVertical)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageFlipVertical(&phpImage->image->data);
+    ImageFlipVertical(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5274,7 +5358,7 @@ PHP_FUNCTION(ImageFlipHorizontal)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageFlipHorizontal(&phpImage->image->data);
+    ImageFlipHorizontal(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5293,7 +5377,7 @@ PHP_FUNCTION(ImageRotateCW)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageRotateCW(&phpImage->image->data);
+    ImageRotateCW(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5312,7 +5396,7 @@ PHP_FUNCTION(ImageRotateCCW)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageRotateCCW(&phpImage->image->data);
+    ImageRotateCCW(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5335,7 +5419,7 @@ PHP_FUNCTION(ImageColorTint)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageColorTint(&phpImage->image->data, phpColor->color->data);
+    ImageColorTint(php_raylib_image_fetch_data(phpImage), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5354,7 +5438,7 @@ PHP_FUNCTION(ImageColorInvert)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageColorInvert(&phpImage->image->data);
+    ImageColorInvert(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5373,7 +5457,7 @@ PHP_FUNCTION(ImageColorGrayscale)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageColorGrayscale(&phpImage->image->data);
+    ImageColorGrayscale(php_raylib_image_fetch_data(phpImage));
 
 }
 
@@ -5395,7 +5479,7 @@ PHP_FUNCTION(ImageColorContrast)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageColorContrast(&phpImage->image->data, (float) contrast);
+    ImageColorContrast(php_raylib_image_fetch_data(phpImage), (float) contrast);
 
 }
 
@@ -5417,7 +5501,7 @@ PHP_FUNCTION(ImageColorBrightness)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    ImageColorBrightness(&phpImage->image->data, (brightness <= INT_MAX) ? (int) ((zend_long) brightness) : -1);
+    ImageColorBrightness(php_raylib_image_fetch_data(phpImage), (brightness <= INT_MAX) ? (int) ((zend_long) brightness) : -1);
 
 }
 
@@ -5444,7 +5528,7 @@ PHP_FUNCTION(ImageColorReplace)
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
     php_raylib_color_object *phpReplace = Z_COLOR_OBJ_P(replace);
 
-    ImageColorReplace(&phpImage->image->data, phpColor->color->data, phpReplace->color->data);
+    ImageColorReplace(php_raylib_image_fetch_data(phpImage), *php_raylib_color_fetch_data(phpColor), *php_raylib_color_fetch_data(phpReplace));
 
 }
 
@@ -5463,7 +5547,7 @@ PHP_FUNCTION(UnloadImageColors)
 
     php_raylib_color_object *phpColors = Z_COLOR_OBJ_P(colors);
 
-    UnloadImageColors(&phpColors->color->data);
+    UnloadImageColors(php_raylib_color_fetch_data(phpColors));
 
 }
 
@@ -5482,7 +5566,7 @@ PHP_FUNCTION(UnloadImagePalette)
 
     php_raylib_color_object *phpColors = Z_COLOR_OBJ_P(colors);
 
-    UnloadImagePalette(&phpColors->color->data);
+    UnloadImagePalette(php_raylib_color_fetch_data(phpColors));
 
 }
 
@@ -5504,10 +5588,12 @@ PHP_FUNCTION(GetImageAlphaBorder)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    Rectangle originalResult = GetImageAlphaBorder(phpImage->image->data, (float) threshold);
+    Rectangle originalResult = GetImageAlphaBorder(*php_raylib_image_fetch_data(phpImage), (float) threshold);
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
     php_raylib_rectangle_object *phpResult = php_raylib_rectangle_fetch_object(result);
-    phpResult->rectangle->data = originalResult;
+    Rectangle *rectangleData = php_raylib_rectangle_fetch_data(phpResult);
+    // Dereference rectangleData for assignment back to object
+    *rectangleData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -5533,10 +5619,12 @@ PHP_FUNCTION(GetImageColor)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    Color originalResult = GetImageColor(phpImage->image->data, (x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1);
+    Color originalResult = GetImageColor(*php_raylib_image_fetch_data(phpImage), (x <= INT_MAX) ? (int) ((zend_long) x) : -1, (y <= INT_MAX) ? (int) ((zend_long) y) : -1);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -5560,7 +5648,7 @@ PHP_FUNCTION(ImageClearBackground)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageClearBackground(&phpDst->image->data, phpColor->color->data);
+    ImageClearBackground(php_raylib_image_fetch_data(phpDst), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5589,7 +5677,7 @@ PHP_FUNCTION(ImageDrawPixel)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawPixel(&phpDst->image->data, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpColor->color->data);
+    ImageDrawPixel(php_raylib_image_fetch_data(phpDst), (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5616,7 +5704,7 @@ PHP_FUNCTION(ImageDrawPixelV)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawPixelV(&phpDst->image->data, phpPosition->vector2->data, phpColor->color->data);
+    ImageDrawPixelV(php_raylib_image_fetch_data(phpDst), *php_raylib_vector2_fetch_data(phpPosition), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5651,7 +5739,7 @@ PHP_FUNCTION(ImageDrawLine)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawLine(&phpDst->image->data, (startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, phpColor->color->data);
+    ImageDrawLine(php_raylib_image_fetch_data(phpDst), (startPosX <= INT_MAX) ? (int) ((zend_long) startPosX) : -1, (startPosY <= INT_MAX) ? (int) ((zend_long) startPosY) : -1, (endPosX <= INT_MAX) ? (int) ((zend_long) endPosX) : -1, (endPosY <= INT_MAX) ? (int) ((zend_long) endPosY) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5682,7 +5770,7 @@ PHP_FUNCTION(ImageDrawLineV)
     php_raylib_vector2_object *phpEnd = Z_VECTOR2_OBJ_P(end);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawLineV(&phpDst->image->data, phpStart->vector2->data, phpEnd->vector2->data, phpColor->color->data);
+    ImageDrawLineV(php_raylib_image_fetch_data(phpDst), *php_raylib_vector2_fetch_data(phpStart), *php_raylib_vector2_fetch_data(phpEnd), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5714,7 +5802,7 @@ PHP_FUNCTION(ImageDrawCircle)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawCircle(&phpDst->image->data, (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color->data);
+    ImageDrawCircle(php_raylib_image_fetch_data(phpDst), (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5744,7 +5832,7 @@ PHP_FUNCTION(ImageDrawCircleV)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawCircleV(&phpDst->image->data, phpCenter->vector2->data, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color->data);
+    ImageDrawCircleV(php_raylib_image_fetch_data(phpDst), *php_raylib_vector2_fetch_data(phpCenter), (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5776,7 +5864,7 @@ PHP_FUNCTION(ImageDrawCircleLines)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawCircleLines(&phpDst->image->data, (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color->data);
+    ImageDrawCircleLines(php_raylib_image_fetch_data(phpDst), (centerX <= INT_MAX) ? (int) ((zend_long) centerX) : -1, (centerY <= INT_MAX) ? (int) ((zend_long) centerY) : -1, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5806,7 +5894,7 @@ PHP_FUNCTION(ImageDrawCircleLinesV)
     php_raylib_vector2_object *phpCenter = Z_VECTOR2_OBJ_P(center);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawCircleLinesV(&phpDst->image->data, phpCenter->vector2->data, (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, phpColor->color->data);
+    ImageDrawCircleLinesV(php_raylib_image_fetch_data(phpDst), *php_raylib_vector2_fetch_data(phpCenter), (radius <= INT_MAX) ? (int) ((zend_long) radius) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5841,7 +5929,7 @@ PHP_FUNCTION(ImageDrawRectangle)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawRectangle(&phpDst->image->data, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, phpColor->color->data);
+    ImageDrawRectangle(php_raylib_image_fetch_data(phpDst), (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5872,7 +5960,7 @@ PHP_FUNCTION(ImageDrawRectangleV)
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawRectangleV(&phpDst->image->data, phpPosition->vector2->data, phpSize->vector2->data, phpColor->color->data);
+    ImageDrawRectangleV(php_raylib_image_fetch_data(phpDst), *php_raylib_vector2_fetch_data(phpPosition), *php_raylib_vector2_fetch_data(phpSize), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5899,7 +5987,7 @@ PHP_FUNCTION(ImageDrawRectangleRec)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawRectangleRec(&phpDst->image->data, phpRec->rectangle->data, phpColor->color->data);
+    ImageDrawRectangleRec(php_raylib_image_fetch_data(phpDst), *php_raylib_rectangle_fetch_data(phpRec), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5929,7 +6017,7 @@ PHP_FUNCTION(ImageDrawRectangleLines)
     php_raylib_rectangle_object *phpRec = Z_RECTANGLE_OBJ_P(rec);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawRectangleLines(&phpDst->image->data, phpRec->rectangle->data, (thick <= INT_MAX) ? (int) ((zend_long) thick) : -1, phpColor->color->data);
+    ImageDrawRectangleLines(php_raylib_image_fetch_data(phpDst), *php_raylib_rectangle_fetch_data(phpRec), (thick <= INT_MAX) ? (int) ((zend_long) thick) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -5964,7 +6052,7 @@ PHP_FUNCTION(ImageDraw)
     php_raylib_rectangle_object *phpDstRec = Z_RECTANGLE_OBJ_P(dstRec);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    ImageDraw(&phpDst->image->data, phpSrc->image->data, phpSrcRec->rectangle->data, phpDstRec->rectangle->data, phpTint->color->data);
+    ImageDraw(php_raylib_image_fetch_data(phpDst), *php_raylib_image_fetch_data(phpSrc), *php_raylib_rectangle_fetch_data(phpSrcRec), *php_raylib_rectangle_fetch_data(phpDstRec), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -5999,7 +6087,7 @@ PHP_FUNCTION(ImageDrawText)
     php_raylib_image_object *phpDst = Z_IMAGE_OBJ_P(dst);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    ImageDrawText(&phpDst->image->data, text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color->data);
+    ImageDrawText(php_raylib_image_fetch_data(phpDst), text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -6039,7 +6127,7 @@ PHP_FUNCTION(ImageDrawTextEx)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    ImageDrawTextEx(&phpDst->image->data, phpFont->font->data, text->val, phpPosition->vector2->data, (float) fontSize, (float) spacing, phpTint->color->data);
+    ImageDrawTextEx(php_raylib_image_fetch_data(phpDst), *php_raylib_font_fetch_data(phpFont), text->val, *php_raylib_vector2_fetch_data(phpPosition), (float) fontSize, (float) spacing, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6060,7 +6148,9 @@ PHP_FUNCTION(LoadTexture)
     Texture originalResult = LoadTexture(fileName->val);
     zend_object *result = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
     php_raylib_texture_object *phpResult = php_raylib_texture_fetch_object(result);
-    phpResult->texture->data = originalResult;
+    Texture *textureData = php_raylib_texture_fetch_data(phpResult);
+    // Dereference textureData for assignment back to object
+    *textureData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6080,10 +6170,12 @@ PHP_FUNCTION(LoadTextureFromImage)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    Texture originalResult = LoadTextureFromImage(phpImage->image->data);
+    Texture originalResult = LoadTextureFromImage(*php_raylib_image_fetch_data(phpImage));
     zend_object *result = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
     php_raylib_texture_object *phpResult = php_raylib_texture_fetch_object(result);
-    phpResult->texture->data = originalResult;
+    Texture *textureData = php_raylib_texture_fetch_data(phpResult);
+    // Dereference textureData for assignment back to object
+    *textureData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6106,10 +6198,12 @@ PHP_FUNCTION(LoadTextureCubemap)
 
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
 
-    Texture originalResult = LoadTextureCubemap(phpImage->image->data, (layout <= INT_MAX) ? (int) ((zend_long) layout) : -1);
+    Texture originalResult = LoadTextureCubemap(*php_raylib_image_fetch_data(phpImage), (layout <= INT_MAX) ? (int) ((zend_long) layout) : -1);
     zend_object *result = php_raylib_texture_new_ex(php_raylib_texture_ce, NULL);
     php_raylib_texture_object *phpResult = php_raylib_texture_fetch_object(result);
-    phpResult->texture->data = originalResult;
+    Texture *textureData = php_raylib_texture_fetch_data(phpResult);
+    // Dereference textureData for assignment back to object
+    *textureData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6134,7 +6228,9 @@ PHP_FUNCTION(LoadRenderTexture)
     RenderTexture originalResult = LoadRenderTexture((width <= INT_MAX) ? (int) ((zend_long) width) : -1, (height <= INT_MAX) ? (int) ((zend_long) height) : -1);
     zend_object *result = php_raylib_rendertexture_new_ex(php_raylib_rendertexture_ce, NULL);
     php_raylib_rendertexture_object *phpResult = php_raylib_rendertexture_fetch_object(result);
-    phpResult->rendertexture->data = originalResult;
+    RenderTexture *rendertextureData = php_raylib_rendertexture_fetch_data(phpResult);
+    // Dereference rendertextureData for assignment back to object
+    *rendertextureData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6154,7 +6250,7 @@ PHP_FUNCTION(IsTextureReady)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    RETURN_BOOL(IsTextureReady(phpTexture->texture->data));
+    RETURN_BOOL(IsTextureReady(*php_raylib_texture_fetch_data(phpTexture)));
 }
 
 // Unload texture from GPU memory (VRAM)
@@ -6172,7 +6268,7 @@ PHP_FUNCTION(UnloadTexture)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    UnloadTexture(phpTexture->texture->data);
+    UnloadTexture(*php_raylib_texture_fetch_data(phpTexture));
 
 }
 
@@ -6191,7 +6287,7 @@ PHP_FUNCTION(IsRenderTextureReady)
 
     php_raylib_rendertexture_object *phpTarget = Z_RENDERTEXTURE_OBJ_P(target);
 
-    RETURN_BOOL(IsRenderTextureReady(phpTarget->rendertexture->data));
+    RETURN_BOOL(IsRenderTextureReady(*php_raylib_rendertexture_fetch_data(phpTarget)));
 }
 
 // Unload render texture from GPU memory (VRAM)
@@ -6209,7 +6305,7 @@ PHP_FUNCTION(UnloadRenderTexture)
 
     php_raylib_rendertexture_object *phpTarget = Z_RENDERTEXTURE_OBJ_P(target);
 
-    UnloadRenderTexture(phpTarget->rendertexture->data);
+    UnloadRenderTexture(*php_raylib_rendertexture_fetch_data(phpTarget));
 
 }
 
@@ -6228,7 +6324,7 @@ PHP_FUNCTION(GenTextureMipmaps)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    GenTextureMipmaps(&phpTexture->texture->data);
+    GenTextureMipmaps(php_raylib_texture_fetch_data(phpTexture));
 
 }
 
@@ -6250,7 +6346,7 @@ PHP_FUNCTION(SetTextureFilter)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    SetTextureFilter(phpTexture->texture->data, (filter <= INT_MAX) ? (int) ((zend_long) filter) : -1);
+    SetTextureFilter(*php_raylib_texture_fetch_data(phpTexture), (filter <= INT_MAX) ? (int) ((zend_long) filter) : -1);
 
 }
 
@@ -6272,7 +6368,7 @@ PHP_FUNCTION(SetTextureWrap)
 
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    SetTextureWrap(phpTexture->texture->data, (wrap <= INT_MAX) ? (int) ((zend_long) wrap) : -1);
+    SetTextureWrap(*php_raylib_texture_fetch_data(phpTexture), (wrap <= INT_MAX) ? (int) ((zend_long) wrap) : -1);
 
 }
 
@@ -6301,7 +6397,7 @@ PHP_FUNCTION(DrawTexture)
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTexture(phpTexture->texture->data, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, phpTint->color->data);
+    DrawTexture(*php_raylib_texture_fetch_data(phpTexture), (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6328,7 +6424,7 @@ PHP_FUNCTION(DrawTextureV)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextureV(phpTexture->texture->data, phpPosition->vector2->data, phpTint->color->data);
+    DrawTextureV(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_vector2_fetch_data(phpPosition), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6361,7 +6457,7 @@ PHP_FUNCTION(DrawTextureEx)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextureEx(phpTexture->texture->data, phpPosition->vector2->data, (float) rotation, (float) scale, phpTint->color->data);
+    DrawTextureEx(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_vector2_fetch_data(phpPosition), (float) rotation, (float) scale, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6392,7 +6488,7 @@ PHP_FUNCTION(DrawTextureRec)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextureRec(phpTexture->texture->data, phpSource->rectangle->data, phpPosition->vector2->data, phpTint->color->data);
+    DrawTextureRec(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_rectangle_fetch_data(phpSource), *php_raylib_vector2_fetch_data(phpPosition), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6430,7 +6526,7 @@ PHP_FUNCTION(DrawTexturePro)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTexturePro(phpTexture->texture->data, phpSource->rectangle->data, phpDest->rectangle->data, phpOrigin->vector2->data, (float) rotation, phpTint->color->data);
+    DrawTexturePro(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_rectangle_fetch_data(phpSource), *php_raylib_rectangle_fetch_data(phpDest), *php_raylib_vector2_fetch_data(phpOrigin), (float) rotation, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6468,7 +6564,7 @@ PHP_FUNCTION(DrawTextureNPatch)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextureNPatch(phpTexture->texture->data, phpNPatchInfo->npatchinfo->data, phpDest->rectangle->data, phpOrigin->vector2->data, (float) rotation, phpTint->color->data);
+    DrawTextureNPatch(*php_raylib_texture_fetch_data(phpTexture), *php_raylib_npatchinfo_fetch_data(phpNPatchInfo), *php_raylib_rectangle_fetch_data(phpDest), *php_raylib_vector2_fetch_data(phpOrigin), (float) rotation, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -6490,10 +6586,12 @@ PHP_FUNCTION(Fade)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Color originalResult = Fade(phpColor->color->data, (float) alpha);
+    Color originalResult = Fade(*php_raylib_color_fetch_data(phpColor), (float) alpha);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6513,7 +6611,7 @@ PHP_FUNCTION(ColorToInt)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    RETURN_LONG(ColorToInt(phpColor->color->data));
+    RETURN_LONG(ColorToInt(*php_raylib_color_fetch_data(phpColor)));
 }
 
 // Get Color normalized as float [0..1]
@@ -6531,10 +6629,12 @@ PHP_FUNCTION(ColorNormalize)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Vector4 originalResult = ColorNormalize(phpColor->color->data);
+    Vector4 originalResult = ColorNormalize(*php_raylib_color_fetch_data(phpColor));
     zend_object *result = php_raylib_vector4_new_ex(php_raylib_vector4_ce, NULL);
     php_raylib_vector4_object *phpResult = php_raylib_vector4_fetch_object(result);
-    phpResult->vector4->data = originalResult;
+    Vector4 *vector4Data = php_raylib_vector4_fetch_data(phpResult);
+    // Dereference vector4Data for assignment back to object
+    *vector4Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6554,10 +6654,12 @@ PHP_FUNCTION(ColorFromNormalized)
 
     php_raylib_vector4_object *phpNormalized = Z_VECTOR4_OBJ_P(normalized);
 
-    Color originalResult = ColorFromNormalized(phpNormalized->vector4->data);
+    Color originalResult = ColorFromNormalized(*php_raylib_vector4_fetch_data(phpNormalized));
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6577,10 +6679,12 @@ PHP_FUNCTION(ColorToHSV)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Vector3 originalResult = ColorToHSV(phpColor->color->data);
+    Vector3 originalResult = ColorToHSV(*php_raylib_color_fetch_data(phpColor));
     zend_object *result = php_raylib_vector3_new_ex(php_raylib_vector3_ce, NULL);
     php_raylib_vector3_object *phpResult = php_raylib_vector3_fetch_object(result);
-    phpResult->vector3->data = originalResult;
+    Vector3 *vector3Data = php_raylib_vector3_fetch_data(phpResult);
+    // Dereference vector3Data for assignment back to object
+    *vector3Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6608,7 +6712,9 @@ PHP_FUNCTION(ColorFromHSV)
     Color originalResult = ColorFromHSV((float) hue, (float) saturation, (float) value);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6632,10 +6738,12 @@ PHP_FUNCTION(ColorTint)
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    Color originalResult = ColorTint(phpColor->color->data, phpTint->color->data);
+    Color originalResult = ColorTint(*php_raylib_color_fetch_data(phpColor), *php_raylib_color_fetch_data(phpTint));
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6658,10 +6766,12 @@ PHP_FUNCTION(ColorBrightness)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Color originalResult = ColorBrightness(phpColor->color->data, (float) factor);
+    Color originalResult = ColorBrightness(*php_raylib_color_fetch_data(phpColor), (float) factor);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6684,10 +6794,12 @@ PHP_FUNCTION(ColorContrast)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Color originalResult = ColorContrast(phpColor->color->data, (float) contrast);
+    Color originalResult = ColorContrast(*php_raylib_color_fetch_data(phpColor), (float) contrast);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6710,10 +6822,12 @@ PHP_FUNCTION(ColorAlpha)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    Color originalResult = ColorAlpha(phpColor->color->data, (float) alpha);
+    Color originalResult = ColorAlpha(*php_raylib_color_fetch_data(phpColor), (float) alpha);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6741,10 +6855,12 @@ PHP_FUNCTION(ColorAlphaBlend)
     php_raylib_color_object *phpSrc = Z_COLOR_OBJ_P(src);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    Color originalResult = ColorAlphaBlend(phpDst->color->data, phpSrc->color->data, phpTint->color->data);
+    Color originalResult = ColorAlphaBlend(*php_raylib_color_fetch_data(phpDst), *php_raylib_color_fetch_data(phpSrc), *php_raylib_color_fetch_data(phpTint));
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6766,7 +6882,9 @@ PHP_FUNCTION(GetColor)
     Color originalResult = GetColor((hexValue <= INT_MAX) ? (int) ((zend_long) hexValue) : -1);
     zend_object *result = php_raylib_color_new_ex(php_raylib_color_ce, NULL);
     php_raylib_color_object *phpResult = php_raylib_color_fetch_object(result);
-    phpResult->color->data = originalResult;
+    Color *colorData = php_raylib_color_fetch_data(phpResult);
+    // Dereference colorData for assignment back to object
+    *colorData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6806,7 +6924,9 @@ PHP_FUNCTION(GetFontDefault)
     Font originalResult = GetFontDefault();
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
     php_raylib_font_object *phpResult = php_raylib_font_fetch_object(result);
-    phpResult->font->data = originalResult;
+    Font *fontData = php_raylib_font_fetch_data(phpResult);
+    // Dereference fontData for assignment back to object
+    *fontData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6828,7 +6948,9 @@ PHP_FUNCTION(LoadFont)
     Font originalResult = LoadFont(fileName->val);
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
     php_raylib_font_object *phpResult = php_raylib_font_fetch_object(result);
-    phpResult->font->data = originalResult;
+    Font *fontData = php_raylib_font_fetch_data(phpResult);
+    // Dereference fontData for assignment back to object
+    *fontData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6873,7 +6995,9 @@ PHP_FUNCTION(LoadFontEx)
     Font originalResult = LoadFontEx(fileName->val, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, fontchars_array, (glyphCount <= INT_MAX) ? (int) ((zend_long) glyphCount) : -1);
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
     php_raylib_font_object *phpResult = php_raylib_font_fetch_object(result);
-    phpResult->font->data = originalResult;
+    Font *fontData = php_raylib_font_fetch_data(phpResult);
+    // Dereference fontData for assignment back to object
+    *fontData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6900,10 +7024,12 @@ PHP_FUNCTION(LoadFontFromImage)
     php_raylib_image_object *phpImage = Z_IMAGE_OBJ_P(image);
     php_raylib_color_object *phpKey = Z_COLOR_OBJ_P(key);
 
-    Font originalResult = LoadFontFromImage(phpImage->image->data, phpKey->color->data, (firstChar <= INT_MAX) ? (int) ((zend_long) firstChar) : -1);
+    Font originalResult = LoadFontFromImage(*php_raylib_image_fetch_data(phpImage), *php_raylib_color_fetch_data(phpKey), (firstChar <= INT_MAX) ? (int) ((zend_long) firstChar) : -1);
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
     php_raylib_font_object *phpResult = php_raylib_font_fetch_object(result);
-    phpResult->font->data = originalResult;
+    Font *fontData = php_raylib_font_fetch_data(phpResult);
+    // Dereference fontData for assignment back to object
+    *fontData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6968,7 +7094,9 @@ PHP_FUNCTION(LoadFontFromMemory)
     Font originalResult = LoadFontFromMemory(fileType->val, filedata_array, (dataSize <= INT_MAX) ? (int) ((zend_long) dataSize) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, fontchars_array, (glyphCount <= INT_MAX) ? (int) ((zend_long) glyphCount) : -1);
     zend_object *result = php_raylib_font_new_ex(php_raylib_font_ce, NULL);
     php_raylib_font_object *phpResult = php_raylib_font_fetch_object(result);
-    phpResult->font->data = originalResult;
+    Font *fontData = php_raylib_font_fetch_data(phpResult);
+    // Dereference fontData for assignment back to object
+    *fontData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -6988,7 +7116,7 @@ PHP_FUNCTION(IsFontReady)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    RETURN_BOOL(IsFontReady(phpFont->font->data));
+    RETURN_BOOL(IsFontReady(*php_raylib_font_fetch_data(phpFont)));
 }
 
 // Unload font chars info data (RAM)
@@ -7017,7 +7145,7 @@ PHP_FUNCTION(UnloadFontData)
         ZVAL_DEREF(chars_element);
         if ((Z_TYPE_P(chars_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(chars_element), php_raylib_glyphinfo_ce))) {
             php_raylib_glyphinfo_object *glyphinfo_obj =  Z_GLYPHINFO_OBJ_P(chars_element);
-            chars_array[chars_index] = glyphinfo_obj->glyphinfo->data;
+            chars_array[chars_index] = *php_raylib_glyphinfo_fetch_data(glyphinfo_obj);
         }
 
         chars_index++;
@@ -7042,7 +7170,7 @@ PHP_FUNCTION(UnloadFont)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    UnloadFont(phpFont->font->data);
+    UnloadFont(*php_raylib_font_fetch_data(phpFont));
 
 }
 
@@ -7064,7 +7192,7 @@ PHP_FUNCTION(ExportFontAsCode)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    RETURN_BOOL(ExportFontAsCode(phpFont->font->data, fileName->val));
+    RETURN_BOOL(ExportFontAsCode(*php_raylib_font_fetch_data(phpFont), fileName->val));
 }
 
 // Draw current FPS
@@ -7115,7 +7243,7 @@ PHP_FUNCTION(DrawText)
 
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawText(text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, phpColor->color->data);
+    DrawText(text->val, (posX <= INT_MAX) ? (int) ((zend_long) posX) : -1, (posY <= INT_MAX) ? (int) ((zend_long) posY) : -1, (fontSize <= INT_MAX) ? (int) ((zend_long) fontSize) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7151,7 +7279,7 @@ PHP_FUNCTION(DrawTextEx)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextEx(phpFont->font->data, text->val, phpPosition->vector2->data, (float) fontSize, (float) spacing, phpTint->color->data);
+    DrawTextEx(*php_raylib_font_fetch_data(phpFont), text->val, *php_raylib_vector2_fetch_data(phpPosition), (float) fontSize, (float) spacing, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -7194,7 +7322,7 @@ PHP_FUNCTION(DrawTextPro)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextPro(phpFont->font->data, text->val, phpPosition->vector2->data, phpOrigin->vector2->data, (float) rotation, (float) fontSize, (float) spacing, phpTint->color->data);
+    DrawTextPro(*php_raylib_font_fetch_data(phpFont), text->val, *php_raylib_vector2_fetch_data(phpPosition), *php_raylib_vector2_fetch_data(phpOrigin), (float) rotation, (float) fontSize, (float) spacing, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -7227,7 +7355,7 @@ PHP_FUNCTION(DrawTextCodepoint)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextCodepoint(phpFont->font->data, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1, phpPosition->vector2->data, (float) fontSize, phpTint->color->data);
+    DrawTextCodepoint(*php_raylib_font_fetch_data(phpFont), (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1, *php_raylib_vector2_fetch_data(phpPosition), (float) fontSize, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -7280,7 +7408,7 @@ PHP_FUNCTION(DrawTextCodepoints)
     php_raylib_vector2_object *phpPosition = Z_VECTOR2_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawTextCodepoints(phpFont->font->data, codepoints_array, (count <= INT_MAX) ? (int) ((zend_long) count) : -1, phpPosition->vector2->data, (float) fontSize, (float) spacing, phpTint->color->data);
+    DrawTextCodepoints(*php_raylib_font_fetch_data(phpFont), codepoints_array, (count <= INT_MAX) ? (int) ((zend_long) count) : -1, *php_raylib_vector2_fetch_data(phpPosition), (float) fontSize, (float) spacing, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -7328,10 +7456,12 @@ PHP_FUNCTION(MeasureTextEx)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    Vector2 originalResult = MeasureTextEx(phpFont->font->data, text->val, (float) fontSize, (float) spacing);
+    Vector2 originalResult = MeasureTextEx(*php_raylib_font_fetch_data(phpFont), text->val, (float) fontSize, (float) spacing);
     zend_object *result = php_raylib_vector2_new_ex(php_raylib_vector2_ce, NULL);
     php_raylib_vector2_object *phpResult = php_raylib_vector2_fetch_object(result);
-    phpResult->vector2->data = originalResult;
+    Vector2 *vector2Data = php_raylib_vector2_fetch_data(phpResult);
+    // Dereference vector2Data for assignment back to object
+    *vector2Data = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -7354,7 +7484,7 @@ PHP_FUNCTION(GetGlyphIndex)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    RETURN_LONG(GetGlyphIndex(phpFont->font->data, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1));
+    RETURN_LONG(GetGlyphIndex(*php_raylib_font_fetch_data(phpFont), (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1));
 }
 
 // Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
@@ -7375,10 +7505,12 @@ PHP_FUNCTION(GetGlyphInfo)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    GlyphInfo originalResult = GetGlyphInfo(phpFont->font->data, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
+    GlyphInfo originalResult = GetGlyphInfo(*php_raylib_font_fetch_data(phpFont), (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
     zend_object *result = php_raylib_glyphinfo_new_ex(php_raylib_glyphinfo_ce, NULL);
     php_raylib_glyphinfo_object *phpResult = php_raylib_glyphinfo_fetch_object(result);
-    phpResult->glyphinfo->data = originalResult;
+    GlyphInfo *glyphinfoData = php_raylib_glyphinfo_fetch_data(phpResult);
+    // Dereference glyphinfoData for assignment back to object
+    *glyphinfoData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -7401,10 +7533,12 @@ PHP_FUNCTION(GetGlyphAtlasRec)
 
     php_raylib_font_object *phpFont = Z_FONT_OBJ_P(font);
 
-    Rectangle originalResult = GetGlyphAtlasRec(phpFont->font->data, (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
+    Rectangle originalResult = GetGlyphAtlasRec(*php_raylib_font_fetch_data(phpFont), (codepoint <= INT_MAX) ? (int) ((zend_long) codepoint) : -1);
     zend_object *result = php_raylib_rectangle_new_ex(php_raylib_rectangle_ce, NULL);
     php_raylib_rectangle_object *phpResult = php_raylib_rectangle_fetch_object(result);
-    phpResult->rectangle->data = originalResult;
+    Rectangle *rectangleData = php_raylib_rectangle_fetch_data(phpResult);
+    // Dereference rectangleData for assignment back to object
+    *rectangleData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -7733,7 +7867,7 @@ PHP_FUNCTION(DrawLine3D)
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawLine3D(phpStartPos->vector3->data, phpEndPos->vector3->data, phpColor->color->data);
+    DrawLine3D(*php_raylib_vector3_fetch_data(phpStartPos), *php_raylib_vector3_fetch_data(phpEndPos), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7756,7 +7890,7 @@ PHP_FUNCTION(DrawPoint3D)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPoint3D(phpPosition->vector3->data, phpColor->color->data);
+    DrawPoint3D(*php_raylib_vector3_fetch_data(phpPosition), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7789,7 +7923,7 @@ PHP_FUNCTION(DrawCircle3D)
     php_raylib_vector3_object *phpRotationAxis = Z_VECTOR3_OBJ_P(rotationAxis);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCircle3D(phpCenter->vector3->data, (float) radius, phpRotationAxis->vector3->data, (float) rotationAngle, phpColor->color->data);
+    DrawCircle3D(*php_raylib_vector3_fetch_data(phpCenter), (float) radius, *php_raylib_vector3_fetch_data(phpRotationAxis), (float) rotationAngle, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7820,7 +7954,7 @@ PHP_FUNCTION(DrawTriangle3D)
     php_raylib_vector3_object *phpV3 = Z_VECTOR3_OBJ_P(v3);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangle3D(phpV1->vector3->data, phpV2->vector3->data, phpV3->vector3->data, phpColor->color->data);
+    DrawTriangle3D(*php_raylib_vector3_fetch_data(phpV1), *php_raylib_vector3_fetch_data(phpV2), *php_raylib_vector3_fetch_data(phpV3), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7853,14 +7987,14 @@ PHP_FUNCTION(DrawTriangleStrip3D)
         ZVAL_DEREF(points_element);
         if ((Z_TYPE_P(points_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(points_element), php_raylib_vector3_ce))) {
             php_raylib_vector3_object *vector3_obj =  Z_VECTOR3_OBJ_P(points_element);
-            points_array[points_index] = vector3_obj->vector3->data;
+            points_array[points_index] = *php_raylib_vector3_fetch_data(vector3_obj);
         }
 
         points_index++;
     } ZEND_HASH_FOREACH_END();
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawTriangleStrip3D(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, phpColor->color->data);
+    DrawTriangleStrip3D(points_array, (pointCount <= INT_MAX) ? (int) ((zend_long) pointCount) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7892,7 +8026,7 @@ PHP_FUNCTION(DrawCube)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCube(phpPosition->vector3->data, (float) width, (float) height, (float) length, phpColor->color->data);
+    DrawCube(*php_raylib_vector3_fetch_data(phpPosition), (float) width, (float) height, (float) length, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7919,7 +8053,7 @@ PHP_FUNCTION(DrawCubeV)
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCubeV(phpPosition->vector3->data, phpSize->vector3->data, phpColor->color->data);
+    DrawCubeV(*php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector3_fetch_data(phpSize), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7951,7 +8085,7 @@ PHP_FUNCTION(DrawCubeWires)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCubeWires(phpPosition->vector3->data, (float) width, (float) height, (float) length, phpColor->color->data);
+    DrawCubeWires(*php_raylib_vector3_fetch_data(phpPosition), (float) width, (float) height, (float) length, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -7978,7 +8112,7 @@ PHP_FUNCTION(DrawCubeWiresV)
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCubeWiresV(phpPosition->vector3->data, phpSize->vector3->data, phpColor->color->data);
+    DrawCubeWiresV(*php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector3_fetch_data(phpSize), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8004,7 +8138,7 @@ PHP_FUNCTION(DrawSphere)
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawSphere(phpCenterPos->vector3->data, (float) radius, phpColor->color->data);
+    DrawSphere(*php_raylib_vector3_fetch_data(phpCenterPos), (float) radius, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8036,7 +8170,7 @@ PHP_FUNCTION(DrawSphereEx)
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawSphereEx(phpCenterPos->vector3->data, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color->data);
+    DrawSphereEx(*php_raylib_vector3_fetch_data(phpCenterPos), (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8068,7 +8202,7 @@ PHP_FUNCTION(DrawSphereWires)
     php_raylib_vector3_object *phpCenterPos = Z_VECTOR3_OBJ_P(centerPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawSphereWires(phpCenterPos->vector3->data, (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color->data);
+    DrawSphereWires(*php_raylib_vector3_fetch_data(phpCenterPos), (float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8103,7 +8237,7 @@ PHP_FUNCTION(DrawCylinder)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCylinder(phpPosition->vector3->data, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color->data);
+    DrawCylinder(*php_raylib_vector3_fetch_data(phpPosition), (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8139,7 +8273,7 @@ PHP_FUNCTION(DrawCylinderEx)
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCylinderEx(phpStartPos->vector3->data, phpEndPos->vector3->data, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color->data);
+    DrawCylinderEx(*php_raylib_vector3_fetch_data(phpStartPos), *php_raylib_vector3_fetch_data(phpEndPos), (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8174,7 +8308,7 @@ PHP_FUNCTION(DrawCylinderWires)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCylinderWires(phpPosition->vector3->data, (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, phpColor->color->data);
+    DrawCylinderWires(*php_raylib_vector3_fetch_data(phpPosition), (float) radiusTop, (float) radiusBottom, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8210,7 +8344,7 @@ PHP_FUNCTION(DrawCylinderWiresEx)
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCylinderWiresEx(phpStartPos->vector3->data, phpEndPos->vector3->data, (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, phpColor->color->data);
+    DrawCylinderWiresEx(*php_raylib_vector3_fetch_data(phpStartPos), *php_raylib_vector3_fetch_data(phpEndPos), (float) startRadius, (float) endRadius, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8246,7 +8380,7 @@ PHP_FUNCTION(DrawCapsule)
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCapsule(phpStartPos->vector3->data, phpEndPos->vector3->data, (float) radius, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, phpColor->color->data);
+    DrawCapsule(*php_raylib_vector3_fetch_data(phpStartPos), *php_raylib_vector3_fetch_data(phpEndPos), (float) radius, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8282,7 +8416,7 @@ PHP_FUNCTION(DrawCapsuleWires)
     php_raylib_vector3_object *phpEndPos = Z_VECTOR3_OBJ_P(endPos);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawCapsuleWires(phpStartPos->vector3->data, phpEndPos->vector3->data, (float) radius, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, phpColor->color->data);
+    DrawCapsuleWires(*php_raylib_vector3_fetch_data(phpStartPos), *php_raylib_vector3_fetch_data(phpEndPos), (float) radius, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8309,7 +8443,7 @@ PHP_FUNCTION(DrawPlane)
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawPlane(phpCenterPos->vector3->data, phpSize->vector2->data, phpColor->color->data);
+    DrawPlane(*php_raylib_vector3_fetch_data(phpCenterPos), *php_raylib_vector2_fetch_data(phpSize), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8332,7 +8466,7 @@ PHP_FUNCTION(DrawRay)
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawRay(phpRay->ray->data, phpColor->color->data);
+    DrawRay(*php_raylib_ray_fetch_data(phpRay), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8374,7 +8508,59 @@ PHP_FUNCTION(LoadModel)
     Model originalResult = LoadModel(fileName->val);
     zend_object *result = php_raylib_model_new_ex(php_raylib_model_ce, NULL);
     php_raylib_model_object *phpResult = php_raylib_model_fetch_object(result);
-    phpResult->model->data = originalResult;
+    Model *modelData = php_raylib_model_fetch_data(phpResult);
+    // Dereference modelData for assignment back to object
+    *modelData = originalResult;
+
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->meshCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *meshesResult = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
+        // Fetch the data inside the PHP Object
+        Mesh *meshElement = php_raylib_mesh_fetch_data(php_raylib_mesh_fetch_object(meshesResult));
+        // Link this as a pointer, rather than copying data between each other
+        *meshElement = php_raylib_model_fetch_data(phpResult)->meshes[i];
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->meshes, meshesResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->materialCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *materialsResult = php_raylib_material_new_ex(php_raylib_material_ce, NULL);
+        // Fetch the data inside the PHP Object
+        Material *materialElement = php_raylib_material_fetch_data(php_raylib_material_fetch_object(materialsResult));
+        // Link this as a pointer, rather than copying data between each other
+        *materialElement = php_raylib_model_fetch_data(phpResult)->materials[i];
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->materials, materialsResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->boneCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *bonesResult = php_raylib_boneinfo_new_ex(php_raylib_boneinfo_ce, NULL);
+        // Fetch the data inside the PHP Object
+        BoneInfo *boneinfoElement = php_raylib_boneinfo_fetch_data(php_raylib_boneinfo_fetch_object(bonesResult));
+        // Link this as a pointer, rather than copying data between each other
+        *boneinfoElement = php_raylib_model_fetch_data(phpResult)->bones[i];
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->bones, bonesResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->boneCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *bindPoseResult = php_raylib_transform_new_ex(php_raylib_transform_ce, NULL);
+        // Fetch the data inside the PHP Object
+        Transform *transformElement = php_raylib_transform_fetch_data(php_raylib_transform_fetch_object(bindPoseResult));
+        // Link this as a pointer, rather than copying data between each other
+        *transformElement = php_raylib_model_fetch_data(phpResult)->bindPose[i];
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->bindpose, bindPoseResult);
+    }
+
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8394,10 +8580,12 @@ PHP_FUNCTION(LoadModelFromMesh)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    Model originalResult = LoadModelFromMesh(phpMesh->mesh->data);
+    Model originalResult = LoadModelFromMesh(*php_raylib_mesh_fetch_data(phpMesh));
     zend_object *result = php_raylib_model_new_ex(php_raylib_model_ce, NULL);
     php_raylib_model_object *phpResult = php_raylib_model_fetch_object(result);
-    phpResult->model->data = originalResult;
+    Model *modelData = php_raylib_model_fetch_data(phpResult);
+    // Dereference modelData for assignment back to object
+    *modelData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8417,7 +8605,7 @@ PHP_FUNCTION(IsModelReady)
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
 
-    RETURN_BOOL(IsModelReady(phpModel->model->data));
+    RETURN_BOOL(IsModelReady(*php_raylib_model_fetch_data(phpModel)));
 }
 
 // Unload model (including meshes) from memory (RAM and/or VRAM)
@@ -8435,7 +8623,7 @@ PHP_FUNCTION(UnloadModel)
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
 
-    UnloadModel(phpModel->model->data);
+    UnloadModel(*php_raylib_model_fetch_data(phpModel));
 
 }
 
@@ -8454,10 +8642,12 @@ PHP_FUNCTION(GetModelBoundingBox)
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
 
-    BoundingBox originalResult = GetModelBoundingBox(phpModel->model->data);
+    BoundingBox originalResult = GetModelBoundingBox(*php_raylib_model_fetch_data(phpModel));
     zend_object *result = php_raylib_boundingbox_new_ex(php_raylib_boundingbox_ce, NULL);
     php_raylib_boundingbox_object *phpResult = php_raylib_boundingbox_fetch_object(result);
-    phpResult->boundingbox->data = originalResult;
+    BoundingBox *boundingboxData = php_raylib_boundingbox_fetch_data(phpResult);
+    // Dereference boundingboxData for assignment back to object
+    *boundingboxData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8488,7 +8678,7 @@ PHP_FUNCTION(DrawModel)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawModel(phpModel->model->data, phpPosition->vector3->data, (float) scale, phpTint->color->data);
+    DrawModel(*php_raylib_model_fetch_data(phpModel), *php_raylib_vector3_fetch_data(phpPosition), (float) scale, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8526,7 +8716,7 @@ PHP_FUNCTION(DrawModelEx)
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(scale);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawModelEx(phpModel->model->data, phpPosition->vector3->data, phpRotationAxis->vector3->data, (float) rotationAngle, phpScale->vector3->data, phpTint->color->data);
+    DrawModelEx(*php_raylib_model_fetch_data(phpModel), *php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector3_fetch_data(phpRotationAxis), (float) rotationAngle, *php_raylib_vector3_fetch_data(phpScale), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8556,7 +8746,7 @@ PHP_FUNCTION(DrawModelWires)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawModelWires(phpModel->model->data, phpPosition->vector3->data, (float) scale, phpTint->color->data);
+    DrawModelWires(*php_raylib_model_fetch_data(phpModel), *php_raylib_vector3_fetch_data(phpPosition), (float) scale, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8594,7 +8784,7 @@ PHP_FUNCTION(DrawModelWiresEx)
     php_raylib_vector3_object *phpScale = Z_VECTOR3_OBJ_P(scale);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawModelWiresEx(phpModel->model->data, phpPosition->vector3->data, phpRotationAxis->vector3->data, (float) rotationAngle, phpScale->vector3->data, phpTint->color->data);
+    DrawModelWiresEx(*php_raylib_model_fetch_data(phpModel), *php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector3_fetch_data(phpRotationAxis), (float) rotationAngle, *php_raylib_vector3_fetch_data(phpScale), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8617,7 +8807,7 @@ PHP_FUNCTION(DrawBoundingBox)
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
     php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(color);
 
-    DrawBoundingBox(phpBox->boundingbox->data, phpColor->color->data);
+    DrawBoundingBox(*php_raylib_boundingbox_fetch_data(phpBox), *php_raylib_color_fetch_data(phpColor));
 
 }
 
@@ -8651,7 +8841,7 @@ PHP_FUNCTION(DrawBillboard)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawBillboard(phpCamera->camera3d->data, phpTexture->texture->data, phpPosition->vector3->data, (float) size, phpTint->color->data);
+    DrawBillboard(*php_raylib_camera3d_fetch_data(phpCamera), *php_raylib_texture_fetch_data(phpTexture), *php_raylib_vector3_fetch_data(phpPosition), (float) size, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8690,7 +8880,7 @@ PHP_FUNCTION(DrawBillboardRec)
     php_raylib_vector2_object *phpSize = Z_VECTOR2_OBJ_P(size);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawBillboardRec(phpCamera->camera3d->data, phpTexture->texture->data, phpSource->rectangle->data, phpPosition->vector3->data, phpSize->vector2->data, phpTint->color->data);
+    DrawBillboardRec(*php_raylib_camera3d_fetch_data(phpCamera), *php_raylib_texture_fetch_data(phpTexture), *php_raylib_rectangle_fetch_data(phpSource), *php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector2_fetch_data(phpSize), *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8740,7 +8930,7 @@ PHP_FUNCTION(DrawBillboardPro)
     php_raylib_vector2_object *phpOrigin = Z_VECTOR2_OBJ_P(origin);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawBillboardPro(phpCamera->camera3d->data, phpTexture->texture->data, phpSource->rectangle->data, phpPosition->vector3->data, phpUp->vector3->data, phpSize->vector2->data, phpOrigin->vector2->data, (float) rotation, phpTint->color->data);
+    DrawBillboardPro(*php_raylib_camera3d_fetch_data(phpCamera), *php_raylib_texture_fetch_data(phpTexture), *php_raylib_rectangle_fetch_data(phpSource), *php_raylib_vector3_fetch_data(phpPosition), *php_raylib_vector3_fetch_data(phpUp), *php_raylib_vector2_fetch_data(phpSize), *php_raylib_vector2_fetch_data(phpOrigin), (float) rotation, *php_raylib_color_fetch_data(phpTint));
 
 }
 
@@ -8762,7 +8952,7 @@ PHP_FUNCTION(UploadMesh)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    UploadMesh(&phpMesh->mesh->data, dynamic);
+    UploadMesh(php_raylib_mesh_fetch_data(phpMesh), dynamic);
 
 }
 
@@ -8781,7 +8971,7 @@ PHP_FUNCTION(UnloadMesh)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    UnloadMesh(phpMesh->mesh->data);
+    UnloadMesh(*php_raylib_mesh_fetch_data(phpMesh));
 
 }
 
@@ -8808,7 +8998,7 @@ PHP_FUNCTION(DrawMesh)
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(transform);
 
-    DrawMesh(phpMesh->mesh->data, phpMaterial->material->data, phpTransform->matrix->data);
+    DrawMesh(*php_raylib_mesh_fetch_data(phpMesh), *php_raylib_material_fetch_data(phpMaterial), *php_raylib_matrix_fetch_data(phpTransform));
 
 }
 
@@ -8838,7 +9028,7 @@ PHP_FUNCTION(DrawMeshInstanced)
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
     php_raylib_matrix_object *phpTransforms = Z_MATRIX_OBJ_P(transforms);
 
-    DrawMeshInstanced(phpMesh->mesh->data, phpMaterial->material->data, &phpTransforms->matrix->data, (instances <= INT_MAX) ? (int) ((zend_long) instances) : -1);
+    DrawMeshInstanced(*php_raylib_mesh_fetch_data(phpMesh), *php_raylib_material_fetch_data(phpMaterial), php_raylib_matrix_fetch_data(phpTransforms), (instances <= INT_MAX) ? (int) ((zend_long) instances) : -1);
 
 }
 
@@ -8860,7 +9050,7 @@ PHP_FUNCTION(ExportMesh)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    RETURN_BOOL(ExportMesh(phpMesh->mesh->data, fileName->val));
+    RETURN_BOOL(ExportMesh(*php_raylib_mesh_fetch_data(phpMesh), fileName->val));
 }
 
 // Compute mesh bounding box limits
@@ -8878,10 +9068,12 @@ PHP_FUNCTION(GetMeshBoundingBox)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    BoundingBox originalResult = GetMeshBoundingBox(phpMesh->mesh->data);
+    BoundingBox originalResult = GetMeshBoundingBox(*php_raylib_mesh_fetch_data(phpMesh));
     zend_object *result = php_raylib_boundingbox_new_ex(php_raylib_boundingbox_ce, NULL);
     php_raylib_boundingbox_object *phpResult = php_raylib_boundingbox_fetch_object(result);
-    phpResult->boundingbox->data = originalResult;
+    BoundingBox *boundingboxData = php_raylib_boundingbox_fetch_data(phpResult);
+    // Dereference boundingboxData for assignment back to object
+    *boundingboxData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8901,7 +9093,7 @@ PHP_FUNCTION(GenMeshTangents)
 
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
 
-    GenMeshTangents(&phpMesh->mesh->data);
+    GenMeshTangents(php_raylib_mesh_fetch_data(phpMesh));
 
 }
 
@@ -8925,7 +9117,9 @@ PHP_FUNCTION(GenMeshPoly)
     Mesh originalResult = GenMeshPoly((sides <= INT_MAX) ? (int) ((zend_long) sides) : -1, (float) radius);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8956,7 +9150,9 @@ PHP_FUNCTION(GenMeshPlane)
     Mesh originalResult = GenMeshPlane((float) width, (float) length, (resX <= INT_MAX) ? (int) ((zend_long) resX) : -1, (resZ <= INT_MAX) ? (int) ((zend_long) resZ) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8984,7 +9180,9 @@ PHP_FUNCTION(GenMeshCube)
     Mesh originalResult = GenMeshCube((float) width, (float) height, (float) length);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9012,7 +9210,9 @@ PHP_FUNCTION(GenMeshSphere)
     Mesh originalResult = GenMeshSphere((float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9040,7 +9240,9 @@ PHP_FUNCTION(GenMeshHemiSphere)
     Mesh originalResult = GenMeshHemiSphere((float) radius, (rings <= INT_MAX) ? (int) ((zend_long) rings) : -1, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9068,7 +9270,9 @@ PHP_FUNCTION(GenMeshCylinder)
     Mesh originalResult = GenMeshCylinder((float) radius, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9096,7 +9300,9 @@ PHP_FUNCTION(GenMeshCone)
     Mesh originalResult = GenMeshCone((float) radius, (float) height, (slices <= INT_MAX) ? (int) ((zend_long) slices) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9127,7 +9333,9 @@ PHP_FUNCTION(GenMeshTorus)
     Mesh originalResult = GenMeshTorus((float) radius, (float) size, (radSeg <= INT_MAX) ? (int) ((zend_long) radSeg) : -1, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9158,7 +9366,9 @@ PHP_FUNCTION(GenMeshKnot)
     Mesh originalResult = GenMeshKnot((float) radius, (float) size, (radSeg <= INT_MAX) ? (int) ((zend_long) radSeg) : -1, (sides <= INT_MAX) ? (int) ((zend_long) sides) : -1);
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9182,10 +9392,12 @@ PHP_FUNCTION(GenMeshHeightmap)
     php_raylib_image_object *phpHeightmap = Z_IMAGE_OBJ_P(heightmap);
     php_raylib_vector3_object *phpSize = Z_VECTOR3_OBJ_P(size);
 
-    Mesh originalResult = GenMeshHeightmap(phpHeightmap->image->data, phpSize->vector3->data);
+    Mesh originalResult = GenMeshHeightmap(*php_raylib_image_fetch_data(phpHeightmap), *php_raylib_vector3_fetch_data(phpSize));
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9209,10 +9421,12 @@ PHP_FUNCTION(GenMeshCubicmap)
     php_raylib_image_object *phpCubicmap = Z_IMAGE_OBJ_P(cubicmap);
     php_raylib_vector3_object *phpCubeSize = Z_VECTOR3_OBJ_P(cubeSize);
 
-    Mesh originalResult = GenMeshCubicmap(phpCubicmap->image->data, phpCubeSize->vector3->data);
+    Mesh originalResult = GenMeshCubicmap(*php_raylib_image_fetch_data(phpCubicmap), *php_raylib_vector3_fetch_data(phpCubeSize));
     zend_object *result = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
     php_raylib_mesh_object *phpResult = php_raylib_mesh_fetch_object(result);
-    phpResult->mesh->data = originalResult;
+    Mesh *meshData = php_raylib_mesh_fetch_data(phpResult);
+    // Dereference meshData for assignment back to object
+    *meshData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9229,7 +9443,9 @@ PHP_FUNCTION(LoadMaterialDefault)
     Material originalResult = LoadMaterialDefault();
     zend_object *result = php_raylib_material_new_ex(php_raylib_material_ce, NULL);
     php_raylib_material_object *phpResult = php_raylib_material_fetch_object(result);
-    phpResult->material->data = originalResult;
+    Material *materialData = php_raylib_material_fetch_data(phpResult);
+    // Dereference materialData for assignment back to object
+    *materialData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9249,7 +9465,7 @@ PHP_FUNCTION(IsMaterialReady)
 
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
 
-    RETURN_BOOL(IsMaterialReady(phpMaterial->material->data));
+    RETURN_BOOL(IsMaterialReady(*php_raylib_material_fetch_data(phpMaterial)));
 }
 
 // Unload material from GPU memory (VRAM)
@@ -9267,7 +9483,7 @@ PHP_FUNCTION(UnloadMaterial)
 
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
 
-    UnloadMaterial(phpMaterial->material->data);
+    UnloadMaterial(*php_raylib_material_fetch_data(phpMaterial));
 
 }
 
@@ -9293,7 +9509,7 @@ PHP_FUNCTION(SetMaterialTexture)
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    SetMaterialTexture(&phpMaterial->material->data, (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1, phpTexture->texture->data);
+    SetMaterialTexture(php_raylib_material_fetch_data(phpMaterial), (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1, *php_raylib_texture_fetch_data(phpTexture));
 
 }
 
@@ -9318,7 +9534,7 @@ PHP_FUNCTION(SetModelMeshMaterial)
 
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
 
-    SetModelMeshMaterial(&phpModel->model->data, (meshId <= INT_MAX) ? (int) ((zend_long) meshId) : -1, (materialId <= INT_MAX) ? (int) ((zend_long) materialId) : -1);
+    SetModelMeshMaterial(php_raylib_model_fetch_data(phpModel), (meshId <= INT_MAX) ? (int) ((zend_long) meshId) : -1, (materialId <= INT_MAX) ? (int) ((zend_long) materialId) : -1);
 
 }
 
@@ -9360,12 +9576,13 @@ PHP_FUNCTION(LoadModelAnimations)
         zend_object *modelAnimation = php_raylib_modelanimation_new_ex(php_raylib_modelanimation_ce, NULL);
         php_raylib_modelanimation_object *phpModelAnimation = php_raylib_modelanimation_fetch_object(modelAnimation);
         // Assign model animation to PHP object
-        phpModelAnimation->modelanimation->data = anims[i];
+        *php_raylib_modelanimation_fetch_data(phpModelAnimation) = anims[i];
 
         // Push PHP object to array
         add_next_index_object(return_value,  &phpModelAnimation->std);
     }
 }
+
 
 // Update model animation pose
 // RLAPI void UpdateModelAnimation(Model model, ModelAnimation anim, int frame);
@@ -9389,7 +9606,7 @@ PHP_FUNCTION(UpdateModelAnimation)
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
 
-    UpdateModelAnimation(phpModel->model->data, phpAnim->modelanimation->data, (frame <= INT_MAX) ? (int) ((zend_long) frame) : -1);
+    UpdateModelAnimation(*php_raylib_model_fetch_data(phpModel), *php_raylib_modelanimation_fetch_data(phpAnim), (frame <= INT_MAX) ? (int) ((zend_long) frame) : -1);
 
 }
 
@@ -9408,7 +9625,7 @@ PHP_FUNCTION(UnloadModelAnimation)
 
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
 
-    UnloadModelAnimation(phpAnim->modelanimation->data);
+    UnloadModelAnimation(*php_raylib_modelanimation_fetch_data(phpAnim));
 
 }
 
@@ -9438,7 +9655,7 @@ PHP_FUNCTION(UnloadModelAnimations)
         ZVAL_DEREF(animations_element);
         if ((Z_TYPE_P(animations_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P(animations_element), php_raylib_modelanimation_ce))) {
             php_raylib_modelanimation_object *modelanimation_obj =  Z_MODELANIMATION_OBJ_P(animations_element);
-            animations_array[animations_index] = modelanimation_obj->modelanimation->data;
+            animations_array[animations_index] = *php_raylib_modelanimation_fetch_data(modelanimation_obj);
         }
 
         animations_index++;
@@ -9467,7 +9684,7 @@ PHP_FUNCTION(IsModelAnimationValid)
     php_raylib_model_object *phpModel = Z_MODEL_OBJ_P(model);
     php_raylib_modelanimation_object *phpAnim = Z_MODELANIMATION_OBJ_P(anim);
 
-    RETURN_BOOL(IsModelAnimationValid(phpModel->model->data, phpAnim->modelanimation->data));
+    RETURN_BOOL(IsModelAnimationValid(*php_raylib_model_fetch_data(phpModel), *php_raylib_modelanimation_fetch_data(phpAnim)));
 }
 
 // Check collision between two spheres
@@ -9495,7 +9712,7 @@ PHP_FUNCTION(CheckCollisionSpheres)
     php_raylib_vector3_object *phpCenter1 = Z_VECTOR3_OBJ_P(center1);
     php_raylib_vector3_object *phpCenter2 = Z_VECTOR3_OBJ_P(center2);
 
-    RETURN_BOOL(CheckCollisionSpheres(phpCenter1->vector3->data, (float) radius1, phpCenter2->vector3->data, (float) radius2));
+    RETURN_BOOL(CheckCollisionSpheres(*php_raylib_vector3_fetch_data(phpCenter1), (float) radius1, *php_raylib_vector3_fetch_data(phpCenter2), (float) radius2));
 }
 
 // Check collision between two bounding boxes
@@ -9517,7 +9734,7 @@ PHP_FUNCTION(CheckCollisionBoxes)
     php_raylib_boundingbox_object *phpBox1 = Z_BOUNDINGBOX_OBJ_P(box1);
     php_raylib_boundingbox_object *phpBox2 = Z_BOUNDINGBOX_OBJ_P(box2);
 
-    RETURN_BOOL(CheckCollisionBoxes(phpBox1->boundingbox->data, phpBox2->boundingbox->data));
+    RETURN_BOOL(CheckCollisionBoxes(*php_raylib_boundingbox_fetch_data(phpBox1), *php_raylib_boundingbox_fetch_data(phpBox2)));
 }
 
 // Check collision between box and sphere
@@ -9542,7 +9759,7 @@ PHP_FUNCTION(CheckCollisionBoxSphere)
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
     php_raylib_vector3_object *phpCenter = Z_VECTOR3_OBJ_P(center);
 
-    RETURN_BOOL(CheckCollisionBoxSphere(phpBox->boundingbox->data, phpCenter->vector3->data, (float) radius));
+    RETURN_BOOL(CheckCollisionBoxSphere(*php_raylib_boundingbox_fetch_data(phpBox), *php_raylib_vector3_fetch_data(phpCenter), (float) radius));
 }
 
 // Get collision info between ray and sphere
@@ -9567,10 +9784,12 @@ PHP_FUNCTION(GetRayCollisionSphere)
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
     php_raylib_vector3_object *phpCenter = Z_VECTOR3_OBJ_P(center);
 
-    RayCollision originalResult = GetRayCollisionSphere(phpRay->ray->data, phpCenter->vector3->data, (float) radius);
+    RayCollision originalResult = GetRayCollisionSphere(*php_raylib_ray_fetch_data(phpRay), *php_raylib_vector3_fetch_data(phpCenter), (float) radius);
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision->data = originalResult;
+    RayCollision *raycollisionData = php_raylib_raycollision_fetch_data(phpResult);
+    // Dereference raycollisionData for assignment back to object
+    *raycollisionData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9594,10 +9813,12 @@ PHP_FUNCTION(GetRayCollisionBox)
     php_raylib_ray_object *phpRay = Z_RAY_OBJ_P(ray);
     php_raylib_boundingbox_object *phpBox = Z_BOUNDINGBOX_OBJ_P(box);
 
-    RayCollision originalResult = GetRayCollisionBox(phpRay->ray->data, phpBox->boundingbox->data);
+    RayCollision originalResult = GetRayCollisionBox(*php_raylib_ray_fetch_data(phpRay), *php_raylib_boundingbox_fetch_data(phpBox));
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision->data = originalResult;
+    RayCollision *raycollisionData = php_raylib_raycollision_fetch_data(phpResult);
+    // Dereference raycollisionData for assignment back to object
+    *raycollisionData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9625,10 +9846,12 @@ PHP_FUNCTION(GetRayCollisionMesh)
     php_raylib_mesh_object *phpMesh = Z_MESH_OBJ_P(mesh);
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(transform);
 
-    RayCollision originalResult = GetRayCollisionMesh(phpRay->ray->data, phpMesh->mesh->data, phpTransform->matrix->data);
+    RayCollision originalResult = GetRayCollisionMesh(*php_raylib_ray_fetch_data(phpRay), *php_raylib_mesh_fetch_data(phpMesh), *php_raylib_matrix_fetch_data(phpTransform));
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision->data = originalResult;
+    RayCollision *raycollisionData = php_raylib_raycollision_fetch_data(phpResult);
+    // Dereference raycollisionData for assignment back to object
+    *raycollisionData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9660,10 +9883,12 @@ PHP_FUNCTION(GetRayCollisionTriangle)
     php_raylib_vector3_object *phpP2 = Z_VECTOR3_OBJ_P(p2);
     php_raylib_vector3_object *phpP3 = Z_VECTOR3_OBJ_P(p3);
 
-    RayCollision originalResult = GetRayCollisionTriangle(phpRay->ray->data, phpP1->vector3->data, phpP2->vector3->data, phpP3->vector3->data);
+    RayCollision originalResult = GetRayCollisionTriangle(*php_raylib_ray_fetch_data(phpRay), *php_raylib_vector3_fetch_data(phpP1), *php_raylib_vector3_fetch_data(phpP2), *php_raylib_vector3_fetch_data(phpP3));
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision->data = originalResult;
+    RayCollision *raycollisionData = php_raylib_raycollision_fetch_data(phpResult);
+    // Dereference raycollisionData for assignment back to object
+    *raycollisionData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9699,10 +9924,12 @@ PHP_FUNCTION(GetRayCollisionQuad)
     php_raylib_vector3_object *phpP3 = Z_VECTOR3_OBJ_P(p3);
     php_raylib_vector3_object *phpP4 = Z_VECTOR3_OBJ_P(p4);
 
-    RayCollision originalResult = GetRayCollisionQuad(phpRay->ray->data, phpP1->vector3->data, phpP2->vector3->data, phpP3->vector3->data, phpP4->vector3->data);
+    RayCollision originalResult = GetRayCollisionQuad(*php_raylib_ray_fetch_data(phpRay), *php_raylib_vector3_fetch_data(phpP1), *php_raylib_vector3_fetch_data(phpP2), *php_raylib_vector3_fetch_data(phpP3), *php_raylib_vector3_fetch_data(phpP4));
     zend_object *result = php_raylib_raycollision_new_ex(php_raylib_raycollision_ce, NULL);
     php_raylib_raycollision_object *phpResult = php_raylib_raycollision_fetch_object(result);
-    phpResult->raycollision->data = originalResult;
+    RayCollision *raycollisionData = php_raylib_raycollision_fetch_data(phpResult);
+    // Dereference raycollisionData for assignment back to object
+    *raycollisionData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9780,7 +10007,9 @@ PHP_FUNCTION(LoadWave)
     Wave originalResult = LoadWave(fileName->val);
     zend_object *result = php_raylib_wave_new_ex(php_raylib_wave_ce, NULL);
     php_raylib_wave_object *phpResult = php_raylib_wave_fetch_object(result);
-    phpResult->wave->data = originalResult;
+    Wave *waveData = php_raylib_wave_fetch_data(phpResult);
+    // Dereference waveData for assignment back to object
+    *waveData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9822,7 +10051,9 @@ PHP_FUNCTION(LoadWaveFromMemory)
     Wave originalResult = LoadWaveFromMemory(fileType->val, filedata_array, (dataSize <= INT_MAX) ? (int) ((zend_long) dataSize) : -1);
     zend_object *result = php_raylib_wave_new_ex(php_raylib_wave_ce, NULL);
     php_raylib_wave_object *phpResult = php_raylib_wave_fetch_object(result);
-    phpResult->wave->data = originalResult;
+    Wave *waveData = php_raylib_wave_fetch_data(phpResult);
+    // Dereference waveData for assignment back to object
+    *waveData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9842,7 +10073,7 @@ PHP_FUNCTION(IsWaveReady)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    RETURN_BOOL(IsWaveReady(phpWave->wave->data));
+    RETURN_BOOL(IsWaveReady(*php_raylib_wave_fetch_data(phpWave)));
 }
 
 // Load sound from file
@@ -9862,7 +10093,9 @@ PHP_FUNCTION(LoadSound)
     Sound originalResult = LoadSound(fileName->val);
     zend_object *result = php_raylib_sound_new_ex(php_raylib_sound_ce, NULL);
     php_raylib_sound_object *phpResult = php_raylib_sound_fetch_object(result);
-    phpResult->sound->data = originalResult;
+    Sound *soundData = php_raylib_sound_fetch_data(phpResult);
+    // Dereference soundData for assignment back to object
+    *soundData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9882,10 +10115,12 @@ PHP_FUNCTION(LoadSoundFromWave)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    Sound originalResult = LoadSoundFromWave(phpWave->wave->data);
+    Sound originalResult = LoadSoundFromWave(*php_raylib_wave_fetch_data(phpWave));
     zend_object *result = php_raylib_sound_new_ex(php_raylib_sound_ce, NULL);
     php_raylib_sound_object *phpResult = php_raylib_sound_fetch_object(result);
-    phpResult->sound->data = originalResult;
+    Sound *soundData = php_raylib_sound_fetch_data(phpResult);
+    // Dereference soundData for assignment back to object
+    *soundData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -9905,7 +10140,7 @@ PHP_FUNCTION(IsSoundReady)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    RETURN_BOOL(IsSoundReady(phpSound->sound->data));
+    RETURN_BOOL(IsSoundReady(*php_raylib_sound_fetch_data(phpSound)));
 }
 
 // Unload wave data
@@ -9923,7 +10158,7 @@ PHP_FUNCTION(UnloadWave)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    UnloadWave(phpWave->wave->data);
+    UnloadWave(*php_raylib_wave_fetch_data(phpWave));
 
 }
 
@@ -9942,7 +10177,7 @@ PHP_FUNCTION(UnloadSound)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    UnloadSound(phpSound->sound->data);
+    UnloadSound(*php_raylib_sound_fetch_data(phpSound));
 
 }
 
@@ -9964,7 +10199,7 @@ PHP_FUNCTION(ExportWave)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    RETURN_BOOL(ExportWave(phpWave->wave->data, fileName->val));
+    RETURN_BOOL(ExportWave(*php_raylib_wave_fetch_data(phpWave), fileName->val));
 }
 
 // Export wave sample data to code (.h), returns true on success
@@ -9985,7 +10220,7 @@ PHP_FUNCTION(ExportWaveAsCode)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    RETURN_BOOL(ExportWaveAsCode(phpWave->wave->data, fileName->val));
+    RETURN_BOOL(ExportWaveAsCode(*php_raylib_wave_fetch_data(phpWave), fileName->val));
 }
 
 // Play a sound
@@ -10003,7 +10238,7 @@ PHP_FUNCTION(PlaySound)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    PlaySound(phpSound->sound->data);
+    PlaySound(*php_raylib_sound_fetch_data(phpSound));
 
 }
 
@@ -10022,7 +10257,7 @@ PHP_FUNCTION(StopSound)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    StopSound(phpSound->sound->data);
+    StopSound(*php_raylib_sound_fetch_data(phpSound));
 
 }
 
@@ -10041,7 +10276,7 @@ PHP_FUNCTION(PauseSound)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    PauseSound(phpSound->sound->data);
+    PauseSound(*php_raylib_sound_fetch_data(phpSound));
 
 }
 
@@ -10060,7 +10295,7 @@ PHP_FUNCTION(ResumeSound)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    ResumeSound(phpSound->sound->data);
+    ResumeSound(*php_raylib_sound_fetch_data(phpSound));
 
 }
 
@@ -10079,7 +10314,7 @@ PHP_FUNCTION(IsSoundPlaying)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    RETURN_BOOL(IsSoundPlaying(phpSound->sound->data));
+    RETURN_BOOL(IsSoundPlaying(*php_raylib_sound_fetch_data(phpSound)));
 }
 
 // Set volume for a sound (1.0 is max level)
@@ -10100,7 +10335,7 @@ PHP_FUNCTION(SetSoundVolume)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    SetSoundVolume(phpSound->sound->data, (float) volume);
+    SetSoundVolume(*php_raylib_sound_fetch_data(phpSound), (float) volume);
 
 }
 
@@ -10122,7 +10357,7 @@ PHP_FUNCTION(SetSoundPitch)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    SetSoundPitch(phpSound->sound->data, (float) pitch);
+    SetSoundPitch(*php_raylib_sound_fetch_data(phpSound), (float) pitch);
 
 }
 
@@ -10144,7 +10379,7 @@ PHP_FUNCTION(SetSoundPan)
 
     php_raylib_sound_object *phpSound = Z_SOUND_OBJ_P(sound);
 
-    SetSoundPan(phpSound->sound->data, (float) pan);
+    SetSoundPan(*php_raylib_sound_fetch_data(phpSound), (float) pan);
 
 }
 
@@ -10163,10 +10398,12 @@ PHP_FUNCTION(WaveCopy)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    Wave originalResult = WaveCopy(phpWave->wave->data);
+    Wave originalResult = WaveCopy(*php_raylib_wave_fetch_data(phpWave));
     zend_object *result = php_raylib_wave_new_ex(php_raylib_wave_ce, NULL);
     php_raylib_wave_object *phpResult = php_raylib_wave_fetch_object(result);
-    phpResult->wave->data = originalResult;
+    Wave *waveData = php_raylib_wave_fetch_data(phpResult);
+    // Dereference waveData for assignment back to object
+    *waveData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -10192,7 +10429,7 @@ PHP_FUNCTION(WaveCrop)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    WaveCrop(&phpWave->wave->data, (initSample <= INT_MAX) ? (int) ((zend_long) initSample) : -1, (finalSample <= INT_MAX) ? (int) ((zend_long) finalSample) : -1);
+    WaveCrop(php_raylib_wave_fetch_data(phpWave), (initSample <= INT_MAX) ? (int) ((zend_long) initSample) : -1, (finalSample <= INT_MAX) ? (int) ((zend_long) finalSample) : -1);
 
 }
 
@@ -10220,7 +10457,7 @@ PHP_FUNCTION(WaveFormat)
 
     php_raylib_wave_object *phpWave = Z_WAVE_OBJ_P(wave);
 
-    WaveFormat(&phpWave->wave->data, (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
+    WaveFormat(php_raylib_wave_fetch_data(phpWave), (sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
 
 }
 
@@ -10273,7 +10510,9 @@ PHP_FUNCTION(LoadMusicStream)
     Music originalResult = LoadMusicStream(fileName->val);
     zend_object *result = php_raylib_music_new_ex(php_raylib_music_ce, NULL);
     php_raylib_music_object *phpResult = php_raylib_music_fetch_object(result);
-    phpResult->music->data = originalResult;
+    Music *musicData = php_raylib_music_fetch_data(phpResult);
+    // Dereference musicData for assignment back to object
+    *musicData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -10315,7 +10554,9 @@ PHP_FUNCTION(LoadMusicStreamFromMemory)
     Music originalResult = LoadMusicStreamFromMemory(fileType->val, data_array, (dataSize <= INT_MAX) ? (int) ((zend_long) dataSize) : -1);
     zend_object *result = php_raylib_music_new_ex(php_raylib_music_ce, NULL);
     php_raylib_music_object *phpResult = php_raylib_music_fetch_object(result);
-    phpResult->music->data = originalResult;
+    Music *musicData = php_raylib_music_fetch_data(phpResult);
+    // Dereference musicData for assignment back to object
+    *musicData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -10335,7 +10576,7 @@ PHP_FUNCTION(IsMusicReady)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    RETURN_BOOL(IsMusicReady(phpMusic->music->data));
+    RETURN_BOOL(IsMusicReady(*php_raylib_music_fetch_data(phpMusic)));
 }
 
 // Unload music stream
@@ -10353,7 +10594,7 @@ PHP_FUNCTION(UnloadMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    UnloadMusicStream(phpMusic->music->data);
+    UnloadMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10372,7 +10613,7 @@ PHP_FUNCTION(PlayMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    PlayMusicStream(phpMusic->music->data);
+    PlayMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10391,7 +10632,7 @@ PHP_FUNCTION(IsMusicStreamPlaying)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    RETURN_BOOL(IsMusicStreamPlaying(phpMusic->music->data));
+    RETURN_BOOL(IsMusicStreamPlaying(*php_raylib_music_fetch_data(phpMusic)));
 }
 
 // Updates buffers for music streaming
@@ -10409,7 +10650,7 @@ PHP_FUNCTION(UpdateMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    UpdateMusicStream(phpMusic->music->data);
+    UpdateMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10428,7 +10669,7 @@ PHP_FUNCTION(StopMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    StopMusicStream(phpMusic->music->data);
+    StopMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10447,7 +10688,7 @@ PHP_FUNCTION(PauseMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    PauseMusicStream(phpMusic->music->data);
+    PauseMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10466,7 +10707,7 @@ PHP_FUNCTION(ResumeMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    ResumeMusicStream(phpMusic->music->data);
+    ResumeMusicStream(*php_raylib_music_fetch_data(phpMusic));
 
 }
 
@@ -10488,7 +10729,7 @@ PHP_FUNCTION(SeekMusicStream)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    SeekMusicStream(phpMusic->music->data, (float) position);
+    SeekMusicStream(*php_raylib_music_fetch_data(phpMusic), (float) position);
 
 }
 
@@ -10510,7 +10751,7 @@ PHP_FUNCTION(SetMusicVolume)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    SetMusicVolume(phpMusic->music->data, (float) volume);
+    SetMusicVolume(*php_raylib_music_fetch_data(phpMusic), (float) volume);
 
 }
 
@@ -10532,7 +10773,7 @@ PHP_FUNCTION(SetMusicPitch)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    SetMusicPitch(phpMusic->music->data, (float) pitch);
+    SetMusicPitch(*php_raylib_music_fetch_data(phpMusic), (float) pitch);
 
 }
 
@@ -10554,7 +10795,7 @@ PHP_FUNCTION(SetMusicPan)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    SetMusicPan(phpMusic->music->data, (float) pan);
+    SetMusicPan(*php_raylib_music_fetch_data(phpMusic), (float) pan);
 
 }
 
@@ -10573,7 +10814,7 @@ PHP_FUNCTION(GetMusicTimeLength)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    RETURN_DOUBLE((double) GetMusicTimeLength(phpMusic->music->data));
+    RETURN_DOUBLE((double) GetMusicTimeLength(*php_raylib_music_fetch_data(phpMusic)));
 }
 
 // Get current music time played (in seconds)
@@ -10591,7 +10832,7 @@ PHP_FUNCTION(GetMusicTimePlayed)
 
     php_raylib_music_object *phpMusic = Z_MUSIC_OBJ_P(music);
 
-    RETURN_DOUBLE((double) GetMusicTimePlayed(phpMusic->music->data));
+    RETURN_DOUBLE((double) GetMusicTimePlayed(*php_raylib_music_fetch_data(phpMusic)));
 }
 
 // Load audio stream (to stream raw audio pcm data)
@@ -10617,7 +10858,9 @@ PHP_FUNCTION(LoadAudioStream)
     AudioStream originalResult = LoadAudioStream((sampleRate <= INT_MAX) ? (int) ((zend_long) sampleRate) : -1, (sampleSize <= INT_MAX) ? (int) ((zend_long) sampleSize) : -1, (channels <= INT_MAX) ? (int) ((zend_long) channels) : -1);
     zend_object *result = php_raylib_audiostream_new_ex(php_raylib_audiostream_ce, NULL);
     php_raylib_audiostream_object *phpResult = php_raylib_audiostream_fetch_object(result);
-    phpResult->audiostream->data = originalResult;
+    AudioStream *audiostreamData = php_raylib_audiostream_fetch_data(phpResult);
+    // Dereference audiostreamData for assignment back to object
+    *audiostreamData = originalResult;
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -10637,7 +10880,7 @@ PHP_FUNCTION(IsAudioStreamReady)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    RETURN_BOOL(IsAudioStreamReady(phpStream->audiostream->data));
+    RETURN_BOOL(IsAudioStreamReady(*php_raylib_audiostream_fetch_data(phpStream)));
 }
 
 // Unload audio stream and free memory
@@ -10655,7 +10898,7 @@ PHP_FUNCTION(UnloadAudioStream)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    UnloadAudioStream(phpStream->audiostream->data);
+    UnloadAudioStream(*php_raylib_audiostream_fetch_data(phpStream));
 
 }
 
@@ -10674,7 +10917,7 @@ PHP_FUNCTION(IsAudioStreamProcessed)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    RETURN_BOOL(IsAudioStreamProcessed(phpStream->audiostream->data));
+    RETURN_BOOL(IsAudioStreamProcessed(*php_raylib_audiostream_fetch_data(phpStream)));
 }
 
 // Play audio stream
@@ -10692,7 +10935,7 @@ PHP_FUNCTION(PlayAudioStream)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    PlayAudioStream(phpStream->audiostream->data);
+    PlayAudioStream(*php_raylib_audiostream_fetch_data(phpStream));
 
 }
 
@@ -10711,7 +10954,7 @@ PHP_FUNCTION(PauseAudioStream)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    PauseAudioStream(phpStream->audiostream->data);
+    PauseAudioStream(*php_raylib_audiostream_fetch_data(phpStream));
 
 }
 
@@ -10730,7 +10973,7 @@ PHP_FUNCTION(ResumeAudioStream)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    ResumeAudioStream(phpStream->audiostream->data);
+    ResumeAudioStream(*php_raylib_audiostream_fetch_data(phpStream));
 
 }
 
@@ -10749,7 +10992,7 @@ PHP_FUNCTION(IsAudioStreamPlaying)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    RETURN_BOOL(IsAudioStreamPlaying(phpStream->audiostream->data));
+    RETURN_BOOL(IsAudioStreamPlaying(*php_raylib_audiostream_fetch_data(phpStream)));
 }
 
 // Stop audio stream
@@ -10767,7 +11010,7 @@ PHP_FUNCTION(StopAudioStream)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    StopAudioStream(phpStream->audiostream->data);
+    StopAudioStream(*php_raylib_audiostream_fetch_data(phpStream));
 
 }
 
@@ -10789,7 +11032,7 @@ PHP_FUNCTION(SetAudioStreamVolume)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    SetAudioStreamVolume(phpStream->audiostream->data, (float) volume);
+    SetAudioStreamVolume(*php_raylib_audiostream_fetch_data(phpStream), (float) volume);
 
 }
 
@@ -10811,7 +11054,7 @@ PHP_FUNCTION(SetAudioStreamPitch)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    SetAudioStreamPitch(phpStream->audiostream->data, (float) pitch);
+    SetAudioStreamPitch(*php_raylib_audiostream_fetch_data(phpStream), (float) pitch);
 
 }
 
@@ -10833,7 +11076,7 @@ PHP_FUNCTION(SetAudioStreamPan)
 
     php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(stream);
 
-    SetAudioStreamPan(phpStream->audiostream->data, (float) pan);
+    SetAudioStreamPan(*php_raylib_audiostream_fetch_data(phpStream), (float) pan);
 
 }
 

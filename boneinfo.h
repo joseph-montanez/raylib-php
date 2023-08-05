@@ -15,10 +15,21 @@ extern zend_object * php_raylib_boneinfo_new_ex(zend_class_entry *ce, zend_objec
 
 extern zend_object_handlers php_raylib_boneinfo_object_handlers;
 
+typedef enum {
+    RL_BONEINFO_IS_POINTER,
+    RL_BONEINFO_IS_VALUE
+} RLBoneInfoDataType;
+
+typedef union {
+    BoneInfo *p;
+    BoneInfo v;
+} BoneInfoUnion;
+
 struct RL_BoneInfo {
     unsigned int id;
     char *guid;
-    BoneInfo data;
+    BoneInfoUnion data;
+    RLBoneInfoDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -41,6 +52,17 @@ typedef struct _php_raylib_boneinfo_object {
 
 static inline php_raylib_boneinfo_object *php_raylib_boneinfo_fetch_object(zend_object *obj) {
     return (php_raylib_boneinfo_object *)((char *)obj - XtOffsetOf(php_raylib_boneinfo_object, std));
+}
+
+static inline BoneInfo *php_raylib_boneinfo_fetch_data(php_raylib_boneinfo_object *obj) {
+    BoneInfo *my_boneinfo;
+    if (obj->boneinfo->type == RL_BONEINFO_IS_POINTER) {
+        my_boneinfo = obj->boneinfo->data.p;
+    } else {
+        my_boneinfo = &obj->boneinfo->data.v;
+    }
+
+    return my_boneinfo;
 }
 
 #define Z_BONEINFO_OBJ_P(zv) php_raylib_boneinfo_fetch_object(Z_OBJ_P(zv));

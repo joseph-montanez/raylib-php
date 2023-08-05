@@ -104,6 +104,8 @@ struct RL_MaterialMap* RL_MaterialMap_Create() {
     object->id = RL_MATERIALMAP_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_MaterialMap_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( MaterialMap) {};
+    object->type = RL_MATERIALMAP_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -381,21 +383,21 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_color_object *phpColor = Z_COLOR_OBJ_P(&other->color);
 
 
-        intern->materialmap->data = (MaterialMap) {
+        *php_raylib_materialmap_fetch_data(intern) = (MaterialMap) {
             .texture = (Texture) {
-                .id = other->materialmap->data.texture.id,
-                .width = other->materialmap->data.texture.width,
-                .height = other->materialmap->data.texture.height,
-                .mipmaps = other->materialmap->data.texture.mipmaps,
-                .format = other->materialmap->data.texture.format
+                .id = php_raylib_materialmap_fetch_data(other)->texture.id,
+                .width = php_raylib_materialmap_fetch_data(other)->texture.width,
+                .height = php_raylib_materialmap_fetch_data(other)->texture.height,
+                .mipmaps = php_raylib_materialmap_fetch_data(other)->texture.mipmaps,
+                .format = php_raylib_materialmap_fetch_data(other)->texture.format
             },
             .color = (Color) {
-                .r = other->materialmap->data.color.r,
-                .g = other->materialmap->data.color.g,
-                .b = other->materialmap->data.color.b,
-                .a = other->materialmap->data.color.a
+                .r = php_raylib_materialmap_fetch_data(other)->color.r,
+                .g = php_raylib_materialmap_fetch_data(other)->color.g,
+                .b = php_raylib_materialmap_fetch_data(other)->color.b,
+                .a = php_raylib_materialmap_fetch_data(other)->color.a
             },
-            .value = other->materialmap->data.value
+            .value = php_raylib_materialmap_fetch_data(other)->value
         };
 
         ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
@@ -410,7 +412,7 @@ zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_color_object *phpColor = php_raylib_color_fetch_object(color);
 
         intern->materialmap = RL_MaterialMap_Create();
-        intern->materialmap->data = (MaterialMap) {
+        *php_raylib_materialmap_fetch_data(intern) = (MaterialMap) {
             .texture = (Texture) {
                 .id = 0,
                 .width = 0,
@@ -503,19 +505,19 @@ PHP_METHOD(MaterialMap, __construct)
     ZVAL_OBJ_COPY(&intern->texture, &phpTexture->std);
     ZVAL_OBJ_COPY(&intern->color, &phpColor->std);
 
-    intern->materialmap->data = (MaterialMap) {
+    *php_raylib_materialmap_fetch_data(intern) = (MaterialMap) {
         .texture = (Texture) {
-            .id = phpTexture->texture->data.id,
-            .width = phpTexture->texture->data.width,
-            .height = phpTexture->texture->data.height,
-            .mipmaps = phpTexture->texture->data.mipmaps,
-            .format = phpTexture->texture->data.format
+            .id = php_raylib_texture_fetch_data(phpTexture)->id,
+            .width = php_raylib_texture_fetch_data(phpTexture)->width,
+            .height = php_raylib_texture_fetch_data(phpTexture)->height,
+            .mipmaps = php_raylib_texture_fetch_data(phpTexture)->mipmaps,
+            .format = php_raylib_texture_fetch_data(phpTexture)->format
         },
         .color = (Color) {
-            .r = phpColor->color->data.r,
-            .g = phpColor->color->data.g,
-            .b = phpColor->color->data.b,
-            .a = phpColor->color->data.a
+            .r = php_raylib_color_fetch_data(phpColor)->r,
+            .g = php_raylib_color_fetch_data(phpColor)->g,
+            .b = php_raylib_color_fetch_data(phpColor)->b,
+            .a = php_raylib_color_fetch_data(phpColor)->a
         },
         .value = (float) value
     };
@@ -547,7 +549,7 @@ static zend_object * php_raylib_materialmap_get_color(php_raylib_materialmap_obj
 
 static double php_raylib_materialmap_get_value(php_raylib_materialmap_object *obj) /* {{{ */
 {
-    return (double) obj->materialmap->data.value;
+    return (double) php_raylib_materialmap_fetch_data(obj)->value;
 }
 /* }}} */
 
@@ -592,11 +594,11 @@ static int php_raylib_materialmap_set_value(php_raylib_materialmap_object *obj, 
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->materialmap->data.value = 0;
+        php_raylib_materialmap_fetch_data(obj)->value = 0;
         return ret;
     }
 
-    obj->materialmap->data.value = (float) zval_get_double(newval);
+    php_raylib_materialmap_fetch_data(obj)->value = (float) zval_get_double(newval);
 
     return ret;
 }

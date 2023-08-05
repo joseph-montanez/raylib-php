@@ -102,6 +102,8 @@ struct RL_Image* RL_Image_Create() {
     object->id = RL_IMAGE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Image_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Image) {};
+    object->type = RL_IMAGE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -358,15 +360,15 @@ zend_object * php_raylib_image_new_ex(zend_class_entry *ce, zend_object *orig)/*
     if (orig) {
         php_raylib_image_object *other = php_raylib_image_fetch_object(orig);
 
-        intern->image->data = (Image) {
-            .width = other->image->data.width,
-            .height = other->image->data.height,
-            .mipmaps = other->image->data.mipmaps,
-            .format = other->image->data.format
+        *php_raylib_image_fetch_data(intern) = (Image) {
+            .width = php_raylib_image_fetch_data(other)->width,
+            .height = php_raylib_image_fetch_data(other)->height,
+            .mipmaps = php_raylib_image_fetch_data(other)->mipmaps,
+            .format = php_raylib_image_fetch_data(other)->format
         };
     } else {
         intern->image = RL_Image_Create();
-        intern->image->data = (Image) {
+        *php_raylib_image_fetch_data(intern) = (Image) {
             .data = 0,
             .width = 0,
             .height = 0,
@@ -416,7 +418,7 @@ PHP_METHOD(Image, __construct)
 
 
     php_raylib_image_object *intern = Z_IMAGE_OBJ_P(ZEND_THIS);
-    intern->image->data = LoadImage(fileName->val);
+    *php_raylib_image_fetch_data(intern) = LoadImage(fileName->val);
 }
 
 static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{{ */
@@ -427,25 +429,25 @@ static HashTable * php_raylib_image_get_data(php_raylib_image_object *obj) /* {{
 
 static zend_long php_raylib_image_get_width(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image->data.width;
+    return (zend_long) php_raylib_image_fetch_data(obj)->width;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_height(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image->data.height;
+    return (zend_long) php_raylib_image_fetch_data(obj)->height;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_mipmaps(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image->data.mipmaps;
+    return (zend_long) php_raylib_image_fetch_data(obj)->mipmaps;
 }
 /* }}} */
 
 static zend_long php_raylib_image_get_format(php_raylib_image_object *obj) /* {{{ */
 {
-    return (zend_long) obj->image->data.format;
+    return (zend_long) php_raylib_image_fetch_data(obj)->format;
 }
 /* }}} */
 
@@ -464,11 +466,11 @@ static int php_raylib_image_set_width(php_raylib_image_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image->data.width = 0;
+        php_raylib_image_fetch_data(obj)->width = 0;
         return ret;
     }
 
-    obj->image->data.width = (int) zval_get_long(newval);
+    php_raylib_image_fetch_data(obj)->width = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -479,11 +481,11 @@ static int php_raylib_image_set_height(php_raylib_image_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image->data.height = 0;
+        php_raylib_image_fetch_data(obj)->height = 0;
         return ret;
     }
 
-    obj->image->data.height = (int) zval_get_long(newval);
+    php_raylib_image_fetch_data(obj)->height = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -494,11 +496,11 @@ static int php_raylib_image_set_mipmaps(php_raylib_image_object *obj, zval *newv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image->data.mipmaps = 0;
+        php_raylib_image_fetch_data(obj)->mipmaps = 0;
         return ret;
     }
 
-    obj->image->data.mipmaps = (int) zval_get_long(newval);
+    php_raylib_image_fetch_data(obj)->mipmaps = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -509,11 +511,11 @@ static int php_raylib_image_set_format(php_raylib_image_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->image->data.format = 0;
+        php_raylib_image_fetch_data(obj)->format = 0;
         return ret;
     }
 
-    obj->image->data.format = (int) zval_get_long(newval);
+    php_raylib_image_fetch_data(obj)->format = (int) zval_get_long(newval);
 
     return ret;
 }

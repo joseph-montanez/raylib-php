@@ -6,7 +6,7 @@ PHP_METHOD(Color, [colorName])
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){[r], [g], [b], [a]};
+    *php_raylib_color_fetch_data(result) = (Color){[r], [g], [b], [a]};
 
     RETURN_OBJ(&result->std);
 }

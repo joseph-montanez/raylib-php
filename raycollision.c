@@ -103,6 +103,8 @@ struct RL_RayCollision* RL_RayCollision_Create() {
     object->id = RL_RAYCOLLISION_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_RayCollision_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( RayCollision) {};
+    object->type = RL_RAYCOLLISION_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -378,18 +380,18 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
         php_raylib_vector3_object *phpNormal = Z_VECTOR3_OBJ_P(&other->normal);
 
 
-        intern->raycollision->data = (RayCollision) {
-            .hit = other->raycollision->data.hit,
-            .distance = other->raycollision->data.distance,
+        *php_raylib_raycollision_fetch_data(intern) = (RayCollision) {
+            .hit = php_raylib_raycollision_fetch_data(other)->hit,
+            .distance = php_raylib_raycollision_fetch_data(other)->distance,
             .point = (Vector3) {
-                .x = other->raycollision->data.point.x,
-                .y = other->raycollision->data.point.y,
-                .z = other->raycollision->data.point.z
+                .x = php_raylib_raycollision_fetch_data(other)->point.x,
+                .y = php_raylib_raycollision_fetch_data(other)->point.y,
+                .z = php_raylib_raycollision_fetch_data(other)->point.z
             },
             .normal = (Vector3) {
-                .x = other->raycollision->data.normal.x,
-                .y = other->raycollision->data.normal.y,
-                .z = other->raycollision->data.normal.z
+                .x = php_raylib_raycollision_fetch_data(other)->normal.x,
+                .y = php_raylib_raycollision_fetch_data(other)->normal.y,
+                .z = php_raylib_raycollision_fetch_data(other)->normal.z
             }
         };
 
@@ -405,7 +407,7 @@ zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_object *
         php_raylib_vector3_object *phpNormal = php_raylib_vector3_fetch_object(normal);
 
         intern->raycollision = RL_RayCollision_Create();
-        intern->raycollision->data = (RayCollision) {
+        *php_raylib_raycollision_fetch_data(intern) = (RayCollision) {
             .hit = 0,
             .distance = 0,
             .point = (Vector3) {
@@ -505,31 +507,31 @@ PHP_METHOD(RayCollision, __construct)
     ZVAL_OBJ_COPY(&intern->point, &phpPoint->std);
     ZVAL_OBJ_COPY(&intern->normal, &phpNormal->std);
 
-    intern->raycollision->data = (RayCollision) {
+    *php_raylib_raycollision_fetch_data(intern) = (RayCollision) {
         .hit = (bool) hit,
         .distance = (float) distance,
         .point = (Vector3) {
-            .x = phpPoint->vector3->data.x,
-            .y = phpPoint->vector3->data.y,
-            .z = phpPoint->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpPoint)->x,
+            .y = php_raylib_vector3_fetch_data(phpPoint)->y,
+            .z = php_raylib_vector3_fetch_data(phpPoint)->z
         },
         .normal = (Vector3) {
-            .x = phpNormal->vector3->data.x,
-            .y = phpNormal->vector3->data.y,
-            .z = phpNormal->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpNormal)->x,
+            .y = php_raylib_vector3_fetch_data(phpNormal)->y,
+            .z = php_raylib_vector3_fetch_data(phpNormal)->z
         }
     };
 }
 
 static bool php_raylib_raycollision_get_hit(php_raylib_raycollision_object *obj) /* {{{ */
 {
-    return obj->raycollision->data.hit;
+    return php_raylib_raycollision_fetch_data(obj)->hit;
 }
 /* }}} */
 
 static double php_raylib_raycollision_get_distance(php_raylib_raycollision_object *obj) /* {{{ */
 {
-    return (double) obj->raycollision->data.distance;
+    return (double) php_raylib_raycollision_fetch_data(obj)->distance;
 }
 /* }}} */
 
@@ -571,11 +573,11 @@ static int php_raylib_raycollision_set_distance(php_raylib_raycollision_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->raycollision->data.distance = 0;
+        php_raylib_raycollision_fetch_data(obj)->distance = 0;
         return ret;
     }
 
-    obj->raycollision->data.distance = (float) zval_get_double(newval);
+    php_raylib_raycollision_fetch_data(obj)->distance = (float) zval_get_double(newval);
 
     return ret;
 }

@@ -103,6 +103,8 @@ struct RL_Camera2D* RL_Camera2D_Create() {
     object->id = RL_CAMERA2D_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Camera2D_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Camera2D) {};
+    object->type = RL_CAMERA2D_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -365,17 +367,17 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector2_object *phpTarget = Z_VECTOR2_OBJ_P(&other->target);
 
 
-        intern->camera2d->data = (Camera2D) {
+        *php_raylib_camera2d_fetch_data(intern) = (Camera2D) {
             .offset = (Vector2) {
-                .x = other->camera2d->data.offset.x,
-                .y = other->camera2d->data.offset.y
+                .x = php_raylib_camera2d_fetch_data(other)->offset.x,
+                .y = php_raylib_camera2d_fetch_data(other)->offset.y
             },
             .target = (Vector2) {
-                .x = other->camera2d->data.target.x,
-                .y = other->camera2d->data.target.y
+                .x = php_raylib_camera2d_fetch_data(other)->target.x,
+                .y = php_raylib_camera2d_fetch_data(other)->target.y
             },
-            .rotation = other->camera2d->data.rotation,
-            .zoom = other->camera2d->data.zoom
+            .rotation = php_raylib_camera2d_fetch_data(other)->rotation,
+            .zoom = php_raylib_camera2d_fetch_data(other)->zoom
         };
 
         ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
@@ -390,7 +392,7 @@ zend_object * php_raylib_camera2d_new_ex(zend_class_entry *ce, zend_object *orig
         php_raylib_vector2_object *phpTarget = php_raylib_vector2_fetch_object(target);
 
         intern->camera2d = RL_Camera2D_Create();
-        intern->camera2d->data = (Camera2D) {
+        *php_raylib_camera2d_fetch_data(intern) = (Camera2D) {
             .offset = (Vector2) {
                 .x = 0,
                 .y = 0
@@ -488,14 +490,14 @@ PHP_METHOD(Camera2D, __construct)
     ZVAL_OBJ_COPY(&intern->offset, &phpOffset->std);
     ZVAL_OBJ_COPY(&intern->target, &phpTarget->std);
 
-    intern->camera2d->data = (Camera2D) {
+    *php_raylib_camera2d_fetch_data(intern) = (Camera2D) {
         .offset = (Vector2) {
-            .x = phpOffset->vector2->data.x,
-            .y = phpOffset->vector2->data.y
+            .x = php_raylib_vector2_fetch_data(phpOffset)->x,
+            .y = php_raylib_vector2_fetch_data(phpOffset)->y
         },
         .target = (Vector2) {
-            .x = phpTarget->vector2->data.x,
-            .y = phpTarget->vector2->data.y
+            .x = php_raylib_vector2_fetch_data(phpTarget)->x,
+            .y = php_raylib_vector2_fetch_data(phpTarget)->y
         },
         .rotation = (float) rotation,
         .zoom = (float) zoom
@@ -528,13 +530,13 @@ static zend_object * php_raylib_camera2d_get_target(php_raylib_camera2d_object *
 
 static double php_raylib_camera2d_get_rotation(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    return (double) obj->camera2d->data.rotation;
+    return (double) php_raylib_camera2d_fetch_data(obj)->rotation;
 }
 /* }}} */
 
 static double php_raylib_camera2d_get_zoom(php_raylib_camera2d_object *obj) /* {{{ */
 {
-    return (double) obj->camera2d->data.zoom;
+    return (double) php_raylib_camera2d_fetch_data(obj)->zoom;
 }
 /* }}} */
 
@@ -579,11 +581,11 @@ static int php_raylib_camera2d_set_rotation(php_raylib_camera2d_object *obj, zva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera2d->data.rotation = 0;
+        php_raylib_camera2d_fetch_data(obj)->rotation = 0;
         return ret;
     }
 
-    obj->camera2d->data.rotation = (float) zval_get_double(newval);
+    php_raylib_camera2d_fetch_data(obj)->rotation = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -594,11 +596,11 @@ static int php_raylib_camera2d_set_zoom(php_raylib_camera2d_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->camera2d->data.zoom = 0;
+        php_raylib_camera2d_fetch_data(obj)->zoom = 0;
         return ret;
     }
 
-    obj->camera2d->data.zoom = (float) zval_get_double(newval);
+    php_raylib_camera2d_fetch_data(obj)->zoom = (float) zval_get_double(newval);
 
     return ret;
 }

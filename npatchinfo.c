@@ -103,6 +103,8 @@ struct RL_NPatchInfo* RL_NPatchInfo_Create() {
     object->id = RL_NPATCHINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_NPatchInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( NPatchInfo) {};
+    object->type = RL_NPATCHINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -364,18 +366,18 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
         php_raylib_rectangle_object *phpSource = Z_RECTANGLE_OBJ_P(&other->source);
 
 
-        intern->npatchinfo->data = (NPatchInfo) {
+        *php_raylib_npatchinfo_fetch_data(intern) = (NPatchInfo) {
             .source = (Rectangle) {
-                .x = other->npatchinfo->data.source.x,
-                .y = other->npatchinfo->data.source.y,
-                .width = other->npatchinfo->data.source.width,
-                .height = other->npatchinfo->data.source.height
+                .x = php_raylib_npatchinfo_fetch_data(other)->source.x,
+                .y = php_raylib_npatchinfo_fetch_data(other)->source.y,
+                .width = php_raylib_npatchinfo_fetch_data(other)->source.width,
+                .height = php_raylib_npatchinfo_fetch_data(other)->source.height
             },
-            .left = other->npatchinfo->data.left,
-            .top = other->npatchinfo->data.top,
-            .right = other->npatchinfo->data.right,
-            .bottom = other->npatchinfo->data.bottom,
-            .layout = other->npatchinfo->data.layout
+            .left = php_raylib_npatchinfo_fetch_data(other)->left,
+            .top = php_raylib_npatchinfo_fetch_data(other)->top,
+            .right = php_raylib_npatchinfo_fetch_data(other)->right,
+            .bottom = php_raylib_npatchinfo_fetch_data(other)->bottom,
+            .layout = php_raylib_npatchinfo_fetch_data(other)->layout
         };
 
         ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
@@ -386,7 +388,7 @@ zend_object * php_raylib_npatchinfo_new_ex(zend_class_entry *ce, zend_object *or
         php_raylib_rectangle_object *phpSource = php_raylib_rectangle_fetch_object(source);
 
         intern->npatchinfo = RL_NPatchInfo_Create();
-        intern->npatchinfo->data = (NPatchInfo) {
+        *php_raylib_npatchinfo_fetch_data(intern) = (NPatchInfo) {
             .source = (Rectangle) {
                 .x = 0,
                 .y = 0,
@@ -499,12 +501,12 @@ PHP_METHOD(NPatchInfo, __construct)
 
     ZVAL_OBJ_COPY(&intern->source, &phpSource->std);
 
-    intern->npatchinfo->data = (NPatchInfo) {
+    *php_raylib_npatchinfo_fetch_data(intern) = (NPatchInfo) {
         .source = (Rectangle) {
-            .x = phpSource->rectangle->data.x,
-            .y = phpSource->rectangle->data.y,
-            .width = phpSource->rectangle->data.width,
-            .height = phpSource->rectangle->data.height
+            .x = php_raylib_rectangle_fetch_data(phpSource)->x,
+            .y = php_raylib_rectangle_fetch_data(phpSource)->y,
+            .width = php_raylib_rectangle_fetch_data(phpSource)->width,
+            .height = php_raylib_rectangle_fetch_data(phpSource)->height
         },
         .left = (int) left,
         .top = (int) top,
@@ -528,31 +530,31 @@ static zend_object * php_raylib_npatchinfo_get_source(php_raylib_npatchinfo_obje
 
 static zend_long php_raylib_npatchinfo_get_left(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo->data.left;
+    return (zend_long) php_raylib_npatchinfo_fetch_data(obj)->left;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_top(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo->data.top;
+    return (zend_long) php_raylib_npatchinfo_fetch_data(obj)->top;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_right(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo->data.right;
+    return (zend_long) php_raylib_npatchinfo_fetch_data(obj)->right;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_bottom(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo->data.bottom;
+    return (zend_long) php_raylib_npatchinfo_fetch_data(obj)->bottom;
 }
 /* }}} */
 
 static zend_long php_raylib_npatchinfo_get_layout(php_raylib_npatchinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->npatchinfo->data.layout;
+    return (zend_long) php_raylib_npatchinfo_fetch_data(obj)->layout;
 }
 /* }}} */
 
@@ -579,11 +581,11 @@ static int php_raylib_npatchinfo_set_left(php_raylib_npatchinfo_object *obj, zva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo->data.left = 0;
+        php_raylib_npatchinfo_fetch_data(obj)->left = 0;
         return ret;
     }
 
-    obj->npatchinfo->data.left = (int) zval_get_long(newval);
+    php_raylib_npatchinfo_fetch_data(obj)->left = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -594,11 +596,11 @@ static int php_raylib_npatchinfo_set_top(php_raylib_npatchinfo_object *obj, zval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo->data.top = 0;
+        php_raylib_npatchinfo_fetch_data(obj)->top = 0;
         return ret;
     }
 
-    obj->npatchinfo->data.top = (int) zval_get_long(newval);
+    php_raylib_npatchinfo_fetch_data(obj)->top = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -609,11 +611,11 @@ static int php_raylib_npatchinfo_set_right(php_raylib_npatchinfo_object *obj, zv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo->data.right = 0;
+        php_raylib_npatchinfo_fetch_data(obj)->right = 0;
         return ret;
     }
 
-    obj->npatchinfo->data.right = (int) zval_get_long(newval);
+    php_raylib_npatchinfo_fetch_data(obj)->right = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -624,11 +626,11 @@ static int php_raylib_npatchinfo_set_bottom(php_raylib_npatchinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo->data.bottom = 0;
+        php_raylib_npatchinfo_fetch_data(obj)->bottom = 0;
         return ret;
     }
 
-    obj->npatchinfo->data.bottom = (int) zval_get_long(newval);
+    php_raylib_npatchinfo_fetch_data(obj)->bottom = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -639,11 +641,11 @@ static int php_raylib_npatchinfo_set_layout(php_raylib_npatchinfo_object *obj, z
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->npatchinfo->data.layout = 0;
+        php_raylib_npatchinfo_fetch_data(obj)->layout = 0;
         return ret;
     }
 
-    obj->npatchinfo->data.layout = (int) zval_get_long(newval);
+    php_raylib_npatchinfo_fetch_data(obj)->layout = (int) zval_get_long(newval);
 
     return ret;
 }

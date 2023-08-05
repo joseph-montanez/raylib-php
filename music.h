@@ -17,10 +17,21 @@ extern zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_music_object_handlers;
 
+typedef enum {
+    RL_MUSIC_IS_POINTER,
+    RL_MUSIC_IS_VALUE
+} RLMusicDataType;
+
+typedef union {
+    Music *p;
+    Music v;
+} MusicUnion;
+
 struct RL_Music {
     unsigned int id;
     char *guid;
-    Music data;
+    MusicUnion data;
+    RLMusicDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -44,6 +55,17 @@ typedef struct _php_raylib_music_object {
 
 static inline php_raylib_music_object *php_raylib_music_fetch_object(zend_object *obj) {
     return (php_raylib_music_object *)((char *)obj - XtOffsetOf(php_raylib_music_object, std));
+}
+
+static inline Music *php_raylib_music_fetch_data(php_raylib_music_object *obj) {
+    Music *my_music;
+    if (obj->music->type == RL_MUSIC_IS_POINTER) {
+        my_music = obj->music->data.p;
+    } else {
+        my_music = &obj->music->data.v;
+    }
+
+    return my_music;
 }
 
 #define Z_MUSIC_OBJ_P(zv) php_raylib_music_fetch_object(Z_OBJ_P(zv));

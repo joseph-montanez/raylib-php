@@ -103,6 +103,8 @@ struct RL_Ray* RL_Ray_Create() {
     object->id = RL_RAY_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Ray_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Ray) {};
+    object->type = RL_RAY_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -351,16 +353,16 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
         php_raylib_vector3_object *phpDirection = Z_VECTOR3_OBJ_P(&other->direction);
 
 
-        intern->ray->data = (Ray) {
+        *php_raylib_ray_fetch_data(intern) = (Ray) {
             .position = (Vector3) {
-                .x = other->ray->data.position.x,
-                .y = other->ray->data.position.y,
-                .z = other->ray->data.position.z
+                .x = php_raylib_ray_fetch_data(other)->position.x,
+                .y = php_raylib_ray_fetch_data(other)->position.y,
+                .z = php_raylib_ray_fetch_data(other)->position.z
             },
             .direction = (Vector3) {
-                .x = other->ray->data.direction.x,
-                .y = other->ray->data.direction.y,
-                .z = other->ray->data.direction.z
+                .x = php_raylib_ray_fetch_data(other)->direction.x,
+                .y = php_raylib_ray_fetch_data(other)->direction.y,
+                .z = php_raylib_ray_fetch_data(other)->direction.z
             }
         };
 
@@ -376,7 +378,7 @@ zend_object * php_raylib_ray_new_ex(zend_class_entry *ce, zend_object *orig)/* {
         php_raylib_vector3_object *phpDirection = php_raylib_vector3_fetch_object(direction);
 
         intern->ray = RL_Ray_Create();
-        intern->ray->data = (Ray) {
+        *php_raylib_ray_fetch_data(intern) = (Ray) {
             .position = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -456,16 +458,16 @@ PHP_METHOD(Ray, __construct)
     ZVAL_OBJ_COPY(&intern->position, &phpPosition->std);
     ZVAL_OBJ_COPY(&intern->direction, &phpDirection->std);
 
-    intern->ray->data = (Ray) {
+    *php_raylib_ray_fetch_data(intern) = (Ray) {
         .position = (Vector3) {
-            .x = phpPosition->vector3->data.x,
-            .y = phpPosition->vector3->data.y,
-            .z = phpPosition->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpPosition)->x,
+            .y = php_raylib_vector3_fetch_data(phpPosition)->y,
+            .z = php_raylib_vector3_fetch_data(phpPosition)->z
         },
         .direction = (Vector3) {
-            .x = phpDirection->vector3->data.x,
-            .y = phpDirection->vector3->data.y,
-            .z = phpDirection->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpDirection)->x,
+            .y = php_raylib_vector3_fetch_data(phpDirection)->y,
+            .z = php_raylib_vector3_fetch_data(phpDirection)->z
         }
     };
 }

@@ -55,7 +55,7 @@ class ObjectNewEx
             $input[] = '';
         }
 
-        $input[] = '        intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
+        $input[] = '        *php_raylib_' . $struct->nameLower . '_fetch_data(intern) = (' . $struct->name . ') {';
 
         $hasFields = false;
         foreach ($struct->fields as $i => $field) {
@@ -75,7 +75,7 @@ class ObjectNewEx
                         $delimiter2 = $n + 1 >= $subStruct->totalFields ? '' : ',';
 //                        $ref = $subField->isArray ? '->' : '.';
                         $ref = '.';
-                        $input[] = '                .' . $subField->name . ' = other->' . $struct->nameLower . '->data.' . $field->name . $ref . $subField->name . $delimiter2;
+                        $input[] = '                .' . $subField->name . ' = php_raylib_' . $struct->nameLower . '_fetch_data(other)->' . $field->name . $ref . $subField->name . $delimiter2;
                     }
                     $input[] = '            }' . $delimiter;
                 }
@@ -84,7 +84,7 @@ class ObjectNewEx
                     //-- This is ignored for now as `memcpy` is used below to copy fields over
                 } else {
                     $hasFields = true;
-                    $input[] = '            .' . $field->name . ' = other->' . $struct->nameLower . '->data.' . $field->name . $delimiter;
+                    $input[] = '            .' . $field->name . ' = php_raylib_' . $struct->nameLower . '_fetch_data(other)->' . $field->name . $delimiter;
                 }
             }
         }
@@ -100,10 +100,10 @@ class ObjectNewEx
 
         foreach ($struct->fields as $i => $field) {
             if ($field->isPrimitive && str_starts_with($field->type, 'char') && $field->isArray && $field->arrayCountNumber > 0) {
-                $input[] = '        strncpy(intern->' . $struct->nameLower . '->data.' . $field->name . ', other->' . $struct->nameLower . '->data.' . $field->name . ', ' . $field->arrayCountNumber . ');';
+                $input[] = '        strncpy(php_raylib_' . $struct->nameLower . '_fetch_data(intern)->' . $field->name . ',  php_raylib_' . $struct->nameLower . '_fetch_data(other)->' . $field->name . ', ' . $field->arrayCountNumber . ');';
             }
             elseif ($field->isPrimitive && $field->isArray && $field->arrayCountNumber > 0) {
-                $input[] = '        memcpy(intern->' . $struct->nameLower . '->data.' . $field->name . ', other->' . $struct->nameLower . '->data.' . $field->name . ', sizeof intern->' . $struct->nameLower . '->data.' . $field->name . ');';
+                $input[] = '        memcpy(php_raylib_' . $struct->nameLower . '_fetch_data(intern)->' . $field->name . ', php_raylib_' . $struct->nameLower . '_fetch_data(other)->' . $field->name . ', sizeof(' . $field->typePlain . ') * ' . $field->arrayCountNumber . ');';
             }
         }
 
@@ -153,7 +153,7 @@ class ObjectNewEx
         }
 
         $input[] = '        intern->' . $struct->nameLower . ' = RL_' . $struct->name . '_Create();';
-        $input[] = '        intern->' . $struct->nameLower . '->data = (' . $struct->name . ') {';
+        $input[] = '        *php_raylib_' . $struct->nameLower . '_fetch_data(intern) = (' . $struct->name . ') {';
 
         foreach ($struct->fields as $i => $field) {
             $delimiter = $i + 1 >= $struct->totalFields ? '' : ',';

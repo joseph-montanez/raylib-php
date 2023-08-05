@@ -102,6 +102,8 @@ struct RL_Texture* RL_Texture_Create() {
     object->id = RL_TEXTURE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Texture_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Texture) {};
+    object->type = RL_TEXTURE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -359,16 +361,16 @@ zend_object * php_raylib_texture_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_texture_object *other = php_raylib_texture_fetch_object(orig);
 
-        intern->texture->data = (Texture) {
-            .id = other->texture->data.id,
-            .width = other->texture->data.width,
-            .height = other->texture->data.height,
-            .mipmaps = other->texture->data.mipmaps,
-            .format = other->texture->data.format
+        *php_raylib_texture_fetch_data(intern) = (Texture) {
+            .id = php_raylib_texture_fetch_data(other)->id,
+            .width = php_raylib_texture_fetch_data(other)->width,
+            .height = php_raylib_texture_fetch_data(other)->height,
+            .mipmaps = php_raylib_texture_fetch_data(other)->mipmaps,
+            .format = php_raylib_texture_fetch_data(other)->format
         };
     } else {
         intern->texture = RL_Texture_Create();
-        intern->texture->data = (Texture) {
+        *php_raylib_texture_fetch_data(intern) = (Texture) {
             .id = 0,
             .width = 0,
             .height = 0,
@@ -418,36 +420,36 @@ PHP_METHOD(Texture, __construct)
 
 
     php_raylib_texture_object *intern = Z_TEXTURE_OBJ_P(ZEND_THIS);
-    intern->texture->data = LoadTexture(fileName->val);
+    *php_raylib_texture_fetch_data(intern) = LoadTexture(fileName->val);
 }
 
 static zend_long php_raylib_texture_get_id(php_raylib_texture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->texture->data.id;
+    return (zend_long) php_raylib_texture_fetch_data(obj)->id;
 }
 /* }}} */
 
 static zend_long php_raylib_texture_get_width(php_raylib_texture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->texture->data.width;
+    return (zend_long) php_raylib_texture_fetch_data(obj)->width;
 }
 /* }}} */
 
 static zend_long php_raylib_texture_get_height(php_raylib_texture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->texture->data.height;
+    return (zend_long) php_raylib_texture_fetch_data(obj)->height;
 }
 /* }}} */
 
 static zend_long php_raylib_texture_get_mipmaps(php_raylib_texture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->texture->data.mipmaps;
+    return (zend_long) php_raylib_texture_fetch_data(obj)->mipmaps;
 }
 /* }}} */
 
 static zend_long php_raylib_texture_get_format(php_raylib_texture_object *obj) /* {{{ */
 {
-    return (zend_long) obj->texture->data.format;
+    return (zend_long) php_raylib_texture_fetch_data(obj)->format;
 }
 /* }}} */
 
@@ -456,11 +458,11 @@ static int php_raylib_texture_set_id(php_raylib_texture_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->texture->data.id = 0;
+        php_raylib_texture_fetch_data(obj)->id = 0;
         return ret;
     }
 
-    obj->texture->data.id = (unsigned int) zval_get_long(newval);
+    php_raylib_texture_fetch_data(obj)->id = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -471,11 +473,11 @@ static int php_raylib_texture_set_width(php_raylib_texture_object *obj, zval *ne
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->texture->data.width = 0;
+        php_raylib_texture_fetch_data(obj)->width = 0;
         return ret;
     }
 
-    obj->texture->data.width = (int) zval_get_long(newval);
+    php_raylib_texture_fetch_data(obj)->width = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -486,11 +488,11 @@ static int php_raylib_texture_set_height(php_raylib_texture_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->texture->data.height = 0;
+        php_raylib_texture_fetch_data(obj)->height = 0;
         return ret;
     }
 
-    obj->texture->data.height = (int) zval_get_long(newval);
+    php_raylib_texture_fetch_data(obj)->height = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -501,11 +503,11 @@ static int php_raylib_texture_set_mipmaps(php_raylib_texture_object *obj, zval *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->texture->data.mipmaps = 0;
+        php_raylib_texture_fetch_data(obj)->mipmaps = 0;
         return ret;
     }
 
-    obj->texture->data.mipmaps = (int) zval_get_long(newval);
+    php_raylib_texture_fetch_data(obj)->mipmaps = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -516,11 +518,11 @@ static int php_raylib_texture_set_format(php_raylib_texture_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->texture->data.format = 0;
+        php_raylib_texture_fetch_data(obj)->format = 0;
         return ret;
     }
 
-    obj->texture->data.format = (int) zval_get_long(newval);
+    php_raylib_texture_fetch_data(obj)->format = (int) zval_get_long(newval);
 
     return ret;
 }

@@ -36,7 +36,7 @@ PHP_FUNCTION(LoadModelAnimations)
         zend_object *modelAnimation = php_raylib_modelanimation_new_ex(php_raylib_modelanimation_ce, NULL);
         php_raylib_modelanimation_object *phpModelAnimation = php_raylib_modelanimation_fetch_object(modelAnimation);
         // Assign model animation to PHP object
-        phpModelAnimation->modelanimation->data = anims[i];
+        *php_raylib_modelanimation_fetch_data(phpModelAnimation) = anims[i];
 
         // Push PHP object to array
         add_next_index_object(return_value,  &phpModelAnimation->std);

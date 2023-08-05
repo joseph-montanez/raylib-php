@@ -7,10 +7,11 @@ use Raylib\Parser\Generate\Zend\ArgBeginInfo;
 use Raylib\Parser\Generate\Zend\ArgInfo;
 use Raylib\Parser\Generate\Zend\ZParam;
 use Raylib\Parser\Helper;
+use Raylib\Parser\Struct;
 
 class CFunction
 {
-    public function gerenate(Func $function, $input)
+    public function gerenate(Func $function, $input, $structs)
     {
         if ($function->returnType === 'const void'
             || $function->returnType === 'void *'
@@ -103,7 +104,7 @@ class CFunction
                     } else {
                         $input[] = strtr('        if ((Z_TYPE_P([nameLower]_element) == IS_OBJECT && instanceof_function(Z_OBJCE_P([nameLower]_element), php_raylib_[typeLower]_ce))) {', $tr);
                         $input[] = strtr('            php_raylib_[typeLower]_object *[typeLower]_obj =  Z_[typeUpper]_OBJ_P([nameLower]_element);', $tr);
-                        $input[] = strtr('            [nameLower]_array[[nameLower]_index] = [typeLower]_obj->[typeLower]->data;', $tr);
+                        $input[] = strtr('            [nameLower]_array[[nameLower]_index] = *php_raylib_[typeLower]_fetch_data([typeLower]_obj);', $tr);
                         $input[] = strtr('        }', $tr);
                     }
                     $input[] = strtr('', $tr);
@@ -163,7 +164,7 @@ class CFunction
                 if ($param->isArray) {
                     $fnParams[] = strtr("[nameLower]_array", $tr);
                 } else {
-                    $fnParams[] = sprintf("%sphp%s->%s->data", $param->isRef ? '&' : '', $param->nameUpperFirst, $param->typeLower);
+                    $fnParams[] = sprintf("%sphp_raylib_%s_fetch_data(php%s)", $param->isRef ? '' : '*', $param->typeLower, $param->nameUpperFirst);
                 }
             } else {
             }
@@ -220,9 +221,53 @@ class CFunction
                 $input[] = sprintf("    %s originalResult = %s(%s);", $function->returnType, $function->name, implode(', ', $fnParams));
                 $input[] = sprintf("    zend_object *result = php_raylib_%s_new_ex(php_raylib_%s_ce, NULL);", $function->returnTypeLower, $function->returnTypeLower);
                 $input[] = sprintf("    php_raylib_%s_object *phpResult = php_raylib_%s_fetch_object(result);", $function->returnTypeLower, $function->returnTypeLower);
-                $input[] = sprintf("    phpResult->%s->data = originalResult;", $function->returnTypeLower);
+                $input[] = sprintf("    %s *%sData = php_raylib_%s_fetch_data(phpResult);", $function->returnType, $function->returnTypeLower, $function->returnTypeLower);
+                $input[] = sprintf("    // Dereference %sData for assignment back to object", $function->returnTypeLower);
+                $input[] = sprintf("    *%sData = originalResult;", $function->returnTypeLower);
                 $input[] = '';
-                $input[] = sprintf("    RETURN_OBJ(&phpResult->std);", $function->name, implode(', ', $fnParams));
+
+                //-- Fully populate the internal sub objects
+                if ($function->isConstructor) {
+                    /** @var Struct $matchedStruct */
+                    $matchedStruct = null;
+                    foreach ((array) $structs as $struct) {
+                        if ($struct->name === $function->returnType) {
+                            $matchedStruct = $struct;
+                            break;
+                        }
+                    }
+
+                    foreach ($matchedStruct->nonPrimitiveFields as $field) {
+                        if ($field->isArray) {
+
+                            $input[] = sprintf("    for (int i = 0; i < php_raylib_%s_fetch_data(phpResult)->%s; i++) {", $function->returnTypeLower, $field->arrayCountField);
+//                            $input[] = sprintf("        zend_object *%sResult = php_raylib_%s_new_ex(php_raylib_model_ce, NULL);", $field->name, $field->typePlainLower);
+//                            $input[] = sprintf("        add_next_index_object(&phpResult->%s, %sResult);",
+//                                $field->name, $field->name);
+//                            $input[] = sprintf("        // add_next_index_object(&phpResult->%s, php_raylib_%s_fetch_data(phpResult)->%s[i]);",
+//                                $field->name, $function->returnTypeLower, $field->name);
+
+
+                            $input []= '        // Create PHP Object holder of this data';
+                            $input []= '        zend_object *' . $field->name . 'Result = php_raylib_' . $field->typePlainLower . '_new_ex(php_raylib_' . $field->typePlainLower . '_ce, NULL);';
+                            $input []= '        // Fetch the data inside the PHP Object';
+                            $input []= '        ' . $field->typePlain . ' *' . $field->typePlainLower . 'Element = php_raylib_' . $field->typePlainLower . '_fetch_data(php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . 'Result));';
+                            $input []= '        // Link this as a pointer, rather than copying data between each other';
+                            $input []= '        *' . $field->typePlainLower . 'Element = php_raylib_' . $function->returnTypeLower . '_fetch_data(phpResult)->' . $field->name . '[i];';
+                            $input []= '        // Push element to PHP array which should just be an object that is also a data pointer,';
+                            $input []= '        // if this is changed should update original data?';
+                            $input []= '        add_next_index_object(&phpResult->' . $field->nameLower . ', ' . $field->name . 'Result);';
+
+                            $input[] = sprintf("    }");
+                        }
+                        $input[] = '';
+                    }
+
+                    $input[] = '';
+                }
+
+
+                $input[] = '    RETURN_OBJ(&phpResult->std);';
             }
         } else {
             $input[] = '    ' . $function->name . '(' . implode(', ', $fnParams) . ');';

@@ -23,10 +23,21 @@ extern zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *o
 
 extern zend_object_handlers php_raylib_font_object_handlers;
 
+typedef enum {
+    RL_FONT_IS_POINTER,
+    RL_FONT_IS_VALUE
+} RLFontDataType;
+
+typedef union {
+    Font *p;
+    Font v;
+} FontUnion;
+
 struct RL_Font {
     unsigned int id;
     char *guid;
-    Font data;
+    FontUnion data;
+    RLFontDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -50,6 +61,17 @@ typedef struct _php_raylib_font_object {
 
 static inline php_raylib_font_object *php_raylib_font_fetch_object(zend_object *obj) {
     return (php_raylib_font_object *)((char *)obj - XtOffsetOf(php_raylib_font_object, std));
+}
+
+static inline Font *php_raylib_font_fetch_data(php_raylib_font_object *obj) {
+    Font *my_font;
+    if (obj->font->type == RL_FONT_IS_POINTER) {
+        my_font = obj->font->data.p;
+    } else {
+        my_font = &obj->font->data.v;
+    }
+
+    return my_font;
 }
 
 #define Z_FONT_OBJ_P(zv) php_raylib_font_fetch_object(Z_OBJ_P(zv));

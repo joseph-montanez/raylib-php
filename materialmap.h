@@ -19,10 +19,21 @@ extern zend_object * php_raylib_materialmap_new_ex(zend_class_entry *ce, zend_ob
 
 extern zend_object_handlers php_raylib_materialmap_object_handlers;
 
+typedef enum {
+    RL_MATERIALMAP_IS_POINTER,
+    RL_MATERIALMAP_IS_VALUE
+} RLMaterialMapDataType;
+
+typedef union {
+    MaterialMap *p;
+    MaterialMap v;
+} MaterialMapUnion;
+
 struct RL_MaterialMap {
     unsigned int id;
     char *guid;
-    MaterialMap data;
+    MaterialMapUnion data;
+    RLMaterialMapDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -45,6 +56,17 @@ typedef struct _php_raylib_materialmap_object {
 
 static inline php_raylib_materialmap_object *php_raylib_materialmap_fetch_object(zend_object *obj) {
     return (php_raylib_materialmap_object *)((char *)obj - XtOffsetOf(php_raylib_materialmap_object, std));
+}
+
+static inline MaterialMap *php_raylib_materialmap_fetch_data(php_raylib_materialmap_object *obj) {
+    MaterialMap *my_materialmap;
+    if (obj->materialmap->type == RL_MATERIALMAP_IS_POINTER) {
+        my_materialmap = obj->materialmap->data.p;
+    } else {
+        my_materialmap = &obj->materialmap->data.v;
+    }
+
+    return my_materialmap;
 }
 
 #define Z_MATERIALMAP_OBJ_P(zv) php_raylib_materialmap_fetch_object(Z_OBJ_P(zv));

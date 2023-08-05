@@ -102,6 +102,8 @@ struct RL_Wave* RL_Wave_Create() {
     object->id = RL_WAVE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Wave_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Wave) {};
+    object->type = RL_WAVE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -358,15 +360,15 @@ zend_object * php_raylib_wave_new_ex(zend_class_entry *ce, zend_object *orig)/* 
     if (orig) {
         php_raylib_wave_object *other = php_raylib_wave_fetch_object(orig);
 
-        intern->wave->data = (Wave) {
-            .frameCount = other->wave->data.frameCount,
-            .sampleRate = other->wave->data.sampleRate,
-            .sampleSize = other->wave->data.sampleSize,
-            .channels = other->wave->data.channels,
+        *php_raylib_wave_fetch_data(intern) = (Wave) {
+            .frameCount = php_raylib_wave_fetch_data(other)->frameCount,
+            .sampleRate = php_raylib_wave_fetch_data(other)->sampleRate,
+            .sampleSize = php_raylib_wave_fetch_data(other)->sampleSize,
+            .channels = php_raylib_wave_fetch_data(other)->channels,
         };
     } else {
         intern->wave = RL_Wave_Create();
-        intern->wave->data = (Wave) {
+        *php_raylib_wave_fetch_data(intern) = (Wave) {
             .frameCount = 0,
             .sampleRate = 0,
             .sampleSize = 0,
@@ -416,25 +418,25 @@ PHP_METHOD(Wave, __construct)
 
 static zend_long php_raylib_wave_get_framecount(php_raylib_wave_object *obj) /* {{{ */
 {
-    return (zend_long) obj->wave->data.frameCount;
+    return (zend_long) php_raylib_wave_fetch_data(obj)->frameCount;
 }
 /* }}} */
 
 static zend_long php_raylib_wave_get_samplerate(php_raylib_wave_object *obj) /* {{{ */
 {
-    return (zend_long) obj->wave->data.sampleRate;
+    return (zend_long) php_raylib_wave_fetch_data(obj)->sampleRate;
 }
 /* }}} */
 
 static zend_long php_raylib_wave_get_samplesize(php_raylib_wave_object *obj) /* {{{ */
 {
-    return (zend_long) obj->wave->data.sampleSize;
+    return (zend_long) php_raylib_wave_fetch_data(obj)->sampleSize;
 }
 /* }}} */
 
 static zend_long php_raylib_wave_get_channels(php_raylib_wave_object *obj) /* {{{ */
 {
-    return (zend_long) obj->wave->data.channels;
+    return (zend_long) php_raylib_wave_fetch_data(obj)->channels;
 }
 /* }}} */
 
@@ -449,11 +451,11 @@ static int php_raylib_wave_set_framecount(php_raylib_wave_object *obj, zval *new
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->wave->data.frameCount = 0;
+        php_raylib_wave_fetch_data(obj)->frameCount = 0;
         return ret;
     }
 
-    obj->wave->data.frameCount = (unsigned int) zval_get_long(newval);
+    php_raylib_wave_fetch_data(obj)->frameCount = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -464,11 +466,11 @@ static int php_raylib_wave_set_samplerate(php_raylib_wave_object *obj, zval *new
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->wave->data.sampleRate = 0;
+        php_raylib_wave_fetch_data(obj)->sampleRate = 0;
         return ret;
     }
 
-    obj->wave->data.sampleRate = (unsigned int) zval_get_long(newval);
+    php_raylib_wave_fetch_data(obj)->sampleRate = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -479,11 +481,11 @@ static int php_raylib_wave_set_samplesize(php_raylib_wave_object *obj, zval *new
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->wave->data.sampleSize = 0;
+        php_raylib_wave_fetch_data(obj)->sampleSize = 0;
         return ret;
     }
 
-    obj->wave->data.sampleSize = (unsigned int) zval_get_long(newval);
+    php_raylib_wave_fetch_data(obj)->sampleSize = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -494,11 +496,11 @@ static int php_raylib_wave_set_channels(php_raylib_wave_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->wave->data.channels = 0;
+        php_raylib_wave_fetch_data(obj)->channels = 0;
         return ret;
     }
 
-    obj->wave->data.channels = (unsigned int) zval_get_long(newval);
+    php_raylib_wave_fetch_data(obj)->channels = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

@@ -15,10 +15,21 @@ extern zend_object * php_raylib_vector4_new_ex(zend_class_entry *ce, zend_object
 
 extern zend_object_handlers php_raylib_vector4_object_handlers;
 
+typedef enum {
+    RL_VECTOR4_IS_POINTER,
+    RL_VECTOR4_IS_VALUE
+} RLVector4DataType;
+
+typedef union {
+    Vector4 *p;
+    Vector4 v;
+} Vector4Union;
+
 struct RL_Vector4 {
     unsigned int id;
     char *guid;
-    Vector4 data;
+    Vector4Union data;
+    RLVector4DataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -39,6 +50,17 @@ typedef struct _php_raylib_vector4_object {
 
 static inline php_raylib_vector4_object *php_raylib_vector4_fetch_object(zend_object *obj) {
     return (php_raylib_vector4_object *)((char *)obj - XtOffsetOf(php_raylib_vector4_object, std));
+}
+
+static inline Vector4 *php_raylib_vector4_fetch_data(php_raylib_vector4_object *obj) {
+    Vector4 *my_vector4;
+    if (obj->vector4->type == RL_VECTOR4_IS_POINTER) {
+        my_vector4 = obj->vector4->data.p;
+    } else {
+        my_vector4 = &obj->vector4->data.v;
+    }
+
+    return my_vector4;
 }
 
 #define Z_VECTOR4_OBJ_P(zv) php_raylib_vector4_fetch_object(Z_OBJ_P(zv));

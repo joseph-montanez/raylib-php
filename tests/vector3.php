@@ -11,7 +11,7 @@ $camera->position->x++;
 
 var_dump($camera->position);
 echo "unset\n";
-unset($camera->position);
+unset($vector);
 echo "dump\n";
 var_dump($camera->position);
 

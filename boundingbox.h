@@ -17,10 +17,21 @@ extern zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_ob
 
 extern zend_object_handlers php_raylib_boundingbox_object_handlers;
 
+typedef enum {
+    RL_BOUNDINGBOX_IS_POINTER,
+    RL_BOUNDINGBOX_IS_VALUE
+} RLBoundingBoxDataType;
+
+typedef union {
+    BoundingBox *p;
+    BoundingBox v;
+} BoundingBoxUnion;
+
 struct RL_BoundingBox {
     unsigned int id;
     char *guid;
-    BoundingBox data;
+    BoundingBoxUnion data;
+    RLBoundingBoxDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -43,6 +54,17 @@ typedef struct _php_raylib_boundingbox_object {
 
 static inline php_raylib_boundingbox_object *php_raylib_boundingbox_fetch_object(zend_object *obj) {
     return (php_raylib_boundingbox_object *)((char *)obj - XtOffsetOf(php_raylib_boundingbox_object, std));
+}
+
+static inline BoundingBox *php_raylib_boundingbox_fetch_data(php_raylib_boundingbox_object *obj) {
+    BoundingBox *my_boundingbox;
+    if (obj->boundingbox->type == RL_BOUNDINGBOX_IS_POINTER) {
+        my_boundingbox = obj->boundingbox->data.p;
+    } else {
+        my_boundingbox = &obj->boundingbox->data.v;
+    }
+
+    return my_boundingbox;
 }
 
 #define Z_BOUNDINGBOX_OBJ_P(zv) php_raylib_boundingbox_fetch_object(Z_OBJ_P(zv));

@@ -15,10 +15,21 @@ extern zend_object * php_raylib_matrix_new_ex(zend_class_entry *ce, zend_object 
 
 extern zend_object_handlers php_raylib_matrix_object_handlers;
 
+typedef enum {
+    RL_MATRIX_IS_POINTER,
+    RL_MATRIX_IS_VALUE
+} RLMatrixDataType;
+
+typedef union {
+    Matrix *p;
+    Matrix v;
+} MatrixUnion;
+
 struct RL_Matrix {
     unsigned int id;
     char *guid;
-    Matrix data;
+    MatrixUnion data;
+    RLMatrixDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -39,6 +50,17 @@ typedef struct _php_raylib_matrix_object {
 
 static inline php_raylib_matrix_object *php_raylib_matrix_fetch_object(zend_object *obj) {
     return (php_raylib_matrix_object *)((char *)obj - XtOffsetOf(php_raylib_matrix_object, std));
+}
+
+static inline Matrix *php_raylib_matrix_fetch_data(php_raylib_matrix_object *obj) {
+    Matrix *my_matrix;
+    if (obj->matrix->type == RL_MATRIX_IS_POINTER) {
+        my_matrix = obj->matrix->data.p;
+    } else {
+        my_matrix = &obj->matrix->data.v;
+    }
+
+    return my_matrix;
 }
 
 #define Z_MATRIX_OBJ_P(zv) php_raylib_matrix_fetch_object(Z_OBJ_P(zv));

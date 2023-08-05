@@ -102,6 +102,8 @@ struct RL_Vector4* RL_Vector4_Create() {
     object->id = RL_VECTOR4_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Vector4_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Vector4) {};
+    object->type = RL_VECTOR4_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -345,15 +347,15 @@ zend_object * php_raylib_vector4_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_vector4_object *other = php_raylib_vector4_fetch_object(orig);
 
-        intern->vector4->data = (Vector4) {
-            .x = other->vector4->data.x,
-            .y = other->vector4->data.y,
-            .z = other->vector4->data.z,
-            .w = other->vector4->data.w
+        *php_raylib_vector4_fetch_data(intern) = (Vector4) {
+            .x = php_raylib_vector4_fetch_data(other)->x,
+            .y = php_raylib_vector4_fetch_data(other)->y,
+            .z = php_raylib_vector4_fetch_data(other)->z,
+            .w = php_raylib_vector4_fetch_data(other)->w
         };
     } else {
         intern->vector4 = RL_Vector4_Create();
-        intern->vector4->data = (Vector4) {
+        *php_raylib_vector4_fetch_data(intern) = (Vector4) {
             .x = 0,
             .y = 0,
             .z = 0,
@@ -437,7 +439,7 @@ PHP_METHOD(Vector4, __construct)
 
 
 
-    intern->vector4->data = (Vector4) {
+    *php_raylib_vector4_fetch_data(intern) = (Vector4) {
         .x = (float) x,
         .y = (float) y,
         .z = (float) z,
@@ -447,25 +449,25 @@ PHP_METHOD(Vector4, __construct)
 
 static double php_raylib_vector4_get_x(php_raylib_vector4_object *obj) /* {{{ */
 {
-    return (double) obj->vector4->data.x;
+    return (double) php_raylib_vector4_fetch_data(obj)->x;
 }
 /* }}} */
 
 static double php_raylib_vector4_get_y(php_raylib_vector4_object *obj) /* {{{ */
 {
-    return (double) obj->vector4->data.y;
+    return (double) php_raylib_vector4_fetch_data(obj)->y;
 }
 /* }}} */
 
 static double php_raylib_vector4_get_z(php_raylib_vector4_object *obj) /* {{{ */
 {
-    return (double) obj->vector4->data.z;
+    return (double) php_raylib_vector4_fetch_data(obj)->z;
 }
 /* }}} */
 
 static double php_raylib_vector4_get_w(php_raylib_vector4_object *obj) /* {{{ */
 {
-    return (double) obj->vector4->data.w;
+    return (double) php_raylib_vector4_fetch_data(obj)->w;
 }
 /* }}} */
 
@@ -474,11 +476,11 @@ static int php_raylib_vector4_set_x(php_raylib_vector4_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector4->data.x = 0;
+        php_raylib_vector4_fetch_data(obj)->x = 0;
         return ret;
     }
 
-    obj->vector4->data.x = (float) zval_get_double(newval);
+    php_raylib_vector4_fetch_data(obj)->x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -489,11 +491,11 @@ static int php_raylib_vector4_set_y(php_raylib_vector4_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector4->data.y = 0;
+        php_raylib_vector4_fetch_data(obj)->y = 0;
         return ret;
     }
 
-    obj->vector4->data.y = (float) zval_get_double(newval);
+    php_raylib_vector4_fetch_data(obj)->y = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -504,11 +506,11 @@ static int php_raylib_vector4_set_z(php_raylib_vector4_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector4->data.z = 0;
+        php_raylib_vector4_fetch_data(obj)->z = 0;
         return ret;
     }
 
-    obj->vector4->data.z = (float) zval_get_double(newval);
+    php_raylib_vector4_fetch_data(obj)->z = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -519,11 +521,11 @@ static int php_raylib_vector4_set_w(php_raylib_vector4_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector4->data.w = 0;
+        php_raylib_vector4_fetch_data(obj)->w = 0;
         return ret;
     }
 
-    obj->vector4->data.w = (float) zval_get_double(newval);
+    php_raylib_vector4_fetch_data(obj)->w = (float) zval_get_double(newval);
 
     return ret;
 }

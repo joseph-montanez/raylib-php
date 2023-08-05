@@ -102,6 +102,8 @@ struct RL_Shader* RL_Shader_Create() {
     object->id = RL_SHADER_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Shader_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Shader) {};
+    object->type = RL_SHADER_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -359,13 +361,13 @@ zend_object * php_raylib_shader_new_ex(zend_class_entry *ce, zend_object *orig)/
     if (orig) {
         php_raylib_shader_object *other = php_raylib_shader_fetch_object(orig);
 
-        intern->shader->data = (Shader) {
-            .id = other->shader->data.id,
+        *php_raylib_shader_fetch_data(intern) = (Shader) {
+            .id = php_raylib_shader_fetch_data(other)->id,
         };
-        memcpy(intern->shader->data.locs, other->shader->data.locs, sizeof intern->shader->data.locs);
+        memcpy(php_raylib_shader_fetch_data(intern)->locs, php_raylib_shader_fetch_data(other)->locs, sizeof(int) * 32);
     } else {
         intern->shader = RL_Shader_Create();
-        intern->shader->data = (Shader) {
+        *php_raylib_shader_fetch_data(intern) = (Shader) {
             .id = 0,
             .locs = 0
         };
@@ -409,7 +411,7 @@ PHP_METHOD(Shader, __construct)
 
 static zend_long php_raylib_shader_get_id(php_raylib_shader_object *obj) /* {{{ */
 {
-    return (zend_long) obj->shader->data.id;
+    return (zend_long) php_raylib_shader_fetch_data(obj)->id;
 }
 /* }}} */
 
@@ -421,13 +423,16 @@ static HashTable * php_raylib_shader_get_locs(php_raylib_shader_object *obj) /* 
     // Create zval to hold array
     zval zLocs;
     unsigned int i;
+    Shader *objectData = php_raylib_shader_fetch_data(obj);
 
     // Initialize Array
     array_init_size(&zLocs, 32);
 
     // populate the array with int
     for (i = 0; i < 32; i++) {
-        add_next_index_double(&zLocs, obj->shader->data.locs[i]);
+        if (objectData != NULL && objectData->locs != NULL) {
+            add_next_index_double(&zLocs, objectData->locs[i]);
+        }
     }
 
     return Z_ARRVAL_P(&zLocs);
@@ -439,11 +444,11 @@ static int php_raylib_shader_set_id(php_raylib_shader_object *obj, zval *newval)
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->shader->data.id = 0;
+        php_raylib_shader_fetch_data(obj)->id = 0;
         return ret;
     }
 
-    obj->shader->data.id = (unsigned int) zval_get_long(newval);
+    php_raylib_shader_fetch_data(obj)->id = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

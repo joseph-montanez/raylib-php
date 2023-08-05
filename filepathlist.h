@@ -15,10 +15,21 @@ extern zend_object * php_raylib_filepathlist_new_ex(zend_class_entry *ce, zend_o
 
 extern zend_object_handlers php_raylib_filepathlist_object_handlers;
 
+typedef enum {
+    RL_FILEPATHLIST_IS_POINTER,
+    RL_FILEPATHLIST_IS_VALUE
+} RLFilePathListDataType;
+
+typedef union {
+    FilePathList *p;
+    FilePathList v;
+} FilePathListUnion;
+
 struct RL_FilePathList {
     unsigned int id;
     char *guid;
-    FilePathList data;
+    FilePathListUnion data;
+    RLFilePathListDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -39,6 +50,17 @@ typedef struct _php_raylib_filepathlist_object {
 
 static inline php_raylib_filepathlist_object *php_raylib_filepathlist_fetch_object(zend_object *obj) {
     return (php_raylib_filepathlist_object *)((char *)obj - XtOffsetOf(php_raylib_filepathlist_object, std));
+}
+
+static inline FilePathList *php_raylib_filepathlist_fetch_data(php_raylib_filepathlist_object *obj) {
+    FilePathList *my_filepathlist;
+    if (obj->filepathlist->type == RL_FILEPATHLIST_IS_POINTER) {
+        my_filepathlist = obj->filepathlist->data.p;
+    } else {
+        my_filepathlist = &obj->filepathlist->data.v;
+    }
+
+    return my_filepathlist;
 }
 
 #define Z_FILEPATHLIST_OBJ_P(zv) php_raylib_filepathlist_fetch_object(Z_OBJ_P(zv));

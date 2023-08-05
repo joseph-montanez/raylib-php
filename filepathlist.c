@@ -102,6 +102,8 @@ struct RL_FilePathList* RL_FilePathList_Create() {
     object->id = RL_FILEPATHLIST_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_FilePathList_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( FilePathList) {};
+    object->type = RL_FILEPATHLIST_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -358,14 +360,14 @@ zend_object * php_raylib_filepathlist_new_ex(zend_class_entry *ce, zend_object *
     if (orig) {
         php_raylib_filepathlist_object *other = php_raylib_filepathlist_fetch_object(orig);
 
-        intern->filepathlist->data = (FilePathList) {
-            .capacity = other->filepathlist->data.capacity,
-            .count = other->filepathlist->data.count,
-            .paths = other->filepathlist->data.paths
+        *php_raylib_filepathlist_fetch_data(intern) = (FilePathList) {
+            .capacity = php_raylib_filepathlist_fetch_data(other)->capacity,
+            .count = php_raylib_filepathlist_fetch_data(other)->count,
+            .paths = php_raylib_filepathlist_fetch_data(other)->paths
         };
     } else {
         intern->filepathlist = RL_FilePathList_Create();
-        intern->filepathlist->data = (FilePathList) {
+        *php_raylib_filepathlist_fetch_data(intern) = (FilePathList) {
             .capacity = 0,
             .count = 0,
             .paths = 0
@@ -439,7 +441,7 @@ PHP_METHOD(FilePathList, __construct)
 
 
 
-    intern->filepathlist->data = (FilePathList) {
+    *php_raylib_filepathlist_fetch_data(intern) = (FilePathList) {
         .capacity = (unsigned int) capacity,
         .count = (unsigned int) count,
         .paths = (char **) paths
@@ -448,20 +450,20 @@ PHP_METHOD(FilePathList, __construct)
 
 static zend_long php_raylib_filepathlist_get_capacity(php_raylib_filepathlist_object *obj) /* {{{ */
 {
-    return (zend_long) obj->filepathlist->data.capacity;
+    return (zend_long) php_raylib_filepathlist_fetch_data(obj)->capacity;
 }
 /* }}} */
 
 static zend_long php_raylib_filepathlist_get_count(php_raylib_filepathlist_object *obj) /* {{{ */
 {
-    return (zend_long) obj->filepathlist->data.count;
+    return (zend_long) php_raylib_filepathlist_fetch_data(obj)->count;
 }
 /* }}} */
 
 static zend_string * php_raylib_filepathlist_get_paths(php_raylib_filepathlist_object *obj) /* {{{ */
 {
     zend_string *result_str;
-    result_str = zend_string_init(obj->filepathlist->data.paths, strlen(obj->filepathlist->data.paths), 1);
+    result_str = zend_string_init(php_raylib_filepathlist_fetch_data(obj)->paths, strlen(php_raylib_filepathlist_fetch_data(obj)->paths), 1);
     return result_str;
 }
 /* }}} */
@@ -471,11 +473,11 @@ static int php_raylib_filepathlist_set_capacity(php_raylib_filepathlist_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->filepathlist->data.capacity = 0;
+        php_raylib_filepathlist_fetch_data(obj)->capacity = 0;
         return ret;
     }
 
-    obj->filepathlist->data.capacity = (unsigned int) zval_get_long(newval);
+    php_raylib_filepathlist_fetch_data(obj)->capacity = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -486,11 +488,11 @@ static int php_raylib_filepathlist_set_count(php_raylib_filepathlist_object *obj
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->filepathlist->data.count = 0;
+        php_raylib_filepathlist_fetch_data(obj)->count = 0;
         return ret;
     }
 
-    obj->filepathlist->data.count = (unsigned int) zval_get_long(newval);
+    php_raylib_filepathlist_fetch_data(obj)->count = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -501,7 +503,7 @@ static int php_raylib_filepathlist_set_paths(php_raylib_filepathlist_object *obj
     int ret = SUCCESS;
 
     zend_string *str = zval_get_string(newval);
-    obj->filepathlist->data.paths = ZSTR_VAL(str);
+   php_raylib_filepathlist_fetch_data(obj)->paths = ZSTR_VAL(str);
     zend_string_release_ex(str, 0);
 
     return ret;

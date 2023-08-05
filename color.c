@@ -102,6 +102,8 @@ struct RL_Color* RL_Color_Create() {
     object->id = RL_COLOR_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Color_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Color) {};
+    object->type = RL_COLOR_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -345,15 +347,15 @@ zend_object * php_raylib_color_new_ex(zend_class_entry *ce, zend_object *orig)/*
     if (orig) {
         php_raylib_color_object *other = php_raylib_color_fetch_object(orig);
 
-        intern->color->data = (Color) {
-            .r = other->color->data.r,
-            .g = other->color->data.g,
-            .b = other->color->data.b,
-            .a = other->color->data.a
+        *php_raylib_color_fetch_data(intern) = (Color) {
+            .r = php_raylib_color_fetch_data(other)->r,
+            .g = php_raylib_color_fetch_data(other)->g,
+            .b = php_raylib_color_fetch_data(other)->b,
+            .a = php_raylib_color_fetch_data(other)->a
         };
     } else {
         intern->color = RL_Color_Create();
-        intern->color->data = (Color) {
+        *php_raylib_color_fetch_data(intern) = (Color) {
             .r = 0,
             .g = 0,
             .b = 0,
@@ -437,7 +439,7 @@ PHP_METHOD(Color, __construct)
 
 
 
-    intern->color->data = (Color) {
+    *php_raylib_color_fetch_data(intern) = (Color) {
         .r = (unsigned char) r,
         .g = (unsigned char) g,
         .b = (unsigned char) b,
@@ -453,7 +455,7 @@ PHP_METHOD(Color, LIGHTGRAY)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){200, 200, 200, 255};
+    *php_raylib_color_fetch_data(result) = (Color){200, 200, 200, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -466,7 +468,7 @@ PHP_METHOD(Color, GRAY)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){130, 130, 130, 255};
+    *php_raylib_color_fetch_data(result) = (Color){130, 130, 130, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -479,7 +481,7 @@ PHP_METHOD(Color, DARKGRAY)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){80, 80, 80, 255};
+    *php_raylib_color_fetch_data(result) = (Color){80, 80, 80, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -492,7 +494,7 @@ PHP_METHOD(Color, YELLOW)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){253, 249, 0, 255};
+    *php_raylib_color_fetch_data(result) = (Color){253, 249, 0, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -505,7 +507,7 @@ PHP_METHOD(Color, GOLD)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){255, 203, 0, 255};
+    *php_raylib_color_fetch_data(result) = (Color){255, 203, 0, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -518,7 +520,7 @@ PHP_METHOD(Color, ORANGE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){255, 161, 0, 255};
+    *php_raylib_color_fetch_data(result) = (Color){255, 161, 0, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -531,7 +533,7 @@ PHP_METHOD(Color, PINK)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){255, 109, 194, 255};
+    *php_raylib_color_fetch_data(result) = (Color){255, 109, 194, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -544,7 +546,7 @@ PHP_METHOD(Color, RED)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){230, 41, 55, 255};
+    *php_raylib_color_fetch_data(result) = (Color){230, 41, 55, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -557,7 +559,7 @@ PHP_METHOD(Color, MAROON)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){190, 33, 55, 255};
+    *php_raylib_color_fetch_data(result) = (Color){190, 33, 55, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -570,7 +572,7 @@ PHP_METHOD(Color, GREEN)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 228, 48, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 228, 48, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -583,7 +585,7 @@ PHP_METHOD(Color, LIME)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 158, 47, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 158, 47, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -596,7 +598,7 @@ PHP_METHOD(Color, DARKGREEN)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 117, 44, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 117, 44, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -609,7 +611,7 @@ PHP_METHOD(Color, SKYBLUE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){102, 191, 255, 255};
+    *php_raylib_color_fetch_data(result) = (Color){102, 191, 255, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -622,7 +624,7 @@ PHP_METHOD(Color, BLUE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 121, 241, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 121, 241, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -635,7 +637,7 @@ PHP_METHOD(Color, DARKBLUE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 82, 172, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 82, 172, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -648,7 +650,7 @@ PHP_METHOD(Color, PURPLE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){200, 122, 255, 255};
+    *php_raylib_color_fetch_data(result) = (Color){200, 122, 255, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -661,7 +663,7 @@ PHP_METHOD(Color, VIOLET)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){135, 60, 190, 255};
+    *php_raylib_color_fetch_data(result) = (Color){135, 60, 190, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -674,7 +676,7 @@ PHP_METHOD(Color, DARKPURPLE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){112, 31, 126, 255};
+    *php_raylib_color_fetch_data(result) = (Color){112, 31, 126, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -687,7 +689,7 @@ PHP_METHOD(Color, BEIGE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){211, 176, 131, 255};
+    *php_raylib_color_fetch_data(result) = (Color){211, 176, 131, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -700,7 +702,7 @@ PHP_METHOD(Color, BROWN)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){127, 106, 79, 255};
+    *php_raylib_color_fetch_data(result) = (Color){127, 106, 79, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -713,7 +715,7 @@ PHP_METHOD(Color, DARKBROWN)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){76, 63, 47, 255};
+    *php_raylib_color_fetch_data(result) = (Color){76, 63, 47, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -726,7 +728,7 @@ PHP_METHOD(Color, WHITE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){255, 255, 255, 255};
+    *php_raylib_color_fetch_data(result) = (Color){255, 255, 255, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -739,7 +741,7 @@ PHP_METHOD(Color, BLACK)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 0, 0, 255};
+    *php_raylib_color_fetch_data(result) = (Color){0, 0, 0, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -752,7 +754,7 @@ PHP_METHOD(Color, BLANK)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){0, 0, 0, 0};
+    *php_raylib_color_fetch_data(result) = (Color){0, 0, 0, 0};
 
     RETURN_OBJ(&result->std);
 }
@@ -765,7 +767,7 @@ PHP_METHOD(Color, MAGENTA)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){255, 0, 255, 255};
+    *php_raylib_color_fetch_data(result) = (Color){255, 0, 255, 255};
 
     RETURN_OBJ(&result->std);
 }
@@ -778,32 +780,32 @@ PHP_METHOD(Color, RAYWHITE)
     object_init_ex(obj, php_raylib_color_ce);
 
     php_raylib_color_object *result = Z_COLOR_OBJ_P(obj);
-    result->color->data = (Color){245, 245, 245, 255};
+    *php_raylib_color_fetch_data(result) = (Color){245, 245, 245, 255};
 
     RETURN_OBJ(&result->std);
 }
 
 static zend_long php_raylib_color_get_r(php_raylib_color_object *obj) /* {{{ */
 {
-    return (zend_long) obj->color->data.r;
+    return (zend_long) php_raylib_color_fetch_data(obj)->r;
 }
 /* }}} */
 
 static zend_long php_raylib_color_get_g(php_raylib_color_object *obj) /* {{{ */
 {
-    return (zend_long) obj->color->data.g;
+    return (zend_long) php_raylib_color_fetch_data(obj)->g;
 }
 /* }}} */
 
 static zend_long php_raylib_color_get_b(php_raylib_color_object *obj) /* {{{ */
 {
-    return (zend_long) obj->color->data.b;
+    return (zend_long) php_raylib_color_fetch_data(obj)->b;
 }
 /* }}} */
 
 static zend_long php_raylib_color_get_a(php_raylib_color_object *obj) /* {{{ */
 {
-    return (zend_long) obj->color->data.a;
+    return (zend_long) php_raylib_color_fetch_data(obj)->a;
 }
 /* }}} */
 
@@ -812,11 +814,11 @@ static int php_raylib_color_set_r(php_raylib_color_object *obj, zval *newval) /*
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->color->data.r = 0;
+        php_raylib_color_fetch_data(obj)->r = 0;
         return ret;
     }
 
-    obj->color->data.r = (unsigned char) zval_get_long(newval);
+    php_raylib_color_fetch_data(obj)->r = (unsigned char) zval_get_long(newval);
 
     return ret;
 }
@@ -827,11 +829,11 @@ static int php_raylib_color_set_g(php_raylib_color_object *obj, zval *newval) /*
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->color->data.g = 0;
+        php_raylib_color_fetch_data(obj)->g = 0;
         return ret;
     }
 
-    obj->color->data.g = (unsigned char) zval_get_long(newval);
+    php_raylib_color_fetch_data(obj)->g = (unsigned char) zval_get_long(newval);
 
     return ret;
 }
@@ -842,11 +844,11 @@ static int php_raylib_color_set_b(php_raylib_color_object *obj, zval *newval) /*
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->color->data.b = 0;
+        php_raylib_color_fetch_data(obj)->b = 0;
         return ret;
     }
 
-    obj->color->data.b = (unsigned char) zval_get_long(newval);
+    php_raylib_color_fetch_data(obj)->b = (unsigned char) zval_get_long(newval);
 
     return ret;
 }
@@ -857,11 +859,11 @@ static int php_raylib_color_set_a(php_raylib_color_object *obj, zval *newval) /*
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->color->data.a = 0;
+        php_raylib_color_fetch_data(obj)->a = 0;
         return ret;
     }
 
-    obj->color->data.a = (unsigned char) zval_get_long(newval);
+    php_raylib_color_fetch_data(obj)->a = (unsigned char) zval_get_long(newval);
 
     return ret;
 }

@@ -102,6 +102,8 @@ struct RL_Vector2* RL_Vector2_Create() {
     object->id = RL_VECTOR2_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Vector2_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Vector2) {};
+    object->type = RL_VECTOR2_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -345,13 +347,13 @@ zend_object * php_raylib_vector2_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_vector2_object *other = php_raylib_vector2_fetch_object(orig);
 
-        intern->vector2->data = (Vector2) {
-            .x = other->vector2->data.x,
-            .y = other->vector2->data.y
+        *php_raylib_vector2_fetch_data(intern) = (Vector2) {
+            .x = php_raylib_vector2_fetch_data(other)->x,
+            .y = php_raylib_vector2_fetch_data(other)->y
         };
     } else {
         intern->vector2 = RL_Vector2_Create();
-        intern->vector2->data = (Vector2) {
+        *php_raylib_vector2_fetch_data(intern) = (Vector2) {
             .x = 0,
             .y = 0
         };
@@ -415,7 +417,7 @@ PHP_METHOD(Vector2, __construct)
 
 
 
-    intern->vector2->data = (Vector2) {
+    *php_raylib_vector2_fetch_data(intern) = (Vector2) {
         .x = (float) x,
         .y = (float) y
     };
@@ -423,13 +425,13 @@ PHP_METHOD(Vector2, __construct)
 
 static double php_raylib_vector2_get_x(php_raylib_vector2_object *obj) /* {{{ */
 {
-    return (double) obj->vector2->data.x;
+    return (double) php_raylib_vector2_fetch_data(obj)->x;
 }
 /* }}} */
 
 static double php_raylib_vector2_get_y(php_raylib_vector2_object *obj) /* {{{ */
 {
-    return (double) obj->vector2->data.y;
+    return (double) php_raylib_vector2_fetch_data(obj)->y;
 }
 /* }}} */
 
@@ -438,11 +440,11 @@ static int php_raylib_vector2_set_x(php_raylib_vector2_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector2->data.x = 0;
+        php_raylib_vector2_fetch_data(obj)->x = 0;
         return ret;
     }
 
-    obj->vector2->data.x = (float) zval_get_double(newval);
+    php_raylib_vector2_fetch_data(obj)->x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -453,11 +455,11 @@ static int php_raylib_vector2_set_y(php_raylib_vector2_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector2->data.y = 0;
+        php_raylib_vector2_fetch_data(obj)->y = 0;
         return ret;
     }
 
-    obj->vector2->data.y = (float) zval_get_double(newval);
+    php_raylib_vector2_fetch_data(obj)->y = (float) zval_get_double(newval);
 
     return ret;
 }

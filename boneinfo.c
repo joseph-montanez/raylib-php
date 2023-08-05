@@ -102,6 +102,8 @@ struct RL_BoneInfo* RL_BoneInfo_Create() {
     object->id = RL_BONEINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_BoneInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( BoneInfo) {};
+    object->type = RL_BONEINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -358,13 +360,13 @@ zend_object * php_raylib_boneinfo_new_ex(zend_class_entry *ce, zend_object *orig
     if (orig) {
         php_raylib_boneinfo_object *other = php_raylib_boneinfo_fetch_object(orig);
 
-        intern->boneinfo->data = (BoneInfo) {
-            .parent = other->boneinfo->data.parent
+        *php_raylib_boneinfo_fetch_data(intern) = (BoneInfo) {
+            .parent = php_raylib_boneinfo_fetch_data(other)->parent
         };
-        strncpy(intern->boneinfo->data.name, other->boneinfo->data.name, 32);
+        strncpy(php_raylib_boneinfo_fetch_data(intern)->name,  php_raylib_boneinfo_fetch_data(other)->name, 32);
     } else {
         intern->boneinfo = RL_BoneInfo_Create();
-        intern->boneinfo->data = (BoneInfo) {
+        *php_raylib_boneinfo_fetch_data(intern) = (BoneInfo) {
             .name = 0,
             .parent = 0
         };
@@ -409,14 +411,14 @@ PHP_METHOD(BoneInfo, __construct)
 static zend_string * php_raylib_boneinfo_get_name(php_raylib_boneinfo_object *obj) /* {{{ */
 {
     zend_string *result_str;
-    result_str = zend_string_init(obj->boneinfo->data.name, 32, 1);
+    result_str = zend_string_init(php_raylib_boneinfo_fetch_data(obj)->name, 32, 1);
     return result_str;
 }
 /* }}} */
 
 static zend_long php_raylib_boneinfo_get_parent(php_raylib_boneinfo_object *obj) /* {{{ */
 {
-    return (zend_long) obj->boneinfo->data.parent;
+    return (zend_long) php_raylib_boneinfo_fetch_data(obj)->parent;
 }
 /* }}} */
 
@@ -425,7 +427,7 @@ static int php_raylib_boneinfo_set_name(php_raylib_boneinfo_object *obj, zval *n
     int ret = SUCCESS;
 
     zend_string *str = zval_get_string(newval);
-    strncpy(obj->boneinfo->data.name, ZSTR_VAL(str), 32);
+    strncpy(php_raylib_boneinfo_fetch_data(obj)->name, ZSTR_VAL(str), 32);
     zend_string_release_ex(str, 0);
 
     return ret;
@@ -437,11 +439,11 @@ static int php_raylib_boneinfo_set_parent(php_raylib_boneinfo_object *obj, zval 
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->boneinfo->data.parent = 0;
+        php_raylib_boneinfo_fetch_data(obj)->parent = 0;
         return ret;
     }
 
-    obj->boneinfo->data.parent = (int) zval_get_long(newval);
+    php_raylib_boneinfo_fetch_data(obj)->parent = (int) zval_get_long(newval);
 
     return ret;
 }

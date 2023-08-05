@@ -9351,6 +9351,7 @@
       "name": "LoadModel",
       "description": "Load model from files (meshes and materials)",
       "returnType": "Model",
+      "isConstructor": true,
       "params": [
         {
           "type": "const char *",

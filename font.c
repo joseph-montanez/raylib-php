@@ -105,6 +105,8 @@ struct RL_Font* RL_Font_Create() {
     object->id = RL_FONT_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Font_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Font) {};
+    object->type = RL_FONT_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -404,16 +406,16 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
         // glyphs array not yet supported needs to generate a hash table!
         //php_raylib_glyphinfo_object *phpGlyphs = php_raylib_glyphinfo_fetch_object(glyphs);
 
-        intern->font->data = (Font) {
-            .baseSize = other->font->data.baseSize,
-            .glyphCount = other->font->data.glyphCount,
-            .glyphPadding = other->font->data.glyphPadding,
+        *php_raylib_font_fetch_data(intern) = (Font) {
+            .baseSize = php_raylib_font_fetch_data(other)->baseSize,
+            .glyphCount = php_raylib_font_fetch_data(other)->glyphCount,
+            .glyphPadding = php_raylib_font_fetch_data(other)->glyphPadding,
             .texture = (Texture) {
-                .id = other->font->data.texture.id,
-                .width = other->font->data.texture.width,
-                .height = other->font->data.texture.height,
-                .mipmaps = other->font->data.texture.mipmaps,
-                .format = other->font->data.texture.format
+                .id = php_raylib_font_fetch_data(other)->texture.id,
+                .width = php_raylib_font_fetch_data(other)->texture.width,
+                .height = php_raylib_font_fetch_data(other)->texture.height,
+                .mipmaps = php_raylib_font_fetch_data(other)->texture.mipmaps,
+                .format = php_raylib_font_fetch_data(other)->texture.format
             },
         };
 
@@ -445,7 +447,7 @@ zend_object * php_raylib_font_new_ex(zend_class_entry *ce, zend_object *orig)/* 
         //php_raylib_glyphinfo_object *phpGlyphs = php_raylib_glyphinfo_fetch_object(glyphs);
 
         intern->font = RL_Font_Create();
-        intern->font->data = (Font) {
+        *php_raylib_font_fetch_data(intern) = (Font) {
             .baseSize = 0,
             .glyphCount = 0,
             .glyphPadding = 0,
@@ -514,24 +516,24 @@ PHP_METHOD(Font, __construct)
 
 
     php_raylib_font_object *intern = Z_FONT_OBJ_P(ZEND_THIS);
-    intern->font->data = LoadFont(fileName->val);
+    *php_raylib_font_fetch_data(intern) = LoadFont(fileName->val);
 }
 
 static zend_long php_raylib_font_get_basesize(php_raylib_font_object *obj) /* {{{ */
 {
-    return (zend_long) obj->font->data.baseSize;
+    return (zend_long) php_raylib_font_fetch_data(obj)->baseSize;
 }
 /* }}} */
 
 static zend_long php_raylib_font_get_glyphcount(php_raylib_font_object *obj) /* {{{ */
 {
-    return (zend_long) obj->font->data.glyphCount;
+    return (zend_long) php_raylib_font_fetch_data(obj)->glyphCount;
 }
 /* }}} */
 
 static zend_long php_raylib_font_get_glyphpadding(php_raylib_font_object *obj) /* {{{ */
 {
-    return (zend_long) obj->font->data.glyphPadding;
+    return (zend_long) php_raylib_font_fetch_data(obj)->glyphPadding;
 }
 /* }}} */
 
@@ -564,11 +566,11 @@ static int php_raylib_font_set_basesize(php_raylib_font_object *obj, zval *newva
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->font->data.baseSize = 0;
+        php_raylib_font_fetch_data(obj)->baseSize = 0;
         return ret;
     }
 
-    obj->font->data.baseSize = (int) zval_get_long(newval);
+    php_raylib_font_fetch_data(obj)->baseSize = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -579,11 +581,11 @@ static int php_raylib_font_set_glyphcount(php_raylib_font_object *obj, zval *new
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->font->data.glyphCount = 0;
+        php_raylib_font_fetch_data(obj)->glyphCount = 0;
         return ret;
     }
 
-    obj->font->data.glyphCount = (int) zval_get_long(newval);
+    php_raylib_font_fetch_data(obj)->glyphCount = (int) zval_get_long(newval);
 
     return ret;
 }
@@ -594,11 +596,11 @@ static int php_raylib_font_set_glyphpadding(php_raylib_font_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->font->data.glyphPadding = 0;
+        php_raylib_font_fetch_data(obj)->glyphPadding = 0;
         return ret;
     }
 
-    obj->font->data.glyphPadding = (int) zval_get_long(newval);
+    php_raylib_font_fetch_data(obj)->glyphPadding = (int) zval_get_long(newval);
 
     return ret;
 }

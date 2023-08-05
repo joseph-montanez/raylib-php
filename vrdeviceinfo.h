@@ -15,10 +15,21 @@ extern zend_object * php_raylib_vrdeviceinfo_new_ex(zend_class_entry *ce, zend_o
 
 extern zend_object_handlers php_raylib_vrdeviceinfo_object_handlers;
 
+typedef enum {
+    RL_VRDEVICEINFO_IS_POINTER,
+    RL_VRDEVICEINFO_IS_VALUE
+} RLVrDeviceInfoDataType;
+
+typedef union {
+    VrDeviceInfo *p;
+    VrDeviceInfo v;
+} VrDeviceInfoUnion;
+
 struct RL_VrDeviceInfo {
     unsigned int id;
     char *guid;
-    VrDeviceInfo data;
+    VrDeviceInfoUnion data;
+    RLVrDeviceInfoDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -43,6 +54,17 @@ typedef struct _php_raylib_vrdeviceinfo_object {
 
 static inline php_raylib_vrdeviceinfo_object *php_raylib_vrdeviceinfo_fetch_object(zend_object *obj) {
     return (php_raylib_vrdeviceinfo_object *)((char *)obj - XtOffsetOf(php_raylib_vrdeviceinfo_object, std));
+}
+
+static inline VrDeviceInfo *php_raylib_vrdeviceinfo_fetch_data(php_raylib_vrdeviceinfo_object *obj) {
+    VrDeviceInfo *my_vrdeviceinfo;
+    if (obj->vrdeviceinfo->type == RL_VRDEVICEINFO_IS_POINTER) {
+        my_vrdeviceinfo = obj->vrdeviceinfo->data.p;
+    } else {
+        my_vrdeviceinfo = &obj->vrdeviceinfo->data.v;
+    }
+
+    return my_vrdeviceinfo;
 }
 
 #define Z_VRDEVICEINFO_OBJ_P(zv) php_raylib_vrdeviceinfo_fetch_object(Z_OBJ_P(zv));

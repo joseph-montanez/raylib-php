@@ -102,6 +102,8 @@ struct RL_AudioStream* RL_AudioStream_Create() {
     object->id = RL_AUDIOSTREAM_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_AudioStream_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( AudioStream) {};
+    object->type = RL_AUDIOSTREAM_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -385,10 +387,10 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
         // processor array not yet supported needs to generate a hash table!
         //php_raylib_raudioprocessor_object *phpProcessor = php_raylib_raudioprocessor_fetch_object(processor);
 
-        intern->audiostream->data = (AudioStream) {
-            .sampleRate = other->audiostream->data.sampleRate,
-            .sampleSize = other->audiostream->data.sampleSize,
-            .channels = other->audiostream->data.channels
+        *php_raylib_audiostream_fetch_data(intern) = (AudioStream) {
+            .sampleRate = php_raylib_audiostream_fetch_data(other)->sampleRate,
+            .sampleSize = php_raylib_audiostream_fetch_data(other)->sampleSize,
+            .channels = php_raylib_audiostream_fetch_data(other)->channels
         };
 
         HashTable *processor_hash;
@@ -409,7 +411,7 @@ zend_object * php_raylib_audiostream_new_ex(zend_class_entry *ce, zend_object *o
         //php_raylib_raudioprocessor_object *phpProcessor = php_raylib_raudioprocessor_fetch_object(processor);
 
         intern->audiostream = RL_AudioStream_Create();
-        intern->audiostream->data = (AudioStream) {
+        *php_raylib_audiostream_fetch_data(intern) = (AudioStream) {
             // .buffer is an array and not yet supported via constructor
             // .processor is an array and not yet supported via constructor
             .sampleRate = 0,
@@ -462,7 +464,7 @@ PHP_METHOD(AudioStream, __construct)
 
 static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    //return Z_ARRVAL_P(&obj->buffer);
+//    return Z_ARRVAL_P(&obj->buffer);
 }
 /* }}} */
 
@@ -476,19 +478,19 @@ static zend_object * php_raylib_audiostream_get_processor(php_raylib_audiostream
 
 static zend_long php_raylib_audiostream_get_samplerate(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    return (zend_long) obj->audiostream->data.sampleRate;
+    return (zend_long) php_raylib_audiostream_fetch_data(obj)->sampleRate;
 }
 /* }}} */
 
 static zend_long php_raylib_audiostream_get_samplesize(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    return (zend_long) obj->audiostream->data.sampleSize;
+    return (zend_long) php_raylib_audiostream_fetch_data(obj)->sampleSize;
 }
 /* }}} */
 
 static zend_long php_raylib_audiostream_get_channels(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    return (zend_long) obj->audiostream->data.channels;
+    return (zend_long) php_raylib_audiostream_fetch_data(obj)->channels;
 }
 /* }}} */
 
@@ -522,11 +524,11 @@ static int php_raylib_audiostream_set_samplerate(php_raylib_audiostream_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->audiostream->data.sampleRate = 0;
+        php_raylib_audiostream_fetch_data(obj)->sampleRate = 0;
         return ret;
     }
 
-    obj->audiostream->data.sampleRate = (unsigned int) zval_get_long(newval);
+    php_raylib_audiostream_fetch_data(obj)->sampleRate = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -537,11 +539,11 @@ static int php_raylib_audiostream_set_samplesize(php_raylib_audiostream_object *
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->audiostream->data.sampleSize = 0;
+        php_raylib_audiostream_fetch_data(obj)->sampleSize = 0;
         return ret;
     }
 
-    obj->audiostream->data.sampleSize = (unsigned int) zval_get_long(newval);
+    php_raylib_audiostream_fetch_data(obj)->sampleSize = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -552,11 +554,11 @@ static int php_raylib_audiostream_set_channels(php_raylib_audiostream_object *ob
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->audiostream->data.channels = 0;
+        php_raylib_audiostream_fetch_data(obj)->channels = 0;
         return ret;
     }
 
-    obj->audiostream->data.channels = (unsigned int) zval_get_long(newval);
+    php_raylib_audiostream_fetch_data(obj)->channels = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

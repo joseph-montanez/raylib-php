@@ -15,10 +15,21 @@ extern zend_object * php_raylib_shader_new_ex(zend_class_entry *ce, zend_object 
 
 extern zend_object_handlers php_raylib_shader_object_handlers;
 
+typedef enum {
+    RL_SHADER_IS_POINTER,
+    RL_SHADER_IS_VALUE
+} RLShaderDataType;
+
+typedef union {
+    Shader *p;
+    Shader v;
+} ShaderUnion;
+
 struct RL_Shader {
     unsigned int id;
     char *guid;
-    Shader data;
+    ShaderUnion data;
+    RLShaderDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -41,6 +52,17 @@ typedef struct _php_raylib_shader_object {
 
 static inline php_raylib_shader_object *php_raylib_shader_fetch_object(zend_object *obj) {
     return (php_raylib_shader_object *)((char *)obj - XtOffsetOf(php_raylib_shader_object, std));
+}
+
+static inline Shader *php_raylib_shader_fetch_data(php_raylib_shader_object *obj) {
+    Shader *my_shader;
+    if (obj->shader->type == RL_SHADER_IS_POINTER) {
+        my_shader = obj->shader->data.p;
+    } else {
+        my_shader = &obj->shader->data.v;
+    }
+
+    return my_shader;
 }
 
 #define Z_SHADER_OBJ_P(zv) php_raylib_shader_fetch_object(Z_OBJ_P(zv));

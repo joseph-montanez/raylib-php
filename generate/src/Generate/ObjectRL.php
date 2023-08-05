@@ -11,10 +11,24 @@ class ObjectRL
 {
     public function generate(array $structsByType, Struct $struct, array $input): array
     {
+
+        $input[] = 'typedef enum {';
+        $input[] = '    RL_' . $struct->nameUpper . '_IS_POINTER,';
+        $input[] = '    RL_' . $struct->nameUpper . '_IS_VALUE';
+        $input[] = '} RL' . $struct->name . 'DataType;';
+        $input[] = '';
+
+        $input[] = 'typedef union {';
+        $input[] = '    ' . $struct->name . ' *p;';
+        $input[] = '    ' . $struct->name . ' v;';
+        $input[] = '} ' . $struct->name . 'Union;';
+        $input[] = '';
+
         $input[] = 'struct RL_' . $struct->name . ' {';
         $input[] = '    unsigned int id;';
         $input[] = '    char *guid;';
-        $input[] = '    ' . $struct->name . ' data;';
+        $input[] = '    ' . $struct->name . 'Union data;';
+        $input[] = '    RL' . $struct->name . 'DataType type;';
         $input[] = '    unsigned refCount;';
         $input[] = '    unsigned char deleted;';
         $input[] = '};';

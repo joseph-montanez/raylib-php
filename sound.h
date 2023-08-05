@@ -17,10 +17,21 @@ extern zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_sound_object_handlers;
 
+typedef enum {
+    RL_SOUND_IS_POINTER,
+    RL_SOUND_IS_VALUE
+} RLSoundDataType;
+
+typedef union {
+    Sound *p;
+    Sound v;
+} SoundUnion;
+
 struct RL_Sound {
     unsigned int id;
     char *guid;
-    Sound data;
+    SoundUnion data;
+    RLSoundDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -42,6 +53,17 @@ typedef struct _php_raylib_sound_object {
 
 static inline php_raylib_sound_object *php_raylib_sound_fetch_object(zend_object *obj) {
     return (php_raylib_sound_object *)((char *)obj - XtOffsetOf(php_raylib_sound_object, std));
+}
+
+static inline Sound *php_raylib_sound_fetch_data(php_raylib_sound_object *obj) {
+    Sound *my_sound;
+    if (obj->sound->type == RL_SOUND_IS_POINTER) {
+        my_sound = obj->sound->data.p;
+    } else {
+        my_sound = &obj->sound->data.v;
+    }
+
+    return my_sound;
 }
 
 #define Z_SOUND_OBJ_P(zv) php_raylib_sound_fetch_object(Z_OBJ_P(zv));

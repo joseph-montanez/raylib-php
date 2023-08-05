@@ -103,6 +103,8 @@ struct RL_BoundingBox* RL_BoundingBox_Create() {
     object->id = RL_BOUNDINGBOX_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_BoundingBox_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( BoundingBox) {};
+    object->type = RL_BOUNDINGBOX_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -351,16 +353,16 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_vector3_object *phpMax = Z_VECTOR3_OBJ_P(&other->max);
 
 
-        intern->boundingbox->data = (BoundingBox) {
+        *php_raylib_boundingbox_fetch_data(intern) = (BoundingBox) {
             .min = (Vector3) {
-                .x = other->boundingbox->data.min.x,
-                .y = other->boundingbox->data.min.y,
-                .z = other->boundingbox->data.min.z
+                .x = php_raylib_boundingbox_fetch_data(other)->min.x,
+                .y = php_raylib_boundingbox_fetch_data(other)->min.y,
+                .z = php_raylib_boundingbox_fetch_data(other)->min.z
             },
             .max = (Vector3) {
-                .x = other->boundingbox->data.max.x,
-                .y = other->boundingbox->data.max.y,
-                .z = other->boundingbox->data.max.z
+                .x = php_raylib_boundingbox_fetch_data(other)->max.x,
+                .y = php_raylib_boundingbox_fetch_data(other)->max.y,
+                .z = php_raylib_boundingbox_fetch_data(other)->max.z
             }
         };
 
@@ -376,7 +378,7 @@ zend_object * php_raylib_boundingbox_new_ex(zend_class_entry *ce, zend_object *o
         php_raylib_vector3_object *phpMax = php_raylib_vector3_fetch_object(max);
 
         intern->boundingbox = RL_BoundingBox_Create();
-        intern->boundingbox->data = (BoundingBox) {
+        *php_raylib_boundingbox_fetch_data(intern) = (BoundingBox) {
             .min = (Vector3) {
                 .x = 0,
                 .y = 0,
@@ -456,16 +458,16 @@ PHP_METHOD(BoundingBox, __construct)
     ZVAL_OBJ_COPY(&intern->min, &phpMin->std);
     ZVAL_OBJ_COPY(&intern->max, &phpMax->std);
 
-    intern->boundingbox->data = (BoundingBox) {
+    *php_raylib_boundingbox_fetch_data(intern) = (BoundingBox) {
         .min = (Vector3) {
-            .x = phpMin->vector3->data.x,
-            .y = phpMin->vector3->data.y,
-            .z = phpMin->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpMin)->x,
+            .y = php_raylib_vector3_fetch_data(phpMin)->y,
+            .z = php_raylib_vector3_fetch_data(phpMin)->z
         },
         .max = (Vector3) {
-            .x = phpMax->vector3->data.x,
-            .y = phpMax->vector3->data.y,
-            .z = phpMax->vector3->data.z
+            .x = php_raylib_vector3_fetch_data(phpMax)->x,
+            .y = php_raylib_vector3_fetch_data(phpMax)->y,
+            .z = php_raylib_vector3_fetch_data(phpMax)->z
         }
     };
 }

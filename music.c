@@ -103,6 +103,8 @@ struct RL_Music* RL_Music_Create() {
     object->id = RL_MUSIC_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Music_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Music) {};
+    object->type = RL_MUSIC_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -404,17 +406,17 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
         php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&other->stream);
 
 
-        intern->music->data = (Music) {
+        *php_raylib_music_fetch_data(intern) = (Music) {
             .stream = (AudioStream) {
-                .buffer = other->music->data.stream.buffer,
-                .processor = other->music->data.stream.processor,
-                .sampleRate = other->music->data.stream.sampleRate,
-                .sampleSize = other->music->data.stream.sampleSize,
-                .channels = other->music->data.stream.channels
+                .buffer = php_raylib_music_fetch_data(other)->stream.buffer,
+                .processor = php_raylib_music_fetch_data(other)->stream.processor,
+                .sampleRate = php_raylib_music_fetch_data(other)->stream.sampleRate,
+                .sampleSize = php_raylib_music_fetch_data(other)->stream.sampleSize,
+                .channels = php_raylib_music_fetch_data(other)->stream.channels
             },
-            .frameCount = other->music->data.frameCount,
-            .looping = other->music->data.looping,
-            .ctxType = other->music->data.ctxType,
+            .frameCount = php_raylib_music_fetch_data(other)->frameCount,
+            .looping = php_raylib_music_fetch_data(other)->looping,
+            .ctxType = php_raylib_music_fetch_data(other)->ctxType,
         };
 
         ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
@@ -425,7 +427,7 @@ zend_object * php_raylib_music_new_ex(zend_class_entry *ce, zend_object *orig)/*
         php_raylib_audiostream_object *phpStream = php_raylib_audiostream_fetch_object(stream);
 
         intern->music = RL_Music_Create();
-        intern->music->data = (Music) {
+        *php_raylib_music_fetch_data(intern) = (Music) {
             .stream = (AudioStream) {
                 .buffer = 0,
                 .processor = 0,
@@ -491,19 +493,19 @@ static zend_object * php_raylib_music_get_stream(php_raylib_music_object *obj) /
 
 static zend_long php_raylib_music_get_framecount(php_raylib_music_object *obj) /* {{{ */
 {
-    return (zend_long) obj->music->data.frameCount;
+    return (zend_long) php_raylib_music_fetch_data(obj)->frameCount;
 }
 /* }}} */
 
 static bool php_raylib_music_get_looping(php_raylib_music_object *obj) /* {{{ */
 {
-    return obj->music->data.looping;
+    return php_raylib_music_fetch_data(obj)->looping;
 }
 /* }}} */
 
 static zend_long php_raylib_music_get_ctxtype(php_raylib_music_object *obj) /* {{{ */
 {
-    return (zend_long) obj->music->data.ctxType;
+    return (zend_long) php_raylib_music_fetch_data(obj)->ctxType;
 }
 /* }}} */
 
@@ -536,11 +538,11 @@ static int php_raylib_music_set_framecount(php_raylib_music_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->music->data.frameCount = 0;
+        php_raylib_music_fetch_data(obj)->frameCount = 0;
         return ret;
     }
 
-    obj->music->data.frameCount = (unsigned int) zval_get_long(newval);
+    php_raylib_music_fetch_data(obj)->frameCount = (unsigned int) zval_get_long(newval);
 
     return ret;
 }
@@ -560,11 +562,11 @@ static int php_raylib_music_set_ctxtype(php_raylib_music_object *obj, zval *newv
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->music->data.ctxType = 0;
+        php_raylib_music_fetch_data(obj)->ctxType = 0;
         return ret;
     }
 
-    obj->music->data.ctxType = (int) zval_get_long(newval);
+    php_raylib_music_fetch_data(obj)->ctxType = (int) zval_get_long(newval);
 
     return ret;
 }

@@ -54,7 +54,7 @@ $camera = new Camera3D(
 
 $model = LoadModel(__DIR__ . '/resources/models/iqm/guy.iqm');                    // Load the animated model mesh and basic data
 $texture = LoadTexture( __DIR__ . '/resources/models/iqm/guytex.png');             // Load model texture and set material
-var_dump($model);
+var_dump($model->materials);
 exit;
 SetMaterialTexture($model->materials[0], MATERIAL_MAP_ALBEDO, $texture); // Set model material map texture
 

@@ -103,6 +103,8 @@ struct RL_Sound* RL_Sound_Create() {
     object->id = RL_SOUND_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Sound_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Sound) {};
+    object->type = RL_SOUND_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -364,15 +366,15 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
         php_raylib_audiostream_object *phpStream = Z_AUDIOSTREAM_OBJ_P(&other->stream);
 
 
-        intern->sound->data = (Sound) {
+        *php_raylib_sound_fetch_data(intern) = (Sound) {
             .stream = (AudioStream) {
-                .buffer = other->sound->data.stream.buffer,
-                .processor = other->sound->data.stream.processor,
-                .sampleRate = other->sound->data.stream.sampleRate,
-                .sampleSize = other->sound->data.stream.sampleSize,
-                .channels = other->sound->data.stream.channels
+                .buffer = php_raylib_sound_fetch_data(other)->stream.buffer,
+                .processor = php_raylib_sound_fetch_data(other)->stream.processor,
+                .sampleRate = php_raylib_sound_fetch_data(other)->stream.sampleRate,
+                .sampleSize = php_raylib_sound_fetch_data(other)->stream.sampleSize,
+                .channels = php_raylib_sound_fetch_data(other)->stream.channels
             },
-            .frameCount = other->sound->data.frameCount
+            .frameCount = php_raylib_sound_fetch_data(other)->frameCount
         };
 
         ZVAL_OBJ_COPY(&intern->stream, &phpStream->std);
@@ -383,7 +385,7 @@ zend_object * php_raylib_sound_new_ex(zend_class_entry *ce, zend_object *orig)/*
         php_raylib_audiostream_object *phpStream = php_raylib_audiostream_fetch_object(stream);
 
         intern->sound = RL_Sound_Create();
-        intern->sound->data = (Sound) {
+        *php_raylib_sound_fetch_data(intern) = (Sound) {
             .stream = (AudioStream) {
                 .buffer = 0,
                 .processor = 0,
@@ -438,7 +440,7 @@ PHP_METHOD(Sound, __construct)
 
 
     php_raylib_sound_object *intern = Z_SOUND_OBJ_P(ZEND_THIS);
-    intern->sound->data = LoadSound(fileName->val);
+    *php_raylib_sound_fetch_data(intern) = LoadSound(fileName->val);
 }
 
 static zend_object * php_raylib_sound_get_stream(php_raylib_sound_object *obj) /* {{{ */
@@ -455,7 +457,7 @@ static zend_object * php_raylib_sound_get_stream(php_raylib_sound_object *obj) /
 
 static zend_long php_raylib_sound_get_framecount(php_raylib_sound_object *obj) /* {{{ */
 {
-    return (zend_long) obj->sound->data.frameCount;
+    return (zend_long) php_raylib_sound_fetch_data(obj)->frameCount;
 }
 /* }}} */
 
@@ -482,11 +484,11 @@ static int php_raylib_sound_set_framecount(php_raylib_sound_object *obj, zval *n
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->sound->data.frameCount = 0;
+        php_raylib_sound_fetch_data(obj)->frameCount = 0;
         return ret;
     }
 
-    obj->sound->data.frameCount = (unsigned int) zval_get_long(newval);
+    php_raylib_sound_fetch_data(obj)->frameCount = (unsigned int) zval_get_long(newval);
 
     return ret;
 }

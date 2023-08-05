@@ -17,10 +17,21 @@ extern zend_object * php_raylib_glyphinfo_new_ex(zend_class_entry *ce, zend_obje
 
 extern zend_object_handlers php_raylib_glyphinfo_object_handlers;
 
+typedef enum {
+    RL_GLYPHINFO_IS_POINTER,
+    RL_GLYPHINFO_IS_VALUE
+} RLGlyphInfoDataType;
+
+typedef union {
+    GlyphInfo *p;
+    GlyphInfo v;
+} GlyphInfoUnion;
+
 struct RL_GlyphInfo {
     unsigned int id;
     char *guid;
-    GlyphInfo data;
+    GlyphInfoUnion data;
+    RLGlyphInfoDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -42,6 +53,17 @@ typedef struct _php_raylib_glyphinfo_object {
 
 static inline php_raylib_glyphinfo_object *php_raylib_glyphinfo_fetch_object(zend_object *obj) {
     return (php_raylib_glyphinfo_object *)((char *)obj - XtOffsetOf(php_raylib_glyphinfo_object, std));
+}
+
+static inline GlyphInfo *php_raylib_glyphinfo_fetch_data(php_raylib_glyphinfo_object *obj) {
+    GlyphInfo *my_glyphinfo;
+    if (obj->glyphinfo->type == RL_GLYPHINFO_IS_POINTER) {
+        my_glyphinfo = obj->glyphinfo->data.p;
+    } else {
+        my_glyphinfo = &obj->glyphinfo->data.v;
+    }
+
+    return my_glyphinfo;
 }
 
 #define Z_GLYPHINFO_OBJ_P(zv) php_raylib_glyphinfo_fetch_object(Z_OBJ_P(zv));

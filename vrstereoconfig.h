@@ -18,10 +18,21 @@ extern zend_object * php_raylib_vrstereoconfig_new_ex(zend_class_entry *ce, zend
 
 extern zend_object_handlers php_raylib_vrstereoconfig_object_handlers;
 
+typedef enum {
+    RL_VRSTEREOCONFIG_IS_POINTER,
+    RL_VRSTEREOCONFIG_IS_VALUE
+} RLVrStereoConfigDataType;
+
+typedef union {
+    VrStereoConfig *p;
+    VrStereoConfig v;
+} VrStereoConfigUnion;
+
 struct RL_VrStereoConfig {
     unsigned int id;
     char *guid;
-    VrStereoConfig data;
+    VrStereoConfigUnion data;
+    RLVrStereoConfigDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -56,6 +67,17 @@ typedef struct _php_raylib_vrstereoconfig_object {
 
 static inline php_raylib_vrstereoconfig_object *php_raylib_vrstereoconfig_fetch_object(zend_object *obj) {
     return (php_raylib_vrstereoconfig_object *)((char *)obj - XtOffsetOf(php_raylib_vrstereoconfig_object, std));
+}
+
+static inline VrStereoConfig *php_raylib_vrstereoconfig_fetch_data(php_raylib_vrstereoconfig_object *obj) {
+    VrStereoConfig *my_vrstereoconfig;
+    if (obj->vrstereoconfig->type == RL_VRSTEREOCONFIG_IS_POINTER) {
+        my_vrstereoconfig = obj->vrstereoconfig->data.p;
+    } else {
+        my_vrstereoconfig = &obj->vrstereoconfig->data.v;
+    }
+
+    return my_vrstereoconfig;
 }
 
 #define Z_VRSTEREOCONFIG_OBJ_P(zv) php_raylib_vrstereoconfig_fetch_object(Z_OBJ_P(zv));

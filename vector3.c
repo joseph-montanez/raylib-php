@@ -102,6 +102,8 @@ struct RL_Vector3* RL_Vector3_Create() {
     object->id = RL_VECTOR3_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Vector3_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
+    object->data.v = ( Vector3) {};
+    object->type = RL_VECTOR3_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
 
@@ -345,14 +347,14 @@ zend_object * php_raylib_vector3_new_ex(zend_class_entry *ce, zend_object *orig)
     if (orig) {
         php_raylib_vector3_object *other = php_raylib_vector3_fetch_object(orig);
 
-        intern->vector3->data = (Vector3) {
-            .x = other->vector3->data.x,
-            .y = other->vector3->data.y,
-            .z = other->vector3->data.z
+        *php_raylib_vector3_fetch_data(intern) = (Vector3) {
+            .x = php_raylib_vector3_fetch_data(other)->x,
+            .y = php_raylib_vector3_fetch_data(other)->y,
+            .z = php_raylib_vector3_fetch_data(other)->z
         };
     } else {
         intern->vector3 = RL_Vector3_Create();
-        intern->vector3->data = (Vector3) {
+        *php_raylib_vector3_fetch_data(intern) = (Vector3) {
             .x = 0,
             .y = 0,
             .z = 0
@@ -426,7 +428,7 @@ PHP_METHOD(Vector3, __construct)
 
 
 
-    intern->vector3->data = (Vector3) {
+    *php_raylib_vector3_fetch_data(intern) = (Vector3) {
         .x = (float) x,
         .y = (float) y,
         .z = (float) z
@@ -435,19 +437,19 @@ PHP_METHOD(Vector3, __construct)
 
 static double php_raylib_vector3_get_x(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3->data.x;
+    return (double) php_raylib_vector3_fetch_data(obj)->x;
 }
 /* }}} */
 
 static double php_raylib_vector3_get_y(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3->data.y;
+    return (double) php_raylib_vector3_fetch_data(obj)->y;
 }
 /* }}} */
 
 static double php_raylib_vector3_get_z(php_raylib_vector3_object *obj) /* {{{ */
 {
-    return (double) obj->vector3->data.z;
+    return (double) php_raylib_vector3_fetch_data(obj)->z;
 }
 /* }}} */
 
@@ -456,11 +458,11 @@ static int php_raylib_vector3_set_x(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3->data.x = 0;
+        php_raylib_vector3_fetch_data(obj)->x = 0;
         return ret;
     }
 
-    obj->vector3->data.x = (float) zval_get_double(newval);
+    php_raylib_vector3_fetch_data(obj)->x = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -471,11 +473,11 @@ static int php_raylib_vector3_set_y(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3->data.y = 0;
+        php_raylib_vector3_fetch_data(obj)->y = 0;
         return ret;
     }
 
-    obj->vector3->data.y = (float) zval_get_double(newval);
+    php_raylib_vector3_fetch_data(obj)->y = (float) zval_get_double(newval);
 
     return ret;
 }
@@ -486,11 +488,11 @@ static int php_raylib_vector3_set_z(php_raylib_vector3_object *obj, zval *newval
     int ret = SUCCESS;
 
     if (Z_TYPE_P(newval) == IS_NULL) {
-        obj->vector3->data.z = 0;
+        php_raylib_vector3_fetch_data(obj)->z = 0;
         return ret;
     }
 
-    obj->vector3->data.z = (float) zval_get_double(newval);
+    php_raylib_vector3_fetch_data(obj)->z = (float) zval_get_double(newval);
 
     return ret;
 }

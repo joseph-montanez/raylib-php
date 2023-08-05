@@ -15,10 +15,21 @@ extern zend_object * php_raylib_color_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_color_object_handlers;
 
+typedef enum {
+    RL_COLOR_IS_POINTER,
+    RL_COLOR_IS_VALUE
+} RLColorDataType;
+
+typedef union {
+    Color *p;
+    Color v;
+} ColorUnion;
+
 struct RL_Color {
     unsigned int id;
     char *guid;
-    Color data;
+    ColorUnion data;
+    RLColorDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -39,6 +50,17 @@ typedef struct _php_raylib_color_object {
 
 static inline php_raylib_color_object *php_raylib_color_fetch_object(zend_object *obj) {
     return (php_raylib_color_object *)((char *)obj - XtOffsetOf(php_raylib_color_object, std));
+}
+
+static inline Color *php_raylib_color_fetch_data(php_raylib_color_object *obj) {
+    Color *my_color;
+    if (obj->color->type == RL_COLOR_IS_POINTER) {
+        my_color = obj->color->data.p;
+    } else {
+        my_color = &obj->color->data.v;
+    }
+
+    return my_color;
 }
 
 #define Z_COLOR_OBJ_P(zv) php_raylib_color_fetch_object(Z_OBJ_P(zv));

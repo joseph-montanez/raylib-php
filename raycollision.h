@@ -17,10 +17,21 @@ extern zend_object * php_raylib_raycollision_new_ex(zend_class_entry *ce, zend_o
 
 extern zend_object_handlers php_raylib_raycollision_object_handlers;
 
+typedef enum {
+    RL_RAYCOLLISION_IS_POINTER,
+    RL_RAYCOLLISION_IS_VALUE
+} RLRayCollisionDataType;
+
+typedef union {
+    RayCollision *p;
+    RayCollision v;
+} RayCollisionUnion;
+
 struct RL_RayCollision {
     unsigned int id;
     char *guid;
-    RayCollision data;
+    RayCollisionUnion data;
+    RLRayCollisionDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -43,6 +54,17 @@ typedef struct _php_raylib_raycollision_object {
 
 static inline php_raylib_raycollision_object *php_raylib_raycollision_fetch_object(zend_object *obj) {
     return (php_raylib_raycollision_object *)((char *)obj - XtOffsetOf(php_raylib_raycollision_object, std));
+}
+
+static inline RayCollision *php_raylib_raycollision_fetch_data(php_raylib_raycollision_object *obj) {
+    RayCollision *my_raycollision;
+    if (obj->raycollision->type == RL_RAYCOLLISION_IS_POINTER) {
+        my_raycollision = obj->raycollision->data.p;
+    } else {
+        my_raycollision = &obj->raycollision->data.v;
+    }
+
+    return my_raycollision;
 }
 
 #define Z_RAYCOLLISION_OBJ_P(zv) php_raylib_raycollision_fetch_object(Z_OBJ_P(zv));

@@ -42,26 +42,26 @@ class ObjectPropertySetters
                     break;
                 case 'double';
                     $input[] = '    if (Z_TYPE_P(newval) == IS_NULL) {';
-                    $input[] = '        obj->' . $struct->nameLower . '->data.' . $field->name . ' = 0;';
+                    $input[] = '        php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ' = 0;';
                     $input[] = '        return ret;';
                     $input[] = '    }';
                     $input[] = '';
-                    $input[] = '    obj->' . $struct->nameLower . '->data.' . $field->name . ' = (' . $field->type . ') zval_get_double(newval);';
+                    $input[] = '    php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ' = (' . $field->type . ') zval_get_double(newval);';
                     break;
                 case 'zend_long';
                     $input[] = '    if (Z_TYPE_P(newval) == IS_NULL) {';
-                    $input[] = '        obj->' . $struct->nameLower . '->data.' . $field->name . ' = 0;';
+                    $input[] = '        php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ' = 0;';
                     $input[] = '        return ret;';
                     $input[] = '    }';
                     $input[] = '';
-                    $input[] = '    obj->' . $struct->nameLower . '->data.' . $field->name . ' = (' . $field->type . ') zval_get_long(newval);';
+                    $input[] = '    php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ' = (' . $field->type . ') zval_get_long(newval);';
                     break;
                 case 'zend_string *';
                     $input[] = '    zend_string *str = zval_get_string(newval);';
                     if ($field->arrayCountNumber) {
-                        $input[] = '    strncpy(obj->' . $struct->nameLower . '->data.' . $field->name . ', ZSTR_VAL(str), ' . $field->arrayCountNumber . ');';
+                        $input[] = '    strncpy(php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ', ZSTR_VAL(str), ' . $field->arrayCountNumber . ');';
                     } else {
-                        $input[] = '    obj->' . $struct->nameLower . '->data.' . $field->name . ' = ZSTR_VAL(str);';
+                        $input[] = '   php_raylib_' . $struct->nameLower . '_fetch_data(obj)->' . $field->name . ' = ZSTR_VAL(str);';
                     }
                     $input[] = '    zend_string_release_ex(str, 0);';
                     break;

@@ -15,10 +15,21 @@ extern zend_object * php_raylib_image_new_ex(zend_class_entry *ce, zend_object *
 
 extern zend_object_handlers php_raylib_image_object_handlers;
 
+typedef enum {
+    RL_IMAGE_IS_POINTER,
+    RL_IMAGE_IS_VALUE
+} RLImageDataType;
+
+typedef union {
+    Image *p;
+    Image v;
+} ImageUnion;
+
 struct RL_Image {
     unsigned int id;
     char *guid;
-    Image data;
+    ImageUnion data;
+    RLImageDataType type;
     unsigned refCount;
     unsigned char deleted;
 };
@@ -41,6 +52,17 @@ typedef struct _php_raylib_image_object {
 
 static inline php_raylib_image_object *php_raylib_image_fetch_object(zend_object *obj) {
     return (php_raylib_image_object *)((char *)obj - XtOffsetOf(php_raylib_image_object, std));
+}
+
+static inline Image *php_raylib_image_fetch_data(php_raylib_image_object *obj) {
+    Image *my_image;
+    if (obj->image->type == RL_IMAGE_IS_POINTER) {
+        my_image = obj->image->data.p;
+    } else {
+        my_image = &obj->image->data.v;
+    }
+
+    return my_image;
 }
 
 #define Z_IMAGE_OBJ_P(zv) php_raylib_image_fetch_object(Z_OBJ_P(zv));
