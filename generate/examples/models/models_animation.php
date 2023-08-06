@@ -54,17 +54,13 @@ $camera = new Camera3D(
 
 $model = LoadModel(__DIR__ . '/resources/models/iqm/guy.iqm');                    // Load the animated model mesh and basic data
 $texture = LoadTexture( __DIR__ . '/resources/models/iqm/guytex.png');             // Load model texture and set material
-var_dump($model->materials);
-exit;
 SetMaterialTexture($model->materials[0], MATERIAL_MAP_ALBEDO, $texture); // Set model material map texture
 
 $position = new Vector3(0.0, 0.0, 0.0);            // Set model position
 
-exit;
 
 // Load animation data
 $animsCount = 0;
-echo 123;
 $anims = LoadModelAnimations(__DIR__ . '/resources/models/iqm/guyanim.iqm', $animsCount);
 var_dump('$animsCount', $animsCount);
 $animFrameCounter = 0;

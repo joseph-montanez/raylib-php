@@ -250,15 +250,38 @@ class CFunction
 
                             $input []= '        // Create PHP Object holder of this data';
                             $input []= '        zend_object *' . $field->name . 'Result = php_raylib_' . $field->typePlainLower . '_new_ex(php_raylib_' . $field->typePlainLower . '_ce, NULL);';
+                            $input []= '';
                             $input []= '        // Fetch the data inside the PHP Object';
-                            $input []= '        ' . $field->typePlain . ' *' . $field->typePlainLower . 'Element = php_raylib_' . $field->typePlainLower . '_fetch_data(php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . 'Result));';
+                            $input []= '        php_raylib_' . $field->typePlainLower . '_object *p' . ucfirst($field->typePlainLower) . 'Object = php_raylib_' . $field->typePlainLower . '_fetch_object(' . $field->name . 'Result);';
+                            $input []= '        ' . $field->typePlain . ' *' . $field->typePlainLower . 'Element = php_raylib_' . $field->typePlainLower . '_fetch_data(p' . ucfirst($field->typePlainLower) . 'Object);';
+                            $input []= '';
                             $input []= '        // Link this as a pointer, rather than copying data between each other';
-                            $input []= '        *' . $field->typePlainLower . 'Element = php_raylib_' . $function->returnTypeLower . '_fetch_data(phpResult)->' . $field->name . '[i];';
+                            $input []= '        p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->type = RL_' . $field->typePlainUpper . '_IS_POINTER;';
+                            $input []= '        p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p = &php_raylib_' . $function->returnTypeLower . '_fetch_data(phpResult)->' . $field->name . '[i];';
+                            $input []= '';
+
+                            $input []= '        // Go through each sub-object and assign values (references)';
+                            /** @var Struct $struct */
+                            foreach ((array) $structs as $struct) {
+                                if ($struct->name === $field->typePlain) {
+                                    foreach ($struct->nonPrimitiveFields as $typeField) {
+                                        if ($typeField->isArray) {
+                                            $input []= '        //-- TODO array mapping of sub struct';
+                                        }
+                                        $input []= '        php_raylib_' . $typeField->typePlainLower . '_object *php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = Z_' . $typeField->typePlainUpper . '_OBJ_P(&p' . ucfirst($field->typePlainLower) . 'Object->' . $typeField->name . ');';
+                                        $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
+                                        $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . ';';
+                                        $input []= '';
+                                    }
+
+                                }
+                            }
+
                             $input []= '        // Push element to PHP array which should just be an object that is also a data pointer,';
                             $input []= '        // if this is changed should update original data?';
                             $input []= '        add_next_index_object(&phpResult->' . $field->nameLower . ', ' . $field->name . 'Result);';
 
-                            $input[] = sprintf("    }");
+                            $input[] = '    }';
                         }
                         $input[] = '';
                     }
