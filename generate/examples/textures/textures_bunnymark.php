@@ -17,7 +17,7 @@ use raylib\Color;
 use raylib\Vector2;
 use const raylib\MouseButton\MOUSE_BUTTON_LEFT;
 
-const MAX_BUNNIES = 50000;    // 50K bunnies limit
+const MAX_BUNNIES = 100000;    // 50K bunnies limit
 
 // This is the maximum amount of elements (quads) per batch
 // NOTE: This value is defined in [rlgl] module and can be changed there
@@ -52,8 +52,12 @@ for ($i = 0; $i < MAX_BUNNIES; $i++) {
 
 $bunniesCount = 0;           // Bunnies counter
 
-SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+SetTargetFPS(144);               // Set our game to run at 60 frames-per-second
 //--------------------------------------------------------------------------------------
+
+$texBunnyHalfWidth = $texBunny->width / 2;
+$texBunnyHalfHeight = $texBunny->height / 2;
+$texBunnyHalfHeight40 = $texBunnyHalfHeight - 40;
 
 // Main game loop
 while (!WindowShouldClose()) {    // Detect window close button or ESC key
@@ -79,10 +83,10 @@ while (!WindowShouldClose()) {    // Detect window close button or ESC key
         $bunnies[$i]->position->x += $bunnies[$i]->speed->x;
         $bunnies[$i]->position->y += $bunnies[$i]->speed->y;
 
-        if ((($bunnies[$i]->position->x + $texBunny->width/2) > GetScreenWidth()) ||
-            (($bunnies[$i]->position->x + $texBunny->width/2) < 0)) $bunnies[$i]->speed->x *= -1;
-        if ((($bunnies[$i]->position->y + $texBunny->height/2) > GetScreenHeight()) ||
-            (($bunnies[$i]->position->y + $texBunny->height/2 - 40) < 0)) $bunnies[$i]->speed->y *= -1;
+        if ((($bunnies[$i]->position->x + $texBunnyHalfWidth) > $screenWidth) ||
+            (($bunnies[$i]->position->x + $texBunnyHalfWidth) < 0)) $bunnies[$i]->speed->x *= -1;
+        if ((($bunnies[$i]->position->y + $texBunnyHalfHeight) > $screenHeight) ||
+            (($bunnies[$i]->position->y + $texBunnyHalfHeight40) < 0)) $bunnies[$i]->speed->y *= -1;
     }
     //----------------------------------------------------------------------------------
 
