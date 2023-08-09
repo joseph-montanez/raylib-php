@@ -58,11 +58,9 @@ SetMaterialTexture($model->materials[0], MATERIAL_MAP_ALBEDO, $texture); // Set 
 
 $position = new Vector3(0.0, 0.0, 0.0);            // Set model position
 
-
 // Load animation data
 $animsCount = 0;
 $anims = LoadModelAnimations(__DIR__ . '/resources/models/iqm/guyanim.iqm', $animsCount);
-var_dump('$animsCount', $animsCount);
 $animFrameCounter = 0;
 
 DisableCursor();                    // Catch cursor
@@ -97,7 +95,7 @@ while (!WindowShouldClose())        // Detect window close button or ESC key
 
             for ($i = 0; $i < $model->boneCount; $i++)
             {
-                DrawCube($anims[0]->framePoses[$animFrameCounter][$i]->translation, 0.2, 0.2, 0.2, $red);
+                //DrawCube($anims[0]->framePoses[$animFrameCounter][$i]->translation, 0.2, 0.2, 0.2, $red);
             }
 
             DrawGrid(10, 1.0);         // Draw a grid
@@ -107,6 +105,7 @@ while (!WindowShouldClose())        // Detect window close button or ESC key
         DrawText("PRESS SPACE to PLAY MODEL ANIMATION", 10, 10, 20, $maroon);
         DrawText("(c) Guy IQM 3D model by @culacant", $screenWidth - 200, $screenHeight - 20, 10, $gray);
 
+        DrawFPS(10, 100);
     EndDrawing();
     //----------------------------------------------------------------------------------
 }
@@ -114,7 +113,7 @@ while (!WindowShouldClose())        // Detect window close button or ESC key
 // De-Initialization
 //--------------------------------------------------------------------------------------
 UnloadTexture($texture);                     // Unload texture
-UnloadModelAnimations($anims, $animsCount);   // Unload model animations data
+//UnloadModelAnimations($anims, $animsCount);   // Unload model animations data
 UnloadModel($model);                         // Unload model
 
 CloseWindow();                  // Close window and OpenGL context

@@ -30,7 +30,8 @@ PHP_FUNCTION(LoadModelAnimations)
     }
 
     // Create a PHP array with the default size of the animation count
-    array_init_size(return_value, animsCount);
+//    array_init_size(return_value, animsCount);
+    array_init_size(return_value);
 
     for (i = 0; i < animsCount; i++) {
         zend_object *modelAnimation = php_raylib_modelanimation_new_ex(php_raylib_modelanimation_ce, NULL);

@@ -4310,10 +4310,10 @@ function SetModelMeshMaterial(& $model, int $meshId, int $materialId): void {  }
  * Load model animations from file
  *
  * @param string $fileName
- * @param array $animCount
+ * @param int $animCount
  *
  */
-function LoadModelAnimations(string $fileName, array $animCount): \raylib\ModelAnimation { return new \raylib\ModelAnimation; }
+function LoadModelAnimations(string $fileName, int &$animCount): array { }
 
 /*
  * Update model animation pose

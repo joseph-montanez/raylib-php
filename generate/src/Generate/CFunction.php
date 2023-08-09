@@ -266,11 +266,36 @@ class CFunction
                                 if ($struct->name === $field->typePlain) {
                                     foreach ($struct->nonPrimitiveFields as $typeField) {
                                         if ($typeField->isArray) {
-                                            $input []= '        //-- TODO array mapping of sub struct';
+                                            $maxStructArray = $typeField->arrayCountNumber > 0 ? $typeField->arrayCountNumber : '0 /* todo */';
+                                            $input [] = '        for (int n = 0; n < ' . $maxStructArray . '; n++) {';
+                                            $input [] = '            MaterialMap *' . lcfirst($typeField->typePlain) . ' = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . '[n];';
+                                            $input [] = '';
+
+                                            $input [] = '            // Create PHP Object holder of this data';
+                                            $input [] = '            zend_object *' . lcfirst($typeField->typePlain) . 'Result = php_raylib_' . $typeField->typePlainLower . '_new_ex(php_raylib_' . $typeField->typePlainLower . '_ce, NULL);';
+                                            $input [] = '            php_raylib_' . $typeField->typePlainLower . '_object *p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = php_raylib_' . $typeField->typePlainLower . '_fetch_object(' . lcfirst($typeField->typePlain) . 'Result);';
+                                            $input [] = '';
+
+                                            $input [] = '            p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
+                                            $input [] = '            p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = ' . lcfirst($typeField->typePlain) . ';';
+                                            $input [] = '';
+
+                                            $input [] = '            /*';
+                                            $input [] = '            * Need to also populate the following sub SUB objects';
+                                            $input [] = '            * zval texture;';
+                                            $input [] = '            * zval color;';
+                                            $input [] = '            */';
+                                            $input [] = '';
+
+
+                                            $input [] = '            add_next_index_object(&p' . ucfirst($field->typePlainLower) . 'Object->maps, ' . lcfirst($typeField->typePlain) . 'Result);';
+
+                                            $input [] = '        }';
+                                        } else {
+                                            $input []= '        php_raylib_' . $typeField->typePlainLower . '_object *php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = Z_' . $typeField->typePlainUpper . '_OBJ_P(&p' . ucfirst($field->typePlainLower) . 'Object->' . $typeField->name . ');';
+                                            $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
+                                            $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . ';';
                                         }
-                                        $input []= '        php_raylib_' . $typeField->typePlainLower . '_object *php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = Z_' . $typeField->typePlainUpper . '_OBJ_P(&p' . ucfirst($field->typePlainLower) . 'Object->' . $typeField->name . ');';
-                                        $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
-                                        $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . ';';
                                         $input []= '';
                                     }
 

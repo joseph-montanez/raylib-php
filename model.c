@@ -839,12 +839,12 @@ void php_raylib_model_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_model_prop_handlers, 0, NULL, php_raylib_model_free_prop_handler, 1);
     php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "transform", php_raylib_model_get_transform, php_raylib_model_set_transform, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "meshcount", NULL, NULL, php_raylib_model_get_meshcount, php_raylib_model_set_meshcount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "materialcount", NULL, NULL, php_raylib_model_get_materialcount, php_raylib_model_set_materialcount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "meshCount", NULL, NULL, php_raylib_model_get_meshcount, php_raylib_model_set_meshcount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "materialCount", NULL, NULL, php_raylib_model_get_materialcount, php_raylib_model_set_materialcount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "meshes", NULL, NULL, NULL, NULL, php_raylib_model_get_meshes, php_raylib_model_set_meshes, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "materials", NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_materials, php_raylib_model_set_materials, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "meshmaterial", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_meshmaterial, php_raylib_model_set_meshmaterial, NULL, NULL, NULL, NULL);
-    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "bonecount", NULL, NULL, php_raylib_model_get_bonecount, php_raylib_model_set_bonecount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "meshMaterial", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_meshmaterial, php_raylib_model_set_meshmaterial, NULL, NULL, NULL, NULL);
+    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "boneCount", NULL, NULL, php_raylib_model_get_bonecount, php_raylib_model_set_bonecount, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "bones", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_bones, php_raylib_model_set_bones, NULL, NULL);
-    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "bindpose", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_bindpose, php_raylib_model_set_bindpose);
+    php_raylib_model_register_prop_handler(&php_raylib_model_prop_handlers, "bindPose", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_model_get_bindpose, php_raylib_model_set_bindpose);
 }

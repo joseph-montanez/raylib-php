@@ -576,8 +576,8 @@ void php_raylib_modelanimation_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_modelanimation_prop_handlers, 0, NULL, php_raylib_modelanimation_free_prop_handler, 1);
-    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "bonecount", php_raylib_modelanimation_get_bonecount, php_raylib_modelanimation_set_bonecount, NULL, NULL, NULL, NULL);
-    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "framecount", php_raylib_modelanimation_get_framecount, php_raylib_modelanimation_set_framecount, NULL, NULL, NULL, NULL);
+    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "boneCount", php_raylib_modelanimation_get_bonecount, php_raylib_modelanimation_set_bonecount, NULL, NULL, NULL, NULL);
+    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "frameCount", php_raylib_modelanimation_get_framecount, php_raylib_modelanimation_set_framecount, NULL, NULL, NULL, NULL);
     php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "bones", NULL, NULL, php_raylib_modelanimation_get_bones, php_raylib_modelanimation_set_bones, NULL, NULL);
-    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "frameposes", NULL, NULL, NULL, NULL, php_raylib_modelanimation_get_frameposes, php_raylib_modelanimation_set_frameposes);
+    php_raylib_modelanimation_register_prop_handler(&php_raylib_modelanimation_prop_handlers, "framePoses", NULL, NULL, NULL, NULL, php_raylib_modelanimation_get_frameposes, php_raylib_modelanimation_set_frameposes);
 }
