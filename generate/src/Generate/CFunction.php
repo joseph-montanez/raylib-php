@@ -273,11 +273,11 @@ class CFunction
 
                                             $input [] = '            // Create PHP Object holder of this data';
                                             $input [] = '            zend_object *' . lcfirst($typeField->typePlain) . 'Result = php_raylib_' . $typeField->typePlainLower . '_new_ex(php_raylib_' . $typeField->typePlainLower . '_ce, NULL);';
-                                            $input [] = '            php_raylib_' . $typeField->typePlainLower . '_object *p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = php_raylib_' . $typeField->typePlainLower . '_fetch_object(' . lcfirst($typeField->typePlain) . 'Result);';
+                                            $input [] = '            php_raylib_' . $typeField->typePlainLower . '_object *p' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object = php_raylib_' . $typeField->typePlainLower . '_fetch_object(' . lcfirst($typeField->typePlain) . 'Result);';
                                             $input [] = '';
 
-                                            $input [] = '            p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
-                                            $input [] = '            p' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = ' . lcfirst($typeField->typePlain) . ';';
+                                            $input [] = '            p' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
+                                            $input [] = '            p' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object->' . $typeField->typePlainLower . '->data.p = ' . lcfirst($typeField->typePlain) . ';';
                                             $input [] = '';
 
                                             $input [] = '            /*';
@@ -292,9 +292,9 @@ class CFunction
 
                                             $input [] = '        }';
                                         } else {
-                                            $input []= '        php_raylib_' . $typeField->typePlainLower . '_object *php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object = Z_' . $typeField->typePlainUpper . '_OBJ_P(&p' . ucfirst($field->typePlainLower) . 'Object->' . $typeField->name . ');';
-                                            $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
-                                            $input []= '        php' . ucfirst($field->typePlainLower) . $typeField->typePlain . 'Object->' . $typeField->typePlainLower . '->data.p = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . ';';
+                                            $input []= '        php_raylib_' . $typeField->typePlainLower . '_object *php' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object = Z_' . $typeField->typePlainUpper . '_OBJ_P(&p' . ucfirst($field->typePlainLower) . 'Object->' . $typeField->name . ');';
+                                            $input []= '        php' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object->' . $typeField->typePlainLower . '->type = RL_' . $typeField->typePlainUpper . '_IS_POINTER;';
+                                            $input []= '        php' . ucfirst($field->typePlainLower) . ucfirst($typeField->nameLower) . 'Object->' . $typeField->typePlainLower . '->data.p = &p' . ucfirst($field->typePlainLower) . 'Object->' . $field->typePlainLower . '->data.p->' . $typeField->name . ';';
                                         }
                                         $input []= '';
                                     }

@@ -8553,10 +8553,10 @@ PHP_FUNCTION(LoadModel)
 
             // Create PHP Object holder of this data
             zend_object *materialMapResult = php_raylib_materialmap_new_ex(php_raylib_materialmap_ce, NULL);
-            php_raylib_materialmap_object *pMaterialMaterialMapObject = php_raylib_materialmap_fetch_object(materialMapResult);
+            php_raylib_materialmap_object *pMaterialMapsObject = php_raylib_materialmap_fetch_object(materialMapResult);
 
-            pMaterialMaterialMapObject->materialmap->type = RL_MATERIALMAP_IS_POINTER;
-            pMaterialMaterialMapObject->materialmap->data.p = materialMap;
+            pMaterialMapsObject->materialmap->type = RL_MATERIALMAP_IS_POINTER;
+            pMaterialMapsObject->materialmap->data.p = materialMap;
 
             /*
             * Need to also populate the following sub SUB objects
@@ -8603,17 +8603,17 @@ PHP_FUNCTION(LoadModel)
         pTransformObject->transform->data.p = &php_raylib_model_fetch_data(phpResult)->bindPose[i];
 
         // Go through each sub-object and assign values (references)
-        php_raylib_vector3_object *phpTransformVector3Object = Z_VECTOR3_OBJ_P(&pTransformObject->translation);
-        phpTransformVector3Object->vector3->type = RL_VECTOR3_IS_POINTER;
-        phpTransformVector3Object->vector3->data.p = &pTransformObject->transform->data.p->translation;
+        php_raylib_vector3_object *phpTransformTranslationObject = Z_VECTOR3_OBJ_P(&pTransformObject->translation);
+        phpTransformTranslationObject->vector3->type = RL_VECTOR3_IS_POINTER;
+        phpTransformTranslationObject->vector3->data.p = &pTransformObject->transform->data.p->translation;
 
-        php_raylib_vector4_object *phpTransformVector4Object = Z_VECTOR4_OBJ_P(&pTransformObject->rotation);
-        phpTransformVector4Object->vector4->type = RL_VECTOR4_IS_POINTER;
-        phpTransformVector4Object->vector4->data.p = &pTransformObject->transform->data.p->rotation;
+        php_raylib_vector4_object *phpTransformRotationObject = Z_VECTOR4_OBJ_P(&pTransformObject->rotation);
+        phpTransformRotationObject->vector4->type = RL_VECTOR4_IS_POINTER;
+        phpTransformRotationObject->vector4->data.p = &pTransformObject->transform->data.p->rotation;
 
-        php_raylib_vector3_object *phpTransformVector31Object = Z_VECTOR3_OBJ_P(&pTransformObject->scale);
-        phpTransformVector31Object->vector3->type = RL_VECTOR3_IS_POINTER;
-        phpTransformVector31Object->vector3->data.p = &pTransformObject->transform->data.p->scale;
+        php_raylib_vector3_object *phpTransformScaleObject = Z_VECTOR3_OBJ_P(&pTransformObject->scale);
+        phpTransformScaleObject->vector3->type = RL_VECTOR3_IS_POINTER;
+        phpTransformScaleObject->vector3->data.p = &pTransformObject->transform->data.p->scale;
 
         // Push element to PHP array which should just be an object that is also a data pointer,
         // if this is changed should update original data?
@@ -9599,7 +9599,6 @@ PHP_FUNCTION(SetModelMeshMaterial)
 
 // Load model animations from file
 // RLAPI Model LoadModelFromMesh(Mesh mesh);
-//ZEND_BEGIN_ARG_INFO_EX(arginfo_LoadModelAnimations, 0, 1, 2)
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_LoadModelAnimations, 0, 2, IS_ARRAY, 0)
     ZEND_ARG_INFO(0, fileName)
     ZEND_ARG_TYPE_INFO(1, animCount, IS_LONG, 0)
@@ -9618,11 +9617,18 @@ PHP_FUNCTION(LoadModelAnimations)
     unsigned int animsCount = 0;
     ModelAnimation *anims = LoadModelAnimations(fileName->val, &animsCount);
 
+    php_printf("animsCount: %d\n", animsCount);
+
+    // Set output variable animsCount
     if (zAnimsCount) {
         ZEND_TRY_ASSIGN_REF_LONG(zAnimsCount, animsCount);
     }
 
-    // Create a PHP array with the default size of the animation count
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_THROWS();
+    }
+
+  // Create a PHP array with the default size of the animation count
     array_init_size(return_value, animsCount);
 
     for (i = 0; i < animsCount; i++) {
