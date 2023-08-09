@@ -78,7 +78,7 @@ class Stub
                 ];
 
                 foreach ($colors as $color) {
-                    $input[] = '        public static function ' . $color[0] . '(): Color { }';
+                    $input[] = '        public static function ' . $color[0] . '(): Color { return new Color(); }';
                 }
             }
 

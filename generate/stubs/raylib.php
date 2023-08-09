@@ -56,32 +56,32 @@ namespace raylib {
         public int $b;
         public int $a;
         public function __construct() { }
-        public static function LIGHTGRAY(): Color { }
-        public static function GRAY(): Color { }
-        public static function DARKGRAY(): Color { }
-        public static function YELLOW(): Color { }
-        public static function GOLD(): Color { }
-        public static function ORANGE(): Color { }
-        public static function PINK(): Color { }
-        public static function RED(): Color { }
-        public static function MAROON(): Color { }
-        public static function GREEN(): Color { }
-        public static function LIME(): Color { }
-        public static function DARKGREEN(): Color { }
-        public static function SKYBLUE(): Color { }
-        public static function BLUE(): Color { }
-        public static function DARKBLUE(): Color { }
-        public static function PURPLE(): Color { }
-        public static function VIOLET(): Color { }
-        public static function DARKPURPLE(): Color { }
-        public static function BEIGE(): Color { }
-        public static function BROWN(): Color { }
-        public static function DARKBROWN(): Color { }
-        public static function WHITE(): Color { }
-        public static function BLACK(): Color { }
-        public static function BLANK(): Color { }
-        public static function MAGENTA(): Color { }
-        public static function RAYWHITE(): Color { }
+        public static function LIGHTGRAY(): Color { return new Color(); }
+        public static function GRAY(): Color { return new Color(); }
+        public static function DARKGRAY(): Color { return new Color(); }
+        public static function YELLOW(): Color { return new Color(); }
+        public static function GOLD(): Color { return new Color(); }
+        public static function ORANGE(): Color { return new Color(); }
+        public static function PINK(): Color { return new Color(); }
+        public static function RED(): Color { return new Color(); }
+        public static function MAROON(): Color { return new Color(); }
+        public static function GREEN(): Color { return new Color(); }
+        public static function LIME(): Color { return new Color(); }
+        public static function DARKGREEN(): Color { return new Color(); }
+        public static function SKYBLUE(): Color { return new Color(); }
+        public static function BLUE(): Color { return new Color(); }
+        public static function DARKBLUE(): Color { return new Color(); }
+        public static function PURPLE(): Color { return new Color(); }
+        public static function VIOLET(): Color { return new Color(); }
+        public static function DARKPURPLE(): Color { return new Color(); }
+        public static function BEIGE(): Color { return new Color(); }
+        public static function BROWN(): Color { return new Color(); }
+        public static function DARKBROWN(): Color { return new Color(); }
+        public static function WHITE(): Color { return new Color(); }
+        public static function BLACK(): Color { return new Color(); }
+        public static function BLANK(): Color { return new Color(); }
+        public static function MAGENTA(): Color { return new Color(); }
+        public static function RAYWHITE(): Color { return new Color(); }
     }
 }
 

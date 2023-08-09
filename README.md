@@ -232,9 +232,9 @@ supported yet, but can be later.
 ## Benchmarks
 
 Using the Bunnymark textures 100,000 max, 144 frames per second. Any language / extension that hits 85 FPS is the limit
-of the GPU of the test machine.
+of the GPU of the test machine. All run with "Apple" for **kind** (M1/M2) native architect.
 
-M1 Mac Mini - 16GB RAM
+M1 Mac Mini - 16GB RAM - macOS Ventura 13.4.1
 
 | Language                         | Extension                | FPS    | Memory | CPU  | GPU |
 |----------------------------------|--------------------------|--------|--------|------|-----|
@@ -248,3 +248,4 @@ M1 Mac Mini - 16GB RAM
 | PHP 8.2 (Jit)                    | raylib-php               | 41 FPS | 257 MB | 100% | 60% |
 | PHP 8.2                          | raylib-php               | 27 FPS | 242 MB | 100% | 57% |
 | Python 3.11                      | raylib-python-cffi       | 10 FPS | 100 MB | 100% | 35% |
+| Lua (LuaJIT 2.1.0-beta3) (-O2)   | TSnake41/raylib-lua      | 5 FPS  | 113 MB | 100% | 31% |
