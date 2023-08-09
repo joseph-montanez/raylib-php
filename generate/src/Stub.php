@@ -116,7 +116,25 @@ class Stub
                     $paramType = 'string';
                 }
                 elseif ($param->type && $param->isRef) {
-                    $paramType = '&';
+                    if (Helper::isString($param->type)) {
+                        $paramType = 'string';
+                    }
+                    elseif (Helper::isArray($param->type)) {
+                        $paramType = 'array';
+                    }
+                    elseif (Helper::isBool($param->type)) {
+                        $paramType = 'bool';
+                    }
+                    elseif (Helper::isInt($param->type)) {
+                        $paramType = 'int';
+                    }
+                    elseif (Helper::isFloat($param->type)) {
+                        $paramType = 'float';
+                    }
+                    elseif (!Helper::isPrimitive($param->type)) {
+                        $paramType = '\\raylib\\' . trim(str_replace('*', '', $param->type));
+                    }
+                    $paramType .= ' &';
                 }
                 elseif ($param->type && Helper::isArray($param->type)) {
                     $paramType = 'array';
@@ -134,7 +152,7 @@ class Stub
                     $paramType = '\\raylib\\' . trim(str_replace('*', '', $param->type));
                 }
 
-                $params[] = $paramType . ' $' . $param->name;
+                $params[] = str_replace('& $', '&$', $paramType . ' $' . $param->name);
             }
 
             $returnType = 'void';
@@ -163,6 +181,10 @@ class Stub
             elseif ($function->returnType && !Helper::isPrimitive($function->returnType)) {
                 $returnType = '\\raylib\\' . trim(str_replace('*', '', $function->returnType));
                 $returnValue = 'return new '  . $returnType . ';';
+                if ($function->returnIsArray) {
+                    $returnType = 'array'; // appending [] is not yet supported in PHP :(
+                    $returnValue = 'return [];';
+                }
             }
 
             $input[] = '/*';
@@ -171,6 +193,11 @@ class Stub
             foreach ($params as $param) {
                 $input[] = ' * @param ' . $param;
             }
+
+            if ($function->returnType && !Helper::isPrimitive($function->returnType) && $function->returnIsArray) {
+                $input[] = ' * @return \\raylib\\' . trim(str_replace('*', '', $function->returnType)) . '[]';
+            }
+
             $input[] = ' *';
             $input[] = ' */';
             $input[] = 'function ' . $function->name . '(' . implode(', ', $params) . '): ' . $returnType . ' { ' . $returnValue . ' }';

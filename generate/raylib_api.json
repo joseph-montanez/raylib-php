@@ -10066,7 +10066,7 @@
         {
           "type": "unsigned int *",
           "name": "animCount",
-          "isArray": true
+          "isRef": true
         }
       ]
     },
