@@ -49,7 +49,7 @@ class ObjectStartup
                 }
             }
 
-            $input[] = '    php_raylib_' . $struct->nameLower . '_register_prop_handler(&php_raylib_' . $struct->nameLower . '_prop_handlers, "' . $field->nameLower . '", ' . implode(', ', $params) . ');';
+            $input[] = '    php_raylib_' . $struct->nameLower . '_register_prop_handler(&php_raylib_' . $struct->nameLower . '_prop_handlers, "' . $field->name . '", ' . implode(', ', $params) . ');';
         }
         $input[] = '}';
         $input[] = '';

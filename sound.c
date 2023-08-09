@@ -523,5 +523,5 @@ void php_raylib_sound_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_sound_prop_handlers, 0, NULL, php_raylib_sound_free_prop_handler, 1);
     php_raylib_sound_register_prop_handler(&php_raylib_sound_prop_handlers, "stream", php_raylib_sound_get_stream, php_raylib_sound_set_stream, NULL, NULL);
-    php_raylib_sound_register_prop_handler(&php_raylib_sound_prop_handlers, "framecount", NULL, NULL, php_raylib_sound_get_framecount, php_raylib_sound_set_framecount);
+    php_raylib_sound_register_prop_handler(&php_raylib_sound_prop_handlers, "frameCount", NULL, NULL, php_raylib_sound_get_framecount, php_raylib_sound_set_framecount);
 }

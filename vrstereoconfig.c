@@ -728,11 +728,11 @@ void php_raylib_vrstereoconfig_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_vrstereoconfig_prop_handlers, 0, NULL, php_raylib_vrstereoconfig_free_prop_handler, 1);
     php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "projection", php_raylib_vrstereoconfig_get_projection, php_raylib_vrstereoconfig_set_projection, NULL, NULL);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "viewoffset", php_raylib_vrstereoconfig_get_viewoffset, php_raylib_vrstereoconfig_set_viewoffset, NULL, NULL);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "leftlenscenter", NULL, NULL, php_raylib_vrstereoconfig_get_leftlenscenter, php_raylib_vrstereoconfig_set_leftlenscenter);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "rightlenscenter", NULL, NULL, php_raylib_vrstereoconfig_get_rightlenscenter, php_raylib_vrstereoconfig_set_rightlenscenter);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "leftscreencenter", NULL, NULL, php_raylib_vrstereoconfig_get_leftscreencenter, php_raylib_vrstereoconfig_set_leftscreencenter);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "rightscreencenter", NULL, NULL, php_raylib_vrstereoconfig_get_rightscreencenter, php_raylib_vrstereoconfig_set_rightscreencenter);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "viewOffset", php_raylib_vrstereoconfig_get_viewoffset, php_raylib_vrstereoconfig_set_viewoffset, NULL, NULL);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "leftLensCenter", NULL, NULL, php_raylib_vrstereoconfig_get_leftlenscenter, php_raylib_vrstereoconfig_set_leftlenscenter);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "rightLensCenter", NULL, NULL, php_raylib_vrstereoconfig_get_rightlenscenter, php_raylib_vrstereoconfig_set_rightlenscenter);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "leftScreenCenter", NULL, NULL, php_raylib_vrstereoconfig_get_leftscreencenter, php_raylib_vrstereoconfig_set_leftscreencenter);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "rightScreenCenter", NULL, NULL, php_raylib_vrstereoconfig_get_rightscreencenter, php_raylib_vrstereoconfig_set_rightscreencenter);
     php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "scale", NULL, NULL, php_raylib_vrstereoconfig_get_scale, php_raylib_vrstereoconfig_set_scale);
-    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "scalein", NULL, NULL, php_raylib_vrstereoconfig_get_scalein, php_raylib_vrstereoconfig_set_scalein);
+    php_raylib_vrstereoconfig_register_prop_handler(&php_raylib_vrstereoconfig_prop_handlers, "scaleIn", NULL, NULL, php_raylib_vrstereoconfig_get_scalein, php_raylib_vrstereoconfig_set_scalein);
 }

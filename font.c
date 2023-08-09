@@ -672,9 +672,9 @@ void php_raylib_font_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_font_prop_handlers, 0, NULL, php_raylib_font_free_prop_handler, 1);
-    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "basesize", php_raylib_font_get_basesize, php_raylib_font_set_basesize, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "glyphcount", php_raylib_font_get_glyphcount, php_raylib_font_set_glyphcount, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "glyphpadding", php_raylib_font_get_glyphpadding, php_raylib_font_set_glyphpadding, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "baseSize", php_raylib_font_get_basesize, php_raylib_font_set_basesize, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "glyphCount", php_raylib_font_get_glyphcount, php_raylib_font_set_glyphcount, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "glyphPadding", php_raylib_font_get_glyphpadding, php_raylib_font_set_glyphpadding, NULL, NULL, NULL, NULL, NULL, NULL);
     php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "texture", NULL, NULL, php_raylib_font_get_texture, php_raylib_font_set_texture, NULL, NULL, NULL, NULL);
     php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "recs", NULL, NULL, NULL, NULL, php_raylib_font_get_recs, php_raylib_font_set_recs, NULL, NULL);
     php_raylib_font_register_prop_handler(&php_raylib_font_prop_handlers, "glyphs", NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_font_get_glyphs, php_raylib_font_set_glyphs);

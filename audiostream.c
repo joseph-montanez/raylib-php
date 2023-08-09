@@ -464,7 +464,7 @@ PHP_METHOD(AudioStream, __construct)
 
 static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_object *obj) /* {{{ */
 {
-//    return Z_ARRVAL_P(&obj->buffer);
+    return Z_ARRVAL_P(&obj->buffer);
 }
 /* }}} */
 
@@ -594,7 +594,7 @@ void php_raylib_audiostream_startup(INIT_FUNC_ARGS)
     zend_hash_init(&php_raylib_audiostream_prop_handlers, 0, NULL, php_raylib_audiostream_free_prop_handler, 1);
     php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "buffer", php_raylib_audiostream_get_buffer, php_raylib_audiostream_set_buffer, NULL, NULL, NULL, NULL);
     php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "processor", NULL, NULL, php_raylib_audiostream_get_processor, php_raylib_audiostream_set_processor, NULL, NULL);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplerate", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplerate, php_raylib_audiostream_set_samplerate);
-    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "samplesize", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplesize, php_raylib_audiostream_set_samplesize);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "sampleRate", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplerate, php_raylib_audiostream_set_samplerate);
+    php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "sampleSize", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_samplesize, php_raylib_audiostream_set_samplesize);
     php_raylib_audiostream_register_prop_handler(&php_raylib_audiostream_prop_handlers, "channels", NULL, NULL, NULL, NULL, php_raylib_audiostream_get_channels, php_raylib_audiostream_set_channels);
 }

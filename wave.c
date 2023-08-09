@@ -544,9 +544,9 @@ void php_raylib_wave_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_wave_prop_handlers, 0, NULL, php_raylib_wave_free_prop_handler, 1);
-    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "framecount", php_raylib_wave_get_framecount, php_raylib_wave_set_framecount, NULL, NULL);
-    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "samplerate", php_raylib_wave_get_samplerate, php_raylib_wave_set_samplerate, NULL, NULL);
-    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "samplesize", php_raylib_wave_get_samplesize, php_raylib_wave_set_samplesize, NULL, NULL);
+    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "frameCount", php_raylib_wave_get_framecount, php_raylib_wave_set_framecount, NULL, NULL);
+    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "sampleRate", php_raylib_wave_get_samplerate, php_raylib_wave_set_samplerate, NULL, NULL);
+    php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "sampleSize", php_raylib_wave_get_samplesize, php_raylib_wave_set_samplesize, NULL, NULL);
     php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "channels", php_raylib_wave_get_channels, php_raylib_wave_set_channels, NULL, NULL);
     php_raylib_wave_register_prop_handler(&php_raylib_wave_prop_handlers, "data", NULL, NULL, php_raylib_wave_get_data, php_raylib_wave_set_data);
 }

@@ -650,8 +650,8 @@ void php_raylib_glyphinfo_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_glyphinfo_prop_handlers, 0, NULL, php_raylib_glyphinfo_free_prop_handler, 1);
     php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "value", php_raylib_glyphinfo_get_value, php_raylib_glyphinfo_set_value, NULL, NULL);
-    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "offsetx", php_raylib_glyphinfo_get_offsetx, php_raylib_glyphinfo_set_offsetx, NULL, NULL);
-    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "offsety", php_raylib_glyphinfo_get_offsety, php_raylib_glyphinfo_set_offsety, NULL, NULL);
-    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "advancex", php_raylib_glyphinfo_get_advancex, php_raylib_glyphinfo_set_advancex, NULL, NULL);
+    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "offsetX", php_raylib_glyphinfo_get_offsetx, php_raylib_glyphinfo_set_offsetx, NULL, NULL);
+    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "offsetY", php_raylib_glyphinfo_get_offsety, php_raylib_glyphinfo_set_offsety, NULL, NULL);
+    php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "advanceX", php_raylib_glyphinfo_get_advancex, php_raylib_glyphinfo_set_advancex, NULL, NULL);
     php_raylib_glyphinfo_register_prop_handler(&php_raylib_glyphinfo_prop_handlers, "image", NULL, NULL, php_raylib_glyphinfo_get_image, php_raylib_glyphinfo_set_image);
 }

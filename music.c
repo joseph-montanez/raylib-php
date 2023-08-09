@@ -611,8 +611,8 @@ void php_raylib_music_startup(INIT_FUNC_ARGS)
     // Props
     zend_hash_init(&php_raylib_music_prop_handlers, 0, NULL, php_raylib_music_free_prop_handler, 1);
     php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "stream", php_raylib_music_get_stream, php_raylib_music_set_stream, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "framecount", NULL, NULL, php_raylib_music_get_framecount, php_raylib_music_set_framecount, NULL, NULL, NULL, NULL, NULL, NULL);
+    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "frameCount", NULL, NULL, php_raylib_music_get_framecount, php_raylib_music_set_framecount, NULL, NULL, NULL, NULL, NULL, NULL);
     php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "looping", NULL, NULL, NULL, NULL, php_raylib_music_get_looping, php_raylib_music_set_looping, NULL, NULL, NULL, NULL);
-    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "ctxtype", NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_music_get_ctxtype, php_raylib_music_set_ctxtype, NULL, NULL);
-    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "ctxdata", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_music_get_ctxdata, php_raylib_music_set_ctxdata);
+    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "ctxType", NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_music_get_ctxtype, php_raylib_music_set_ctxtype, NULL, NULL);
+    php_raylib_music_register_prop_handler(&php_raylib_music_prop_handlers, "ctxData", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, php_raylib_music_get_ctxdata, php_raylib_music_set_ctxdata);
 }

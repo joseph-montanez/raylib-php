@@ -711,14 +711,14 @@ void php_raylib_vrdeviceinfo_startup(INIT_FUNC_ARGS)
 
     // Props
     zend_hash_init(&php_raylib_vrdeviceinfo_prop_handlers, 0, NULL, php_raylib_vrdeviceinfo_free_prop_handler, 1);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "hresolution", php_raylib_vrdeviceinfo_get_hresolution, php_raylib_vrdeviceinfo_set_hresolution, NULL, NULL, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vresolution", php_raylib_vrdeviceinfo_get_vresolution, php_raylib_vrdeviceinfo_set_vresolution, NULL, NULL, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "hscreensize", NULL, NULL, php_raylib_vrdeviceinfo_get_hscreensize, php_raylib_vrdeviceinfo_set_hscreensize, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vscreensize", NULL, NULL, php_raylib_vrdeviceinfo_get_vscreensize, php_raylib_vrdeviceinfo_set_vscreensize, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vscreencenter", NULL, NULL, php_raylib_vrdeviceinfo_get_vscreencenter, php_raylib_vrdeviceinfo_set_vscreencenter, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "eyetoscreendistance", NULL, NULL, php_raylib_vrdeviceinfo_get_eyetoscreendistance, php_raylib_vrdeviceinfo_set_eyetoscreendistance, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "lensseparationdistance", NULL, NULL, php_raylib_vrdeviceinfo_get_lensseparationdistance, php_raylib_vrdeviceinfo_set_lensseparationdistance, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "interpupillarydistance", NULL, NULL, php_raylib_vrdeviceinfo_get_interpupillarydistance, php_raylib_vrdeviceinfo_set_interpupillarydistance, NULL, NULL);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "lensdistortionvalues", NULL, NULL, NULL, NULL, php_raylib_vrdeviceinfo_get_lensdistortionvalues, php_raylib_vrdeviceinfo_set_lensdistortionvalues);
-    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "chromaabcorrection", NULL, NULL, NULL, NULL, php_raylib_vrdeviceinfo_get_chromaabcorrection, php_raylib_vrdeviceinfo_set_chromaabcorrection);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "hResolution", php_raylib_vrdeviceinfo_get_hresolution, php_raylib_vrdeviceinfo_set_hresolution, NULL, NULL, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vResolution", php_raylib_vrdeviceinfo_get_vresolution, php_raylib_vrdeviceinfo_set_vresolution, NULL, NULL, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "hScreenSize", NULL, NULL, php_raylib_vrdeviceinfo_get_hscreensize, php_raylib_vrdeviceinfo_set_hscreensize, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vScreenSize", NULL, NULL, php_raylib_vrdeviceinfo_get_vscreensize, php_raylib_vrdeviceinfo_set_vscreensize, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "vScreenCenter", NULL, NULL, php_raylib_vrdeviceinfo_get_vscreencenter, php_raylib_vrdeviceinfo_set_vscreencenter, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "eyeToScreenDistance", NULL, NULL, php_raylib_vrdeviceinfo_get_eyetoscreendistance, php_raylib_vrdeviceinfo_set_eyetoscreendistance, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "lensSeparationDistance", NULL, NULL, php_raylib_vrdeviceinfo_get_lensseparationdistance, php_raylib_vrdeviceinfo_set_lensseparationdistance, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "interpupillaryDistance", NULL, NULL, php_raylib_vrdeviceinfo_get_interpupillarydistance, php_raylib_vrdeviceinfo_set_interpupillarydistance, NULL, NULL);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "lensDistortionValues", NULL, NULL, NULL, NULL, php_raylib_vrdeviceinfo_get_lensdistortionvalues, php_raylib_vrdeviceinfo_set_lensdistortionvalues);
+    php_raylib_vrdeviceinfo_register_prop_handler(&php_raylib_vrdeviceinfo_prop_handlers, "chromaAbCorrection", NULL, NULL, NULL, NULL, php_raylib_vrdeviceinfo_get_chromaabcorrection, php_raylib_vrdeviceinfo_set_chromaabcorrection);
 }
