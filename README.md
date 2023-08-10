@@ -242,8 +242,8 @@ M1 Mac Mini - 16GB RAM - macOS Ventura 13.4.1
 | Zig 0.11.0 (ReleaseFast) (Arena) | raylib.zig               | 85 FPS | 54 MB  | 60%  | 90% |
 | Rust (Release)                   | bitten2up/raylib-rs      | 85 FPS | 48 MB  | 67%  | 90% |
 | Go 2.20 (Release)                | gen2brain/raylib-go      | 85 FPS | 55 MB  | 73%  | 90% |
-| Nim 2.0 (Release)                | planetis-m/naylib        | 83 FPS | 48 MB  | 70%  | 90% |
 | C# 11 .Net 7                     | raylib-cs                | 85 FPS | 68 MB  | 75%  | 90% |
+| Nim 2.0 (Release)                | planetis-m/naylib        | 75 FPS | 49 MB  | 70%  | 90% |
 | NodeJS 20                        | node-raylib              | 44 FPS | 134 MB | 100% | 80% |
 | PHP 8.2 (Jit)                    | raylib-php               | 41 FPS | 257 MB | 100% | 60% |
 | PHP 8.2                          | raylib-php               | 27 FPS | 242 MB | 100% | 57% |
