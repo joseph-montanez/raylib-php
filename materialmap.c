@@ -104,7 +104,7 @@ struct RL_MaterialMap* RL_MaterialMap_Create() {
     object->id = RL_MATERIALMAP_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_MaterialMap_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( MaterialMap) {};
+    object->data.v = (MaterialMap) {0};
     object->type = RL_MATERIALMAP_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

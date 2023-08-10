@@ -102,7 +102,7 @@ struct RL_Image* RL_Image_Create() {
     object->id = RL_IMAGE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Image_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Image) {};
+    object->data.v = (Image) {0};
     object->type = RL_IMAGE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

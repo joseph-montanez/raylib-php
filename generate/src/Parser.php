@@ -574,7 +574,7 @@ class Parser
         $input[] = '    object->guid = RL_' . $struct->name . '_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID';
         // Or list this?
         // RL_Vector3_Hash_Id(object->guid, 33); // Generate hash ID
-        $input[] = '    object->data.v = ( ' . $struct->name . ') {};';
+        $input[] = '    object->data.v = (' . $struct->name . ') {0};';
         $input[] = '    object->type = RL_' . $struct->nameUpper . '_IS_VALUE;';
         $input[] = '    object->refCount = 1;';
         $input[] = '    object->deleted = 0;';
@@ -972,8 +972,8 @@ class Parser
             $cFiles[$struct->nameLower . '.c'] = 1;
             $hFiles[$struct->nameLower . '.h'] = 1;
         }
-        $cFileName['includes\\\\hashmap.c'] = 1;
-        $cFileName['includes\\\\hashmap.h'] = 1;
+        $cFiles['includes\\\\hashmap.c'] = 1;
+        $hFiles['includes\\\\hashmap.h'] = 1;
         $cFiles = array_keys($cFiles);
         $hFiles = array_keys($hFiles);
 

@@ -103,7 +103,7 @@ struct RL_RayCollision* RL_RayCollision_Create() {
     object->id = RL_RAYCOLLISION_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_RayCollision_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( RayCollision) {};
+    object->data.v = (RayCollision) {0};
     object->type = RL_RAYCOLLISION_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

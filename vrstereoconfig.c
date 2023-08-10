@@ -103,7 +103,7 @@ struct RL_VrStereoConfig* RL_VrStereoConfig_Create() {
     object->id = RL_VRSTEREOCONFIG_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_VrStereoConfig_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( VrStereoConfig) {};
+    object->data.v = (VrStereoConfig) {0};
     object->type = RL_VRSTEREOCONFIG_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

@@ -105,7 +105,7 @@ struct RL_Font* RL_Font_Create() {
     object->id = RL_FONT_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Font_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Font) {};
+    object->data.v = (Font) {0};
     object->type = RL_FONT_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

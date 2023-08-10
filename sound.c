@@ -103,7 +103,7 @@ struct RL_Sound* RL_Sound_Create() {
     object->id = RL_SOUND_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Sound_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Sound) {};
+    object->data.v = (Sound) {0};
     object->type = RL_SOUND_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

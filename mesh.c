@@ -102,7 +102,7 @@ struct RL_Mesh* RL_Mesh_Create() {
     object->id = RL_MESH_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Mesh_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Mesh) {};
+    object->data.v = (Mesh) {0};
     object->type = RL_MESH_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

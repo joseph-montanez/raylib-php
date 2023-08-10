@@ -103,7 +103,7 @@ struct RL_GlyphInfo* RL_GlyphInfo_Create() {
     object->id = RL_GLYPHINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_GlyphInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( GlyphInfo) {};
+    object->data.v = (GlyphInfo) {0};
     object->type = RL_GLYPHINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

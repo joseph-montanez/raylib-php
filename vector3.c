@@ -102,7 +102,7 @@ struct RL_Vector3* RL_Vector3_Create() {
     object->id = RL_VECTOR3_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Vector3_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Vector3) {};
+    object->data.v = (Vector3) {0};
     object->type = RL_VECTOR3_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

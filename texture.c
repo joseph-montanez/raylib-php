@@ -102,7 +102,7 @@ struct RL_Texture* RL_Texture_Create() {
     object->id = RL_TEXTURE_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Texture_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Texture) {};
+    object->data.v = (Texture) {0};
     object->type = RL_TEXTURE_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

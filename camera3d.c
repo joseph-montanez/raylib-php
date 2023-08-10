@@ -103,7 +103,7 @@ struct RL_Camera3D* RL_Camera3D_Create() {
     object->id = RL_CAMERA3D_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Camera3D_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Camera3D) {};
+    object->data.v = (Camera3D) {0};
     object->type = RL_CAMERA3D_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

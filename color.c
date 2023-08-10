@@ -102,7 +102,7 @@ struct RL_Color* RL_Color_Create() {
     object->id = RL_COLOR_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Color_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Color) {};
+    object->data.v = (Color) {0};
     object->type = RL_COLOR_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

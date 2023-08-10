@@ -102,7 +102,7 @@ struct RL_AudioStream* RL_AudioStream_Create() {
     object->id = RL_AUDIOSTREAM_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_AudioStream_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( AudioStream) {};
+    object->data.v = (AudioStream) {0};
     object->type = RL_AUDIOSTREAM_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;
@@ -464,7 +464,7 @@ PHP_METHOD(AudioStream, __construct)
 
 static HashTable * php_raylib_audiostream_get_buffer(php_raylib_audiostream_object *obj) /* {{{ */
 {
-    return Z_ARRVAL_P(&obj->buffer);
+    // return Z_ARRVAL_P(&obj->buffer);
 }
 /* }}} */
 

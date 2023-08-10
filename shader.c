@@ -102,7 +102,7 @@ struct RL_Shader* RL_Shader_Create() {
     object->id = RL_SHADER_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Shader_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Shader) {};
+    object->data.v = (Shader) {0};
     object->type = RL_SHADER_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

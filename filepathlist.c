@@ -102,7 +102,7 @@ struct RL_FilePathList* RL_FilePathList_Create() {
     object->id = RL_FILEPATHLIST_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_FilePathList_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( FilePathList) {};
+    object->data.v = (FilePathList) {0};
     object->type = RL_FILEPATHLIST_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

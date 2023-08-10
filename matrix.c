@@ -102,7 +102,7 @@ struct RL_Matrix* RL_Matrix_Create() {
     object->id = RL_MATRIX_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_Matrix_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( Matrix) {};
+    object->data.v = (Matrix) {0};
     object->type = RL_MATRIX_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

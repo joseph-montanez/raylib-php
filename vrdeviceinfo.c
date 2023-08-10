@@ -102,7 +102,7 @@ struct RL_VrDeviceInfo* RL_VrDeviceInfo_Create() {
     object->id = RL_VRDEVICEINFO_OBJECT_ID++;
     object->guid = calloc(33, sizeof(char));
     object->guid = RL_VrDeviceInfo_Hash_Id(object->guid, sizeof(object->guid)); // Generate hash ID
-    object->data.v = ( VrDeviceInfo) {};
+    object->data.v = (VrDeviceInfo) {0};
     object->type = RL_VRDEVICEINFO_IS_VALUE;
     object->refCount = 1;
     object->deleted = 0;

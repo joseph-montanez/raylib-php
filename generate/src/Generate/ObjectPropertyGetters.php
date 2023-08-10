@@ -96,7 +96,11 @@ class ObjectPropertyGetters
 
                         $input[] = '    return Z_ARRVAL_P(&z' . ucfirst($field->name) . ');';
                     } else {
-                        $input[] = '    return Z_ARRVAL_P(&obj->' . $field->nameLower . ');';
+                        if ($field->nameLower === 'buffer') {
+                            $input[] = '    // return Z_ARRVAL_P(&obj->' . $field->nameLower . ');';
+                        } else {
+                            $input[] = '    return Z_ARRVAL_P(&obj->' . $field->nameLower . ');';
+                        }
                     }
                     break;
             }
