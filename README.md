@@ -239,23 +239,32 @@ M1 Mac Mini - 16GB RAM - macOS Ventura 13.4.1
  - **Compiled** - Must be compiled to a binary to run the application
  - **Dynamic** - Can be interpreted for immediately running the application
 
-| Language                            | Typed    | Extension                | FPS    | Memory | CPU  | GPU |
-|-------------------------------------|----------|--------------------------|--------|--------|------|-----|
-| C (CMake Release)                   | compiled | Native                   | 85 FPS | 47 MB  | 64%  | 90% |
-| Zig 0.11.0 (ReleaseFast) (Arena)    | compiled | raylib.zig               | 85 FPS | 54 MB  | 60%  | 90% |
-| Rust (Release)                      | compiled | bitten2up/raylib-rs      | 85 FPS | 48 MB  | 67%  | 90% |
-| Go 2.20 (Release)                   | compiled | gen2brain/raylib-go      | 85 FPS | 55 MB  | 73%  | 90% |
-| C# 11 .Net 7                        | compiled | raylib-cs                | 85 FPS | 68 MB  | 75%  | 90% |
-| Nim 2.0 (Release)                   | compiled | planetis-m/naylib        | 75 FPS | 49 MB  | 70%  | 90% |
-| Haxe 4.3.1 (no-debug, HXCPP_ARM64)* | compiled | raylib-haxe              | 47 FPS | 128 MB | 87%  | 66% |
-| NodeJS 20                           | dynamic  | node-raylib              | 44 FPS | 134 MB | 100% | 80% |
-| PHP 8.2 (Jit)                       | dynamic  | raylib-php               | 41 FPS | 257 MB | 100% | 60% |
-| PHP 8.2                             | dynamic  | raylib-php               | 27 FPS | 242 MB | 100% | 57% |
-| Python 3.11**                       | dynamic  | raylib-python-cffi       | 10 FPS | 100 MB | 100% | 35% |
-| Lua (LuaJIT 2.1.0-beta3) (-O2)***   | dynamic  | TSnake41/raylib-lua      | 5 FPS  | 113 MB | 100% | 31% |
+| Language                            | Typed    | Extension                  | FPS    | Memory | CPU  | GPU |
+|-------------------------------------|----------|----------------------------|--------|--------|------|-----|
+| C (CMake Release)                   | compiled | Native                     | 85 FPS | 47 MB  | 64%  | 90% |
+| Zig 0.11.0 (ReleaseFast) (Arena)    | compiled | raylib.zig                 | 85 FPS | 54 MB  | 60%  | 90% |
+| Rust (Release)                      | compiled | bitten2up/raylib-rs        | 85 FPS | 48 MB  | 67%  | 90% |
+| Go 2.20 (Release)                   | compiled | gen2brain/raylib-go        | 85 FPS | 55 MB  | 73%  | 90% |
+| C# 11 .Net 7                        | compiled | raylib-cs                  | 85 FPS | 68 MB  | 75%  | 90% |
+| Nim 2.0 (Release)                   | compiled | planetis-m/naylib          | 75 FPS | 49 MB  | 70%  | 90% |
+| Haxe 4.3.1 (no-debug, HXCPP_ARM64)* | compiled | raylib-haxe                | 47 FPS | 128 MB | 87%  | 66% |
+| NodeJS 20                           | dynamic  | node-raylib                | 44 FPS | 134 MB | 100% | 80% |
+| PHP 8.2 (Jit)                       | dynamic  | raylib-php                 | 41 FPS | 257 MB | 100% | 60% |
+| PHP 8.2                             | dynamic  | raylib-php                 | 27 FPS | 242 MB | 100% | 57% |
+| Ruby 3.2.2                          | dynamic  | vaiorabbit/raylib-bindings | 11 FPS | 144 MB | 100% | 50% |
+| Python 3.11**                       | dynamic  | raylib-python-cffi         | 10 FPS | 100 MB | 100% | 35% |
+| Lua (LuaJIT 2.1.0-beta3) (-O2)***   | dynamic  | TSnake41/raylib-lua        | 5 FPS  | 113 MB | 100% | 31% |
 
-1) ***Raylib-Haxe** does not compile out of the box and fixes are to run.
+1) ***Raylib-Haxe** does not compile out of the box and fixes are needed to run.
 
 2) ****Python - raylib-python-cffi** Uses FFI which is slower than a ctypes integration
 
 3) *****TSnake41/raylib-lua** Does not currently compile on Arm64 (M1/M2) out of the box, and JIT isn't working as expected on this platform as it should be faster.
+
+Honorable mentions:
+
+ - **PyGame 2.5.1**: PyGame is completely software rendered and thus extremely slow, I wasn't even getting 1 FPS. You'll need to hand roll your own OpenGL
+rendering solution or leverage an additional library to get hardware acceleration. I tried sprite groups and no improvements.
+ - **DragonRuby Game Toolkit 5.5**: DragonRuby is as slow as **raylib-python-cffi** coming in at 10 FPS. This is because DragonRuby does not 
+have batch rendering so if there are 100,000 sprites, that's 100,000 draw calls. It also forces you to render at 1280x720
+at 60 FPS, it's not possible to change this. There are render targets, but this doesn't reduce offscreen rendering.
