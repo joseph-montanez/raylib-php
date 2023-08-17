@@ -254,7 +254,7 @@ M1 Mac Mini - 16GB RAM - macOS Ventura 13.4.1
 | Python 3.11**                       | dynamic  | raylib-python-cffi       | 10 FPS | 100 MB | 100% | 35% |
 | Lua (LuaJIT 2.1.0-beta3) (-O2)***   | dynamic  | TSnake41/raylib-lua      | 5 FPS  | 113 MB | 100% | 31% |
 
-1) ***Raylib-Haxe** does not compile out of the box is needed fixes to run. Also based on Raylib 4.0 and not Raylib 4.5
+1) ***Raylib-Haxe** does not compile out of the box and fixes are to run.
 
 2) ****Python - raylib-python-cffi** Uses FFI which is slower than a ctypes integration
 
