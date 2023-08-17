@@ -37,8 +37,6 @@ int main(void)
 
     UnloadImage(image);     // Unload cubesmap image from RAM, already uploaded to VRAM
 
-    SetCameraMode(camera, CAMERA_ORBITAL);  // Set an orbital camera mode
-
     SetTargetFPS(60);                       // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -47,19 +45,16 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        UpdateCamera(&camera);              // Update camera
+        UpdateCamera(&camera, CAMERA_ORBITAL);              // Update camera
         //----------------------------------------------------------------------------------
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-
             ClearBackground(RAYWHITE);
 
             BeginMode3D(camera);
-
                 DrawModel(model, mapPosition, 1.0f, WHITE);
-
             EndMode3D();
 
             DrawTextureEx(cubicmap, (Vector2){ screenWidth - cubicmap.width*4.0f - 20, 20.0f }, 0.0f, 4.0f, WHITE);

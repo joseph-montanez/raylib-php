@@ -55,9 +55,9 @@ $bunniesCount = 0;           // Bunnies counter
 SetTargetFPS(144);               // Set our game to run at 60 frames-per-second
 //--------------------------------------------------------------------------------------
 
-$texBunnyHalfWidth = $texBunny->width / 2;
-$texBunnyHalfHeight = $texBunny->height / 2;
-$texBunnyHalfHeight40 = $texBunnyHalfHeight - 40;
+$half_bunny_width = $texBunny->width / 2;
+$half_bunny_height = $texBunny->height / 2;
+$half_bunny_height_40 = $texBunnyHalfHeight - 40;
 
 // Main game loop
 while (!WindowShouldClose()) {    // Detect window close button or ESC key
@@ -78,15 +78,19 @@ while (!WindowShouldClose()) {    // Detect window close button or ESC key
     }
 
     // Update bunnies
-    for ($i = 0; $i < $bunniesCount; $i++)
-    {
+    for ($i = 0; $i < $bunniesCount; $i++) {
         $bunnies[$i]->position->x += $bunnies[$i]->speed->x;
         $bunnies[$i]->position->y += $bunnies[$i]->speed->y;
 
-        if ((($bunnies[$i]->position->x + $texBunnyHalfWidth) > $screenWidth) ||
-            (($bunnies[$i]->position->x + $texBunnyHalfWidth) < 0)) $bunnies[$i]->speed->x *= -1;
-        if ((($bunnies[$i]->position->y + $texBunnyHalfHeight) > $screenHeight) ||
-            (($bunnies[$i]->position->y + $texBunnyHalfHeight40) < 0)) $bunnies[$i]->speed->y *= -1;
+        $new_x = $bunnies[$i]->position->x + $half_bunny_width;
+        $new_y = $bunnies[$i]->position->y + $half_bunny_height;
+
+        if ($new_x > $screenWidth || $new_x < 0) {
+            $bunnies[$i]->speed->x *= -1;
+        }
+        if ($new_y > $screenHeight || $new_y < $half_bunny_height_40) {
+            $bunnies[$i]->speed->y *= -1;
+        }
     }
     //----------------------------------------------------------------------------------
 

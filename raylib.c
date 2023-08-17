@@ -8645,6 +8645,114 @@ PHP_FUNCTION(LoadModelFromMesh)
     Model *modelData = php_raylib_model_fetch_data(phpResult);
     // Dereference modelData for assignment back to object
     *modelData = originalResult;
+    /** TODO: Load Materials, Meshes and Bones from Model into PHP Object **/
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->meshCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *meshesResult = php_raylib_mesh_new_ex(php_raylib_mesh_ce, NULL);
+
+        // Fetch the data inside the PHP Object
+        php_raylib_mesh_object *pMeshObject = php_raylib_mesh_fetch_object(meshesResult);
+        Mesh *meshElement = php_raylib_mesh_fetch_data(pMeshObject);
+
+        // Link this as a pointer, rather than copying data between each other
+        pMeshObject->mesh->type = RL_MESH_IS_POINTER;
+        pMeshObject->mesh->data.p = &php_raylib_model_fetch_data(phpResult)->meshes[i];
+
+        // Go through each sub-object and assign values (references)
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->meshes, meshesResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->materialCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *materialsResult = php_raylib_material_new_ex(php_raylib_material_ce, NULL);
+
+        // Fetch the data inside the PHP Object
+        php_raylib_material_object *pMaterialObject = php_raylib_material_fetch_object(materialsResult);
+        Material *materialElement = php_raylib_material_fetch_data(pMaterialObject);
+
+        // Link this as a pointer, rather than copying data between each other
+        pMaterialObject->material->type = RL_MATERIAL_IS_POINTER;
+        pMaterialObject->material->data.p = &php_raylib_model_fetch_data(phpResult)->materials[i];
+
+        // Go through each sub-object and assign values (references)
+        php_raylib_shader_object *phpMaterialShaderObject = Z_SHADER_OBJ_P(&pMaterialObject->shader);
+        phpMaterialShaderObject->shader->type = RL_SHADER_IS_POINTER;
+        phpMaterialShaderObject->shader->data.p = &pMaterialObject->material->data.p->shader;
+
+        for (int n = 0; n < 12; n++) {
+            MaterialMap *materialMap = &pMaterialObject->material->data.p->maps[n];
+
+            // Create PHP Object holder of this data
+            zend_object *materialMapResult = php_raylib_materialmap_new_ex(php_raylib_materialmap_ce, NULL);
+            php_raylib_materialmap_object *pMaterialMapsObject = php_raylib_materialmap_fetch_object(materialMapResult);
+
+            pMaterialMapsObject->materialmap->type = RL_MATERIALMAP_IS_POINTER;
+            pMaterialMapsObject->materialmap->data.p = materialMap;
+
+            /*
+            * Need to also populate the following sub SUB objects
+            * zval texture;
+            * zval color;
+            */
+
+            add_next_index_object(&pMaterialObject->maps, materialMapResult);
+        }
+
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->materials, materialsResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->boneCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *bonesResult = php_raylib_boneinfo_new_ex(php_raylib_boneinfo_ce, NULL);
+
+        // Fetch the data inside the PHP Object
+        php_raylib_boneinfo_object *pBoneinfoObject = php_raylib_boneinfo_fetch_object(bonesResult);
+        BoneInfo *boneinfoElement = php_raylib_boneinfo_fetch_data(pBoneinfoObject);
+
+        // Link this as a pointer, rather than copying data between each other
+        pBoneinfoObject->boneinfo->type = RL_BONEINFO_IS_POINTER;
+        pBoneinfoObject->boneinfo->data.p = &php_raylib_model_fetch_data(phpResult)->bones[i];
+
+        // Go through each sub-object and assign values (references)
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->bones, bonesResult);
+    }
+
+    for (int i = 0; i < php_raylib_model_fetch_data(phpResult)->boneCount; i++) {
+        // Create PHP Object holder of this data
+        zend_object *bindPoseResult = php_raylib_transform_new_ex(php_raylib_transform_ce, NULL);
+
+        // Fetch the data inside the PHP Object
+        php_raylib_transform_object *pTransformObject = php_raylib_transform_fetch_object(bindPoseResult);
+        Transform *transformElement = php_raylib_transform_fetch_data(pTransformObject);
+
+        // Link this as a pointer, rather than copying data between each other
+        pTransformObject->transform->type = RL_TRANSFORM_IS_POINTER;
+        pTransformObject->transform->data.p = &php_raylib_model_fetch_data(phpResult)->bindPose[i];
+
+        // Go through each sub-object and assign values (references)
+        php_raylib_vector3_object *phpTransformTranslationObject = Z_VECTOR3_OBJ_P(&pTransformObject->translation);
+        phpTransformTranslationObject->vector3->type = RL_VECTOR3_IS_POINTER;
+        phpTransformTranslationObject->vector3->data.p = &pTransformObject->transform->data.p->translation;
+
+        php_raylib_vector4_object *phpTransformRotationObject = Z_VECTOR4_OBJ_P(&pTransformObject->rotation);
+        phpTransformRotationObject->vector4->type = RL_VECTOR4_IS_POINTER;
+        phpTransformRotationObject->vector4->data.p = &pTransformObject->transform->data.p->rotation;
+
+        php_raylib_vector3_object *phpTransformScaleObject = Z_VECTOR3_OBJ_P(&pTransformObject->scale);
+        phpTransformScaleObject->vector3->type = RL_VECTOR3_IS_POINTER;
+        phpTransformScaleObject->vector3->data.p = &pTransformObject->transform->data.p->scale;
+
+        // Push element to PHP array which should just be an object that is also a data pointer,
+        // if this is changed should update original data?
+        add_next_index_object(&phpResult->bindpose, bindPoseResult);
+    }
 
     RETURN_OBJ(&phpResult->std);
 }
@@ -8737,7 +8845,10 @@ PHP_FUNCTION(DrawModel)
     php_raylib_vector3_object *phpPosition = Z_VECTOR3_OBJ_P(position);
     php_raylib_color_object *phpTint = Z_COLOR_OBJ_P(tint);
 
-    DrawModel(*php_raylib_model_fetch_data(phpModel), *php_raylib_vector3_fetch_data(phpPosition), (float) scale, *php_raylib_color_fetch_data(phpTint));
+    Model model1 = *php_raylib_model_fetch_data(phpModel);
+    Vector3 vector3 = *php_raylib_vector3_fetch_data(phpPosition);
+    Color color = *php_raylib_color_fetch_data(phpTint);
+    DrawModel(model1, vector3, (float) scale, color);
 
 }
 
@@ -9568,8 +9679,10 @@ PHP_FUNCTION(SetMaterialTexture)
     php_raylib_material_object *phpMaterial = Z_MATERIAL_OBJ_P(material);
     php_raylib_texture_object *phpTexture = Z_TEXTURE_OBJ_P(texture);
 
-    SetMaterialTexture(php_raylib_material_fetch_data(phpMaterial), (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1, *php_raylib_texture_fetch_data(phpTexture));
-
+    Material *pMaterial = php_raylib_material_fetch_data(phpMaterial);
+    Texture texture1 = *php_raylib_texture_fetch_data(phpTexture);
+    int type = (mapType <= INT_MAX) ? (int) ((zend_long) mapType) : -1;
+    SetMaterialTexture(pMaterial, type, texture1);
 }
 
 // Set material for a mesh

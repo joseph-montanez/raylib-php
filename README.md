@@ -189,7 +189,7 @@ Once you have PHP & Raylib setup you can then compile the extension
 
 ### MacOS & Linux
 
-    php -dextension=modules/raylib.so examples/textures/textures_image_loading.phpÏ
+    php -dextension=modules/raylib.so examples/textures/textures_image_loading.php
 
 ### Windows
 
@@ -236,16 +236,26 @@ of the GPU of the test machine. All run with "Apple" for **kind** (M1/M2) native
 
 M1 Mac Mini - 16GB RAM - macOS Ventura 13.4.1
 
-| Language                         | Extension                | FPS    | Memory | CPU  | GPU |
-|----------------------------------|--------------------------|--------|--------|------|-----|
-| C (CMake Release)                | Native                   | 85 FPS | 47 MB  | 64%  | 90% |
-| Zig 0.11.0 (ReleaseFast) (Arena) | raylib.zig               | 85 FPS | 54 MB  | 60%  | 90% |
-| Rust (Release)                   | bitten2up/raylib-rs      | 85 FPS | 48 MB  | 67%  | 90% |
-| Go 2.20 (Release)                | gen2brain/raylib-go      | 85 FPS | 55 MB  | 73%  | 90% |
-| C# 11 .Net 7                     | raylib-cs                | 85 FPS | 68 MB  | 75%  | 90% |
-| Nim 2.0 (Release)                | planetis-m/naylib        | 75 FPS | 49 MB  | 70%  | 90% |
-| NodeJS 20                        | node-raylib              | 44 FPS | 134 MB | 100% | 80% |
-| PHP 8.2 (Jit)                    | raylib-php               | 41 FPS | 257 MB | 100% | 60% |
-| PHP 8.2                          | raylib-php               | 27 FPS | 242 MB | 100% | 57% |
-| Python 3.11                      | raylib-python-cffi       | 10 FPS | 100 MB | 100% | 35% |
-| Lua (LuaJIT 2.1.0-beta3) (-O2)   | TSnake41/raylib-lua      | 5 FPS  | 113 MB | 100% | 31% |
+ - **Compiled** - Must be compiled to a binary to run the application
+ - **Dynamic** - Can be interpreted for immediately running the application
+
+| Language                            | Typed    | Extension                | FPS    | Memory | CPU  | GPU |
+|-------------------------------------|----------|--------------------------|--------|--------|------|-----|
+| C (CMake Release)                   | compiled | Native                   | 85 FPS | 47 MB  | 64%  | 90% |
+| Zig 0.11.0 (ReleaseFast) (Arena)    | compiled | raylib.zig               | 85 FPS | 54 MB  | 60%  | 90% |
+| Rust (Release)                      | compiled | bitten2up/raylib-rs      | 85 FPS | 48 MB  | 67%  | 90% |
+| Go 2.20 (Release)                   | compiled | gen2brain/raylib-go      | 85 FPS | 55 MB  | 73%  | 90% |
+| C# 11 .Net 7                        | compiled | raylib-cs                | 85 FPS | 68 MB  | 75%  | 90% |
+| Nim 2.0 (Release)                   | compiled | planetis-m/naylib        | 75 FPS | 49 MB  | 70%  | 90% |
+| Haxe 4.3.1 (no-debug, HXCPP_ARM64)* | compiled | raylib-haxe              | 47 FPS | 128 MB | 87%  | 66% |
+| NodeJS 20                           | dynamic  | node-raylib              | 44 FPS | 134 MB | 100% | 80% |
+| PHP 8.2 (Jit)                       | dynamic  | raylib-php               | 41 FPS | 257 MB | 100% | 60% |
+| PHP 8.2                             | dynamic  | raylib-php               | 27 FPS | 242 MB | 100% | 57% |
+| Python 3.11**                       | dynamic  | raylib-python-cffi       | 10 FPS | 100 MB | 100% | 35% |
+| Lua (LuaJIT 2.1.0-beta3) (-O2)***   | dynamic  | TSnake41/raylib-lua      | 5 FPS  | 113 MB | 100% | 31% |
+
+1) ***Raylib-Haxe** does not compile out of the box is needed fixes to run. Also based on Raylib 4.0 and not Raylib 4.5
+
+2) ****Python - raylib-python-cffi** Uses FFI which is slower than a ctypes integration
+
+3) *****TSnake41/raylib-lua** Does not currently compile on Arm64 (M1/M2) out of the box, and JIT isn't working as expected on this platform as it should be faster.

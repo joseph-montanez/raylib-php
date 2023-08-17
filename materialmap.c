@@ -565,6 +565,8 @@ static int php_raylib_materialmap_set_texture(php_raylib_materialmap_object *obj
     php_raylib_texture_object *rl_texture = Z_TEXTURE_OBJ_P(newval);
     rl_texture->texture->refCount++;
 
+    php_raylib_materialmap_fetch_data(obj)->texture = *php_raylib_texture_fetch_data(rl_texture);
+
     obj->texture = *newval;
 
     return ret;

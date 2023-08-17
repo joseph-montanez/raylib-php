@@ -418,6 +418,7 @@ zend_object * php_raylib_material_new_ex(zend_class_entry *ce, zend_object *orig
                 .locs = 0
             },
             // .maps is an array and not yet supported via constructor
+            .maps = (malloc(12 * sizeof(MaterialMap))),
             .params = 0
         };
 
@@ -464,6 +465,33 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_material__construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 PHP_METHOD(Material, __construct)
 {
+}
+
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_material__set_map_index, 0, 0, 0)
+    ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
+    ZEND_ARG_OBJ_INFO(0, map, raylib\\MaterialMap, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Material, setMapIndex)
+{
+    zend_long index;
+    zval *zMaterialMap;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(index)
+            Z_PARAM_ZVAL(zMaterialMap)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_materialmap_object *pMaterialmapObject = Z_MATERIALMAP_OBJ_P(zMaterialMap);
+
+    zval *this_zval = getThis();
+    zend_object *obj = Z_OBJ_P(this_zval);
+    php_raylib_material_object *pMaterialObject = php_raylib_material_fetch_object(obj);
+    MaterialMap materialMap = pMaterialmapObject->materialmap->data.v;
+    Material *pMaterial = php_raylib_material_fetch_data(pMaterialObject);
+    pMaterial->maps[index] = materialMap;
+
+    RETURN_NULL();
 }
 
 static zend_object * php_raylib_material_get_shader(php_raylib_material_object *obj) /* {{{ */
@@ -548,6 +576,7 @@ static int php_raylib_material_set_params(php_raylib_material_object *obj, zval 
 
 const zend_function_entry php_raylib_material_methods[] = {
         PHP_ME(Material, __construct, arginfo_material__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Material, setMapIndex, arginfo_material__set_map_index, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_material_startup(INIT_FUNC_ARGS)

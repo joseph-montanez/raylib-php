@@ -619,6 +619,56 @@ PHP_METHOD(Model, __construct)
 {
 }
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_model__set_material_index, 0, 0, 0)
+    ZEND_ARG_TYPE_INFO(0, index, IS_LONG, 0)
+    ZEND_ARG_OBJ_INFO(0, material, raylib\\Material, 0)
+ZEND_END_ARG_INFO()
+PHP_METHOD(Model, setMaterialIndex)
+{
+    zend_long index;
+    zval *zMaterial;
+
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+            Z_PARAM_LONG(index)
+            Z_PARAM_ZVAL(zMaterial)
+    ZEND_PARSE_PARAMETERS_END();
+
+    php_raylib_material_object *pMaterialObject = Z_MATERIAL_OBJ_P(zMaterial);
+
+    zval *this_zval = getThis();
+    zend_object *obj = Z_OBJ_P(this_zval);
+    php_raylib_model_object *pModelObject = php_raylib_model_fetch_object(obj);
+    Model *model = &pModelObject->model->data.v;
+
+    if (index >= model->materialCount) {
+        if (model->materials == NULL) {
+            // Allocate memory for the first time
+            model->materials = malloc((index + 1) * sizeof(Material));
+            if (!model->materials) {
+                // handle the allocation error
+                return;  // or handle in another way
+            }
+            model->materialCount = (int) index + 1;
+        } else {
+            // Resize the previously allocated memory
+            Material *new_materials = realloc(model->materials, (index + 1) * sizeof(Material));
+            if (!new_materials) {
+                // handle the reallocation error, model.materials is still valid
+                return;  // or handle in another way
+            } else {
+                model->materials = new_materials;
+                model->materialCount = (int) index + 1;
+            }
+        }
+    }
+    model->materials[index] = pMaterialObject->material->data.v;
+//
+//    Material *pMaterial = php_raylib_material_fetch_data(pMaterialObject);
+//    pMaterial->maps[index] = materialMap;
+
+    RETURN_NULL();
+}
+
 static zend_object * php_raylib_model_get_transform(php_raylib_model_object *obj) /* {{{ */
 {
     php_raylib_matrix_object *phpTransform = Z_MATRIX_OBJ_P(&obj->transform);
@@ -812,6 +862,7 @@ static int php_raylib_model_set_bindpose(php_raylib_model_object *obj, zval *new
 
 const zend_function_entry php_raylib_model_methods[] = {
         PHP_ME(Model, __construct, arginfo_model__construct, ZEND_ACC_PUBLIC)
+        PHP_ME(Model, setMaterialIndex, arginfo_model__set_material_index, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 void php_raylib_model_startup(INIT_FUNC_ARGS)
